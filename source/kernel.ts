@@ -16,6 +16,10 @@ class Kernel implements KernelInterface {
 
   // The objet properties are used as unique keys type bindings are used as values
   private _bindings : Object;
+  
+  // Regular expresions used to get a list containing the names of the arguments of a function
+  private STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+  private ARGUMENT_NAMES = /([^\s,]+)/g;
 
   // Regiters a type binding
   public bind(typeBinding : TypeBindingInterface<any>) : void {
@@ -57,7 +61,7 @@ class Kernel implements KernelInterface {
     }
   }
 
-  //Validates a type binding
+  // Validates a type binding
   private _validateBinding(typeBinding : TypeBindingInterface<any>) : boolean {
 
     var isValid = true;
@@ -84,6 +88,19 @@ class Kernel implements KernelInterface {
     }
 
     return isValid;
+  }
+  
+  // Take a function as argument and discovers the names of its arguments at run-time
+  private getFunctionArgumentsmNames(func : Function) {
+    
+    var fnStr = func.toString().replace(this.STRIP_COMMENTS, ''),
+        result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match((this.ARGUMENT_NAMES);
+        
+    if(result === null) { 
+      result = [] 
+    };
+    
+    return result;
   }
 
   // The class default constructor
