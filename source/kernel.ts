@@ -76,23 +76,9 @@ class Kernel implements KernelInterface {
       isValid = false;
     }
 
-    // Service type must be an interface (TODO)
-    if(false) {
-      var msg = "The binding's serviceType must be an interface";
-      console.log(msg);
-      isValid = false;
-    }
-
     // Implementation type must be a constructor
     if(typeof typeBinding.implementationType !== "function") {
       var msg = "Typeof binding's implementationType must be a class constructor";
-      console.log(msg);
-      isValid = false;
-    }
-
-    // Implementation type must be an implementation of its service type (TODO)
-    if(false) {
-      var msg = "The binding's implementation type must be an implementation of its service type";
       console.log(msg);
       isValid = false;
     }
