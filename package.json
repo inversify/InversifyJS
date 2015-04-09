@@ -1,0 +1,68 @@
+{
+  "name": "inversify",
+  "version": "1.0.0",
+  "description": "A lightweight IoC container written in TypeScript.",
+  "main": "dist/inversify.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WolkSoftwareLtd/inversify.git"
+  },
+  "keywords": [
+    "IoC",
+    "container",
+    "JavaScript",
+    "TypeScript",
+    "dependency",
+    "inversion",
+    "inversion",
+    "of",
+    "control"
+  ],
+  "author": "Remo H. Jansen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WolkSoftwareLtd/inversify/issues"
+  },
+  "homepage": "https://github.com/WolkSoftwareLtd/inversify",
+  "engines": {},
+  "dependencies": {
+  },
+  "devDependencies": {
+    "browserify": "^9.0.3",
+    "chai": "^2.1.1",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-karma": "0.0.4",
+    "gulp-sourcemaps": "^1.5.0",
+    "gulp-tslint": "^1.4.3",
+    "gulp-typescript": "^2.4.2",
+    "gulp-uglify": "^1.1.0",
+    "karma": "^0.12.31",
+    "karma-browserify": "^4.0.0",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.2.7",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sinon": "^1.0.4",
+    "mocha": "^2.1.0",
+    "run-sequence": "^1.0.2",
+    "sinon": "^1.13.0",
+    "typescript": "^1.4.1",
+    "vinyl-transform": "^1.0.0"
+  },
+  "peerDependencies": {
+    "chai": "^2.1.1",
+    "mocha": "^2.1.0",
+    "sinon": "^1.13.0",
+    "karma": "^0.12.31",
+    "gulp": "^3.8.11",
+    "typescript": "^1.4.1",
+    "browserify": "^9.0.3"
+  }
+}
