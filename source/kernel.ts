@@ -28,7 +28,7 @@ class Kernel implements KernelInterface {
     }
   }
 
-  // Removes a type binding from the registry by key
+  // Removes a type binding from the registry by its key
   public unbind(runtimeIdentifier : string) : void {
     var binding = this._bindings[runtimeIdentifier];
 
@@ -123,6 +123,7 @@ class Kernel implements KernelInterface {
 
   // The class default constructor
   constructor() {
+    // TODO allow settings (disable cache)
     this._bindings = new Object();
   }
 }
