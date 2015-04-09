@@ -27,9 +27,7 @@ todo
 
 ```
 var kernel = new Kernel();
-var runtimeIdentifier = "fooInterface";
-var binding =  new TypeBinding<fooInterface>(runtimeIdentifier, foo);
-kernel.bind(binding);
+kernel.bind(new TypeBinding<fooInterface>("fooInterface", foo));
 ```
 ##### 3. We are done!
 todo
