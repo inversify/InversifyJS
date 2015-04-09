@@ -7,7 +7,8 @@ todo
 
 ### InversifyJS is easy to configure
 
-Declare your classes and interfaces
+##### 1. Declare your classes and interfaces
+todo
 
 ```
 interface fooInterface {
@@ -21,7 +22,8 @@ class foo implements fooInterface {
 }
 ```
 
-Create a kernel and set up your app's type bindings
+##### 2. Create a kernel and set up your app's type bindings
+todo
 
 ```
 var kernel = new Kernel();
@@ -29,7 +31,8 @@ var runtimeIdentifier = "fooInterface";
 var binding =  new TypeBinding<fooInterface>(runtimeIdentifier, foo);
 kernel.bind(binding);
 ```
-We are done!
+##### 3. We are done!
+todo
 
 ```
 var instance = kernel.resolve<fooInterface>("fooInterface");
