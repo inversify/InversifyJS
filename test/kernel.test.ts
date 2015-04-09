@@ -17,7 +17,7 @@ class foo implements fooInterface {
 
 describe('Kernel Test Suite', () => {
 
-    describe('When a resolving dependencies', () => {
+    describe('When resolving dependencies', () => {
 
       it('it should be able to resolve a service without dependencies', (done) => {
         var expected = new foo();
