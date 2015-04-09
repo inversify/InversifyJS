@@ -20,12 +20,13 @@ describe('Kernel Test Suite', () => {
     describe('When a resolving dependencies', () => {
 
       it('it should be able to resolve a service without dependencies', (done) => {
+        var expected = new foo();
         var kernel = new Kernel();
         var runtimeIdentifier = "fooInterface";
         var binding =  new TypeBinding<fooInterface>(runtimeIdentifier, foo);
         kernel.bind(binding);
         var result = kernel.resolve<fooInterface>("fooInterface");
-        expect(foo).to.equals(result);
+        expect(expected).to.equals(result);
         done();
       });
 
