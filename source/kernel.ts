@@ -31,7 +31,7 @@ class Kernel implements KernelInterface {
     if(binding === "undefined") {
       throw new Error(`Could not resolve service ${runtimeIdentifier}`);
     }
-    delete this._bindings[runtimeIdentifier] == undefined;
+    delete this._bindings[runtimeIdentifier];
   }
 
   // Removes all the type bindings from the registry
