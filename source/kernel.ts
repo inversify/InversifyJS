@@ -42,6 +42,8 @@ class Kernel implements KernelInterface {
   unbindAll() : void {
     this._bindings = new Object();
   }
+  
+  // Resolves a dependency
   public resolve<TImplementationType>(runtimeIdentifier : string) : TImplementationType {
 
     var binding = this._bindings[runtimeIdentifier];
@@ -57,7 +59,9 @@ class Kernel implements KernelInterface {
       return clone;
     }
     else {
-      // TODO resolve
+      var result = this._injectDependencies(binding.implementationType);
+      binding.cache = result;
+      return result;
     }
   }
 
@@ -91,7 +95,7 @@ class Kernel implements KernelInterface {
   }
   
   // Take a function as argument and discovers the names of its arguments at run-time
-  private getFunctionArgumentsmNames(func : Function) {
+  private _getFunctionArgumentsmNames(func : Function) {
     
     var fnStr = func.toString().replace(this.STRIP_COMMENTS, ''),
         result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match((this.ARGUMENT_NAMES);
@@ -101,6 +105,20 @@ class Kernel implements KernelInterface {
     };
     
     return result;
+  }
+  
+  // Examines if a constructor has any dependencies. If so, it will resolve and inject them
+  private _injectDependencies(func : Function) : Object {
+    var args = this._getFunctionArgumentsmNames(func);
+    if(args.length === 0) {
+      return new func();
+    }
+    else {
+      for(var i = 0; i < args.length; i++) {
+        var service = args[i];
+        // TODO
+      }
+    }
   }
 
   // The class default constructor
