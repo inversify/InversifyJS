@@ -120,7 +120,6 @@ var FooBar = (function () {
     };
     return FooBar;
 })();
-
 ``` 
 
 ##### 2. Create a kernel and set up your app's type bindings
@@ -149,6 +148,8 @@ todo
  ```
 // resolve
 var foobar = kernel.resolve("FooBarInterface");
+
+// Foo and bar instances has been injected to foobar via its constructor
 foobar.foo.log(); // foo
 foobar.bar.log(); // foo
 foobar.log(); // foobar
