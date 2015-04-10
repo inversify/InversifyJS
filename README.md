@@ -84,15 +84,81 @@ foobar.bar.log(); // foo
 foobar.log(); // foobar
 ```
 
-### InversifyJS is compatible with TypeScript and JavaScript
+### Compatible with JavaScript
 
 todo
 
-### InversifyJS is compatible with many frameworks
+##### 1. Declare your classes
+todo
+
+```
+var Foo = (function () {
+    function Foo() {
+    }
+    Foo.prototype.log = function () {
+        console.log("foo");
+    };
+    return Foo;
+})();
+ 
+var Bar = (function () {
+    function Bar() {
+    }
+    Bar.prototype.log = function () {
+        console.log("bar");
+    };
+    return Bar;
+})();
+ 
+var FooBar = (function () {
+    function FooBar(FooInterface, BarInterface) {
+        this.foo = FooInterface;
+        this.bar = BarInterface;
+    }
+    FooBar.prototype.log = function () {
+        console.log("foobar");
+    };
+    return FooBar;
+})();
+
+``` 
+
+##### 2. Create a kernel and set up your app's type bindings
 
 todo
 
-### InversifyJS is compatible with module loaders
+A type binding (or just a binding) is a mapping between a service type
+(an interface), and an implementation type to be used to satisfy such a
+service requirement.
+
+todo
+
+```
+// kernel
+var kernel = new inversify.Kernel();
+ 
+// bind
+kernel.bind(new inversify.TypeBinding("FooInterface", Foo));
+kernel.bind(new inversify.TypeBinding("BarInterface", Bar));
+kernel.bind(new inversify.TypeBinding("FooBarInterface", FooBar));
+ ```
+##### 3. Resolve dependencies
+
+todo
+
+ ```
+// resolve
+var foobar = kernel.resolve("FooBarInterface");
+foobar.foo.log(); // foo
+foobar.bar.log(); // foo
+foobar.log(); // foobar
+```
+
+### Easy to integrate with frameworks
+
+todo
+
+###  Easy to integrate with module loaders
 
 todo
 
