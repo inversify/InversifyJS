@@ -4,19 +4,21 @@
 // -----------
 
 // A type binding (or just a binding) is a mapping between a service type
-// (generally an interface or abstract class), and an implementation type
-// to be used to satisfy such a service requirement.
+// (an interface), and an implementation type to be used to satisfy such
+// a service requirement.
 
 class TypeBinding<TServiceType>
   implements TypeBindingInterface<TServiceType> {
 
-    // The runtime identifier used because at runtime we don't have interfaces
+    // The runtime identifier used because at runtime
+    // we don't have interfaces
     public runtimeIdentifier : string;
 
     // Constructor of an implemtation of TServiceType
     public implementationType : { new(): TServiceType ;};
 
-    // Once a service has been resolved we will cache the result to boost performance
+    // Once a service has been resolved we will cache
+    // the result to boost performance
     public cache : TServiceType;
 
     // The scope of the type.
