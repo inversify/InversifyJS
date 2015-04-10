@@ -19,13 +19,39 @@ implementation type (classes) to associate with each service type (interfaces).
 todo
 
 ```
-interface fooInterface {
-  bar() : void;
+interface FooInterface {
+  log() : void;
 }
-
-class foo implements fooInterface {
-  public bar() {
-    return "bar";
+ 
+interface BarInterface {
+  log() : void;
+}
+ 
+interface FooBarInterface {
+  log() : void;
+}
+ 
+class Foo implements FooInterface {
+  public log(){ 
+    console.log("foo"); 
+  }
+}
+ 
+class Bar implements BarInterface {
+  public log(){ 
+    console.log("bar"); 
+  }
+}
+ 
+class FooBar implements FooBarInterface {
+  public foo : FooInterface;
+  public bar : BarInterface;
+  public log(){ 
+    console.log("foobar"); 
+  }
+  constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
+    this.foo = FooInterface;
+    this.bar = BarInterface;
   }
 }
 ```
@@ -38,14 +64,24 @@ A type binding (or just a binding) is a mapping between a service type
 service requirement.
 
 ```
-var kernel = new Kernel();
-kernel.bind(new TypeBinding<fooInterface>("fooInterface", foo));
+// kernel
+var kernel = new inversify.Kernel();
+ 
+// bind
+kernel.bind(new inversify.TypeBinding<FooInterface>("FooInterface", Foo));
+kernel.bind(new inversify.TypeBinding<BarInterface>("BarInterface", Bar));
+kernel.bind(new inversify.TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
 ```
-##### 3. We are done!
+##### 3. Resolve dependencies
 todo
 
 ```
-var instance = kernel.resolve<fooInterface>("fooInterface");
+var foobar = kernel.resolve<FooBarInterface>("FooBarInterface");
+
+// Foo and bar instances has been injected to foobar via its constructor
+foobar.foo.log(); // foo
+foobar.bar.log(); // foo
+foobar.log(); // foobar
 ```
 
 ### InversifyJS is compatible with TypeScript and JavaScript
