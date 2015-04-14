@@ -19,13 +19,39 @@ implementation type (classes) to associate with each service type (interfaces).
 todo
 
 ```
-interface fooInterface {
-  bar() : void;
+interface FooInterface {
+  log() : void;
 }
-
-class foo implements fooInterface {
-  public bar() {
-    return "bar";
+ 
+interface BarInterface {
+  log() : void;
+}
+ 
+interface FooBarInterface {
+  log() : void;
+}
+ 
+class Foo implements FooInterface {
+  public log(){ 
+    console.log("foo"); 
+  }
+}
+ 
+class Bar implements BarInterface {
+  public log(){ 
+    console.log("bar"); 
+  }
+}
+ 
+class FooBar implements FooBarInterface {
+  public foo : FooInterface;
+  public bar : BarInterface;
+  public log(){ 
+    console.log("foobar"); 
+  }
+  constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
+    this.foo = FooInterface;
+    this.bar = BarInterface;
   }
 }
 ```
@@ -38,25 +64,102 @@ A type binding (or just a binding) is a mapping between a service type
 service requirement.
 
 ```
-var kernel = new Kernel();
-kernel.bind(new TypeBinding<fooInterface>("fooInterface", foo));
+// kernel
+var kernel = new inversify.Kernel();
+ 
+// bind
+kernel.bind(new inversify.TypeBinding<FooInterface>("FooInterface", Foo));
+kernel.bind(new inversify.TypeBinding<BarInterface>("BarInterface", Bar));
+kernel.bind(new inversify.TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
 ```
-##### 3. We are done!
+##### 3. Resolve dependencies
 todo
 
 ```
-var instance = kernel.resolve<fooInterface>("fooInterface");
+var foobar = kernel.resolve<FooBarInterface>("FooBarInterface");
+
+// Foo and bar instances has been injected to foobar via its constructor
+foobar.foo.log(); // foo
+foobar.bar.log(); // foo
+foobar.log(); // foobar
 ```
 
-### InversifyJS is compatible with TypeScript and JavaScript
+### Compatible with JavaScript
 
 todo
 
-### InversifyJS is compatible with many frameworks
+##### 1. Declare your classes
+todo
+
+```
+var Foo = (function () {
+    function Foo() {
+    }
+    Foo.prototype.log = function () {
+        console.log("foo");
+    };
+    return Foo;
+})();
+ 
+var Bar = (function () {
+    function Bar() {
+    }
+    Bar.prototype.log = function () {
+        console.log("bar");
+    };
+    return Bar;
+})();
+ 
+var FooBar = (function () {
+    function FooBar(FooInterface, BarInterface) {
+        this.foo = FooInterface;
+        this.bar = BarInterface;
+    }
+    FooBar.prototype.log = function () {
+        console.log("foobar");
+    };
+    return FooBar;
+})();
+``` 
+
+##### 2. Create a kernel and set up your app's type bindings
 
 todo
 
-### InversifyJS is compatible with module loaders
+A type binding (or just a binding) is a mapping between a service type
+(an interface), and an implementation type to be used to satisfy such a
+service requirement.
+
+todo
+
+```
+// kernel
+var kernel = new inversify.Kernel();
+ 
+// bind
+kernel.bind(new inversify.TypeBinding("FooInterface", Foo));
+kernel.bind(new inversify.TypeBinding("BarInterface", Bar));
+kernel.bind(new inversify.TypeBinding("FooBarInterface", FooBar));
+ ```
+##### 3. Resolve dependencies
+
+todo
+
+ ```
+// resolve
+var foobar = kernel.resolve("FooBarInterface");
+
+// Foo and bar instances has been injected to foobar via its constructor
+foobar.foo.log(); // foo
+foobar.bar.log(); // foo
+foobar.log(); // foobar
+```
+
+### Easy to integrate with frameworks
+
+todo
+
+###  Easy to integrate with module loaders
 
 todo
 
