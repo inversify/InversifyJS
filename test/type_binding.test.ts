@@ -14,6 +14,7 @@ class foo implements fooInterface {
 	}
 }
 
+
 describe("Type Binging Class Test Suite", () => {
 
     before(function(){

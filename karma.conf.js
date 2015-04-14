@@ -13,7 +13,7 @@ module.exports = function (config) {
           'karma-phantomjs-launcher'
         ],
         preprocessors: {
-          './test/*.test.js' : ['coverage']
+          './bundled/test/*.test.js' : ['coverage']
         },
         port: 9876,
         colors: true,

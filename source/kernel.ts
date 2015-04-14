@@ -1,7 +1,7 @@
 ///<reference path="./inversify.d.ts" />
 
-// Inversify
-// ---------
+// Kernel
+// ------
 
 // Inversify is a lightweight pico container for TypeScript
 // and JavaScript apps.
@@ -118,10 +118,12 @@ class Kernel implements KernelInterface {
   // the names of its arguments at run-time
   private _getFunctionArgumentsmNames(func : Function) {
 
-    var fnStr = func.toString().replace(this.STRIP_COMMENTS, ''),
-        a = fnStr.indexOf('(') + 1,
-        b = fnStr.indexOf(')'),
-        result = fnStr.slice(a, b).match(this.ARGUMENT_NAMES);
+    var fnStr, argsInit, argsEnd, result;
+
+    fnStr = func.toString().replace(this.STRIP_COMMENTS, '');
+    argsInit = fnStr.indexOf('(') + 1;
+    argsEnd = fnStr.indexOf(')');
+    result = fnStr.slice(argsInit, argsEnd).match(this.ARGUMENT_NAMES);
 
     if(result === null) {
       result = []

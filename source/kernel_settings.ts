@@ -1,5 +1,11 @@
 ///<reference path="./inversify.d.ts" />
 
+// KernelSettings
+// -----------
+
+// An object passed to the Kenel constructor to set some
+// core configuration.
+
 class KernelSettings implements KernelSettingsInterface {
   public cache : boolean;
   constructor();

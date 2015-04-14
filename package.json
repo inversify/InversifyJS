@@ -33,11 +33,11 @@
   "engines": {},
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^9.0.3",
+    "browserify": "9.0.4",
     "chai": "^2.1.1",
     "del": "^1.1.1",
-    "glob": "^5.0.5",
     "gulp": "^3.8.11",
+    "gulp-docco": "0.0.4",
     "gulp-karma": "0.0.4",
     "gulp-sourcemaps": "^1.5.0",
     "gulp-tslint": "^1.4.3",
@@ -54,8 +54,7 @@
     "run-sequence": "^1.0.2",
     "sinon": "^1.13.0",
     "typescript": "^1.4.1",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-transform": "^1.0.0"
   },
   "peerDependencies": {
     "chai": "^2.1.1",
