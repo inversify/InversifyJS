@@ -1,7 +1,7 @@
 # InversifyJS
 A lightweight IoC container written in TypeScript.
 
-# About
+### About
 InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
 
 InversifyJS is easy to integrate with the majority of existing JavaScript frameworks and encourage the usage of the best OOP and IoC practices.
@@ -165,7 +165,7 @@ Another common error is implementation-specific interface types done just to be 
 
 In other words, there is a constructor that accepts dependency injection, but also another constructor that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations as well, as developers, over time, start making assumptions around the default implementation, and/or start new-ing up instances using the default constructor.
 
-### License
+# License
 
 License under the MIT License (MIT)
 
