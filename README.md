@@ -1,7 +1,7 @@
 # InversifyJS
 A lightweight IoC container written in TypeScript.
 
-### About
+# About
 InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
 
 InversifyJS is easy to integrate with the majority of existing JavaScript frameworks and encourage the usage of the best OOP and IoC practices.
@@ -18,7 +18,7 @@ InversifyJS has been developed with 3 main goals:
 
 3. Add as litle runtime overhead as possible.
 
-### Installation
+# Installation
 
 You can get the latest release using NPM or Bower.
 ```
@@ -29,7 +29,7 @@ npm install inversify --save
 bower install inversify --save
 ```
 
-### The Basics (with TypeScript)
+# The Basics (with TypeScript)
 The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles. Many of these principles refer to the usage of interfaces. The main reason why it is not possible to write native SOLID JavaScript is becase the language lacks interfaces. In the other hand, TypeScript features interfaces, so, if you are going to use InversifyJS it is recommended to work with TypeScript to get the most out of it.
 
 #### 1. Declare interfaces & implementations
@@ -130,11 +130,11 @@ Our application dependency tree should have one unique root element, known as th
 
 Invoking resolve everytime we need to inject something, as if it was a Service Locator is an anti-pattern. If we are working with an MVC framweork the composition root should be located in the application class, somewhere along the routing logic or in a controller factory class. Please refer to the integration examples if you need additional help.
 
-### Integration with popular frameworks
+# Integration with popular frameworks
 
-InversifyJS was designed with many popular JavaScript frameworks in mind. As a result, it is really easy to integrate with existing JavaScript frameworks and examples of integration withmany popular frameworks are available in the official repository.
+InversifyJS was designed with many popular JavaScript frameworks in mind. As a result, it is really easy to integrate with existing JavaScript frameworks and examples of integration withmany popular frameworks are available in the [official repository](https://github.com/inversify/Inversify-code-samples).
 
-### Good Practices
+# Good Practices
 Dependency Inversion (DI) isn't rocket science. We just need to try to avoid new and singleton except when there's a compelling reason to use them, such as a utility method that has no external dependencies, or a utility class that could not possibly have any purpose outside the framework (interop wrappers and dictionary keys are common examples of this).
 
 Many of the problems with IoC frameworks come up when developers are first learning how to use them, and instead of actually changing the way they handle dependencies and abstractions to fit the IoC model, instead try to manipulate the IoC container to meet the expectations of their old coding style, which would often involve high coupling and low cohesion.
