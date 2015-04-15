@@ -3,16 +3,16 @@
 // Inversify
 // ---------
 
-// The Inversify main file, the librarie entry point.
+// The Inversify main file, the library entry point.
 
 import KernelSettings = require("./kernel_settings");
 import Kernel = require("./kernel");
 import TypeBinding = require("./type_binding");
 
-var Inversify = {
+var inversify = {
   KernelSettings : KernelSettings,
   Kernel : Kernel,
   TypeBinding : TypeBinding
 };
 
-export = Inversify;
+export = inversify;
