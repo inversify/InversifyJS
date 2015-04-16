@@ -60,7 +60,7 @@ gulp.task('build-test', function() {
 });
 
 gulp.task('build', function(cb) {
-  runSequence('lint', 'build-source', 'build-test', cb);
+  runSequence('install', 'lint', 'build-source', 'build-test', cb);
 });
 
 //******************************************************************************
@@ -113,7 +113,7 @@ gulp.task('bundle-test', function (cb) {
 });
 
 gulp.task('bundle', function(cb) {
-  runSequence('build', 'bundle-source', 'bundle-test', cb);
+  runSequence('build', 'bundle-source', 'bundle-test', 'document', cb);
 });
 
 //******************************************************************************
