@@ -5,6 +5,11 @@ module.exports = function (config) {
         frameworks: ['mocha', 'chai', 'sinon'],
         browsers: ['PhantomJS'],
         reporters: ['progress', 'coverage'],
+        coverageReporter: {
+          type : 'text',
+          dir : './coverage/',
+          file : 'coverage.txt'
+        },
         plugins : [
           'karma-coverage',
           'karma-mocha',

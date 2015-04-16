@@ -37,7 +37,6 @@
     "gulp": "^3.8.11",
     "gulp-docco": "0.0.4",
     "gulp-header": "^1.2.2",
-    "gulp-karma": "0.0.4",
     "gulp-run": "^1.6.7",
     "gulp-tslint": "^2.0.0",
     "gulp-typescript": "^2.6.0",

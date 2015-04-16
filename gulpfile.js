@@ -11,7 +11,7 @@ var gulp        = require('gulp'),
     run         = require('gulp-run'),
     tslint      = require('gulp-tslint'),
     tsc         = require('gulp-typescript'),
-    karma       = require('gulp-karma'),
+    karma       = require('gulp-karma').server,
     uglify      = require('gulp-uglify'),
     docco       = require("gulp-docco"),
     runSequence = require('run-sequence'),
@@ -119,18 +119,10 @@ gulp.task('bundle', function(cb) {
 //******************************************************************************
 //* TEST
 //******************************************************************************
-var server = karma.server;
-
 gulp.task('karma', function(cb) {
-  gulp.src('./bundled/test/*.test.js')
-      .pipe(karma({
-         configFile: 'karma.conf.js',
-         action: 'run'
-       }))
-       .on('end', cb)
-       .on('error', function(err) {
-         throw err;
-       });
+  karma.start({
+    configFile : './karma.conf.js'
+  }, cb);
 });
 
 gulp.task('test', function(cb) {
