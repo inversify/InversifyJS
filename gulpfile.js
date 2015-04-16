@@ -8,6 +8,7 @@ var gulp        = require('gulp'),
     browserify  = require('browserify'),
     source      = require('vinyl-source-stream'),
     buffer      = require('vinyl-buffer'),
+    run         = require('gulp-run'),
     tslint      = require('gulp-tslint'),
     tsc         = require('gulp-typescript'),
     karma       = require('gulp-karma'),
@@ -16,6 +17,15 @@ var gulp        = require('gulp'),
     runSequence = require('run-sequence'),
     pkg         = require('./package.json'),
     header      = require('gulp-header');
+    
+//******************************************************************************
+//* INSTALL
+//******************************************************************************    
+gulp.task('install', function(cb) {
+    run('tsd reinstall -so').exec("", function() {
+        cb();
+    });
+});    
 
 //******************************************************************************
 //* LINT
@@ -162,6 +172,7 @@ gulp.task('bake', function(cb) {
 //******************************************************************************
 gulp.task('default', function (cb) {
   runSequence(
+    'install',
     'lint',
     'build-source',
     'build-test',
