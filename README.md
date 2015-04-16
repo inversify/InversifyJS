@@ -1,6 +1,8 @@
 # InversifyJS
 [![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://secure.travis-ci.org/inversify/InversifyJS.png?branch=master)](https://travis-ci.org/inversify/InversifyJS) [![Dependencies](https://david-dm.org/inversify/InversifyJS.png)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
+[![Build Status](https://secure.travis-ci.org/inversify/InversifyJS.png?branch=master)](https://travis-ci.org/inversify/InversifyJS) 
+[![npm version](https://badge.fury.io/js/inversify.svg)](http://badge.fury.io/js/inversify)
+[![Dependencies](https://david-dm.org/inversify/InversifyJS.png)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/dev-status.png)](https://david-dm.org/inversify/InversifyJS/#info=devDependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/peer-status.png)](https://david-dm.org/inversify/InversifyJS/#info=peerDependenciess)
 
