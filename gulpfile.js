@@ -96,10 +96,10 @@ gulp.task("bundle-test", function (cb) {
             debug: true
           });
 
-          return b.bundle()
-            .pipe(source(file))
-            .pipe(buffer())
-            .pipe(gulp.dest(__dirname + "/bundled/test/"));
+          b.bundle()
+           .pipe(source(file))
+           .pipe(buffer())
+           .pipe(gulp.dest(__dirname + "/bundled/test/"));
         }
       });
       cb();
@@ -162,9 +162,9 @@ gulp.task("default", function (cb) {
     "lint",
     "build-source",
     "build-test",
-    "document",
     "bundle-source",
     "bundle-test",
+    "document",
     "karma",
     "compress",
     "header",
