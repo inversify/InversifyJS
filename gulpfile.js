@@ -119,23 +119,27 @@ gulp.task('bundle', function(cb) {
 //******************************************************************************
 //* TEST
 //******************************************************************************
-var server = karma.server;
+//var server = karma.server;
 
-gulp.task('karma', function(cb) {
-  gulp.src('./bundled/test/*.test.js')
-      .pipe(karma({
-         configFile: 'karma.conf.js',
-         action: 'run'
-       }))
-       .on('end', cb)
-       .on('error', function(err) {
-         throw err;
-       });
+var testFiles = [
+  './bundled/test/*.test.js'
+];
+
+gulp.task('karma', function() {
+  return gulp.src(testFiles)
+    .pipe(karma({
+      configFile: 'karma.conf.js',
+      action: 'run'
+    }))
+    .on('error', function(err) {
+      throw err;
+    });
 });
 
 gulp.task('test', function(cb) {
   runSequence('bundle', 'karma', cb);
 });
+
 
 //******************************************************************************
 //* BAKE
