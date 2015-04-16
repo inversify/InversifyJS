@@ -1,6 +1,3 @@
-before_script:
-  - npm install -g tsd
-  - tsd reinstall -so
 language: node_js
 node_js:
   - "0.10"

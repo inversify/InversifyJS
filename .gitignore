@@ -29,6 +29,5 @@ build
 node_modules
 bower_components
 documentation
-typings
 bundled
 tsconfig.json
