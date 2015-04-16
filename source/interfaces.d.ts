@@ -2,11 +2,7 @@ interface TypeBindingInterface<TServiceType> {
   runtimeIdentifier : string;
   implementationType : { new(): TServiceType ;};
   cache : TServiceType;
-  scope : string;
-}
-
-interface KernelSettingsInterface {
-  cache : boolean;
+  scope : number; // TypeBindingScopeEnum
 }
 
 interface KernelInterface {

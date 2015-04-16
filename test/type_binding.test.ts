@@ -1,43 +1,88 @@
 ///<reference path="../typings/tsd.d.ts" />
 
 import chai = require('chai');
-import TypeBinding = require('../source/type_binding');
+import inversify = require("../source/inversify");
 var expect = chai.expect;
 
-interface fooInterface {
-	bar() : void;
+interface FooInterface {
+  name : string;
+  greet() : string;
 }
 
-class foo implements fooInterface {
-	public bar() {
-		return "bar";
-	}
+interface BarInterface {
+  name : string;
+  greet() : string;
 }
 
+interface FooBarInterface {
+  foo : FooInterface;
+  bar : BarInterface;
+  greet() : string;
+}
 
-describe("Type Binging Class Test Suite", () => {
+export class Foo implements FooInterface {
+  public name : string;
+  constructor() {
+    this.name = "foo";
+  }
+  public greet() : string {
+    return this.name;
+  }
+}
 
-    before(function(){
+class Bar implements BarInterface {
+  public name : string;
+  constructor() {
+    this.name = "bar";
+  }
+  public greet() : string {
+    return this.name;
+  }
+}
 
-    });
+class FooBar implements FooBarInterface {
+  public foo : FooInterface;
+  public bar : BarInterface;
+  constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
+    this.foo = FooInterface;
+    this.bar = BarInterface;
+  }
+  public greet() : string{
+    return this.foo.greet() + this.bar.greet();
+  }
+}
 
-    describe("When constructor is invoked", () => {
+describe("Type Binging Class Test Suite \n", () => {
 
-        it('should set its own properties correctly', (done) => {
-          var runtimeIdentifier = "fooInterface";
-          var binding =  new TypeBinding<fooInterface>(runtimeIdentifier, foo);
-          expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
-          expect(binding.implementationType).to.equals(foo);
-          expect(binding.cache).to.equals(null);
-          done();
-        });
+  describe("When Type Binging constructor is invoked \n", () => {
 
-        it("should be able to use implementationType as a constructor", (done) => {
-          var runtimeIdentifier = "fooInterface";
-          var binding =  new TypeBinding<fooInterface>(runtimeIdentifier, foo);
-          var instance = new binding.implementationType();
-          expect(instance.bar()).to.equals("bar");
-          done();
-        });
-    });
+      it('It should set its own properties correctly \n', (done) => {
+
+        var runtimeIdentifier = "FooInterface";
+        var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+        expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
+        expect(binding.implementationType).to.not.equals(null);
+        expect(binding.cache).to.equals(null);
+        expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Transient);
+
+        var runtimeIdentifier = "BarInterface";
+        var binding =  new inversify.TypeBinding<BarInterface>(
+          runtimeIdentifier, Bar, inversify.TypeBindingScopeEnum.Singleton);
+
+        expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
+        expect(binding.implementationType).to.not.equals(null);
+        expect(binding.cache).to.equals(null);
+        expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Singleton);
+
+        done();
+      });
+
+      it("It should be able to use implementationType as a constructor \n", (done) => {
+        var runtimeIdentifier = "FooInterface";
+        var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+        var instance = new binding.implementationType();
+        expect(instance.greet()).to.equals("foo");
+        done();
+      });
+  });
 });

@@ -1,4 +1,4 @@
-///<reference path="./inversify.d.ts" />
+///<reference path="./interfaces.d.ts" />
 
 // TypeBinding
 // -----------
@@ -7,8 +7,9 @@
 // (an interface), and an implementation type to be used to satisfy such
 // a service requirement.
 
-class TypeBinding<TServiceType>
-  implements TypeBindingInterface<TServiceType> {
+import TypeBindingScopeEnum = require("./type_binding_scope");
+
+class TypeBinding<TServiceType> implements TypeBindingInterface<TServiceType> {
 
     // The runtime identifier used because at runtime
     // we don't have interfaces
@@ -22,24 +23,23 @@ class TypeBinding<TServiceType>
     public cache : TServiceType;
 
     // The scope of the type.
-    public scope : string;
+    public scope : TypeBindingScopeEnum;
 
     constructor(
       runtimeIdentifier : string,
       implementationType : { new(): TServiceType ;},
-      scopeType? : string) {
+      scopeType? : TypeBindingScopeEnum) {
 
-      var scopes = ["TRANSIENT", "SINGLETON"];
       this.runtimeIdentifier = runtimeIdentifier;
       this.implementationType = implementationType;
       this.cache = null;
       if(typeof scopeType === "undefined") {
-        this.scope = scopes[0];
+        // Default scope is Transient
+        this.scope = TypeBindingScopeEnum.Transient;
       }
       else {
-        // Accepted values are "SINGLETON" and "TRANSIENT" (default)
-        if(scopes.indexOf(scopeType) !== -1) {
-          this.scope = scopeType;
+        if(TypeBindingScopeEnum[scopeType]) {
+            this.scope = scopeType;
         }
         else {
           var msg = `Invalid scope type ${scopeType}`;

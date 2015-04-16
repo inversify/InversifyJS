@@ -1,0 +1,31 @@
+{
+  "name": "inversify",
+  "version": "0.0.1",
+  "homepage": "https://github.com/inversify/InversifyJS",
+  "authors": [
+    "remojansen <remo.jansen@wolksoftware.com>"
+  ],
+  "description": "A lightweight IoC container written in TypeScript.",
+  "main": "dist/inversify.js",
+  "keywords": [
+    "IoC",
+    "container",
+    "JavaScript",
+    "TypeScript",
+    "dependency",
+    "inversion",
+    "inversion",
+    "control"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "deepcopy": "~0.5.0"
+  }
+}

@@ -7,11 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "test"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/WolkSoftwareLtd/inversify.git"
+    "url": "https://github.com/inversify/InversifyJS.git"
   },
   "keywords": [
     "IoC",
@@ -21,13 +21,12 @@
     "dependency",
     "inversion",
     "inversion",
-    "of",
     "control"
   ],
   "author": "Remo H. Jansen",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/WolkSoftwareLtd/inversify/issues"
+    "url": "https://github.com/inversify/InversifyJS/issues"
   },
   "homepage": "http://inversify.io",
   "engines": {},
@@ -39,7 +38,6 @@
     "gulp": "^3.8.11",
     "gulp-docco": "0.0.4",
     "gulp-karma": "0.0.4",
-    "gulp-sourcemaps": "^1.5.0",
     "gulp-tslint": "^1.4.3",
     "gulp-typescript": "^2.4.2",
     "gulp-uglify": "^1.1.0",
@@ -53,8 +51,7 @@
     "mocha": "^2.1.0",
     "run-sequence": "^1.0.2",
     "sinon": "^1.13.0",
-    "typescript": "^1.4.1",
-    "vinyl-transform": "^1.0.0"
+    "typescript": "^1.4.1"
   },
   "peerDependencies": {
     "chai": "^2.1.1",
