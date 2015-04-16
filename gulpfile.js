@@ -17,15 +17,15 @@ var gulp        = require('gulp'),
     runSequence = require('run-sequence'),
     pkg         = require('./package.json'),
     header      = require('gulp-header');
-    
+
 //******************************************************************************
 //* INSTALL
-//******************************************************************************    
+//******************************************************************************
 gulp.task('install', function(cb) {
     run('tsd reinstall -so').exec("", function() {
         cb();
     });
-});    
+});
 
 //******************************************************************************
 //* LINT
@@ -119,7 +119,7 @@ gulp.task('bundle', function(cb) {
 //******************************************************************************
 //* TEST
 //******************************************************************************
-//var server = karma.server;
+var server = karma.server;
 
 gulp.task('karma', function(cb) {
   gulp.src('./bundled/test/*.test.js')
