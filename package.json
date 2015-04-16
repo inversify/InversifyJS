@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
   "directories": {
@@ -52,14 +52,5 @@
     "run-sequence": "^1.0.2",
     "sinon": "^1.13.0",
     "typescript": "^1.4.1"
-  },
-  "peerDependencies": {
-    "chai": "^2.1.1",
-    "mocha": "^2.1.0",
-    "sinon": "^1.13.0",
-    "karma": "^0.12.31",
-    "gulp": "^3.8.11",
-    "typescript": "^1.4.1",
-    "browserify": "^9.0.3"
   }
 }
