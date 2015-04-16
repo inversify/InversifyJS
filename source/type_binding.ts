@@ -11,30 +11,28 @@ import TypeBindingScopeEnum = require("./type_binding_scope");
 
 class TypeBinding<TServiceType> implements TypeBindingInterface<TServiceType> {
 
-    // The runtime identifier used because at runtime
-    // we don't have interfaces
+    // The runtime identifier used because at runtime we don't have interfaces
     public runtimeIdentifier : string;
 
-    // Constructor of an implemtation of TServiceType
+    // The constructor of a class which must implement TServiceType
     public implementationType : { new(): TServiceType ;};
 
-    // Once a service has been resolved we will cache
-    // the result to boost performance
+    // Cache used to allow singleton scope
     public cache : TServiceType;
 
-    // The scope of the type.
+    // The scope mode to be used
     public scope : TypeBindingScopeEnum;
 
     constructor(
       runtimeIdentifier : string,
-      implementationType : { new(): TServiceType ;},
+      implementationType : { new(...args : any[]): TServiceType ;},
       scopeType? : TypeBindingScopeEnum) {
 
       this.runtimeIdentifier = runtimeIdentifier;
       this.implementationType = implementationType;
       this.cache = null;
       if(typeof scopeType === "undefined") {
-        // Default scope is Transient
+        // The default scope (Transient)
         this.scope = TypeBindingScopeEnum.Transient;
       }
       else {
