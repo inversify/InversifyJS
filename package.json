@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
   "directories": {
@@ -32,25 +32,26 @@
   "engines": {},
   "dependencies": {},
   "devDependencies": {
-    "browserify": "9.0.4",
-    "chai": "^2.1.1",
-    "del": "^1.1.1",
+    "browserify": "^9.0.8",
+    "chai": "^2.2.0",
     "gulp": "^3.8.11",
     "gulp-docco": "0.0.4",
+    "gulp-header": "^1.2.2",
     "gulp-karma": "0.0.4",
-    "gulp-tslint": "^1.4.3",
-    "gulp-typescript": "^2.4.2",
-    "gulp-uglify": "^1.1.0",
+    "gulp-tslint": "^2.0.0",
+    "gulp-typescript": "^2.6.0",
+    "gulp-uglify": "^1.2.0",
     "karma": "^0.12.31",
-    "karma-browserify": "^4.0.0",
     "karma-chai": "^0.1.0",
-    "karma-coverage": "^0.2.7",
+    "karma-coverage": "^0.3.0",
     "karma-mocha": "^0.1.10",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-sinon": "^1.0.4",
-    "mocha": "^2.1.0",
+    "mocha": "^2.2.4",
     "run-sequence": "^1.0.2",
-    "sinon": "^1.13.0",
-    "typescript": "^1.4.1"
+    "sinon": "^1.14.1",
+    "typescript": "^1.5.0-alpha",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

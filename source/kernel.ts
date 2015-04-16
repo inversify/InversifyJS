@@ -45,15 +45,6 @@ class Kernel implements KernelInterface {
     this._bindings = new Object();
   }
 
-  // Clears the cache, this can be useful in very large apps
-  public clearCache() : void {
-    for (var property in this._bindings) {
-      if (this._bindings.hasOwnProperty(property)) {
-        this._bindings[property].cache = null;
-      }
-    }
-  }
-
   // Resolves a dependency by its key
   public resolve<TImplementationType>(runtimeIdentifier : string) : TImplementationType {
 

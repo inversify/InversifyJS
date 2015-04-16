@@ -5,8 +5,10 @@
 //******************************************************************************
 var gulp        = require('gulp'),
     fs          = require("fs"),
+    browserify  = require('browserify'),
+    source      = require('vinyl-source-stream'),
+    buffer      = require('vinyl-buffer'),
     tslint      = require('gulp-tslint'),
-    browserify  = require('gulp-browserify'),
     tsc         = require('gulp-typescript'),
     karma       = require('gulp-karma'),
     uglify      = require('gulp-uglify'),
@@ -64,12 +66,15 @@ gulp.task('document', function () {
 //* BUNDLE
 //******************************************************************************
 gulp.task('bundle-source', function () {
-  return gulp.src('./build/source/inversify.js')
-             .pipe(browserify({
-                debug : true,
-                standalone : 'inversify'
-              }))
-             .pipe(gulp.dest('./bundled/source/'));
+  var b = browserify({
+    entries: './build/source/inversify.js',
+    debug: true
+  });
+
+  return b.bundle()
+    .pipe(source('inversify.js'))
+    .pipe(buffer())
+    .pipe(gulp.dest('./bundled/source/'));
 });
 
 gulp.task('bundle-test', function (cb) {
@@ -81,9 +86,16 @@ gulp.task('bundle-test', function (cb) {
       }
       files.forEach(function (file) {
         if(file.indexOf(".test.js") != -1) {
-          gulp.src(path + file)
-              .pipe(browserify({ debug : true }))
-              .pipe(gulp.dest('./bundled/test/'));
+
+          var b = browserify({
+            entries: path + file,
+            debug: true
+          });
+
+          return b.bundle()
+            .pipe(source(file))
+            .pipe(buffer())
+            .pipe(gulp.dest('./bundled/test/'));
         }
       });
       cb();

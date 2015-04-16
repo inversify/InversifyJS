@@ -54,35 +54,33 @@ class FooBar implements FooBarInterface {
 
 describe("Type Binging Class Test Suite \n", () => {
 
-  describe("When Type Binging constructor is invoked \n", () => {
+  it('It should set its own properties correctly \n', (done) => {
 
-      it('It should set its own properties correctly \n', (done) => {
+    var runtimeIdentifier = "FooInterface";
+    var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+    expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
+    expect(binding.implementationType).to.not.equals(null);
+    expect(binding.cache).to.equals(null);
+    expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Transient);
 
-        var runtimeIdentifier = "FooInterface";
-        var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
-        expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
-        expect(binding.implementationType).to.not.equals(null);
-        expect(binding.cache).to.equals(null);
-        expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Transient);
+    var runtimeIdentifier = "BarInterface";
+    var binding =  new inversify.TypeBinding<BarInterface>(
+      runtimeIdentifier, Bar, inversify.TypeBindingScopeEnum.Singleton);
 
-        var runtimeIdentifier = "BarInterface";
-        var binding =  new inversify.TypeBinding<BarInterface>(
-          runtimeIdentifier, Bar, inversify.TypeBindingScopeEnum.Singleton);
+    expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
+    expect(binding.implementationType).to.not.equals(null);
+    expect(binding.cache).to.equals(null);
+    expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Singleton);
 
-        expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
-        expect(binding.implementationType).to.not.equals(null);
-        expect(binding.cache).to.equals(null);
-        expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Singleton);
-
-        done();
-      });
-
-      it("It should be able to use implementationType as a constructor \n", (done) => {
-        var runtimeIdentifier = "FooInterface";
-        var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
-        var instance = new binding.implementationType();
-        expect(instance.greet()).to.equals("foo");
-        done();
-      });
+    done();
   });
+
+  it("It should be able to use implementationType as a constructor \n", (done) => {
+    var runtimeIdentifier = "FooInterface";
+    var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+    var instance = new binding.implementationType();
+    expect(instance.greet()).to.equals("foo");
+    done();
+  });
+  
 });

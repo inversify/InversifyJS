@@ -9,6 +9,5 @@ interface KernelInterface {
   bind(typeBinding : TypeBindingInterface<any>) : void;
   unbind(runtimeIdentifier : string) : void;
   unbindAll() : void;
-  clearCache() : void;
   resolve<TImplementationType>(runtimeIdentifier : string) : TImplementationType;
 }
