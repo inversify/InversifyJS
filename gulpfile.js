@@ -112,7 +112,8 @@ gulp.task('bundle', function(cb) {
 //******************************************************************************
 gulp.task('karma', function(cb) {
   karma.start({
-    configFile : __dirname + '/karma.conf.js'
+    configFile : __dirname + '/karma.conf.js',
+    singleRun: true
   }, cb);
 });
 
