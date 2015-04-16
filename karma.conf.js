@@ -2,27 +2,27 @@ module.exports = function (config) {
   'use strict';
 
   var testFiles = __dirname + '/bundled/test/*.test.js',
-      coverageFolder = __dirname + '/bundled/test/*.test.js';
+      coverageFolder = __dirname + '/coverage/';
 
   config.set({
       basePath: '',
       frameworks: ['mocha', 'chai', 'sinon'],
       browsers: ['PhantomJS'],
-      reporters: ['progress', 'coverage'],
+      reporters: ['progress', 'coverage', 'coveralls'],
       coverageReporter: {
-        type : 'text',
+        type : 'lcov',
         dir : coverageFolder,
-        file : 'coverage.txt'
       },
       plugins : [
         'karma-coverage',
         'karma-mocha',
         'karma-chai',
         'karma-sinon',
+        'karma-coveralls',
         'karma-phantomjs-launcher'
       ],
       preprocessors: {
-        testFiles : ['coverage']
+        testFiles : ['coverage', 'coveralls']
       },
       files : [
         testFiles

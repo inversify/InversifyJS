@@ -1,6 +1,5 @@
 ///<reference path="../typings/tsd.d.ts" />
 
-import chai = require('chai');
 import inversify = require("../source/inversify");
 var expect = chai.expect;
 

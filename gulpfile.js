@@ -121,7 +121,7 @@ gulp.task("karma", function(cb) {
 });
 
 gulp.task("test", function(cb) {
-  runSequence("bundle", "karma", cb);
+  runSequence("bundle", "karma", "cover", cb);
 });
 
 //******************************************************************************

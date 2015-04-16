@@ -1,6 +1,5 @@
 ///<reference path="../typings/tsd.d.ts" />
 
-import chai = require('chai');
 import inversify = require("../source/inversify");
 var expect = chai.expect;
 
@@ -82,5 +81,5 @@ describe("Type Binging Class Test Suite \n", () => {
     expect(instance.greet()).to.equals("foo");
     done();
   });
-  
+
 });
