@@ -19,15 +19,6 @@ var gulp        = require('gulp'),
     header      = require('gulp-header');
 
 //******************************************************************************
-//* INSTALL
-//******************************************************************************
-gulp.task('install', function(cb) {
-    run('tsd reinstall -so').exec("", function() {
-        cb();
-    });
-});
-
-//******************************************************************************
 //* LINT
 //******************************************************************************
 gulp.task('lint', function() {
@@ -60,7 +51,7 @@ gulp.task('build-test', function() {
 });
 
 gulp.task('build', function(cb) {
-  runSequence('install', 'lint', 'build-source', 'build-test', cb);
+  runSequence('lint', 'build-source', 'build-test', cb);
 });
 
 //******************************************************************************
@@ -164,7 +155,6 @@ gulp.task('bake', function(cb) {
 //******************************************************************************
 gulp.task('default', function (cb) {
   runSequence(
-    'install',
     'lint',
     'build-source',
     'build-test',
