@@ -20,6 +20,9 @@ module.exports = function (config) {
         preprocessors: {
           './bundled/test/*.test.js' : ['coverage']
         },
+        files : [
+          './bundled/test/*.test.js'
+        ],
         port: 9876,
         colors: true,
         autoWatch: false,

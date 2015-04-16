@@ -15,8 +15,8 @@ var gulp        = require('gulp'),
     uglify      = require('gulp-uglify'),
     docco       = require("gulp-docco"),
     runSequence = require('run-sequence'),
-    pkg         = require('./package.json'),
-    header      = require('gulp-header');
+    header      = require('gulp-header'),
+    pkg         = require('./package.json');
 
 //******************************************************************************
 //* LINT
