@@ -23,7 +23,6 @@ module.exports = function (config) {
         port: 9876,
         colors: true,
         autoWatch: false,
-        singleRun: false,
         logLevel: config.LOG_INFO
     });
 };
