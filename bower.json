@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "homepage": "https://github.com/inversify/InversifyJS",
   "authors": [
     "remojansen <remo.jansen@wolksoftware.com>"
@@ -26,6 +26,5 @@
     "tests"
   ],
   "dependencies": {
-    "deepcopy": "~0.5.0"
   }
 }
