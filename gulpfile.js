@@ -4,7 +4,6 @@
 //* DEPENDENCIES
 //******************************************************************************
 var gulp        = require("gulp"),
-    fs          = require("fs"),
     browserify  = require("browserify"),
     source      = require("vinyl-source-stream"),
     buffer      = require("vinyl-buffer"),
@@ -12,6 +11,7 @@ var gulp        = require("gulp"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
     karma       = require("karma").server,
+    coveralls   = require('gulp-coveralls'),
     uglify      = require("gulp-uglify"),
     docco       = require("gulp-docco"),
     runSequence = require("run-sequence"),
@@ -81,29 +81,16 @@ gulp.task("bundle-source", function () {
     .pipe(gulp.dest(__dirname + "/bundled/source/"));
 });
 
-gulp.task("bundle-test", function (cb) {
-
-  var path = __dirname + "/build/test/"
-  fs.readdir(path, function (err, files) {
-      if (err) {
-          throw err;
-      }
-      files.forEach(function (file) {
-        if(file.indexOf(".test.js") != -1) {
-
-          var b = browserify({
-            entries: path + file,
-            debug: true
-          });
-
-          b.bundle()
-           .pipe(source(file))
-           .pipe(buffer())
-           .pipe(gulp.dest(__dirname + "/bundled/test/"));
-        }
-      });
-      cb();
+gulp.task("bundle-test", function () {
+  var b = browserify({
+    entries: __dirname + "/build/test/inversify.test.js",
+    debug: true
   });
+
+  return b.bundle()
+    .pipe(source("inversify.test.js"))
+    .pipe(buffer())
+    .pipe(gulp.dest(__dirname + "/bundled/test/"));
 });
 
 gulp.task("bundle", function(cb) {
@@ -118,6 +105,11 @@ gulp.task("karma", function(cb) {
     configFile : __dirname + "/karma.conf.js",
     singleRun: true
   }, cb);
+});
+
+gulp.task("cover", function() {
+  return gulp.src(__dirname + '/coverage/**/lcov.info')
+      .pipe(coveralls());
 });
 
 gulp.task("test", function(cb) {
@@ -166,6 +158,7 @@ gulp.task("default", function (cb) {
     "bundle-test",
     "document",
     "karma",
+    "cover",
     "compress",
     "header",
     cb);
