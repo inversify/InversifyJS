@@ -137,9 +137,9 @@ class Kernel implements KernelInterface {
       }
   }
 
-  // Use of .apply() with 'new' operator. Can call any constructor
-  // except native constructors that behave differently when called
-  // as functions, like String, Number, Date, etc.) with an array of arguments
+  // Use of .apply() with 'new' operator. Can call any constructor (except native 
+  // constructors that behave differently when called  as functions, like String, 
+  // Number, Date, etc.) with an array of arguments
   private _construct<TImplementationType>(
     constr : { new(): TImplementationType ;}, args : Object[]) : TImplementationType {
 
