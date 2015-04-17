@@ -15,6 +15,7 @@
 // to be told which implementation type (classes) to associate
 // with each service type (interfaces).
 
+// ##### [TypeBindingScopeEnum](http://inversify.io/documentation/type_binding_scope.html)
 import TypeBindingScopeEnum = require("./type_binding_scope");
 
 class Kernel implements KernelInterface {
@@ -137,8 +138,8 @@ class Kernel implements KernelInterface {
       }
   }
 
-  // Use of .apply() with 'new' operator. Can call any constructor (except native 
-  // constructors that behave differently when called  as functions, like String, 
+  // Use of .apply() with 'new' operator. Can call any constructor (except native
+  // constructors that behave differently when called  as functions, like String,
   // Number, Date, etc.) with an array of arguments
   private _construct<TImplementationType>(
     constr : { new(): TImplementationType ;}, args : Object[]) : TImplementationType {

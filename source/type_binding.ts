@@ -7,6 +7,7 @@
 // (an interface), and an implementation type to be used to satisfy such
 // a service requirement.
 
+// ##### [TypeBindingScopeEnum](http://inversify.io/documentation/type_binding_scope.html) 
 import TypeBindingScopeEnum = require("./type_binding_scope");
 
 class TypeBinding<TServiceType> implements TypeBindingInterface<TServiceType> {
