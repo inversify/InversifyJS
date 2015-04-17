@@ -71,6 +71,7 @@ gulp.task("document", function () {
 //******************************************************************************
 gulp.task("bundle-source", function () {
   var b = browserify({
+    standalone : 'inversify',
     entries: __dirname + "/build/source/inversify.js",
     debug: true
   });
