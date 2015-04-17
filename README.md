@@ -141,7 +141,7 @@ Invoking resolve every time we need to inject something, as if it was a Service 
 
 # Integration with popular frameworks
 
-InversifyJS was designed with many popular JavaScript frameworks in mind. As a result, it is really easy to integrate with existing JavaScript frameworks and examples of integration with many popular frameworks are available in the [official repository](https://github.com/inversify/Inversify-code-samples).
+InversifyJS was designed with many popular JavaScript frameworks in mind. As a result, it is really easy to integrate with existing JavaScript frameworks and examples of integration with many popular frameworks are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
 # Good Practices
 Dependency Inversion (DI) isn't rocket science. We just need to try to avoid new and singleton except when there's a compelling reason to use them, such as a utility method that has no external dependencies, or a utility class that could not possibly have any purpose outside the framework (interop wrappers and dictionary keys are common examples of this).
