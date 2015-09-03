@@ -7,10 +7,9 @@
 // (an interface), and an implementation type to be used to satisfy such
 // a service requirement.
 
-// ##### [TypeBindingScopeEnum](http://inversify.io/documentation/type_binding_scope.html) 
-import TypeBindingScopeEnum = require("./type_binding_scope");
+import { TypeBindingScopeEnum } from "./type_binding_scope";
 
-class TypeBinding<TServiceType> implements TypeBindingInterface<TServiceType> {
+class TypeBinding<TServiceType> implements ITypeBinding<TServiceType> {
 
     // The runtime identifier used because at runtime we don't have interfaces
     public runtimeIdentifier : string;
@@ -48,4 +47,4 @@ class TypeBinding<TServiceType> implements TypeBindingInterface<TServiceType> {
     }
 }
 
-export = TypeBinding;
+export { TypeBinding };
