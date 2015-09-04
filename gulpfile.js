@@ -36,7 +36,7 @@ gulp.task("lint", function() {
 var tsProject = tsc.createProject({
   removeComments : false,
   noImplicitAny : false,
-  target : "ES3",
+  target : "ES5",
   module : "commonjs",
   declarationFiles : false
 });
@@ -47,9 +47,17 @@ gulp.task("build-source", function() {
              .js.pipe(gulp.dest(__dirname + "/build/source/"));
 });
 
+var tsTestProject = tsc.createProject({
+  removeComments : false,
+  noImplicitAny : false,
+  target : "ES5",
+  module : "commonjs",
+  declarationFiles : false
+});
+
 gulp.task("build-test", function() {
   return gulp.src(__dirname + "/test/*.test.ts")
-             .pipe(tsc(tsProject))
+             .pipe(tsc(tsTestProject))
              .js.pipe(gulp.dest(__dirname + "/build/test/"));
 });
 

@@ -15,45 +15,55 @@
 // to be told which implementation type (classes) to associate
 // with each service type (interfaces).
 
-// ##### [TypeBindingScopeEnum](http://inversify.io/documentation/type_binding_scope.html)
-import TypeBindingScopeEnum = require("./type_binding_scope");
+import { TypeBindingScopeEnum } from "./type_binding_scope";
+import { Lookup } from "./lookup";
 
-class Kernel implements KernelInterface {
+class Kernel implements IKernel {
 
   // The objet properties are used as unique keys type
   // bindings are used as values
-  private _bindings : Object;
+  private _bindingDictionary : ILookup<ITypeBinding<any>>;
+
+  // The class default constructor
+  constructor() {
+    this._bindingDictionary = new Lookup<ITypeBinding<any>>();
+  }
 
   // Regiters a type binding
-  public bind(typeBinding : TypeBindingInterface<any>) : void {
-    if(this._validateBinding(typeBinding) === true){
-      this._bindings[typeBinding.runtimeIdentifier] = typeBinding;
+  public bind(typeBinding : ITypeBinding<any>) : void {
+    if(this._validateBinding(typeBinding) === true) {
+      this._bindingDictionary.add(typeBinding.runtimeIdentifier, typeBinding);
     }
   }
 
   // Removes a type binding from the registry by its key
   public unbind(runtimeIdentifier : string) : void {
-    var binding = this._bindings[runtimeIdentifier];
-
-    if(typeof binding === "undefined") {
+    try {
+      this._bindingDictionary.remove(runtimeIdentifier);
+    }
+    catch(e) {
       throw new Error(`Could not resolve service ${runtimeIdentifier}`);
     }
-    delete this._bindings[runtimeIdentifier];
   }
 
   // Removes all the type bindings from the registry
   public unbindAll() : void {
-    this._bindings = new Object();
+    this._bindingDictionary = new Lookup<ITypeBinding<any>>();
   }
 
   // Resolves a dependency by its key
   public resolve<TImplementationType>(runtimeIdentifier : string) : TImplementationType {
 
-    var binding : TypeBindingInterface<TImplementationType> = this._bindings[runtimeIdentifier];
-
-    if(typeof binding === "undefined") {
-      throw new Error(`Could not resolve service ${runtimeIdentifier}`);
+    var bindings : ITypeBinding<TImplementationType>[]
+    if(this._bindingDictionary.hasKey(runtimeIdentifier)) {
+      bindings = this._bindingDictionary.get(runtimeIdentifier);
     }
+    else {
+      return null;
+    }
+
+    // NOTE: this will be remove when contextual binding support is added
+    var binding = bindings[0];
 
     // The type binding cache is used t store singleton instance
     if((binding.scope === TypeBindingScopeEnum.Singleton) && (binding.cache !== null)) {
@@ -67,7 +77,7 @@ class Kernel implements KernelInterface {
   }
 
   // Validates a type binding
-  private _validateBinding(typeBinding : TypeBindingInterface<any>) : boolean {
+  private _validateBinding(typeBinding : ITypeBinding<any>) : boolean {
 
     var isValid = true;
 
@@ -79,13 +89,15 @@ class Kernel implements KernelInterface {
     }
 
     // Runtime identifier must be unique
-    if(typeof this._bindings[typeBinding.runtimeIdentifier] !== "undefined") {
+    // NOTE:  this will be remove when contextual binding support is added
+    if(this._bindingDictionary.hasKey(typeBinding.runtimeIdentifier)) {
       var msg = `Dublicated binding runtime identifier ${typeBinding.runtimeIdentifier}`;
       console.log(msg);
       isValid = false;
     }
 
     // Implementation type must be a constructor
+    // NOTE: this may be remove to allow injection of factories, lazy objects and promises
     if(typeof typeBinding.implementationType !== "function") {
       var msg = `Expected ${typeBinding.implementationType} to be a constructor`;
       console.log(msg);
@@ -151,11 +163,6 @@ class Kernel implements KernelInterface {
     F.prototype = constr.prototype;
     return new F();
   }
-
-  // The class default constructor
-  constructor() {
-    this._bindings = new Object();
-  }
 }
 
-export = Kernel;
+export { Kernel };

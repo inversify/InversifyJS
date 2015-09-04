@@ -1,6 +1,6 @@
 ///<reference path="../typings/tsd.d.ts" />
 
-import inversify = require("../source/inversify");
+import { inversify } from "../source/inversify";
 var expect = chai.expect;
 
 //******************************************************************************
@@ -116,18 +116,19 @@ describe('Kernel Test Suite \n', () => {
     var fooBinding =  new inversify.TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
     var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
 
-    //var fooBarBinding =  new inversify.TypeBinding<FooBarInterface>(
-    //  fooBarRuntimeIdentifier, FooBar, inversify.TypeBindingScopeEnum.Singleton);
+    var fooBarBinding =  new inversify.TypeBinding<FooBarInterface>(
+      fooBarRuntimeIdentifier, FooBar, inversify.TypeBindingScopeEnum.Singleton);
 
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
-    //kernel.bind(fooBarBinding);
+    kernel.bind(fooBarBinding);
 
     var fooResult = kernel.resolve<FooInterface>(fooRuntimeIdentifier);
     var barResult = kernel.resolve<BarInterface>(barRuntimeIdentifier);
-    // var fooBarresult = kernel.resolve<FooBarInterface>(fooBarRuntimeIdentifier);
+    var fooBarresult = kernel.resolve<FooBarInterface>(fooBarRuntimeIdentifier);
 
-    // todo assert fooBarresult pedendencies injected correctly
+    expect(fooBarresult.foo).to.not.be.null;
+    expect(fooBarresult.bar).to.not.be.null;
 
     done();
   });
@@ -137,12 +138,7 @@ describe('Kernel Test Suite \n', () => {
     done();
   });
 
-  it('It should NOT be able to dublicate a type binding \n', (done) => {
-    // todo
-    done();
-  });
-
-  it('It should store ingleton type bindings in cache \n', (done) => {
+  it('It should store singleton type bindings in cache \n', (done) => {
     var kernel = new inversify.Kernel();
     var runtimeIdentifier = "FooInterface";
 

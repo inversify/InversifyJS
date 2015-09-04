@@ -3,4 +3,4 @@ enum TypeBindingScopeEnum {
   Singleton
 }
 
-export = TypeBindingScopeEnum;
+export { TypeBindingScopeEnum };
