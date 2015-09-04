@@ -3,8 +3,8 @@
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-declare module 'inversify' {
-  
+declare module inversify {
+
   interface TypeBindingInterface<TServiceType> {
     runtimeIdentifier : string;
     implementationType : { new(): TServiceType ;};

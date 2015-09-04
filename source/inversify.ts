@@ -9,4 +9,10 @@ import { Kernel } from "./kernel";
 import { TypeBinding } from "./type_binding";
 import { TypeBindingScopeEnum } from "./type_binding_scope";
 
-export { Kernel, TypeBindingScopeEnum, TypeBinding };
+var inversify = {
+  Kernel : Kernel,
+  TypeBinding : TypeBinding,
+  TypeBindingScopeEnum : TypeBindingScopeEnum
+};
+
+export { inversify };

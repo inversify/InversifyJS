@@ -23,7 +23,7 @@ class Kernel implements IKernel {
   // The objet properties are used as unique keys type
   // bindings are used as values
   private _bindingDictionary : ILookup<ITypeBinding<any>>;
-  
+
   // The class default constructor
   constructor() {
     this._bindingDictionary = new Lookup<ITypeBinding<any>>();
@@ -53,17 +53,18 @@ class Kernel implements IKernel {
 
   // Resolves a dependency by its key
   public resolve<TImplementationType>(runtimeIdentifier : string) : TImplementationType {
+
     var bindings : ITypeBinding<TImplementationType>[]
-    try {
+    if(this._bindingDictionary.hasKey(runtimeIdentifier)) {
       bindings = this._bindingDictionary.get(runtimeIdentifier);
     }
-    catch(e) {
-      throw new Error(`Could not resolve service ${runtimeIdentifier}`);
+    else {
+      return null;
     }
-    
+
     // NOTE: this will be remove when contextual binding support is added
     var binding = bindings[0];
-    
+
     // The type binding cache is used t store singleton instance
     if((binding.scope === TypeBindingScopeEnum.Singleton) && (binding.cache !== null)) {
       return binding.cache;
@@ -87,7 +88,7 @@ class Kernel implements IKernel {
       isValid = false;
     }
 
-    // Runtime identifier must be unique 
+    // Runtime identifier must be unique
     // NOTE:  this will be remove when contextual binding support is added
     if(this._bindingDictionary.hasKey(typeBinding.runtimeIdentifier)) {
       var msg = `Dublicated binding runtime identifier ${typeBinding.runtimeIdentifier}`;
@@ -95,7 +96,7 @@ class Kernel implements IKernel {
       isValid = false;
     }
 
-    // Implementation type must be a constructor 
+    // Implementation type must be a constructor
     // NOTE: this may be remove to allow injection of factories, lazy objects and promises
     if(typeof typeBinding.implementationType !== "function") {
       var msg = `Expected ${typeBinding.implementationType} to be a constructor`;
