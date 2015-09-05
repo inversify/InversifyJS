@@ -31,9 +31,7 @@ class Kernel implements IKernel {
 
   // Regiters a type binding
   public bind(typeBinding : ITypeBinding<any>) : void {
-    if(this._validateBinding(typeBinding) === true) {
-      this._bindingDictionary.add(typeBinding.runtimeIdentifier, typeBinding);
-    }
+    this._bindingDictionary.add(typeBinding.runtimeIdentifier, typeBinding);
   }
 
   // Removes a type binding from the registry by its key
@@ -74,37 +72,6 @@ class Kernel implements IKernel {
       binding.cache = result;
       return result;
     }
-  }
-
-  // Validates a type binding
-  private _validateBinding(typeBinding : ITypeBinding<any>) : boolean {
-
-    var isValid = true;
-
-    // Runtime identifier is a string
-    if(typeof typeBinding.runtimeIdentifier !== "string") {
-      var msg = `Expected type of ${typeBinding.runtimeIdentifier} to be string`;
-      console.log(msg);
-      isValid = false;
-    }
-
-    // Runtime identifier must be unique
-    // NOTE:  this will be remove when contextual binding support is added
-    if(this._bindingDictionary.hasKey(typeBinding.runtimeIdentifier)) {
-      var msg = `Dublicated binding runtime identifier ${typeBinding.runtimeIdentifier}`;
-      console.log(msg);
-      isValid = false;
-    }
-
-    // Implementation type must be a constructor
-    // NOTE: this may be remove to allow injection of factories, lazy objects and promises
-    if(typeof typeBinding.implementationType !== "function") {
-      var msg = `Expected ${typeBinding.implementationType} to be a constructor`;
-      console.log(msg);
-      isValid = false;
-    }
-
-    return isValid;
   }
 
   // Take a function as argument and discovers
