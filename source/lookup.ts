@@ -10,10 +10,6 @@ class KeyValuePair<T> implements IKeyValuePair<T> {
 	public value : Array<T>;
 
 	constructor(key : string, value : T) {
-
-		if(key === null || key === undefined) throw new Error("Argument Null");
-		if(value === null || value === undefined) throw new Error("Argument Null");
-
 		this.key = key;
 		this.value = new Array<T>();
 		this.value.push(value);
@@ -31,9 +27,6 @@ class Lookup<T> implements ILookup<T> {
 
 	// finds the location of a KeyValuePair pair in _hashMap by its key
 	private getIndexByKey(key : string) : number {
-
-		if(key === null || key === undefined) throw new Error("Argument Null");
-
 		var index = -1;
 		for(var i = 0; i < this._hashMap.length; i++) {
 			var keyValuePair = this._hashMap[i];

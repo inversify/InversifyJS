@@ -1,6 +1,7 @@
 ///<reference path="../typings/tsd.d.ts" />
 
 import { inversify } from "../source/inversify";
+import { Lookup } from "../source/lookup";
 var expect = chai.expect;
 
 //******************************************************************************
@@ -88,6 +89,16 @@ describe("Type Binging Class Test Suite \n", () => {
     done();
   });
 
+  it("Throws when invalid scope \n", (done) => {
+    var runtimeIdentifier = "FooInterface";
+    var scopeType = 3;
+    var fn = function() {
+      new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo, scopeType);
+    }
+    expect(fn).to.throw(`Invalid scope type ${scopeType}`);
+    done();
+  });
+
 });
 
 //******************************************************************************
@@ -130,11 +141,23 @@ describe('Kernel Test Suite \n', () => {
     expect(fooBarresult.foo).to.not.be.null;
     expect(fooBarresult.bar).to.not.be.null;
 
+    expect(fooBarresult.greet()).to.eql("foobar");
+
     done();
   });
 
   it('It should NOT be able to resolve unbound dependencies \n', (done) => {
-    // todo
+    var kernel = new inversify.Kernel();
+    var fooRuntimeIdentifier = "FooInterface";
+    var barRuntimeIdentifier = "BarInterface";
+
+    var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    kernel.bind(barBinding);
+
+    var foo = kernel.resolve(fooRuntimeIdentifier);
+    var bar = kernel.resolve(barRuntimeIdentifier);
+    expect(foo).to.be.null;
+    expect(bar).to.not.be.null;
     done();
   });
 
@@ -169,9 +192,16 @@ describe('Kernel Test Suite \n', () => {
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
 
-    kernel.unbind(fooRuntimeIdentifier);
+    var foo = kernel.resolve(fooRuntimeIdentifier);
+    var bar = kernel.resolve(barRuntimeIdentifier);
+    expect(foo).to.not.be.null;
+    expect(bar).to.not.be.null;
 
-    // todo assert only foo is unbound
+    kernel.unbind(fooRuntimeIdentifier);
+    var foo = kernel.resolve(fooRuntimeIdentifier);
+    var bar = kernel.resolve(barRuntimeIdentifier);
+    expect(foo).to.be.null;
+    expect(bar).to.not.be.null;
 
     done();
   });
@@ -188,8 +218,75 @@ describe('Kernel Test Suite \n', () => {
 
     kernel.unbindAll();
 
-    // todo assert foo and bar are unbound
+    var foo = kernel.resolve(fooRuntimeIdentifier);
+    var bar = kernel.resolve(barRuntimeIdentifier);
+    expect(foo).to.be.null;
+    expect(bar).to.be.null;
 
+    done();
+  });
+
+  it('Throw when cannot unbind \n', (done) => {
+    var kernel = new inversify.Kernel();
+    var fooRuntimeIdentifier = "FooInterface";
+
+    var fn = function() {
+      kernel.unbind(fooRuntimeIdentifier);
+    }
+
+    expect(fn).to.throw(`Could not resolve service ${fooRuntimeIdentifier}`);
+    done();
+  });
+
+});
+
+//******************************************************************************
+//* LOOKUP CLASS
+//******************************************************************************
+describe('Lookup Test Suite \n', () => {
+
+  it('Key cannot be null when invoking get() remove() or hasKey() \n', (done) => {
+    var lookup = new Lookup<any>();
+    var getFn = function() { lookup.get(null); }
+    var removeFn = function() { lookup.remove(null); }
+    var hasKeyFn = function() { lookup.hasKey(null); }
+
+    expect(getFn).to.throw("Argument Null");
+    expect(removeFn).to.throw("Argument Null");
+    expect(hasKeyFn).to.throw("Argument Null");
+    done();
+  });
+
+  it('Key cannot be null when invoking add() \n', (done) => {
+    var lookup = new Lookup<any>();
+    var addFn = function() { lookup.add(null, 1); }
+    expect(addFn).to.throw("Argument Null");
+    done();
+  });
+
+  it('Value cannot be null when invoking add() \n', (done) => {
+    var lookup = new Lookup<any>();
+    var addFn = function() { lookup.add("TEST_KEY", null); }
+    expect(addFn).to.throw("Argument Null");
+    done();
+  });
+
+  it('Value cannot be null when invoking add() \n', (done) => {
+    var lookup = new Lookup<any>();
+    var key = "TEST_KEY";
+    lookup.add(key, 1);
+    lookup.add(key, 2);
+    var result = lookup.get(key);
+    expect(result.length).to.eql(2);
+    done();
+  });
+
+  it('Throws when key not found \n', (done) => {
+    var lookup = new Lookup<any>();
+    var fn = function() {
+      lookup.get("THIS_KEY_IS_NOT_AVAILABLE");
+    }
+    expect(fn).to.throw("Key Not Found");
     done();
   });
 
