@@ -18,6 +18,8 @@
 import { TypeBindingScopeEnum } from "./type_binding_scope";
 import { Lookup } from "./lookup";
 
+declare var Map;
+
 class Kernel implements IKernel {
 
   // The objet properties are used as unique keys type
@@ -80,7 +82,7 @@ class Kernel implements IKernel {
 
     var fnStr, argsInit, argsEnd, result, STRIP_COMMENTS, ARGUMENT_NAMES;
 
-    // Regular expresions used to get a list containing
+    // Regular expressions used to get a list containing
     // the names of the arguments of a function
     STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
     ARGUMENT_NAMES = /([^\s,]+)/g;
@@ -88,7 +90,18 @@ class Kernel implements IKernel {
     fnStr = func.toString().replace(STRIP_COMMENTS, '');
     argsInit = fnStr.indexOf('(') + 1;
     argsEnd = fnStr.indexOf(')');
-    result = fnStr.slice(argsInit, argsEnd).match(ARGUMENT_NAMES);
+
+    // If using ES6 classes and there is no constructor
+    // there is no need to parser constructor args
+    if('function' === typeof Map &&
+       fnStr.indexOf("class") !== -1 &&
+       fnStr.indexOf("constructor") === -1) {
+
+      result = null;
+    }
+    else {
+      result = fnStr.slice(argsInit, argsEnd).match(ARGUMENT_NAMES);
+    }
 
     if(result === null) {
       result = []

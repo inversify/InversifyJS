@@ -4,6 +4,8 @@ import { inversify } from "../source/inversify";
 import { Lookup } from "../source/lookup";
 var expect = chai.expect;
 
+declare var Map;
+
 //******************************************************************************
 //* MOCKS AND STUBS
 //******************************************************************************
@@ -236,6 +238,40 @@ describe('Kernel Test Suite \n', () => {
 
     expect(fn).to.throw(`Could not resolve service ${fooRuntimeIdentifier}`);
     done();
+  });
+
+  it('Not try to find constructor arguments when ES6 and no constructor \n', () => {
+    // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
+
+    // using any to access private members
+    var kernel : any = new inversify.Kernel();
+    var binding : any = inversify.TypeBinding;
+
+    var A = function(){};
+    A.toString = function() { return "class A {\n}"; }
+
+    var B = function(){};
+    B.toString = function() { return "class B {\n constructor(a) {\n }\n}"; }
+
+    kernel.bind(new binding('a', A));
+    kernel.bind(new binding('b', B));
+
+    // trigger ES6 detection (TODO run tests on real --harmony enviroment)
+    Map = function() { };
+
+    // using any to access private members
+    var args1 = kernel._getConstructorArguments(A);
+    expect(args1).to.be.instanceof(Array);
+    expect(args1.length).to.equal(0);
+
+    var args2 = kernel._getConstructorArguments(B);
+    expect(args2).to.be.instanceof(Array);
+    expect(args2.length).to.equal(1);
+    expect(args2[0]).to.be.a('string');
+    expect(args2[0]).to.equal("a");
+
+    // roll back ES6 detection
+    Map = undefined;
   });
 
 });
