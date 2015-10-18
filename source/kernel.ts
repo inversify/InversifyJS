@@ -135,14 +135,9 @@ class Kernel implements IKernel {
   // Number, Date, etc.) with an array of arguments
   private _construct<TImplementationType>(
     constr : { new(): TImplementationType ;}, args : Object[]) : TImplementationType {
-
-    function F() : void {
-      constr.apply(this, args);
-    }
-
-    F.prototype = constr.prototype;
-    return new F();
+      return new (Function.prototype.bind.apply(constr, [null].concat(args)));
   }
+
 }
 
 export { Kernel };
