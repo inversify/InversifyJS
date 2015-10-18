@@ -38,7 +38,6 @@
     "gulp-coveralls": "^0.1.4",
     "gulp-docco": "0.0.4",
     "gulp-header": "^1.7.1",
-    "gulp-run": "^1.6.10",
     "gulp-tslint": "^3.2.0",
     "gulp-typescript": "^2.8.2",
     "gulp-uglify": "^1.4.0",

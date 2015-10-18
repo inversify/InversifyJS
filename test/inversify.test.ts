@@ -1,6 +1,6 @@
 ///<reference path="../typings/tsd.d.ts" />
 
-import { inversify } from "../source/inversify";
+import { Kernel, TypeBinding, TypeBindingScopeEnum } from "../source/inversify";
 import { Lookup } from "../source/lookup";
 var expect = chai.expect;
 
@@ -65,27 +65,27 @@ describe("Type Binging Class Test Suite \n", () => {
   it('It should set its own properties correctly \n', (done) => {
 
     var runtimeIdentifier = "FooInterface";
-    var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+    var binding =  new TypeBinding<FooInterface>(runtimeIdentifier, Foo);
     expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
     expect(binding.implementationType).to.not.equals(null);
     expect(binding.cache).to.equals(null);
-    expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Transient);
+    expect(binding.scope).to.equal(TypeBindingScopeEnum.Transient);
 
     var runtimeIdentifier = "BarInterface";
-    var binding =  new inversify.TypeBinding<BarInterface>(
-      runtimeIdentifier, Bar, inversify.TypeBindingScopeEnum.Singleton);
+    var binding =  new TypeBinding<BarInterface>(
+      runtimeIdentifier, Bar, TypeBindingScopeEnum.Singleton);
 
     expect(binding.runtimeIdentifier).to.equals(runtimeIdentifier);
     expect(binding.implementationType).to.not.equals(null);
     expect(binding.cache).to.equals(null);
-    expect(binding.scope).to.equal(inversify.TypeBindingScopeEnum.Singleton);
+    expect(binding.scope).to.equal(TypeBindingScopeEnum.Singleton);
 
     done();
   });
 
   it("It should be able to use implementationType as a constructor \n", (done) => {
     var runtimeIdentifier = "FooInterface";
-    var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+    var binding =  new TypeBinding<FooInterface>(runtimeIdentifier, Foo);
     var instance = new binding.implementationType();
     expect(instance.greet()).to.equals("foo");
     done();
@@ -95,7 +95,7 @@ describe("Type Binging Class Test Suite \n", () => {
     var runtimeIdentifier = "FooInterface";
     var scopeType = 3;
     var fn = function() {
-      new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo, scopeType);
+      new TypeBinding<FooInterface>(runtimeIdentifier, Foo, scopeType);
     }
     expect(fn).to.throw(`Invalid scope type ${scopeType}`);
     done();
@@ -110,9 +110,9 @@ describe('Kernel Test Suite \n', () => {
 
   it('It should be able to resolve a service without dependencies \n', (done) => {
     var expected = new Foo();
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
-    var binding =  new inversify.TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+    var binding =  new TypeBinding<FooInterface>(runtimeIdentifier, Foo);
     kernel.bind(binding);
     var result = kernel.resolve<FooInterface>(runtimeIdentifier);
     expect(expected.name).to.equals(result.name);
@@ -121,16 +121,16 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('It should be able to resolve a complex dependencies tree \n', (done) => {
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
     var fooBarRuntimeIdentifier = "FooBarInterface";
 
-    var fooBinding =  new inversify.TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
+    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
 
-    var fooBarBinding =  new inversify.TypeBinding<FooBarInterface>(
-      fooBarRuntimeIdentifier, FooBar, inversify.TypeBindingScopeEnum.Singleton);
+    var fooBarBinding =  new TypeBinding<FooBarInterface>(
+      fooBarRuntimeIdentifier, FooBar, TypeBindingScopeEnum.Singleton);
 
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
@@ -149,11 +149,11 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('It should NOT be able to resolve unbound dependencies \n', (done) => {
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
 
-    var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
     kernel.bind(barBinding);
 
     var foo = kernel.resolve(fooRuntimeIdentifier);
@@ -164,12 +164,12 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('It should store singleton type bindings in cache \n', (done) => {
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
 
     // Singleton binding
-    var binding =  new inversify.TypeBinding<FooInterface>(
-      runtimeIdentifier, Foo, inversify.TypeBindingScopeEnum.Singleton);
+    var binding =  new TypeBinding<FooInterface>(
+      runtimeIdentifier, Foo, TypeBindingScopeEnum.Singleton);
 
     kernel.bind(binding);
 
@@ -185,12 +185,12 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('It should unbind a binding when requested \n', (done) => {
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
 
-    var fooBinding =  new inversify.TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
+    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
 
@@ -209,12 +209,12 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('It should unbind all bindings when requested \n', (done) => {
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
 
-    var fooBinding =  new inversify.TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
+    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
 
@@ -229,7 +229,7 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('Throw when cannot unbind \n', (done) => {
-    var kernel = new inversify.Kernel();
+    var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
 
     var fn = function() {
@@ -244,8 +244,8 @@ describe('Kernel Test Suite \n', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
 
     // using any to access private members
-    var kernel : any = new inversify.Kernel();
-    var binding : any = inversify.TypeBinding;
+    var kernel : any = new Kernel();
+    var binding : any = TypeBinding;
 
     var A = function(){};
     A.toString = function() { return "class A {\n}"; }
