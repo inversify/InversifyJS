@@ -305,7 +305,7 @@ describe('Kernel Test Suite \n', () => {
   });
 
   it('Find constructor arguments when ES6 but written as ES5 constructor with properties containing "class" \n', () => {
-    // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
+    // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
     var kernel : any = new Kernel();
@@ -341,7 +341,7 @@ describe('Kernel Test Suite \n', () => {
 });
 
   it('Find constructor arguments when ES6 but written as ES5 constructor \n', () => {
-    // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
+    // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
     var kernel : any = new Kernel();
