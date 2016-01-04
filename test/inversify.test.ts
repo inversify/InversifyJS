@@ -304,7 +304,7 @@ describe('Kernel Test Suite \n', () => {
     Map = undefined;
   });
 
-  it('Find constructor arguments when ES6 but written as ES5 constructor \n', () => {
+  it('Find constructor arguments when ES6 but written as ES5 constructor with properties containing "class" \n', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
 
     // using any to access private members
