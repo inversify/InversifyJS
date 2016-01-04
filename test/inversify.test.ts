@@ -304,6 +304,78 @@ describe('Kernel Test Suite \n', () => {
     Map = undefined;
   });
 
+  it('Find constructor arguments when ES6 but written as ES5 constructor \n', () => {
+    // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
+
+    // using any to access private members
+    var kernel : any = new Kernel();
+    var binding : any = TypeBinding;
+
+    var C = function(){};
+    C.toString = function() { return "var C = function(d) {\n this.classy = false; return this; \n}"; }
+
+    var D = function(){};
+    D.toString = function() { return "var D = function(c) {\n this.someClass = 'b'; return this; \n}"; }
+
+    kernel.bind(new binding('c', C));
+    kernel.bind(new binding('d', D));
+
+    // trigger ES6 detection (TODO run tests on real --harmony enviroment)
+    Map = function() { };
+
+    // using any to access private members
+    var argsForC = kernel._getConstructorArguments(C);
+    expect(argsForC).to.be.instanceof(Array);
+    expect(argsForC.length).to.equal(1);
+    expect(argsForC[0]).to.be.a("string");
+    expect(argsForC[0]).to.equal("d");
+
+    var argsForD = kernel._getConstructorArguments(D);
+    expect(argsForD).to.be.instanceof(Array);
+    expect(argsForD.length).to.equal(1);
+    expect(argsForD[0]).to.be.a("string");
+    expect(argsForD[0]).to.equal("c");
+
+    // roll back ES6 detection
+    Map = undefined;
+});
+
+  it('Find constructor arguments when ES6 but written as ES5 constructor \n', () => {
+    // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
+
+    // using any to access private members
+    var kernel : any = new Kernel();
+    var binding : any = TypeBinding;
+
+    var E = function(){};
+    E.toString = function() { return "function(f) {\n this.constructorfy = true; return this; \n}"; }
+
+    var F = function(){};
+    F.toString = function() { return "function(e) {\n this.MajorConstructor(); return this; \n}"; }
+
+    kernel.bind(new binding('e', E));
+    kernel.bind(new binding('f', F));
+
+    // trigger ES6 detection (TODO run tests on real --harmony enviroment)
+    Map = function() { };
+
+    // using any to access private members
+    var argsForE = kernel._getConstructorArguments(E);
+    expect(argsForE).to.be.instanceof(Array);
+    expect(argsForE.length).to.equal(1);
+    expect(argsForE[0]).to.be.a("string");
+    expect(argsForE[0]).to.equal("f");
+
+    var argsForF = kernel._getConstructorArguments(F);
+    expect(argsForF).to.be.instanceof(Array);
+    expect(argsForF.length).to.equal(1);
+    expect(argsForF[0]).to.be.a("string");
+    expect(argsForF[0]).to.equal("e");
+
+    // roll back ES6 detection
+    Map = undefined;
+});
+
 });
 
 //******************************************************************************

@@ -94,8 +94,8 @@ class Kernel implements IKernel {
     // If using ES6 classes and there is no constructor
     // there is no need to parser constructor args
     if('function' === typeof Map &&
-       fnStr.indexOf("class") !== -1 &&
-       fnStr.indexOf("constructor") === -1) {
+       /\b(class)\b/.test(fnStr) &&
+       /\b(constructor)\b/.test(fnStr) === false) {
 
       result = null;
     }
