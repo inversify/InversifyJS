@@ -24,6 +24,6 @@ interface ILookup<T> {
   hasKey(key : string) : boolean;
 }
 
-interface InjectableConstructorInterface {
+interface InjectableConstructorInterface extends Function {
     argumentTypes: Array<string>;
 }

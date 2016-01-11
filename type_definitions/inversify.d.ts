@@ -3,13 +3,7 @@
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-declare module 'inversify-decorator' {
-
-  interface InjectableConstructorInterface {
-      argumentTypes: Array<string>;
-  }
-
-  function Inject(typeIdentifier: string): (target: InjectableConstructorInterface, propertyName: string, argumentIndex: number) => void;
+declare module 'inversify' {
 
   interface TypeBindingInterface<TServiceType> {
     runtimeIdentifier : string;
@@ -54,4 +48,10 @@ declare module 'inversify-decorator' {
       private _construct<TImplementationType>(constr, args);
       constructor();
   }
+
+  interface InjectableConstructorInterface {
+      argumentTypes: Array<string>;
+  }
+
+  function Inject(typeIdentifier: string): (typeConstructor: InjectableConstructorInterface, propertyName: string, argumentIndex: number) => void;
 }

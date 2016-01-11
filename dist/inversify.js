@@ -1,5 +1,5 @@
 /**
- * inversify v.1.0.2 - A lightweight IoC container written in TypeScript.
+ * inversify-decorator v.1.1.0 - A lightweight IoC container written in TypeScript.
  * Copyright (c) 2015 Remo H. Jansen
  * MIT inversify.io/LICENSE
  * http://inversify.io
