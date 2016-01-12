@@ -79,8 +79,12 @@ class Kernel implements IKernel {
   // Take a function as argument and discovers
   // the names of its arguments at run-time
   private _getConstructorArguments(func : Function) {
+    if ((<any>func).argumentTypes) {
+       return (<any>func).argumentTypes;
+    }
 
     var fnStr, argsInit, argsEnd, result, STRIP_COMMENTS, ARGUMENT_NAMES;
+
 
     // Regular expressions used to get a list containing
     // the names of the arguments of a function
