@@ -37,7 +37,7 @@ var tsProject = tsc.createProject({
   noImplicitAny : false,
   target : "ES5",
   module : "commonjs",
-  declarationFiles : false
+  declarationFiles : true
 });
 
 gulp.task("build-source", function() {

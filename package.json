@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
-  "typings": "type_definitions/inversify.d.ts",
+  "typings": "dist/inversify.d.ts",
   "directories": {
     "test": "test"
   },
