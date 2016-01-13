@@ -1,4 +1,4 @@
-/// <reference path="inversify.d.ts" />
+/// <reference path="inversify-global.d.ts" />
 
 interface FooInterface {
   name : string;
