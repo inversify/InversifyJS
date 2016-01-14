@@ -81,13 +81,16 @@ class Bar implements BarInterface {
 Now we are going to declare a class named FooBar, which has two dependencies (FooInterface & BarInterface). Note that the names of the arguments in its constructor are significant because the injector uses these to look up the dependencies.
 
 ```
+import { Inject } from "inversify";
+
+@Inject("FooInterface", "BarInterface")
 class FooBar implements FooBarInterface {
   public foo : FooInterface;
   public bar : BarInterface;
   public log(){
     console.log("foobar");
   }
-  constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
+  constructor(foo : FooInterface, bad : BarInterface) {
     this.foo = FooInterface;
     this.bar = BarInterface;
   }
@@ -96,27 +99,26 @@ class FooBar implements FooBarInterface {
 
 #### 2. Bind interfaces to implementations
 
-Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. Note that the names of the arguments in the class constructor are significant because the injector uses these to look up the dependencies.
+Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. Note that the names of the arguments in the Inject decorator are significant because the injector uses these to look up for the dependencies.
 
 ```
-// kernel
-var kernel = new inversify.Kernel();
+import { TypeBinding, Kernel } from "inversify";
+var kernel = new Kernel();
 ```
 
 In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
 
 ```
-// bind
-kernel.bind(new inversify.TypeBinding<FooInterface>("FooInterface", Foo));
-kernel.bind(new inversify.TypeBinding<BarInterface>("BarInterface", Bar));
-kernel.bind(new inversify.TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
+kernel.bind(new TypeBinding<FooInterface>("FooInterface", Foo));
+kernel.bind(new TypeBinding<BarInterface>("BarInterface", Bar));
+kernel.bind(new TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
 ```
 
 When we declare a type binding, the TypeScript compiler will check that the implementation type (class) is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
 
 ```
 // Compilation error: Bar does not implement FooInterface
-kernel.bind(new inversify.TypeBinding<FooInterface>("FooInterface", Bar));
+kernel.bind(new TypeBinding<FooInterface>("FooInterface", Bar));
 ```
 
 We should keep the InversifyJS Kernel instantiation and type bindings centralized in one unique IoC configuration file. This will help us to abstract our application from the IoC configuration.

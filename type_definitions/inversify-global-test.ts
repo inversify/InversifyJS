@@ -1,7 +1,4 @@
-/// <reference path="inversify.d.ts" />
-
-// import * as inversify from "inversify";
-import { TypeBindingScopeEnum, TypeBinding, Kernel, Inject } from "inversify";
+/// <reference path="inversify-global.d.ts" />
 
 interface FooInterface {
   name : string;
@@ -52,7 +49,7 @@ class FooBar implements FooBarInterface {
 }
 
 // Kernel
-var kernel = new Kernel();
+var kernel = new inversify.Kernel();
 
 // Identifiers
 var fooRuntimeIdentifier = "FooInterface";
@@ -60,9 +57,9 @@ var barRuntimeIdentifier = "BarInterface";
 var fooBarRuntimeIdentifier = "FooBarInterface";
 
 // Bindings
-var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
-var fooBarBinding =  new TypeBinding<FooBarInterface>(fooBarRuntimeIdentifier, FooBar);
+var fooBinding =  new inversify.TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
+var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+var fooBarBinding =  new inversify.TypeBinding<FooBarInterface>(fooBarRuntimeIdentifier, FooBar);
 
 kernel.bind(fooBinding);
 kernel.bind(barBinding);
