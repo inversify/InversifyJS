@@ -109,8 +109,8 @@ var kernel = new Kernel();
 In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
 
 ```
-kernel.bind(new TypeBinding<FooInterface>("FooInterface", Foo));
-kernel.bind(new TypeBinding<BarInterface>("BarInterface", Bar));
+kernel.bind(new TypeBinding<FooInterface>("FooInterface", Foo, TypeBindingScopeEnum.Transient));
+kernel.bind(new TypeBinding<BarInterface>("BarInterface", Bar, TypeBindingScopeEnum.Singleton));
 kernel.bind(new TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
 ```
 
