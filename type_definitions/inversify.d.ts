@@ -3,7 +3,7 @@
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-declare module 'inversify' {
+declare namespace __inversify {
 
   interface TypeBindingInterface<TServiceType> {
     runtimeIdentifier : string;
@@ -54,4 +54,8 @@ declare module 'inversify' {
   }
 
   function Inject(typeIdentifier: string): (typeConstructor: InjectableConstructorInterface, propertyName: string, argumentIndex: number) => void;
+}
+
+declare module "inversify" {
+    export = __inversify;
 }
