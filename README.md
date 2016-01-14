@@ -78,7 +78,7 @@ class Bar implements BarInterface {
 }
 ```
 
-Now we are going to declare a class named FooBar, which has two dependencies (FooInterface & BarInterface). Note that the names of the arguments in its constructor are significant because the injector uses these to look up the dependencies.
+Now we are going to declare a class named FooBar, which has two dependencies (FooInterface & BarInterface). Note that the names of the arguments in the Inject decorator are significant because the injector uses these to look up the dependencies.
 
 ```
 import { Inject } from "inversify";
@@ -99,7 +99,7 @@ class FooBar implements FooBarInterface {
 
 #### 2. Bind interfaces to implementations
 
-Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. Note that the names of the arguments in the Inject decorator are significant because the injector uses these to look up for the dependencies.
+Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. The Kernel will automatically detect if a class has some dependencies by examining the metadata provided by the Inject decorator.
 
 ```
 import { TypeBinding, Kernel } from "inversify";
