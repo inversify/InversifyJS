@@ -90,9 +90,9 @@ class FooBar implements FooBarInterface {
   public log(){
     console.log("foobar");
   }
-  constructor(foo : FooInterface, bad : BarInterface) {
-    this.foo = FooInterface;
-    this.bar = BarInterface;
+  constructor(foo : FooInterface, bar : BarInterface) {
+    this.foo = foo;
+    this.bar = bar;
   }
 }
 ```
