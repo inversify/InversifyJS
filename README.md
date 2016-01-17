@@ -180,7 +180,7 @@ Another common error is implementation-specific interface types done just to be 
 In other words, there is a constructor that accepts dependency injection, but also another constructor that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations as well, as developers, over time, start making assumptions around the default implementation, and/or start new-ing up instances using the default constructor.
 
 # Contact
-If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!topic/inversifyjs/06opbRx6_I8).
+If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs).
 
 You can report issues using the [Github issues page](https://github.com/inversify/InversifyJS/issues).
 
