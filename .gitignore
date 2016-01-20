@@ -35,3 +35,7 @@ tsconfig.json
 typings
 
 dist
+
+source/*.js
+test/*.js
+type_definitions/*.js
