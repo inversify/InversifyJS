@@ -31,3 +31,5 @@ bower_components
 documentation
 bundled
 tsconfig.json
+
+typings
