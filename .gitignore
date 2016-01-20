@@ -33,3 +33,5 @@ bundled
 tsconfig.json
 
 typings
+
+dist
