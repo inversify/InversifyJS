@@ -9,7 +9,6 @@ var gulp        = require("gulp"),
     buffer      = require("vinyl-buffer"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
-    karma       = require("karma").server,
     coveralls   = require('gulp-coveralls'),
     uglify      = require("gulp-uglify"),
     docco       = require("gulp-docco"),
@@ -110,26 +109,25 @@ gulp.task("bundle", function(cb) {
 //******************************************************************************
 //* TEST
 //******************************************************************************
-gulp.task("karma", function(cb) {
-  karma.start({
-    configFile : __dirname + "/karma.conf.js",
-    singleRun: true
-  }, cb);
-});
 
 gulp.task("mocha", function() {
   return gulp.src('build/test/**/*.test.js')
-		.pipe(mocha({ui: 'bdd'}));
+		.pipe(mocha({ui: 'bdd'}))
+    .pipe(istanbul.writeReports());
+});
+
+gulp.task("istanbul:hook", function() {
+  return gulp.src(['build/source/**/*.js'])
+        // Covering files
+      .pipe(istanbul())
+      // Force `require` to return covered files
+      .pipe(istanbul.hookRequire());
 });
 
 gulp.task("cover", function() {
   if (!process.env.CI) return;
   return gulp.src(__dirname + '/coverage/**/lcov.info')
       .pipe(coveralls());
-});
-
-gulp.task("test", function(cb) {
-  runSequence("bundle", "karma", "cover", cb);
 });
 
 //******************************************************************************
@@ -173,7 +171,8 @@ gulp.task("default", function (cb) {
     "bundle-source",
     "bundle-test",
     "document",
-    "karma",
+    "istanbul:hook",
+    "mocha",
     "cover",
     "compress",
     "header",
@@ -186,9 +185,7 @@ gulp.task("test", function (cb) {
     "build-source",
     "build-test",
     "document",
+    "istanbul:hook",
     "mocha",
-    "cover",
-    "compress",
-    "header",
     cb);
 });
