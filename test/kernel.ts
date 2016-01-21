@@ -206,7 +206,7 @@ describe('Kernel \n', () => {
 
     // roll back ES6 detection
     Map = undefined;
-});
+  });
 
   it('find constructor arguments when ES6 but written as ES5 constructor \n', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
@@ -242,46 +242,46 @@ describe('Kernel \n', () => {
 
     // roll back ES6 detection
     Map = undefined;
-});
+  });
 
-it('find constructor arguments when argumentTypes associated with constructor \n', () => {
-  // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
+  it('find constructor arguments when argumentTypes associated with constructor \n', () => {
+    // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
-  // using any to access private members
-  var kernel : any = new Kernel();
-  var binding : any = TypeBinding;
+    // using any to access private members
+    var kernel : any = new Kernel();
+    var binding : any = TypeBinding;
 
-  var G = function(){};
-  (<any>G).argumentTypes = ["something", "somethingElse"]
+    var G = function(){};
+    (<any>G).argumentTypes = ["something", "somethingElse"]
 
-  var H = function(){};
-  (<any>H).argumentTypes = ["this", "that"]
+    var H = function(){};
+    (<any>H).argumentTypes = ["this", "that"]
 
-  kernel.bind(new binding('g', G));
-  kernel.bind(new binding('h', H));
+    kernel.bind(new binding('g', G));
+    kernel.bind(new binding('h', H));
 
-  // trigger ES6 detection (TODO run tests on real --harmony enviroment)
-  Map = function() { };
+    // trigger ES6 detection (TODO run tests on real --harmony enviroment)
+    Map = function() { };
 
-  // using any to access private members
-  var argsForG = kernel._getConstructorArguments(G);
-  expect(argsForG).to.be.instanceof(Array);
-  expect(argsForG.length).to.equal(2);
-  expect(argsForG[0]).to.be.a("string");
-  expect(argsForG[0]).to.equal("something");
-  expect(argsForG[1]).to.be.a("string");
-  expect(argsForG[1]).to.equal("somethingElse");
+    // using any to access private members
+    var argsForG = kernel._getConstructorArguments(G);
+    expect(argsForG).to.be.instanceof(Array);
+    expect(argsForG.length).to.equal(2);
+    expect(argsForG[0]).to.be.a("string");
+    expect(argsForG[0]).to.equal("something");
+    expect(argsForG[1]).to.be.a("string");
+    expect(argsForG[1]).to.equal("somethingElse");
 
-  var argsForH = kernel._getConstructorArguments(H);
-  expect(argsForH).to.be.instanceof(Array);
-  expect(argsForH.length).to.equal(2);
-  expect(argsForH[0]).to.be.a("string");
-  expect(argsForH[0]).to.equal("this");
-  expect(argsForH[1]).to.be.a("string");
-  expect(argsForH[1]).to.equal("that");
+    var argsForH = kernel._getConstructorArguments(H);
+    expect(argsForH).to.be.instanceof(Array);
+    expect(argsForH.length).to.equal(2);
+    expect(argsForH[0]).to.be.a("string");
+    expect(argsForH[0]).to.equal("this");
+    expect(argsForH[1]).to.be.a("string");
+    expect(argsForH[1]).to.equal("that");
 
-  // roll back ES6 detection
-  Map = undefined;
-});
+    // roll back ES6 detection
+    Map = undefined;
+  });
 
 });
