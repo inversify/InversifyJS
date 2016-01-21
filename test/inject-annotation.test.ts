@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { Inject } from "../source/inversify";
 
 describe('Inject Annotation', () => {
-   it('should resolve a single marked type argument to the type rather than the name', function () {
+   it('should resolve a single marked type argument to the type rather than the name', () => {
       let injectable = <InjectableConstructorInterface>{};
       injectable.toString = function() { return "function(aType) { }"; }
 
@@ -14,7 +14,7 @@ describe('Inject Annotation', () => {
       expect(injectable.argumentTypes[0]).to.equal("IType");
    });
 
-   it('should resolve the first marked type to the annotated and second to the named', function () {
+   it('should resolve the first marked type to the annotated and second to the named', () => {
       let injectable = <InjectableConstructorInterface>{};
       injectable.toString = function() { return "function(aType, bType) { }"; }
 
@@ -27,7 +27,7 @@ describe('Inject Annotation', () => {
       expect(injectable.argumentTypes[1]).to.equal("bType");
    });
 
-   it('should resolve the first type to the named and second to the annotated', function () {
+   it('should resolve the first type to the named and second to the annotated', () => {
       let injectable = <InjectableConstructorInterface>{};
       injectable.toString = function() { return "function(aType, bType) { }"; }
 
@@ -40,7 +40,7 @@ describe('Inject Annotation', () => {
       expect(injectable.argumentTypes[1]).to.equal("IType");
    });
 
-   it('should resolve the first marked type to the annotated and second to the named with different argument names', function () {
+   it('should resolve the first marked type to the annotated and second to the named with different argument names', () => {
       let injectable = <InjectableConstructorInterface>{};
       injectable.toString = function() { return "function(something, somethingElse) { }"; }
 
@@ -53,7 +53,7 @@ describe('Inject Annotation', () => {
       expect(injectable.argumentTypes[1]).to.equal("somethingElse");
    });
 
-   it('should resolve the first type to the named and second to the annotated with different argument names', function () {
+   it('should resolve the first type to the named and second to the annotated with different argument names', () => {
       let injectable = <InjectableConstructorInterface>{};
       injectable.toString = function() { return "function(something, somethingElse) { }"; }
 
