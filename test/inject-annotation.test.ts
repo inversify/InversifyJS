@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 describe('Inject Annotation \n', () => {
    it('should resolve a single marked type argument to the type rather than the name', function () {
       let injectable = <InjectableConstructorInterface>{};
