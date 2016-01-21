@@ -1,3 +1,5 @@
+///<reference path="../typings/tsd.d.ts" />
+
 import { expect } from 'chai';
 import { Inject } from "../source/inversify";
 

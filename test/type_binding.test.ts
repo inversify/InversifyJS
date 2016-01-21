@@ -1,3 +1,5 @@
+///<reference path="../typings/tsd.d.ts" />
+
 import { expect } from 'chai';
 import { TypeBinding, TypeBindingScopeEnum } from "../source/inversify";
 import * as Stubs from './stubs';
