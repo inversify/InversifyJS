@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { Kernel } from "../source/inversify";
+import * as Stubs from './stubs';
 
 describe('Kernel Test Suite \n', () => {
 
