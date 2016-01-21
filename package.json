@@ -34,7 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "browserify": "^13.0.0",
-    "chai": "^3.2.0",
+    "chai": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-coveralls": "^0.1.4",
     "gulp-docco": "0.0.4",
