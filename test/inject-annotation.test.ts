@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { Inject } from "../source/inversify";
 
-describe('Inject Annotation \n', () => {
+describe('Inject Annotation', () => {
    it('should resolve a single marked type argument to the type rather than the name', function () {
       let injectable = <InjectableConstructorInterface>{};
       injectable.toString = function() { return "function(aType) { }"; }
