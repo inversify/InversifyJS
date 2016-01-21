@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import { Kernel, TypeBinding, TypeBindingScopeEnum } from "../source/inversify";
 import * as Stubs from './stubs';
 
+declare var Map;
+
 describe('Kernel Test Suite \n', () => {
 
   it('It should be able to resolve a service without dependencies \n', (done) => {
