@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import { Kernel, TypeBinding, TypeBindingScopeEnum } from "../source/inversify";
-import * as Stubs from './stubs';
+import * as Stubs from './utils/stubs';
 
 declare var Map;
 
