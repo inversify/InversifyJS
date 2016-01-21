@@ -45,7 +45,7 @@
     "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.5.1",
     "istanbul": "^0.4.2",
-    "mocha": "^2.3.0",
+    "mocha": "^2.3.4",
     "phantomjs": "^1.9.18",
     "run-sequence": "^1.1.2",
     "sinon": "^1.16.1",
