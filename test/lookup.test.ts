@@ -5,9 +5,9 @@ describe('Lookup', () => {
 
   it('key cannot be null when invoking get() remove() or hasKey()', (done) => {
     var lookup = new Lookup<any>();
-    var getFn = function() { lookup.get(null); }
-    var removeFn = function() { lookup.remove(null); }
-    var hasKeyFn = function() { lookup.hasKey(null); }
+    var getFn = () => { lookup.get(null); }
+    var removeFn = () => { lookup.remove(null); }
+    var hasKeyFn = () => { lookup.hasKey(null); }
 
     expect(getFn).to.throw("Argument Null");
     expect(removeFn).to.throw("Argument Null");
@@ -17,14 +17,14 @@ describe('Lookup', () => {
 
   it('key cannot be null when invoking add()', (done) => {
     var lookup = new Lookup<any>();
-    var addFn = function() { lookup.add(null, 1); }
+    var addFn = () => { lookup.add(null, 1); }
     expect(addFn).to.throw("Argument Null");
     done();
   });
 
   it('value cannot be null when invoking add()', (done) => {
     var lookup = new Lookup<any>();
-    var addFn = function() { lookup.add("TEST_KEY", null); }
+    var addFn = () => { lookup.add("TEST_KEY", null); }
     expect(addFn).to.throw("Argument Null");
     done();
   });
@@ -41,7 +41,7 @@ describe('Lookup', () => {
 
   it('throws when key not found', (done) => {
     var lookup = new Lookup<any>();
-    var fn = function() {
+    var fn = () => {
       lookup.get("THIS_KEY_IS_NOT_AVAILABLE");
     }
     expect(fn).to.throw("Key Not Found");
