@@ -5,9 +5,6 @@
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
-    "sinon/sinon.d.ts": {
-      "commit": "8f16b0fd1acd81a555b74f912da849dccc7c9a42"
-    },
     "chai/chai.d.ts": {
       "commit": "8f16b0fd1acd81a555b74f912da849dccc7c9a42"
     },

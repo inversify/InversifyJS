@@ -47,7 +47,6 @@
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
     "run-sequence": "^1.1.5",
-    "sinon": "^1.16.1",
     "typescript": "^1.6.0-beta",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
