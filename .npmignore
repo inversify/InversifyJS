@@ -8,3 +8,4 @@ bower.json
 karma.conf.js
 tsd.json
 .gitignore
+CONTRIBUTING.md
