@@ -6,7 +6,7 @@ declare var Map;
 
 describe('Kernel \n', () => {
 
-  it('It should be able to resolve a service without dependencies \n', (done) => {
+  it('should be able to resolve a service without dependencies \n', (done) => {
     var expected = new Stubs.Foo();
     var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
@@ -18,7 +18,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('It should be able to resolve a complex dependencies tree \n', (done) => {
+  it('should be able to resolve a complex dependencies tree \n', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -46,7 +46,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('It should NOT be able to resolve unbound dependencies \n', (done) => {
+  it('should NOT be able to resolve unbound dependencies \n', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -61,7 +61,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('It should store singleton type bindings in cache \n', (done) => {
+  it('should store singleton type bindings in cache \n', (done) => {
     var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
 
@@ -82,7 +82,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('It should unbind a binding when requested \n', (done) => {
+  it('should unbind a binding when requested \n', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -106,7 +106,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('It should unbind all bindings when requested \n', (done) => {
+  it('should unbind all bindings when requested \n', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
