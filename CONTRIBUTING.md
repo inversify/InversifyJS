@@ -5,11 +5,11 @@
 1. Clone your fork of the repository:
         $ git clone https://github.com/YOUR_USERNAME/InversifyJS.git
 
-2. Install npm dependencies
+2. Install npm dependencies:
         $ npm install
 
-3. Install TSD typings
+3. Install TSD typings:
         $ tsd install
 
-4. Run tests
+4. Run tests:
         $ gulp test
