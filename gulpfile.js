@@ -15,7 +15,9 @@ var gulp        = require("gulp"),
     docco       = require("gulp-docco"),
     runSequence = require("run-sequence"),
     header      = require("gulp-header"),
-    pkg         = require(__dirname + "/package.json");
+    pkg         = require(__dirname + "/package.json"),
+    mocha       = require("gulp-mocha"),
+    istanbul    = require("gulp-istanbul");
 
 //******************************************************************************
 //* LINT
@@ -115,6 +117,11 @@ gulp.task("karma", function(cb) {
   }, cb);
 });
 
+gulp.task("mocha", function() {
+  return gulp.src('build/test/**/*.test.js')
+		.pipe(mocha({ui: 'bdd'}));
+});
+
 gulp.task("cover", function() {
   if (!process.env.CI) return;
   return gulp.src(__dirname + '/coverage/**/lcov.info')
@@ -167,6 +174,19 @@ gulp.task("default", function (cb) {
     "bundle-test",
     "document",
     "karma",
+    "cover",
+    "compress",
+    "header",
+    cb);
+});
+
+gulp.task("test", function (cb) {
+  runSequence(
+    "lint",
+    "build-source",
+    "build-test",
+    "document",
+    "mocha",
     "cover",
     "compress",
     "header",
