@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { TypeBinding, TypeBindingScopeEnum } from "../source/inversify";
+import * as Stubs from './stubs';
 
 describe("Type Binding Class Test Suite \n", () => {
 
