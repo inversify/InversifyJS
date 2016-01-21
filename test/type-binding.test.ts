@@ -4,7 +4,7 @@ import * as Stubs from './stubs';
 
 describe("TypeBinding", () => {
 
-  it('It should set its own properties correctly \n', (done) => {
+  it('should set its own properties correctly \n', (done) => {
 
     var runtimeIdentifier = "FooInterface";
     var binding =  new TypeBinding<Stubs.FooInterface>(runtimeIdentifier, Stubs.Foo);
@@ -25,7 +25,7 @@ describe("TypeBinding", () => {
     done();
   });
 
-  it("It should be able to use implementationType as a constructor \n", (done) => {
+  it("should be able to use implementationType as a constructor \n", (done) => {
     var runtimeIdentifier = "FooInterface";
     var binding =  new TypeBinding<Stubs.FooInterface>(runtimeIdentifier, Stubs.Foo);
     var instance = new binding.implementationType();
@@ -33,7 +33,7 @@ describe("TypeBinding", () => {
     done();
   });
 
-  it("Throws when invalid scope \n", (done) => {
+  it("throws when invalid scope \n", (done) => {
     var runtimeIdentifier = "FooInterface";
     var scopeType = 3;
     var fn = function() {
