@@ -63,12 +63,12 @@ describe("Type Binging Class Test Suite \n", () => {
 describe('Kernel Test Suite \n', () => {
 
   it('It should be able to resolve a service without dependencies \n', (done) => {
-    var expected = new Foo();
+    var expected = new Stubs.Foo();
     var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
-    var binding =  new TypeBinding<FooInterface>(runtimeIdentifier, Foo);
+    var binding =  new TypeBinding<Stubs.FooInterface>(runtimeIdentifier, Stubs.Foo);
     kernel.bind(binding);
-    var result = kernel.resolve<FooInterface>(runtimeIdentifier);
+    var result = kernel.resolve<Stubs.FooInterface>(runtimeIdentifier);
     expect(expected.name).to.equals(result.name);
     expect(expected.greet()).to.equals(result.greet());
     done();
@@ -80,19 +80,19 @@ describe('Kernel Test Suite \n', () => {
     var barRuntimeIdentifier = "BarInterface";
     var fooBarRuntimeIdentifier = "FooBarInterface";
 
-    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBinding =  new TypeBinding<Stubs.FooInterface>(fooRuntimeIdentifier, Stubs.Foo);
+    var barBinding =  new TypeBinding<Stubs.BarInterface>(barRuntimeIdentifier, Stubs.Bar);
 
-    var fooBarBinding =  new TypeBinding<FooBarInterface>(
-      fooBarRuntimeIdentifier, FooBar, TypeBindingScopeEnum.Singleton);
+    var fooBarBinding =  new TypeBinding<Stubs.FooBarInterface>(
+      fooBarRuntimeIdentifier, Stubs.FooBar, TypeBindingScopeEnum.Singleton);
 
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
     kernel.bind(fooBarBinding);
 
-    var fooResult = kernel.resolve<FooInterface>(fooRuntimeIdentifier);
-    var barResult = kernel.resolve<BarInterface>(barRuntimeIdentifier);
-    var fooBarresult = kernel.resolve<FooBarInterface>(fooBarRuntimeIdentifier);
+    var fooResult = kernel.resolve<Stubs.FooInterface>(fooRuntimeIdentifier);
+    var barResult = kernel.resolve<Stubs.BarInterface>(barRuntimeIdentifier);
+    var fooBarresult = kernel.resolve<Stubs.FooBarInterface>(fooBarRuntimeIdentifier);
 
     expect(fooBarresult.foo).to.not.be.null;
     expect(fooBarresult.bar).to.not.be.null;
@@ -107,7 +107,7 @@ describe('Kernel Test Suite \n', () => {
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
 
-    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var barBinding =  new TypeBinding<Stubs.BarInterface>(barRuntimeIdentifier, Stubs.Bar);
     kernel.bind(barBinding);
 
     var foo = kernel.resolve(fooRuntimeIdentifier);
@@ -122,16 +122,16 @@ describe('Kernel Test Suite \n', () => {
     var runtimeIdentifier = "FooInterface";
 
     // Singleton binding
-    var binding =  new TypeBinding<FooInterface>(
-      runtimeIdentifier, Foo, TypeBindingScopeEnum.Singleton);
+    var binding =  new TypeBinding<Stubs.FooInterface>(
+      runtimeIdentifier, Stubs.Foo, TypeBindingScopeEnum.Singleton);
 
     kernel.bind(binding);
 
-    var expected = kernel.resolve<FooInterface>(runtimeIdentifier);
+    var expected = kernel.resolve<Stubs.FooInterface>(runtimeIdentifier);
     expected.name = "new name";
 
     // Because is a singleton expected.name should equal result.name
-    var result = kernel.resolve<FooInterface>(runtimeIdentifier);
+    var result = kernel.resolve<Stubs.FooInterface>(runtimeIdentifier);
 
     expect(expected.name).to.equals(result.name);
     expect(expected.greet()).to.equals(result.greet());
@@ -143,8 +143,8 @@ describe('Kernel Test Suite \n', () => {
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
 
-    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBinding =  new TypeBinding<Stubs.FooInterface>(fooRuntimeIdentifier, Stubs.Foo);
+    var barBinding =  new TypeBinding<Stubs.BarInterface>(barRuntimeIdentifier, Stubs.Bar);
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
 
@@ -167,8 +167,8 @@ describe('Kernel Test Suite \n', () => {
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
 
-    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBinding =  new TypeBinding<Stubs.FooInterface>(fooRuntimeIdentifier, Stubs.Foo);
+    var barBinding =  new TypeBinding<Stubs.BarInterface>(barRuntimeIdentifier, Stubs.Bar);
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
 
