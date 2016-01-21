@@ -5,13 +5,10 @@ describe('Lookup', () => {
 
   it('key cannot be null when invoking get() remove() or hasKey()', (done) => {
     var lookup = new Lookup<any>();
-    var getFn = () => { lookup.get(null); }
-    var removeFn = () => { lookup.remove(null); }
-    var hasKeyFn = () => { lookup.hasKey(null); }
 
-    expect(getFn).to.throw("Argument Null");
-    expect(removeFn).to.throw("Argument Null");
-    expect(hasKeyFn).to.throw("Argument Null");
+    expect(() => { lookup.get(null); }).to.throw("Argument Null");
+    expect(() => { lookup.remove(null); }).to.throw("Argument Null");
+    expect(() => { lookup.hasKey(null); }).to.throw("Argument Null");
     done();
   });
 
