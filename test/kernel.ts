@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 describe('Kernel Test Suite \n', () => {
 
   it('It should be able to resolve a service without dependencies \n', (done) => {
