@@ -1,0 +1,10 @@
+source
+test
+type_definitions
+typings
+gulpfile.js
+bower.json
+.travis.yml
+karma.conf.js
+tsd.json
+.gitignore

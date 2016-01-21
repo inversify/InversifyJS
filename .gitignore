@@ -31,3 +31,11 @@ bower_components
 documentation
 bundled
 tsconfig.json
+
+typings
+
+dist
+
+source/*.js
+test/*.js
+type_definitions/*.js

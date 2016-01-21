@@ -3,6 +3,8 @@
 
 import { Kernel, TypeBinding, TypeBindingScopeEnum, Inject } from "../source/inversify";
 import { Lookup } from "../source/lookup";
+import chai = require('chai');
+
 var expect = chai.expect;
 
 declare var Map;
