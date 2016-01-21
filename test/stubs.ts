@@ -1,14 +1,14 @@
-interface FooInterface {
+export interface FooInterface {
   name : string;
   greet() : string;
 }
 
-interface BarInterface {
+export interface BarInterface {
   name : string;
   greet() : string;
 }
 
-interface FooBarInterface {
+export interface FooBarInterface {
   foo : FooInterface;
   bar : BarInterface;
   greet() : string;
@@ -24,7 +24,7 @@ export class Foo implements FooInterface {
   }
 }
 
-class Bar implements BarInterface {
+export class Bar implements BarInterface {
   public name : string;
   constructor() {
     this.name = "bar";
@@ -34,7 +34,7 @@ class Bar implements BarInterface {
   }
 }
 
-class FooBar implements FooBarInterface {
+export class FooBar implements FooBarInterface {
   public foo : FooInterface;
   public bar : BarInterface;
   constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
