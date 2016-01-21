@@ -1,6 +1,8 @@
 ///<reference path="../typings/tsd.d.ts" />
 ///<reference path="../source/interfaces.d.ts" />
 
+import * as Stubs from './stubs';
+
 import { Kernel, TypeBinding, TypeBindingScopeEnum, Inject } from "../source/inversify";
 import { Lookup } from "../source/lookup";
 import chai = require('chai');
