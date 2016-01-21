@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { Lookup } from "../source/lookup";
 
-describe('Lookup Test Suite \n', () => {
+describe('Lookup \n', () => {
 
   it('Key cannot be null when invoking get() remove() or hasKey() \n', (done) => {
     var lookup = new Lookup<any>();
