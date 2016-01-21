@@ -4,9 +4,9 @@ import * as Stubs from './stubs';
 
 declare var Map;
 
-describe('Kernel \n', () => {
+describe('Kernel', () => {
 
-  it('should be able to resolve a service without dependencies \n', (done) => {
+  it('should be able to resolve a service without dependencies', (done) => {
     var expected = new Stubs.Foo();
     var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
@@ -18,7 +18,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('should be able to resolve a complex dependencies tree \n', (done) => {
+  it('should be able to resolve a complex dependencies tree', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -46,7 +46,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('should NOT be able to resolve unbound dependencies \n', (done) => {
+  it('should NOT be able to resolve unbound dependencies', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -61,7 +61,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('should store singleton type bindings in cache \n', (done) => {
+  it('should store singleton type bindings in cache', (done) => {
     var kernel = new Kernel();
     var runtimeIdentifier = "FooInterface";
 
@@ -82,7 +82,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('should unbind a binding when requested \n', (done) => {
+  it('should unbind a binding when requested', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -106,7 +106,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('should unbind all bindings when requested \n', (done) => {
+  it('should unbind all bindings when requested', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
     var barRuntimeIdentifier = "BarInterface";
@@ -126,7 +126,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('throws when cannot unbind \n', (done) => {
+  it('throws when cannot unbind', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
 
@@ -138,7 +138,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('not try to find constructor arguments when ES6 and no constructor \n', () => {
+  it('not try to find constructor arguments when ES6 and no constructor', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
 
     // using any to access private members
@@ -172,7 +172,7 @@ describe('Kernel \n', () => {
     Map = undefined;
   });
 
-  it('find constructor arguments when ES6 but written as ES5 constructor with properties containing "class" \n', () => {
+  it('find constructor arguments when ES6 but written as ES5 constructor with properties containing "class"', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
@@ -208,7 +208,7 @@ describe('Kernel \n', () => {
     Map = undefined;
   });
 
-  it('find constructor arguments when ES6 but written as ES5 constructor \n', () => {
+  it('find constructor arguments when ES6 but written as ES5 constructor', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
@@ -244,7 +244,7 @@ describe('Kernel \n', () => {
     Map = undefined;
   });
 
-  it('find constructor arguments when argumentTypes associated with constructor \n', () => {
+  it('find constructor arguments when argumentTypes associated with constructor', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
