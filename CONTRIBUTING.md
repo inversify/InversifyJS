@@ -10,3 +10,6 @@
 
 3. Install TSD typings
         $ tsd install
+
+4. Run tests
+        $ gulp test
