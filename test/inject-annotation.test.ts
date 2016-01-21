@@ -4,7 +4,7 @@ import { Inject } from "../source/inversify";
 describe('Inject Annotation', () => {
    it('should resolve a single marked type argument to the type rather than the name', () => {
       let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = function() { return "function(aType) { }"; }
+      injectable.toString = () => { return "function(aType) { }"; }
 
       let injectionResolver = Inject("IType");
 
@@ -16,7 +16,7 @@ describe('Inject Annotation', () => {
 
    it('should resolve the first marked type to the annotated and second to the named', () => {
       let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = function() { return "function(aType, bType) { }"; }
+      injectable.toString = () => { return "function(aType, bType) { }"; }
 
       let injectionResolver = Inject("IType");
 
@@ -29,7 +29,7 @@ describe('Inject Annotation', () => {
 
    it('should resolve the first type to the named and second to the annotated', () => {
       let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = function() { return "function(aType, bType) { }"; }
+      injectable.toString = () => { return "function(aType, bType) { }"; }
 
       let injectionResolver = Inject("IType");
 
@@ -42,7 +42,7 @@ describe('Inject Annotation', () => {
 
    it('should resolve the first marked type to the annotated and second to the named with different argument names', () => {
       let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = function() { return "function(something, somethingElse) { }"; }
+      injectable.toString = () => { return "function(something, somethingElse) { }"; }
 
       let injectionResolver = Inject("Resolvable");
 
@@ -55,7 +55,7 @@ describe('Inject Annotation', () => {
 
    it('should resolve the first type to the named and second to the annotated with different argument names', () => {
       let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = function() { return "function(something, somethingElse) { }"; }
+      injectable.toString = () => { return "function(something, somethingElse) { }"; }
 
       let injectionResolver = Inject("Resolvable");
 
