@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { Lookup } from "../source/lookup";
 
 describe('Lookup Test Suite \n', () => {
 
