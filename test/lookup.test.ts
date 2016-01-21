@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 describe('Lookup Test Suite \n', () => {
 
   it('Key cannot be null when invoking get() remove() or hasKey() \n', (done) => {
