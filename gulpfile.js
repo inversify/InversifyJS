@@ -187,5 +187,6 @@ gulp.task("test", function (cb) {
     "document",
     "istanbul:hook",
     "mocha",
+    "cover",
     cb);
 });
