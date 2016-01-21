@@ -126,7 +126,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('Throw when cannot unbind \n', (done) => {
+  it('throws when cannot unbind \n', (done) => {
     var kernel = new Kernel();
     var fooRuntimeIdentifier = "FooInterface";
 
@@ -138,7 +138,7 @@ describe('Kernel \n', () => {
     done();
   });
 
-  it('Not try to find constructor arguments when ES6 and no constructor \n', () => {
+  it('not try to find constructor arguments when ES6 and no constructor \n', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/23
 
     // using any to access private members
@@ -172,7 +172,7 @@ describe('Kernel \n', () => {
     Map = undefined;
   });
 
-  it('Find constructor arguments when ES6 but written as ES5 constructor with properties containing "class" \n', () => {
+  it('find constructor arguments when ES6 but written as ES5 constructor with properties containing "class" \n', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
@@ -208,7 +208,7 @@ describe('Kernel \n', () => {
     Map = undefined;
 });
 
-  it('Find constructor arguments when ES6 but written as ES5 constructor \n', () => {
+  it('find constructor arguments when ES6 but written as ES5 constructor \n', () => {
     // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
     // using any to access private members
@@ -244,7 +244,7 @@ describe('Kernel \n', () => {
     Map = undefined;
 });
 
-it('Find constructor arguments when argumentTypes associated with constructor \n', () => {
+it('find constructor arguments when argumentTypes associated with constructor \n', () => {
   // MORE INFO at https://github.com/inversify/InversifyJS/issues/30
 
   // using any to access private members
