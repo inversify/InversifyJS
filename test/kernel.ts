@@ -4,7 +4,7 @@ import * as Stubs from './stubs';
 
 declare var Map;
 
-describe('Kernel Test Suite \n', () => {
+describe('Kernel \n', () => {
 
   it('It should be able to resolve a service without dependencies \n', (done) => {
     var expected = new Stubs.Foo();
