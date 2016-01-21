@@ -14,7 +14,7 @@ declare var Map;
 //******************************************************************************
 //* TYPE BINDING CLASS
 //******************************************************************************
-describe("Type Binging Class Test Suite \n", () => {
+describe("Type Binding Class Test Suite \n", () => {
 
   it('It should set its own properties correctly \n', (done) => {
 
