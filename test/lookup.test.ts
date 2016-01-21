@@ -3,7 +3,7 @@ import { Lookup } from "../source/lookup";
 
 describe('Lookup', () => {
 
-  it('Key cannot be null when invoking get() remove() or hasKey()', (done) => {
+  it('key cannot be null when invoking get() remove() or hasKey()', (done) => {
     var lookup = new Lookup<any>();
     var getFn = function() { lookup.get(null); }
     var removeFn = function() { lookup.remove(null); }
@@ -15,21 +15,21 @@ describe('Lookup', () => {
     done();
   });
 
-  it('Key cannot be null when invoking add()', (done) => {
+  it('key cannot be null when invoking add()', (done) => {
     var lookup = new Lookup<any>();
     var addFn = function() { lookup.add(null, 1); }
     expect(addFn).to.throw("Argument Null");
     done();
   });
 
-  it('Value cannot be null when invoking add()', (done) => {
+  it('value cannot be null when invoking add()', (done) => {
     var lookup = new Lookup<any>();
     var addFn = function() { lookup.add("TEST_KEY", null); }
     expect(addFn).to.throw("Argument Null");
     done();
   });
 
-  it('Value cannot be null when invoking add()', (done) => {
+  it('value cannot be null when invoking add()', (done) => {
     var lookup = new Lookup<any>();
     var key = "TEST_KEY";
     lookup.add(key, 1);
@@ -39,7 +39,7 @@ describe('Lookup', () => {
     done();
   });
 
-  it('Throws when key not found', (done) => {
+  it('throws when key not found', (done) => {
     var lookup = new Lookup<any>();
     var fn = function() {
       lookup.get("THIS_KEY_IS_NOT_AVAILABLE");
