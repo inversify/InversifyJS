@@ -7,3 +7,6 @@
 
 2. Install npm dependencies
         $ npm install
+
+3. Install TSD typings
+        $ tsd install
