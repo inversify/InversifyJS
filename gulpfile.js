@@ -86,20 +86,8 @@ gulp.task("bundle-source", function () {
     .pipe(gulp.dest(__dirname + "/bundled/source/"));
 });
 
-gulp.task("bundle-test", function () {
-  var b = browserify({
-    entries: __dirname + "/build/test/inversify.test.js",
-    debug: true
-  });
-
-  return b.bundle()
-    .pipe(source("inversify.test.js"))
-    .pipe(buffer())
-    .pipe(gulp.dest(__dirname + "/bundled/test/"));
-});
-
 gulp.task("bundle", function(cb) {
-  runSequence("build", "bundle-source", "bundle-test", "document", cb);
+  runSequence("build", "bundle-source", "document", cb);
 });
 
 //******************************************************************************
@@ -164,8 +152,8 @@ gulp.task("default", function (cb) {
     "lint",
     "build-source",
     "build-test",
+    "build-type-definitions",
     "bundle-source",
-    "bundle-test",
     "document",
     "istanbul:hook",
     "mocha",
@@ -175,12 +163,12 @@ gulp.task("default", function (cb) {
     cb);
 });
 
-gulp.task("test", function (cb) {
+gulp.task("ci", function (cb) {
   runSequence(
     "lint",
     "build-source",
     "build-test",
-    "document",
+    "build-type-definitions",
     "istanbul:hook",
     "mocha",
     "cover",
