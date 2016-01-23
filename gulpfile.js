@@ -33,13 +33,7 @@ gulp.task("lint", function() {
 //******************************************************************************
 //* BUILD
 //******************************************************************************
-var tsProject = tsc.createProject({
-  removeComments : false,
-  noImplicitAny : false,
-  target : "ES5",
-  module : "commonjs",
-  declarationFiles : false
-});
+var tsProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-source", function() {
   return gulp.src(__dirname + "/source/**/**.ts")
@@ -47,13 +41,7 @@ gulp.task("build-source", function() {
              .js.pipe(gulp.dest(__dirname + "/build/source/"));
 });
 
-var tsTestProject = tsc.createProject({
-  removeComments : false,
-  noImplicitAny : false,
-  target : "ES5",
-  module : "commonjs",
-  declarationFiles : false
-});
+var tsTestProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-test", function() {
   return gulp.src(__dirname + "/test/**/*.ts")
@@ -61,8 +49,16 @@ gulp.task("build-test", function() {
              .js.pipe(gulp.dest(__dirname + "/build/test/"));
 });
 
+var tsTypeDefinitionsProject = tsc.createProject("tsconfig.json");
+
+gulp.task("build-type-definitions", function() {
+  return gulp.src(__dirname + "/type_definitions/**/*.ts")
+             .pipe(tsc(tsTypeDefinitionsProject))
+             .js.pipe(gulp.dest(__dirname + "/build/type_definitions/"));
+});
+
 gulp.task("build", function(cb) {
-  runSequence("lint", "build-source", "build-test", cb);
+  runSequence("lint", "build-source", "build-test", "build-type-definitions", cb);
 });
 
 //******************************************************************************
@@ -90,20 +86,8 @@ gulp.task("bundle-source", function () {
     .pipe(gulp.dest(__dirname + "/bundled/source/"));
 });
 
-gulp.task("bundle-test", function () {
-  var b = browserify({
-    entries: __dirname + "/build/test/inversify.test.js",
-    debug: true
-  });
-
-  return b.bundle()
-    .pipe(source("inversify.test.js"))
-    .pipe(buffer())
-    .pipe(gulp.dest(__dirname + "/bundled/test/"));
-});
-
 gulp.task("bundle", function(cb) {
-  runSequence("build", "bundle-source", "bundle-test", "document", cb);
+  runSequence("build", "bundle-source", "document", cb);
 });
 
 //******************************************************************************
@@ -168,8 +152,8 @@ gulp.task("default", function (cb) {
     "lint",
     "build-source",
     "build-test",
+    "build-type-definitions",
     "bundle-source",
-    "bundle-test",
     "document",
     "istanbul:hook",
     "mocha",
@@ -179,12 +163,12 @@ gulp.task("default", function (cb) {
     cb);
 });
 
-gulp.task("test", function (cb) {
+gulp.task("ci", function (cb) {
   runSequence(
     "lint",
     "build-source",
     "build-test",
-    "document",
+    "build-type-definitions",
     "istanbul:hook",
     "mocha",
     "cover",

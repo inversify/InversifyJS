@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp ci"
   },
   "repository": {
     "type": "git",
