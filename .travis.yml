@@ -13,4 +13,4 @@ before_install:
 - tsd install
 env:
   global:
-    - secure: : "AXI7DWd3iH9KKzqsDIagd30DYalP2wiYXaDmiS6A3Afn6cOab8Bjh3Hxq1lIwME8zIR4AV+ZcIkIwmXPaNUShk47lAwja6L2npPf2uUEzKAuA9XeO8zYBIQpm2zy+kpG3VMxA3Khp3M5VxKkKS67BNMo4Lh507xTu529/zQxT/Q="
+    - secure: "AXI7DWd3iH9KKzqsDIagd30DYalP2wiYXaDmiS6A3Afn6cOab8Bjh3Hxq1lIwME8zIR4AV+ZcIkIwmXPaNUShk47lAwja6L2npPf2uUEzKAuA9XeO8zYBIQpm2zy+kpG3VMxA3Khp3M5VxKkKS67BNMo4Lh507xTu529/zQxT/Q="
