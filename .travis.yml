@@ -1,6 +1,16 @@
 language: node_js
 node_js:
-  - "0.10"
+- stable
+- 4.2.3
+- 4.2.0
+- 4.1.2
+- 4.1.0
+- 4.0.0
+- '0.12'
+- '0.10'
 before_install:
-  - npm install -g tsd
-  - tsd install
+- npm install -g tsd
+- tsd install
+env:
+  global:
+    - TSD_GITHUB_TOKEN: 45261dad3da2e923df392a1ddf18161e8844c8de
