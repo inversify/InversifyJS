@@ -99,7 +99,7 @@ gulp.task("mocha", function() {
 
 gulp.task("istanbul:hook", function() {
   return gulp.src(['build/source/**/*.js'])
-        // Covering files
+      // Covering files
       .pipe(istanbul())
       // Force `require` to return covered files
       .pipe(istanbul.hookRequire());
@@ -107,12 +107,12 @@ gulp.task("istanbul:hook", function() {
 
 gulp.task("cover", function() {
   if (!process.env.CI) return;
-  return gulp.src(__dirname + '/coverage/**/lcov.info')
+  return gulp.src("coverage/**/lcov.info")
       .pipe(coveralls());
 });
 
 gulp.task("test", function(cb) {
-  runSequence("mocha", "istanbul:hook", "cover", cb);
+  runSequence("istanbul:hook", "mocha", "cover", cb);
 });
 
 //******************************************************************************
