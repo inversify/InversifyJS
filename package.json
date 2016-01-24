@@ -1,14 +1,14 @@
 {
   "name": "inversify",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
-  "typings": "type_definitions/inversify.d.ts",
+  "typings": "type_definitions/inversify-npm.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "gulp ci"
+    "test": "gulp"
   },
   "repository": {
     "type": "git",
@@ -41,14 +41,15 @@
     "gulp-header": "^1.7.1",
     "gulp-istanbul": "^0.10.3",
     "gulp-mocha": "^2.2.0",
-    "tslint": "^3.2.2",
-    "typescript": "^1.7.5",
+    "gulp-rename": "^1.2.2",
     "gulp-tslint": "^4.3.1",
     "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.5.1",
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
     "run-sequence": "^1.1.5",
+    "tslint": "^3.2.2",
+    "typescript": "^1.7.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
