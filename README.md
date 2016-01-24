@@ -33,14 +33,14 @@ You can get the latest release using npm or bower. The type definitions file can
 ```
 npm install inversify --save
 ```
+**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd. The InversifyJS type definitions are included in the npm package as it is [recommended by the TypeScript development team](https://github.com/Microsoft/TypeScript/wiki/Typings-for-npm-packages).
+
+If you are planing to use inversify as a global you will need to add a reference to the file named `inversify-global.d.ts` this file is included in the npm package:
 
 ```
-bower install inversify --save
+/// <reference path="./node_modules/inversify/type_definitions/inversify-global.d.ts" />
 ```
 
-```
-tsd install inversify --save
-```
 # The Basics (with TypeScript)
 The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles. Many of these principles refer to the usage of interfaces. The main reason why it is not possible to write native SOLID JavaScript is because the language lacks interfaces. In the other hand, TypeScript features interfaces, so, if you are going to use InversifyJS it is recommended to work with TypeScript to get the most out of it.
 
