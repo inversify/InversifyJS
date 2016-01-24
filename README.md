@@ -7,6 +7,8 @@
 [![img](https://david-dm.org/inversify/InversifyJS/dev-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=devDependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/peer-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=peerDependenciess)
 
+<img src="https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/logo.png" width="500"  />
+
 A lightweight IoC container written in TypeScript.
 Visit http://inversify.io/ for more information.
 
