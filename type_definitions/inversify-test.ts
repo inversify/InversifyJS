@@ -77,5 +77,5 @@ module inversify_external_module_test {
     // Unbind
     kernel.unbind(fooRuntimeIdentifier);
     kernel.unbindAll();
-    
+
 }

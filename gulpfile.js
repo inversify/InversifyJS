@@ -12,6 +12,7 @@ var gulp        = require("gulp"),
     coveralls   = require('gulp-coveralls'),
     uglify      = require("gulp-uglify"),
     docco       = require("gulp-docco"),
+    rename      = require("gulp-rename"),
     runSequence = require("run-sequence"),
     header      = require("gulp-header"),
     pkg         = require(__dirname + "/package.json"),
@@ -58,7 +59,7 @@ gulp.task("build-type-definitions", function() {
 });
 
 gulp.task("build", function(cb) {
-  runSequence("lint", "build-source", "build-test", "build-type-definitions", cb);
+  runSequence("build-source", "build-test", "build-type-definitions", cb);
 });
 
 //******************************************************************************
@@ -73,7 +74,7 @@ gulp.task("document", function () {
 //******************************************************************************
 //* BUNDLE
 //******************************************************************************
-gulp.task("bundle-source", function () {
+gulp.task("bundle", function () {
   var b = browserify({
     standalone : 'inversify',
     entries: __dirname + "/build/source/inversify.js",
@@ -86,17 +87,13 @@ gulp.task("bundle-source", function () {
     .pipe(gulp.dest(__dirname + "/bundled/source/"));
 });
 
-gulp.task("bundle", function(cb) {
-  runSequence("build", "bundle-source", "document", cb);
-});
-
 //******************************************************************************
 //* TEST
 //******************************************************************************
 
 gulp.task("mocha", function() {
   return gulp.src('build/test/**/*.test.js')
-		.pipe(mocha({ui: 'bdd'}))
+    .pipe(mocha({ui: 'bdd'}))
     .pipe(istanbul.writeReports());
 });
 
@@ -114,12 +111,24 @@ gulp.task("cover", function() {
       .pipe(coveralls());
 });
 
+gulp.task("test", function(cb) {
+  runSequence("mocha", "istanbul:hook", "cover", cb);
+});
+
 //******************************************************************************
 //* BAKE
 //******************************************************************************
+gulp.task("copy", function() {
+  return gulp.src(__dirname + "/bundled/source/inversify.js")
+    .pipe(gulp.dest(__dirname + "/dist/"));
+});
+
 gulp.task("compress", function() {
   return gulp.src(__dirname + "/bundled/source/inversify.js")
              .pipe(uglify({ preserveComments : false }))
+             .pipe(rename({
+                extname: '.min.js'
+              }))
              .pipe(gulp.dest(__dirname + "/dist/"))
 });
 
@@ -135,13 +144,17 @@ gulp.task("header", function() {
     " */",
     ""].join("\n");
 
-  return gulp.src(__dirname + "/dist/inversify.js")
+  gulp.src(__dirname + "/dist/inversify.js")
+             .pipe(header(banner, { pkg : pkg } ))
+             .pipe(gulp.dest(__dirname + "/dist/"));
+
+  return gulp.src(__dirname + "/dist/inversify.min.js")
              .pipe(header(banner, { pkg : pkg } ))
              .pipe(gulp.dest(__dirname + "/dist/"));
 });
 
-gulp.task("bake", function(cb) {
-  runSequence("bundle", "compress", "header", cb);
+gulp.task("dist", function(cb) {
+  runSequence("bundle", "copy", "compress", "header", "document", cb);
 });
 
 //******************************************************************************
@@ -150,27 +163,8 @@ gulp.task("bake", function(cb) {
 gulp.task("default", function (cb) {
   runSequence(
     "lint",
-    "build-source",
-    "build-test",
-    "build-type-definitions",
-    "bundle-source",
-    "document",
-    "istanbul:hook",
-    "mocha",
-    "cover",
-    "compress",
-    "header",
-    cb);
-});
-
-gulp.task("ci", function (cb) {
-  runSequence(
-    "lint",
-    "build-source",
-    "build-test",
-    "build-type-definitions",
-    "istanbul:hook",
-    "mocha",
-    "cover",
+    "build",
+    "test",
+    "dist",
     cb);
 });
