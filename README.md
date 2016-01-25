@@ -31,7 +31,7 @@ InversifyJS has been developed with 3 main goals:
 
 # Installation
 
-You can get the latest release using npm or bower. The type definitions file can be installed using tsd.
+You can get the latest release and the type definitions using npm.
 ```
 npm install inversify --save
 ```
