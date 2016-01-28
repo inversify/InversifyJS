@@ -1,4 +1,4 @@
-///<reference path="../typings/tsd.d.ts" />
+///<reference path="../typings/main.d.ts" />
 
 import { expect } from 'chai';
 import { Kernel, TypeBinding, TypeBindingScopeEnum } from "../source/inversify";

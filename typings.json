@@ -1,0 +1,6 @@
+{
+  "ambientDependencies": {
+    "chai": "github:DefinitelyTyped/DefinitelyTyped/chai/chai.d.ts#8f16b0fd1acd81a555b74f912da849dccc7c9a42",
+    "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#8f16b0fd1acd81a555b74f912da849dccc7c9a42"
+  }
+}
