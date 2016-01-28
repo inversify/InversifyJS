@@ -9,5 +9,5 @@ node_js:
 - '0.12'
 - '0.10'
 before_install:
-- npm install -g tsd
-- tsd install
+- npm install -g typings
+- typings install

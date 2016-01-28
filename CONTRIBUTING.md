@@ -12,7 +12,7 @@ $ npm install
 ```
 3 - Install TSD typings:
 ```
-$ tsd install
+$ typings install
 ```
 
 4 - Run tests:
