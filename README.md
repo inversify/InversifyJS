@@ -7,6 +7,8 @@
 [![img](https://david-dm.org/inversify/InversifyJS/dev-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=devDependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/peer-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=peerDependenciess)
 
+<img src="https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/logo.png" width="500"  />
+
 A lightweight IoC container written in TypeScript.
 Visit http://inversify.io/ for more information.
 
@@ -29,18 +31,18 @@ InversifyJS has been developed with 3 main goals:
 
 # Installation
 
-You can get the latest release using npm or bower. The type definitions file can be installed using tsd.
+You can get the latest release and the type definitions using npm.
 ```
 npm install inversify --save
 ```
+**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd. The InversifyJS type definitions are included in the npm package as it is [recommended by the TypeScript development team](https://github.com/Microsoft/TypeScript/wiki/Typings-for-npm-packages).
+
+If you are planing to use inversify as a global you will need to add a reference to the file named `inversify-global.d.ts` this file is included in the npm package:
 
 ```
-bower install inversify --save
+/// <reference path="./node_modules/inversify/type_definitions/inversify-global.d.ts" />
 ```
 
-```
-tsd install inversify --save
-```
 # The Basics (with TypeScript)
 The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles. Many of these principles refer to the usage of interfaces. The main reason why it is not possible to write native SOLID JavaScript is because the language lacks interfaces. In the other hand, TypeScript features interfaces, so, if you are going to use InversifyJS it is recommended to work with TypeScript to get the most out of it.
 
@@ -78,45 +80,47 @@ class Bar implements BarInterface {
 }
 ```
 
-Now we are going to declare a class named FooBar, which has two dependencies (FooInterface & BarInterface). Note that the names of the arguments in its constructor are significant because the injector uses these to look up the dependencies.
+Now we are going to declare a class named FooBar, which has two dependencies (FooInterface & BarInterface). Note that the names of the arguments in the Inject decorator are significant because the injector uses these to look up the dependencies.
 
 ```
+import { Inject } from "inversify";
+
+@Inject("FooInterface", "BarInterface")
 class FooBar implements FooBarInterface {
   public foo : FooInterface;
   public bar : BarInterface;
   public log(){
     console.log("foobar");
   }
-  constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
-    this.foo = FooInterface;
-    this.bar = BarInterface;
+  constructor(foo : FooInterface, bar : BarInterface) {
+    this.foo = foo;
+    this.bar = bar;
   }
 }
 ```
 
 #### 2. Bind interfaces to implementations
 
-Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. Note that the names of the arguments in the class constructor are significant because the injector uses these to look up the dependencies.
+Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. The Kernel will automatically detect if a class has some dependencies by examining the metadata provided by the Inject decorator.
 
 ```
-// kernel
-var kernel = new inversify.Kernel();
+import { TypeBinding, Kernel } from "inversify";
+var kernel = new Kernel();
 ```
 
 In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
 
 ```
-// bind
-kernel.bind(new inversify.TypeBinding<FooInterface>("FooInterface", Foo));
-kernel.bind(new inversify.TypeBinding<BarInterface>("BarInterface", Bar));
-kernel.bind(new inversify.TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
+kernel.bind(new TypeBinding<FooInterface>("FooInterface", Foo, TypeBindingScopeEnum.Transient));
+kernel.bind(new TypeBinding<BarInterface>("BarInterface", Bar, TypeBindingScopeEnum.Singleton));
+kernel.bind(new TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
 ```
 
 When we declare a type binding, the TypeScript compiler will check that the implementation type (class) is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
 
 ```
 // Compilation error: Bar does not implement FooInterface
-kernel.bind(new inversify.TypeBinding<FooInterface>("FooInterface", Bar));
+kernel.bind(new TypeBinding<FooInterface>("FooInterface", Bar));
 ```
 
 We should keep the InversifyJS Kernel instantiation and type bindings centralized in one unique IoC configuration file. This will help us to abstract our application from the IoC configuration.
@@ -176,6 +180,11 @@ Another common error is implementation-specific interface types done just to be 
 #### Avoid optional dependencies
 
 In other words, there is a constructor that accepts dependency injection, but also another constructor that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations as well, as developers, over time, start making assumptions around the default implementation, and/or start new-ing up instances using the default constructor.
+
+# Contact
+If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs).
+
+You can report issues using the [Github issues page](https://github.com/inversify/InversifyJS/issues).
 
 # License
 

@@ -1,3 +1,13 @@
 language: node_js
 node_js:
-  - "0.10"
+- stable
+- 4.2.3
+- 4.2.0
+- 4.1.2
+- 4.1.0
+- 4.0.0
+- '0.12'
+- '0.10'
+before_install:
+- npm install -g tsd
+- tsd install

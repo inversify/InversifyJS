@@ -1,1 +1,1 @@
-*.js
+!node_modules

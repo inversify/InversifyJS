@@ -9,13 +9,15 @@ var gulp        = require("gulp"),
     buffer      = require("vinyl-buffer"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
-    karma       = require("karma").server,
     coveralls   = require('gulp-coveralls'),
     uglify      = require("gulp-uglify"),
     docco       = require("gulp-docco"),
+    rename      = require("gulp-rename"),
     runSequence = require("run-sequence"),
     header      = require("gulp-header"),
-    pkg         = require(__dirname + "/package.json");
+    pkg         = require(__dirname + "/package.json"),
+    mocha       = require("gulp-mocha"),
+    istanbul    = require("gulp-istanbul");
 
 //******************************************************************************
 //* LINT
@@ -32,13 +34,7 @@ gulp.task("lint", function() {
 //******************************************************************************
 //* BUILD
 //******************************************************************************
-var tsProject = tsc.createProject({
-  removeComments : false,
-  noImplicitAny : false,
-  target : "ES5",
-  module : "commonjs",
-  declarationFiles : false
-});
+var tsProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-source", function() {
   return gulp.src(__dirname + "/source/**/**.ts")
@@ -46,22 +42,24 @@ gulp.task("build-source", function() {
              .js.pipe(gulp.dest(__dirname + "/build/source/"));
 });
 
-var tsTestProject = tsc.createProject({
-  removeComments : false,
-  noImplicitAny : false,
-  target : "ES5",
-  module : "commonjs",
-  declarationFiles : false
-});
+var tsTestProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-test", function() {
-  return gulp.src(__dirname + "/test/*.test.ts")
+  return gulp.src(__dirname + "/test/**/*.ts")
              .pipe(tsc(tsTestProject))
              .js.pipe(gulp.dest(__dirname + "/build/test/"));
 });
 
+var tsTypeDefinitionsProject = tsc.createProject("tsconfig.json");
+
+gulp.task("build-type-definitions", function() {
+  return gulp.src(__dirname + "/type_definitions/**/*.ts")
+             .pipe(tsc(tsTypeDefinitionsProject))
+             .js.pipe(gulp.dest(__dirname + "/build/type_definitions/"));
+});
+
 gulp.task("build", function(cb) {
-  runSequence("lint", "build-source", "build-test", cb);
+  runSequence("build-source", "build-test", "build-type-definitions", cb);
 });
 
 //******************************************************************************
@@ -76,7 +74,7 @@ gulp.task("document", function () {
 //******************************************************************************
 //* BUNDLE
 //******************************************************************************
-gulp.task("bundle-source", function () {
+gulp.task("bundle", function () {
   var b = browserify({
     standalone : 'inversify',
     entries: __dirname + "/build/source/inversify.js",
@@ -89,48 +87,48 @@ gulp.task("bundle-source", function () {
     .pipe(gulp.dest(__dirname + "/bundled/source/"));
 });
 
-gulp.task("bundle-test", function () {
-  var b = browserify({
-    entries: __dirname + "/build/test/inversify.test.js",
-    debug: true
-  });
-
-  return b.bundle()
-    .pipe(source("inversify.test.js"))
-    .pipe(buffer())
-    .pipe(gulp.dest(__dirname + "/bundled/test/"));
-});
-
-gulp.task("bundle", function(cb) {
-  runSequence("build", "bundle-source", "bundle-test", "document", cb);
-});
-
 //******************************************************************************
 //* TEST
 //******************************************************************************
-gulp.task("karma", function(cb) {
-  karma.start({
-    configFile : __dirname + "/karma.conf.js",
-    singleRun: true
-  }, cb);
+
+gulp.task("mocha", function() {
+  return gulp.src('build/test/**/*.test.js')
+    .pipe(mocha({ui: 'bdd'}))
+    .pipe(istanbul.writeReports());
+});
+
+gulp.task("istanbul:hook", function() {
+  return gulp.src(['build/source/**/*.js'])
+      // Covering files
+      .pipe(istanbul())
+      // Force `require` to return covered files
+      .pipe(istanbul.hookRequire());
 });
 
 gulp.task("cover", function() {
   if (!process.env.CI) return;
-  return gulp.src(__dirname + '/coverage/**/lcov.info')
+  return gulp.src("coverage/**/lcov.info")
       .pipe(coveralls());
 });
 
 gulp.task("test", function(cb) {
-  runSequence("bundle", "karma", "cover", cb);
+  runSequence("istanbul:hook", "mocha", "cover", cb);
 });
 
 //******************************************************************************
 //* BAKE
 //******************************************************************************
+gulp.task("copy", function() {
+  return gulp.src(__dirname + "/bundled/source/inversify.js")
+    .pipe(gulp.dest(__dirname + "/dist/"));
+});
+
 gulp.task("compress", function() {
   return gulp.src(__dirname + "/bundled/source/inversify.js")
              .pipe(uglify({ preserveComments : false }))
+             .pipe(rename({
+                extname: '.min.js'
+              }))
              .pipe(gulp.dest(__dirname + "/dist/"))
 });
 
@@ -146,13 +144,17 @@ gulp.task("header", function() {
     " */",
     ""].join("\n");
 
-  return gulp.src(__dirname + "/dist/inversify.js")
+  gulp.src(__dirname + "/dist/inversify.js")
+             .pipe(header(banner, { pkg : pkg } ))
+             .pipe(gulp.dest(__dirname + "/dist/"));
+
+  return gulp.src(__dirname + "/dist/inversify.min.js")
              .pipe(header(banner, { pkg : pkg } ))
              .pipe(gulp.dest(__dirname + "/dist/"));
 });
 
-gulp.task("bake", function(cb) {
-  runSequence("bundle", "compress", "header", cb);
+gulp.task("dist", function(cb) {
+  runSequence("bundle", "copy", "compress", "header", "document", cb);
 });
 
 //******************************************************************************
@@ -161,14 +163,8 @@ gulp.task("bake", function(cb) {
 gulp.task("default", function (cb) {
   runSequence(
     "lint",
-    "build-source",
-    "build-test",
-    "bundle-source",
-    "bundle-test",
-    "document",
-    "karma",
-    "cover",
-    "compress",
-    "header",
+    "build",
+    "test",
+    "dist",
     cb);
 });

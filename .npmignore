@@ -1,0 +1,16 @@
+source
+test
+typings
+bundled
+build
+coverage
+documentation
+gulpfile.js
+bower.json
+karma.conf.js
+tsconfig.json
+CONTRIBUTING.md
+tsd.json
+.travis.yml
+.gitignore
+.tsdrc

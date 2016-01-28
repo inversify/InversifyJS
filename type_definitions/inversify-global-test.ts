@@ -1,8 +1,6 @@
-/// <reference path="inversify.d.ts" />
+/// <reference path="inversify-global.d.ts" />
 
-import { TypeBindingScopeEnum, TypeBinding, Kernel, Inject } from "inversify";
-
-module inversify_external_module_test {
+module inversify_global_test {
 
     interface FooInterface {
         name : string;
@@ -53,7 +51,7 @@ module inversify_external_module_test {
     }
 
     // Kernel
-    var kernel = new Kernel();
+    var kernel = new inversify.Kernel();
 
     // Identifiers
     var fooRuntimeIdentifier = "FooInterface";
@@ -61,9 +59,9 @@ module inversify_external_module_test {
     var fooBarRuntimeIdentifier = "FooBarInterface";
 
     // Bindings
-    var fooBinding =  new TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
-    var barBinding =  new TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
-    var fooBarBinding =  new TypeBinding<FooBarInterface>(fooBarRuntimeIdentifier, FooBar);
+    var fooBinding =  new inversify.TypeBinding<FooInterface>(fooRuntimeIdentifier, Foo);
+    var barBinding =  new inversify.TypeBinding<BarInterface>(barRuntimeIdentifier, Bar);
+    var fooBarBinding =  new inversify.TypeBinding<FooBarInterface>(fooBarRuntimeIdentifier, FooBar);
 
     kernel.bind(fooBinding);
     kernel.bind(barBinding);
@@ -77,5 +75,5 @@ module inversify_external_module_test {
     // Unbind
     kernel.unbind(fooRuntimeIdentifier);
     kernel.unbindAll();
-
+    
 }

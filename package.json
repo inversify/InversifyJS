@@ -1,14 +1,14 @@
 {
   "name": "inversify",
-  "version": "1.0.2",
+  "version": "1.2.2",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
-  "typings": "type_definitions/inversify-node.d.ts",
+  "typings": "type_definitions/inversify-npm.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp"
   },
   "repository": {
     "type": "git",
@@ -33,26 +33,23 @@
   "engines": {},
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^11.0.1",
-    "chai": "^3.2.0",
+    "browserify": "^13.0.0",
+    "chai": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-coveralls": "^0.1.4",
     "gulp-docco": "0.0.4",
     "gulp-header": "^1.7.1",
-    "gulp-tslint": "^3.2.0",
-    "gulp-typescript": "^2.8.2",
-    "gulp-uglify": "^1.4.0",
-    "karma": "^0.13.9",
-    "karma-chai": "^0.1.0",
-    "karma-coverage": "^0.5.1",
-    "karma-mocha": "^0.2.0",
-    "karma-phantomjs-launcher": "^0.2.1",
-    "karma-sinon": "^1.0.4",
-    "mocha": "^2.3.0",
-    "phantomjs": "^1.9.18",
-    "run-sequence": "^1.1.2",
-    "sinon": "^1.16.1",
-    "typescript": "^1.6.0-beta",
+    "gulp-istanbul": "^0.10.3",
+    "gulp-mocha": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-tslint": "^4.3.1",
+    "gulp-typescript": "^2.10.0",
+    "gulp-uglify": "^1.5.1",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.3.4",
+    "run-sequence": "^1.1.5",
+    "tslint": "^3.2.2",
+    "typescript": "^1.7.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
