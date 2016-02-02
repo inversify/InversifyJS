@@ -23,7 +23,3 @@ interface ILookup<T> {
   remove(key : string) : void;
   hasKey(key : string) : boolean;
 }
-
-interface InjectableConstructorInterface extends Function {
-    argumentTypes: Array<string>;
-}

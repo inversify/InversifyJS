@@ -46,9 +46,7 @@ class Lookup<T> implements ILookup<T> {
 		var index = this.getIndexByKey(key);
 		if(index !== -1) {
 			var keyValuePair = this._hashMap[index];
-			if(keyValuePair.key === key) {
-				keyValuePair.value.push(value);
-			}
+			keyValuePair.value.push(value);
 		}
 		else {
 			this._hashMap.push(new KeyValuePair(key, value));
@@ -63,9 +61,7 @@ class Lookup<T> implements ILookup<T> {
 		var index = this.getIndexByKey(key);
 		if(index !== -1) {
 			var keyValuePair = this._hashMap[index];
-			if(keyValuePair.key === key) {
-				return keyValuePair.value;
-			}
+			return keyValuePair.value;
 		}
 		else {
 			throw new Error("Key Not Found");

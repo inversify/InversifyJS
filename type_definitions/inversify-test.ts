@@ -39,18 +39,19 @@ module inversify_external_module_test {
             return this.name;
         }
     }
-
+    
+    @Inject("FooInterface", "BarInterface")
     class FooBar implements FooBarInterface {
         public foo : FooInterface;
         public bar : BarInterface;
-        constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
-            this.foo = FooInterface;
-            this.bar = BarInterface;
+        constructor(foo : FooInterface, bar : BarInterface) {
+            this.foo = foo;
+            this.bar = bar;
         }
         public greet() : string{
             return this.foo.greet() + this.bar.greet();
         }
-    }
+    }    
 
     // Kernel
     var kernel = new Kernel();

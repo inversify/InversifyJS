@@ -1,6 +1,7 @@
 ///<reference path="./interfaces.d.ts" />
+
 // Inject (Annotation)
-// ------
+// ------------------
 
 // To allow developers using Inversify to mark arguments with the
 // type they should resolve to we need to provide a way for them to do
@@ -10,34 +11,21 @@
 // This should be used in the following way where "IB" has
 // been bound to the kernel to a class that extends IB
 // import { Inject } from "inversify";
-// class A {
-//    constructor (@Inject("IB") be: IB) { ... }
+// @Inject("IKatana", "IShuriken")
+// class Warrior {
+//     
+//     private _katana : IKatana;
+//     private _shuriken : IShuriken;
+//     
+//     constructor(katana : IKatana, shuriken : IShuriken) {
+//         this._katana = katana;
+//         this._shuriken = shuriken;
+//     }
 // }
-let Inject = function (typeIdentifier: string) {
-
-  //return a argument annotation resolver to mark
-  //the constructor with the types that should
-  //be resolved by Inversify
-  return (typeConstructor: InjectableConstructorInterface, propertyName: string, argumentIndex: number) => {
-
-      //if the pre-annotation argument types have not been resolved
-      //then resolve them to the argument names
-      if (!typeConstructor.argumentTypes) {
-         // Regular expressions used to get a list containing
-         // the names of the arguments of a function
-         let STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-         let ARGUMENT_NAMES = /([^\s,]+)/g;
-
-         let constructorString = typeConstructor.toString().replace(STRIP_COMMENTS, "");
-         let argumentsStartIndex = constructorString.indexOf("(") + 1;
-         let argumentsEndIndex = constructorString.indexOf(")");
-
-         //attach information to the constructor
-         typeConstructor.argumentTypes = constructorString.slice(argumentsStartIndex, argumentsEndIndex).match(ARGUMENT_NAMES);
-      }
-
-      //replace the argument name with the annotated type
-      typeConstructor.argumentTypes[argumentIndex] = typeIdentifier;
+let Inject = function (...typeIdentifiers: string[]) {
+  return (constructor : any) => {
+      constructor.__INJECT = typeIdentifiers;
+      return constructor;
   };
 };
 
