@@ -4,67 +4,62 @@ import { expect } from "chai";
 import { Inject } from "../source/inversify";
 
 describe('Inject Annotation', () => {
-   it('should resolve a single marked type argument to the type rather than the name', () => {
-      let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = () => { return "function(aType) { }"; }
-
-      let injectionResolver = Inject("IType");
-
-      injectionResolver(injectable, null, 0);
-
-      expect(injectable.argumentTypes.length).to.equal(1);
-      expect(injectable.argumentTypes[0]).to.equal("IType");
-   });
-
-   it('should resolve the first marked type to the annotated and second to the named', () => {
-      let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = () => { return "function(aType, bType) { }"; }
-
-      let injectionResolver = Inject("IType");
-
-      injectionResolver(injectable, null, 0);
-
-      expect(injectable.argumentTypes.length).to.equal(2);
-      expect(injectable.argumentTypes[0]).to.equal("IType");
-      expect(injectable.argumentTypes[1]).to.equal("bType");
-   });
-
-   it('should resolve the first type to the named and second to the annotated', () => {
-      let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = () => { return "function(aType, bType) { }"; }
-
-      let injectionResolver = Inject("IType");
-
-      injectionResolver(injectable, null, 1);
-
-      expect(injectable.argumentTypes.length).to.equal(2);
-      expect(injectable.argumentTypes[0]).to.equal("aType");
-      expect(injectable.argumentTypes[1]).to.equal("IType");
-   });
-
-   it('should resolve the first marked type to the annotated and second to the named with different argument names', () => {
-      let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = () => { return "function(something, somethingElse) { }"; }
-
-      let injectionResolver = Inject("Resolvable");
-
-      injectionResolver(injectable, null, 0);
-
-      expect(injectable.argumentTypes.length).to.equal(2);
-      expect(injectable.argumentTypes[0]).to.equal("Resolvable");
-      expect(injectable.argumentTypes[1]).to.equal("somethingElse");
-   });
-
-   it('should resolve the first type to the named and second to the annotated with different argument names', () => {
-      let injectable = <InjectableConstructorInterface>{};
-      injectable.toString = () => { return "function(something, somethingElse) { }"; }
-
-      let injectionResolver = Inject("Resolvable");
-
-      injectionResolver(injectable, null, 1);
-
-      expect(injectable.argumentTypes.length).to.equal(2);
-      expect(injectable.argumentTypes[0]).to.equal("something");
-      expect(injectable.argumentTypes[1]).to.equal("Resolvable");
+   it('should generate metadata for annotated classes', () => {
+       
+       interface IKatana {
+           power : number;
+           hit() : boolean;
+       }
+       
+       interface IShuriken {
+           power : number;
+           throw() : boolean;
+       }
+       
+       @Inject("IKatana", "IShuriken")
+       class Warrior {
+           
+           private _katana : IKatana;
+           private _shuriken : IShuriken;
+           
+           constructor(katana : IKatana, shuriken : IShuriken) {
+               this._katana = katana;
+               this._shuriken = shuriken;
+           }
+       }
+       
+       class WarriorWithoutInjections {
+           
+           private _katana : IKatana;
+           private _shuriken : IShuriken;
+           
+           constructor(katana : IKatana, shuriken : IShuriken) {
+               this._katana = katana;
+               this._shuriken = shuriken;
+           }
+       }
+       
+       @Inject()
+       class WarriorDecoratedWithoutInjections {
+           
+           private _katana : IKatana;
+           private _shuriken : IShuriken;
+           
+           constructor(katana : IKatana, shuriken : IShuriken) {
+               this._katana = katana;
+               this._shuriken = shuriken;
+           }
+       }
+       
+       var argumentTypes = (<any>Warrior).__INJECT;
+       expect(argumentTypes.length).to.equal(2);
+       expect(argumentTypes[0]).to.equal("IKatana");
+       expect(argumentTypes[1]).to.equal("IShuriken");
+       
+       var argumentTypes = (<any>WarriorWithoutInjections).__INJECT;
+       expect(typeof argumentTypes).to.equal("undefined");
+       
+       var argumentTypes = (<any>WarriorDecoratedWithoutInjections).__INJECT;
+       expect(argumentTypes.length).to.equal(0);
    });
 });

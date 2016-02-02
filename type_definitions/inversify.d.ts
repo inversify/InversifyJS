@@ -49,11 +49,7 @@ declare namespace __inversify {
       constructor();
   }
 
-  interface InjectableConstructorInterface {
-      argumentTypes: Array<string>;
-  }
-
-  export function Inject(typeIdentifier: string): (typeConstructor: InjectableConstructorInterface, propertyName: string, argumentIndex: number) => void;
+  export function Inject(...typeIdentifier: string[]): (constructor: any) => any;
 
 }
 

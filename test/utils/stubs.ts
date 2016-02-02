@@ -1,3 +1,5 @@
+import { Inject } from "../../source/inject_annotation";
+
 export interface FooInterface {
   name : string;
   greet() : string;
@@ -34,12 +36,13 @@ export class Bar implements BarInterface {
   }
 }
 
+@Inject("FooInterface","BarInterface")
 export class FooBar implements FooBarInterface {
   public foo : FooInterface;
   public bar : BarInterface;
-  constructor(FooInterface : FooInterface, BarInterface : BarInterface) {
-    this.foo = FooInterface;
-    this.bar = BarInterface;
+  constructor(foo : FooInterface, bar : BarInterface) {
+    this.foo = foo;
+    this.bar = bar;
   }
   public greet() : string{
     return this.foo.greet() + this.bar.greet();

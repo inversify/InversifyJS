@@ -78,40 +78,9 @@ class Kernel implements IKernel {
 
   // Take a function as argument and discovers
   // the names of its arguments at run-time
-  private _getConstructorArguments(func : Function) {
-    if ((<any>func).argumentTypes) {
-       return (<any>func).argumentTypes;
-    }
-
-    var fnStr, argsInit, argsEnd, result, STRIP_COMMENTS, ARGUMENT_NAMES;
-
-
-    // Regular expressions used to get a list containing
-    // the names of the arguments of a function
-    STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-    ARGUMENT_NAMES = /([^\s,]+)/g;
-
-    fnStr = func.toString().replace(STRIP_COMMENTS, '');
-    argsInit = fnStr.indexOf('(') + 1;
-    argsEnd = fnStr.indexOf(')');
-
-    // If using ES6 classes and there is no constructor
-    // there is no need to parser constructor args
-    if('function' === typeof Map &&
-       /\b(class)\b/.test(fnStr) &&
-       /\b(constructor)\b/.test(fnStr) === false) {
-
-      result = null;
-    }
-    else {
-      result = fnStr.slice(argsInit, argsEnd).match(ARGUMENT_NAMES);
-    }
-
-    if(result === null) {
-      result = []
-    }
-
-    return result;
+  private _getConstructorArguments(func : any) : string[] {
+      var typeIdentifiers = func.__INJECT || [];
+      return typeIdentifiers;
   }
 
   // Examines if a constructor has any dependencies.
