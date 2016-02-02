@@ -13,7 +13,7 @@ A lightweight IoC container written in TypeScript.
 Visit http://inversify.io/ for more information.
 
 ### About
-InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
+InversifyJS is a lightweight pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
 
 InversifyJS is easy to integrate with the majority of existing JavaScript frameworks and encourage the usage of the best OOP and IoC practices.
 
