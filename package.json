@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
   "typings": "type_definitions/inversify-npm.d.ts",
