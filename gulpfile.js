@@ -111,8 +111,8 @@ gulp.task("cover", function() {
       .pipe(coveralls());
 });
 
-gulp.task("test", function(cb) {
-  runSequence("istanbul:hook", "mocha", "cover", cb);
+gulp.task("build-and-test", function(cb) {
+  runSequence("build", "istanbul:hook", "mocha", "cover", cb);
 });
 
 //******************************************************************************
@@ -163,8 +163,7 @@ gulp.task("dist", function(cb) {
 gulp.task("default", function (cb) {
   runSequence(
     "lint",
-    "build",
-    "test",
+    "build-and-test",
     "dist",
     cb);
 });
