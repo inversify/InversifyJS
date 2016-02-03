@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "gulp",
-    "prepublish": "gulp test && gulp dist"
+    "prepublish": "gulp build-and-test && gulp dist"
   },
   "repository": {
     "type": "git",
