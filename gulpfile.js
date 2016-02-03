@@ -112,7 +112,7 @@ gulp.task("cover", function() {
 });
 
 gulp.task("test", function(cb) {
-  runSequence("istanbul:hook", "mocha", "cover", cb);
+  runSequence("build", "istanbul:hook", "mocha", "cover", cb);
 });
 
 //******************************************************************************
