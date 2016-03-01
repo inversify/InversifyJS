@@ -1,0 +1,17 @@
+"use strict";
+var kernel_1 = require("./kernel/kernel");
+exports.Kernel = kernel_1.Kernel;
+var binding_1 = require("./bindings/binding");
+exports.Binding = binding_1.Binding;
+var binding_scope_1 = require("./bindings/binding_scope");
+exports.BindingScope = binding_scope_1.BindingScope;
+var inject_1 = require("./activation/inject");
+exports.Inject = inject_1.Inject;
+var tagged_1 = require("./activation/tagged");
+exports.Tagged = tagged_1.Tagged;
+var named_1 = require("./activation/named");
+exports.Named = named_1.Named;
+var paramnames_1 = require("./activation/paramnames");
+exports.ParamNames = paramnames_1.ParamNames;
+var decorator_utils_1 = require("./activation/decorator_utils");
+exports.decorate = decorator_utils_1.decorate;
