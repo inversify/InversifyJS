@@ -11,11 +11,10 @@ var gulp        = require("gulp"),
     tsc         = require("gulp-typescript"),
     coveralls   = require('gulp-coveralls'),
     uglify      = require("gulp-uglify"),
-    docco       = require("gulp-docco"),
+    typedoc     = require("gulp-typedoc"),
     rename      = require("gulp-rename"),
     runSequence = require("run-sequence"),
     header      = require("gulp-header"),
-    pkg         = require(__dirname + "/package.json"),
     mocha       = require("gulp-mocha"),
     istanbul    = require("gulp-istanbul");
 
@@ -23,12 +22,16 @@ var gulp        = require("gulp"),
 //* LINT
 //******************************************************************************
 gulp.task("lint", function() {
-  return gulp.src([
-                __dirname + "/source/**/**.ts",
-                __dirname + "/test/**/**.test.ts"
-              ])
-             .pipe(tslint())
-             .pipe(tslint.report("verbose"));
+    
+    var config =  { emitError: (process.env.CI) ? true : false };
+    
+    return gulp.src([
+        "src/**/**.ts",
+        "test/**/**.test.ts",
+        "type_definitions/**/**.ts"
+    ])
+    .pipe(tslint())
+    .pipe(tslint.report("verbose", config));
 });
 
 //******************************************************************************
@@ -37,68 +40,106 @@ gulp.task("lint", function() {
 var tsProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-source", function() {
-  return gulp.src(__dirname + "/source/**/**.ts")
-             .pipe(tsc(tsProject))
-             .js.pipe(gulp.dest(__dirname + "/build/source/"));
+    return gulp.src([
+        "src/**/**.ts",
+        "typings/browser.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts"
+    ])
+    .pipe(tsc(tsProject))
+    .on('error', function (err) {
+        process.exit(1);
+    })
+    .js.pipe(gulp.dest("src/"));
 });
 
 var tsTestProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-test", function() {
-  return gulp.src(__dirname + "/test/**/*.ts")
-             .pipe(tsc(tsTestProject))
-             .js.pipe(gulp.dest(__dirname + "/build/test/"));
+    return gulp.src([
+        "test/**/*.ts",
+        "typings/browser.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts"
+    ])
+    .pipe(tsc(tsTestProject))
+    .on('error', function (err) {
+        process.exit(1);
+    })
+    .js.pipe(gulp.dest("test/"));
 });
 
 var tsTypeDefinitionsProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-type-definitions", function() {
-  return gulp.src(__dirname + "/type_definitions/**/*.ts")
+  return gulp.src("type_definitions/**/*.ts")
              .pipe(tsc(tsTypeDefinitionsProject))
-             .js.pipe(gulp.dest(__dirname + "/build/type_definitions/"));
+             .on('error', function (err) {
+                 process.exit(1);
+             })
+             .js.pipe(gulp.dest("type_definitions/"));
 });
 
 gulp.task("build", function(cb) {
-  runSequence("build-source", "build-test", "build-type-definitions", cb);
+  runSequence("lint", "build-source", "build-test", "build-type-definitions", cb);
 });
 
 //******************************************************************************
 //* DOCUMENT
 //******************************************************************************
 gulp.task("document", function () {
-  return gulp.src(__dirname + "/build/source/*.js")
-             .pipe(docco())
-             .pipe(gulp.dest(__dirname + "/documentation"));
+	return gulp
+		.src(["src/*.ts"])
+		.pipe(typedoc({ 
+			// TypeScript options (see typescript docs) 
+            target: "es5",
+            module: "commonjs",
+            moduleResolution: "node",
+            isolatedModules: false,
+            jsx: "react",
+            experimentalDecorators: true,
+            emitDecoratorMetadata: true,
+            noImplicitAny: false,
+            noLib: false,
+            preserveConstEnums: true,
+            suppressImplicitAnyIndexErrors: true,
+			// Output options (see typedoc docs) 
+			out: "./documentation",
+			name: "InversifyJS",
+			version: true
+		}));
 });
 
 //******************************************************************************
 //* BUNDLE
 //******************************************************************************
 gulp.task("bundle", function () {
+    
   var b = browserify({
     standalone : 'inversify',
-    entries: __dirname + "/build/source/inversify.js",
+    entries:  "src/inversify.js",
     debug: true
   });
 
   return b.bundle()
     .pipe(source("inversify.js"))
     .pipe(buffer())
-    .pipe(gulp.dest(__dirname + "/bundled/source/"));
+    .pipe(gulp.dest("bundled/src/"));
+
 });
 
 //******************************************************************************
 //* TEST
 //******************************************************************************
-
 gulp.task("mocha", function() {
-  return gulp.src('build/test/**/*.test.js')
+  return gulp.src([
+      'node_modules/reflect-metadata/Reflect.js',
+      'test/**/*.test.js'
+    ])
     .pipe(mocha({ui: 'bdd'}))
     .pipe(istanbul.writeReports());
 });
 
 gulp.task("istanbul:hook", function() {
-  return gulp.src(['build/source/**/*.js'])
+  return gulp.src(['src/**/*.js'])
       // Covering files
       .pipe(istanbul())
       // Force `require` to return covered files
@@ -111,25 +152,25 @@ gulp.task("cover", function() {
       .pipe(coveralls());
 });
 
-gulp.task("build-and-test", function(cb) {
-  runSequence("build", "istanbul:hook", "mocha", "cover", cb);
+gulp.task("test", function(cb) {
+  runSequence("istanbul:hook", "mocha", "cover", cb);
 });
 
 //******************************************************************************
 //* BAKE
 //******************************************************************************
 gulp.task("copy", function() {
-  return gulp.src(__dirname + "/bundled/source/inversify.js")
-    .pipe(gulp.dest(__dirname + "/dist/"));
+  return gulp.src("bundled/src/inversify.js")
+    .pipe(gulp.dest("dist/"));
 });
 
 gulp.task("compress", function() {
-  return gulp.src(__dirname + "/bundled/source/inversify.js")
+  return gulp.src("bundled/src/inversify.js")
              .pipe(uglify({ preserveComments : false }))
              .pipe(rename({
                 extname: '.min.js'
               }))
-             .pipe(gulp.dest(__dirname + "/dist/"))
+             .pipe(gulp.dest("dist/"))
 });
 
 gulp.task("header", function() {
@@ -144,17 +185,17 @@ gulp.task("header", function() {
     " */",
     ""].join("\n");
 
-  gulp.src(__dirname + "/dist/inversify.js")
+  gulp.src("dist/inversify.js")
              .pipe(header(banner, { pkg : pkg } ))
-             .pipe(gulp.dest(__dirname + "/dist/"));
+             .pipe(gulp.dest("dist/"));
 
-  return gulp.src(__dirname + "/dist/inversify.min.js")
+  return gulp.src("dist/inversify.min.js")
              .pipe(header(banner, { pkg : pkg } ))
-             .pipe(gulp.dest(__dirname + "/dist/"));
+             .pipe(gulp.dest("dist/"));
 });
 
 gulp.task("dist", function(cb) {
-  runSequence("bundle", "copy", "compress", "header", "document", cb);
+  runSequence("bundle", "copy", "compress", "header", cb);
 });
 
 //******************************************************************************
@@ -162,8 +203,8 @@ gulp.task("dist", function(cb) {
 //******************************************************************************
 gulp.task("default", function (cb) {
   runSequence(
-    "lint",
-    "build-and-test",
+    "build",
+    "test",
     "dist",
     cb);
 });

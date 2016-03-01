@@ -3,48 +3,43 @@
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-interface TypeBindingInterface<TServiceType> {
-  runtimeIdentifier : string;
-  implementationType : { new(): TServiceType ;};
-  cache : TServiceType;
-  scope : number; // TypeBindingScopeEnum
+interface BindingInterface<TServiceType> {
+runtimeIdentifier: string;
+implementationType: { new(): TServiceType ; };
+cache: TServiceType;
+scope: number; // TypeBindingScopeEnum
 }
 
 interface KernelInterface {
-  bind(typeBinding : TypeBindingInterface<any>) : void;
-  unbind(runtimeIdentifier : string) : void;
-  unbindAll() : void;
-  resolve<TImplementationType>(runtimeIdentifier : string) : TImplementationType;
+bind(typeBinding: BindingInterface<any>): void;
+unbind(runtimeIdentifier: string): void;
+unbindAll(): void;
+get<Service>(runtimeIdentifier: string): Service;
 }
 
-export enum TypeBindingScopeEnum {
+export enum BindingScope {
     Transient = 0,
     Singleton = 1,
 }
 
-export class TypeBinding<TServiceType> implements TypeBindingInterface<TServiceType> {
-    runtimeIdentifier: string;
-    implementationType: {
+export class Binding<TServiceType> implements BindingInterface<TServiceType> {
+    public runtimeIdentifier: string;
+    public implementationType: {
         new (): TServiceType;
     };
-    cache: TServiceType;
-    scope: TypeBindingScopeEnum;
+    public cache: TServiceType;
+    public scope: BindingScope;
     constructor(runtimeIdentifier: string, implementationType: {
         new (...args: any[]): TServiceType;
-    }, scopeType?: TypeBindingScopeEnum);
+    }, scopeType?: BindingScope);
 }
 
 export class Kernel implements KernelInterface {
-    private _bindings;
-    bind(typeBinding: TypeBindingInterface<any>): void;
-    unbind(runtimeIdentifier: string): void;
-    unbindAll(): void;
-    resolve<TImplementationType>(runtimeIdentifier: string): TImplementationType;
-    private _validateBinding(typeBinding);
-    private _getConstructorArguments(func);
-    private _injectDependencies<TImplementationType>(func);
-    private _construct<TImplementationType>(constr, args);
+    public bind(typeBinding: BindingInterface<any>): void;
+    public unbind(runtimeIdentifier: string): void;
+    public unbindAll(): void;
+    public get<Service>(runtimeIdentifier: string): Service;
     constructor();
 }
 
-export function Inject(...typeIdentifier: string[]): (constructor: any) => any;
+export function Inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;

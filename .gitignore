@@ -35,6 +35,6 @@ typings
 
 dist
 
-source/*.js
-test/*.js
+src/**/*.js
+test/**/*.js
 type_definitions/*.js
