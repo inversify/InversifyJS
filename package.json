@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "1.3.1",
+  "version": "2.0.0-alpha.0",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "dist/inversify.js",
   "typings": "type_definitions/inversify-npm.d.ts",
@@ -9,21 +9,21 @@
   },
   "scripts": {
     "test": "gulp",
-    "prepublish": "gulp build-and-test && gulp dist"
+    "prepublish": "gulp build && gulp test && gulp dist"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/inversify/InversifyJS.git"
   },
   "keywords": [
-    "IoC",
-    "container",
-    "JavaScript",
-    "TypeScript",
-    "dependency",
-    "inversion",
-    "inversion",
-    "control"
+    "ioc",
+    "di",
+    "javascript",
+    "typescript",
+    "node",
+    "dependency injection",
+    "dependency inversion",
+    "inversion of control container"
   ],
   "author": "Remo H. Jansen",
   "license": "MIT",
@@ -32,26 +32,30 @@
   },
   "homepage": "http://inversify.io",
   "engines": {},
-  "dependencies": {},
+  "dependencies": {
+    "reflect-metadata": "^0.1.3"
+  },
   "devDependencies": {
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-coveralls": "^0.1.4",
-    "gulp-docco": "0.0.4",
     "gulp-header": "^1.7.1",
     "gulp-istanbul": "^0.10.3",
     "gulp-mocha": "^2.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-tslint": "^4.3.1",
+    "gulp-typedoc": "^1.2.1",
     "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.5.1",
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
     "run-sequence": "^1.1.5",
+    "sinon": "^1.17.3",
     "tslint": "^3.2.2",
     "typescript": "^1.7.5",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "wallabify": "0.0.14"
   }
 }

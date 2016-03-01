@@ -13,4 +13,4 @@ CONTRIBUTING.md
 tsd.json
 .travis.yml
 .gitignore
-.tsdrc
+.vscode

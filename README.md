@@ -13,7 +13,7 @@ A lightweight IoC container written in TypeScript.
 Visit http://inversify.io/ for more information.
 
 ### About
-InversifyJS is a lightweight pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
+InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
 
 InversifyJS is easy to integrate with the majority of existing JavaScript frameworks and encourage the usage of the best OOP and IoC practices.
 
@@ -104,23 +104,23 @@ class FooBar implements FooBarInterface {
 Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. The Kernel will automatically detect if a class has some dependencies by examining the metadata provided by the Inject decorator.
 
 ```
-import { TypeBinding, Kernel } from "inversify";
+import { Binding, BindingScope, Kernel } from "inversify";
 var kernel = new Kernel();
 ```
 
 In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
 
 ```
-kernel.bind(new TypeBinding<FooInterface>("FooInterface", Foo, TypeBindingScopeEnum.Transient));
-kernel.bind(new TypeBinding<BarInterface>("BarInterface", Bar, TypeBindingScopeEnum.Singleton));
-kernel.bind(new TypeBinding<FooBarInterface>("FooBarInterface", FooBar));
+kernel.bind(new Binding<FooInterface>("FooInterface", Foo, BindingScope.Transient));
+kernel.bind(new Binding<BarInterface>("BarInterface", Bar, BindingScope.Singleton));
+kernel.bind(new Binding<FooBarInterface>("FooBarInterface", FooBar));
 ```
 
 When we declare a type binding, the TypeScript compiler will check that the implementation type (class) is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
 
 ```
 // Compilation error: Bar does not implement FooInterface
-kernel.bind(new TypeBinding<FooInterface>("FooInterface", Bar));
+kernel.bind(new Binding<FooInterface>("FooInterface", Bar));
 ```
 
 We should keep the InversifyJS Kernel instantiation and type bindings centralized in one unique IoC configuration file. This will help us to abstract our application from the IoC configuration.
@@ -181,10 +181,10 @@ Another common error is implementation-specific interface types done just to be 
 
 In other words, there is a constructor that accepts dependency injection, but also another constructor that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations as well, as developers, over time, start making assumptions around the default implementation, and/or start new-ing up instances using the default constructor.
 
-# Contact
-If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs).
+# Support
+If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
-You can report issues using the [Github issues page](https://github.com/inversify/InversifyJS/issues).
+If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the [development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
 # License
 
