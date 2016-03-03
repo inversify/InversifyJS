@@ -172,45 +172,103 @@ describe("Planner", () => {
 
   });
 
-    it("Should generate plans with multi-injections", () => {
+  it("Should generate plans with multi-injections", () => {
 
-        // TODO 2.0.0-alpha.3 throw for now
+      // TODO 2.0.0-alpha.3 throw for now
 
-        interface IWeapon {}
+      interface IWeapon {}
 
-        class Katana implements IWeapon {}
-        class Shuriken implements IWeapon {}
+      class Katana implements IWeapon {}
+      class Shuriken implements IWeapon {}
 
-        interface INinja {}
+      interface INinja {}
 
-        @Inject("IWeapon", "IWeapon")
-        @ParamNames("katana", "shuriken")
-        class Ninja implements INinja {
-            public katana: IWeapon;
-            public shuriken: IWeapon;
-            public constructor(katana: IWeapon, shuriken: IWeapon) {
-                // DO NOTHING
-            }
-        }
+      @Inject("IWeapon", "IWeapon")
+      @ParamNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(katana: IWeapon, shuriken: IWeapon) {
+              // DO NOTHING
+          }
+      }
 
-        let ninjaId = "INinja";
-        let weaponId = "IWeapon";
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
+      let shurikenBinding = new Binding<IWeapon>(weaponId, Shuriken);
+      let katanaBinding = new Binding<IWeapon>(weaponId, Katana);
 
-        let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-        let shurikenBinding = new Binding<IWeapon>(weaponId, Shuriken);
-        let katanaBinding = new Binding<IWeapon>(weaponId, Katana);
+      let kernel = new Kernel();
+      kernel.bind(ninjaBinding);
+      kernel.bind(shurikenBinding);
+      kernel.bind(katanaBinding);
 
-        let kernel = new Kernel();
-        kernel.bind(ninjaBinding);
-        kernel.bind(shurikenBinding);
-        kernel.bind(katanaBinding);
+      let throwErroFunction = () => {
+          kernel.get(ninjaId);
+      };
 
-        let throwErroFunction = () => {
-            kernel.get(ninjaId);
-        };
+      expect(throwErroFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${weaponId}`);
 
-        expect(throwErroFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${weaponId}`);
+  });
 
-    });
+  it("Should identify circular dependencies", () => {
+
+      interface IA {}
+      interface IB {}
+      interface IC {}
+      interface ID {}
+
+      @Inject("IA")
+      class D implements IC {
+          public a: IA;
+          public constructor(a: IA) { // circular dependency
+              this.a = a;
+          }
+      }
+
+      @Inject("ID")
+      class C implements IC {
+          public d: ID;
+          public constructor(d: ID) {
+              this.d = d;
+          }
+      }
+
+      class B implements IB {}
+
+      @Inject("IB", "IC")
+      class A implements IA {
+          public b: IB;
+          public c: IC;
+          public constructor(b: IB, c: IC) {
+              this.b = b;
+              this.c = c;
+          }
+      }
+
+      let aId = "IA";
+      let bId = "IB";
+      let cId = "IC";
+      let dId = "ID";
+
+      let aBinding = new Binding<IA>(aId, A);
+      let bBinding = new Binding<IB>(bId, B);
+      let cBinding = new Binding<IC>(cId, C);
+      let dBinding = new Binding<ID>(dId, D);
+
+      let kernel = new Kernel();
+      kernel.bind(aBinding);
+      kernel.bind(bBinding);
+      kernel.bind(cBinding);
+      kernel.bind(dBinding);
+
+      let throwErroFunction = () => {
+          kernel.get(aId);
+      };
+
+      expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${dId}`);
+
+  });
 
 });

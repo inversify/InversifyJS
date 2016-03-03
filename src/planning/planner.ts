@@ -27,36 +27,41 @@ class Planner implements IPlanner {
 
         let dependencies = this._getDependencies(binding.implementationType);
 
-        dependencies.forEach((d) => {
-            this._createSubRequest(rootRequest, d);
-        });
-
+        dependencies.forEach((d) => { this._createSubRequest(rootRequest, d); });
         return plan;
     }
 
     private _createSubRequest(parentRequest: IRequest, target: ITarget) {
 
-        let bindings = this._getBindings(parentRequest.parentContext, target.service.value());
+        try {
+            let bindings = this._getBindings(parentRequest.parentContext, target.service.value());
 
-        // mutiple bindings available
-        if (bindings.length > 1) {
+            // mutiple bindings available
+            if (bindings.length > 1) {
 
-            // TODO 2.0.0-alpha.3 
-            // TODO handle multi-injection, named, tagged and contextual binsingd here
-            throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.service.value()}`);
+                // TODO 2.0.0-alpha.3 
+                // TODO handle multi-injection, named, tagged and contextual binsingd here
+                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.service.value()}`);
 
-        } else {
+            } else {
 
-            // TODO 2.0.0-alpha.2 handle value, factory, etc here
-            let binding = bindings[0];
+                // TODO 2.0.0-alpha.2 handle value, factory, etc here
+                let binding = bindings[0];
 
-            let childRequest = parentRequest.addChildRequest(target.service.value(), binding, target);
+                let childRequest = parentRequest.addChildRequest(target.service.value(), binding, target);
 
-            let subDependencies = this._getDependencies(binding.implementationType);
+                let subDependencies = this._getDependencies(binding.implementationType);
 
-            subDependencies.forEach((d, index) => {
-                this._createSubRequest(childRequest, d);
-            });
+                subDependencies.forEach((d, index) => {
+                    this._createSubRequest(childRequest, d);
+                });
+            }
+        } catch (error) {
+            if (error instanceof RangeError) {
+                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${target.service.value()}`);
+            } else {
+                throw new Error(error.message);
+            }
         }
     }
 

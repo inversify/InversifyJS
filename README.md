@@ -130,7 +130,7 @@ We should keep the InversifyJS Kernel instantiation and type bindings centralize
 After declaring the type bindings, we can invoke the kernel resolve method to resolve a dependency. We will use a string as the interface identifier (instead of the interface itself) because the TypeScript interfaces are not available at runtime.
 
 ```
-var foobar = kernel.resolve<FooBarInterface>("FooBarInterface");
+var foobar = kernel.get<FooBarInterface>("FooBarInterface");
 ```
 
 If the interface that we are trying to resolve is bind to a class that has some dependencies, InversifyJS will resolve and inject them into a new instance via the class constructor.
