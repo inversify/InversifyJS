@@ -25,6 +25,9 @@ class Planner implements IPlanner {
         rootRequest.bindings.push(binding);
         let plan = new Plan(context, rootRequest);
 
+        // Plan and Context are duable linked
+        context.addPlan(plan);
+
         let dependencies = this._getDependencies(binding.implementationType);
 
         dependencies.forEach((d) => { this._createSubRequest(rootRequest, d); });
@@ -58,11 +61,31 @@ class Planner implements IPlanner {
             }
         } catch (error) {
             if (error instanceof RangeError) {
-                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${target.service.value()}`);
+                this._throwWhenCircularDependenciesFound(parentRequest.parentContext.plan.rootRequest);
             } else {
                 throw new Error(error.message);
             }
         }
+    }
+
+    private _throwWhenCircularDependenciesFound(request: IRequest, previousServices: string[] = []) {
+
+        previousServices.push(request.service);
+
+        request.childRequests.forEach((childRequest) => {
+
+            let service = childRequest.service;
+            if (previousServices.indexOf(service) === -1) {
+                if (childRequest.childRequests.length > 0) {
+                    this._throwWhenCircularDependenciesFound(childRequest, previousServices);
+                } else {
+                    previousServices.push(service);
+                }
+            } else {
+                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${service} and ${request.service}`);
+            }
+
+        });
     }
 
     private _getBindings(context: IContext, service: string) {

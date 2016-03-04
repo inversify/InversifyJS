@@ -122,10 +122,7 @@ class Kernel implements IKernel {
         let context = this._planner.createContext(this);
 
         // STEP 2: generate a resolutioin plan and link it to the context
-        let plan = this._planner.createPlan(context, binding);
-
-        // Plan and Context are duable linked
-        context.addPlan(plan);
+        this._planner.createPlan(context, binding);
 
         // STEP 3: execute resolution plan
         return this._resolver.resolve<Service>(context);

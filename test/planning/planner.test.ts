@@ -204,7 +204,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should identify circular dependencies", () => {
+  it("Should throw when circular dependencies found", () => {
 
       interface IA {}
       interface IB {}
@@ -254,7 +254,7 @@ describe("Planner", () => {
           kernel.get(aId);
       };
 
-      expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${dId}`);
+      expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${aId} and ${dId}`);
 
   });
 
