@@ -1,7 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 import BindingWhenSyntax from "./binding_when_syntax";
-import { BindingScope } from "../bindings/binding_scope";
+import BindingScope from "../bindings/binding_scope";
 
 class BindingInSyntax<T> implements IBindingInSyntax<T> {
 

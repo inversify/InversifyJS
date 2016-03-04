@@ -1,6 +1,6 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import { Metadata } from "../activation/metadata";
+import Metadata from "../activation/metadata";
 import { tagParameter } from "./decorator_utils";
 
 // Used to add custom metadata which is used to resolve metadata-based contextual bindings.
@@ -11,4 +11,4 @@ function Tagged(metadataKey: string, metadataValue: any) {
     };
 }
 
-export { Tagged };
+export default Tagged;

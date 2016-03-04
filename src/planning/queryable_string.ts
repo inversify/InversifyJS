@@ -33,4 +33,4 @@ class QueryableString implements IQueryableString {
 
 }
 
-export { QueryableString };
+export default QueryableString;

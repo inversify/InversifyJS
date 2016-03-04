@@ -2,14 +2,14 @@
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { Resolver } from "../../src/resolution/resolver";
-import { Planner } from "../../src/planning/planner";
-import { Kernel } from "../../src/kernel/kernel";
-import { Request } from "../../src/planning/request";
-import { Plan } from "../../src/planning/plan";
-import { Target } from "../../src/planning/target";
-import { Inject } from "../../src/activation/inject";
-import { ParamNames } from "../../src/activation/paramnames";
+import Resolver from "../../src/resolution/resolver";
+import Planner from "../../src/planning/planner";
+import Kernel from "../../src/kernel/kernel";
+import Request from "../../src/planning/request";
+import Plan from "../../src/planning/plan";
+import Target from "../../src/planning/target";
+import Inject from "../../src/activation/inject";
+import ParamNames from "../../src/activation/paramnames";
 
 describe("Resolver", () => {
 

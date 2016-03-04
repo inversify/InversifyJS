@@ -1,10 +1,10 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Request } from "../../src/planning/request";
-import { Context } from "../../src/planning/context";
-import { Kernel } from "../../src/kernel/kernel";
-import { Target } from "../../src/planning/target";
+import Request from "../../src/planning/request";
+import Context from "../../src/planning/context";
+import Kernel from "../../src/kernel/kernel";
+import Target from "../../src/planning/target";
 
 describe("Request", () => {
 

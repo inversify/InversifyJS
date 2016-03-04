@@ -1,7 +1,7 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Binding } from "../../src/bindings/binding";
+import Binding from "../../src/bindings/binding";
 import BindingWhenSyntax from "../../src/syntax/binding_when_syntax";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 

@@ -11,4 +11,4 @@ class Metadata implements IMetadata {
   }
 }
 
-export { Metadata };
+export default Metadata;

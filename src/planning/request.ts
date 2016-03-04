@@ -54,4 +54,4 @@ class Request implements IRequest {
         }
 }
 
-export { Request };
+export default Request;

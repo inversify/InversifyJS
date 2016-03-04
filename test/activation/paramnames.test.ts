@@ -1,10 +1,10 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
+import { decorate } from "../../src/activation/decorator_utils";
+import ParamNames from "../../src/activation/paramnames";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
-import { ParamNames } from "../../src/activation/paramnames";
-import { decorate } from "../../src/activation/decorator_utils";
 import * as Stubs from "../utils/stubs";
 
 describe("@ParamNames", () => {

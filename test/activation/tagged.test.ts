@@ -4,9 +4,9 @@ declare function __param(paramIndex, decorator);
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import { Tagged } from "../../src/activation/tagged";
 import { decorate } from "../../src/activation/decorator_utils";
+import Tagged from "../../src/activation/tagged";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 interface IWeapon {}
 class Katana implements IWeapon {}

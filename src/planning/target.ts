@@ -1,7 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import { Metadata } from "../activation/metadata";
-import { QueryableString } from "./queryable_string";
+import Metadata from "../activation/metadata";
+import QueryableString from "./queryable_string";
 
 class Target implements ITarget {
 
@@ -75,4 +75,4 @@ class Target implements ITarget {
   }
 }
 
-export { Target };
+export default Target;

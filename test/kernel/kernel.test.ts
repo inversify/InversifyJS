@@ -2,7 +2,7 @@
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { Kernel } from "../../src/kernel/kernel";
+import Kernel from "../../src/kernel/kernel";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Kernel", () => {

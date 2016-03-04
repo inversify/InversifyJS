@@ -1,8 +1,8 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Target } from "../../src/planning/target";
-import { Metadata } from "../../src/activation/metadata";
+import Target from "../../src/planning/target";
+import Metadata from "../../src/activation/metadata";
 
 describe("Target", () => {
 

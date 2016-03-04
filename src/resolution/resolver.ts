@@ -1,6 +1,6 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import { BindingScope } from "../bindings/binding_scope";
+import BindingScope from "../bindings/binding_scope";
 
 class Resolver implements IResolver {
 
@@ -46,4 +46,4 @@ class Resolver implements IResolver {
 
 }
 
-export { Resolver };
+export default Resolver;

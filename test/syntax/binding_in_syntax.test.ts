@@ -1,8 +1,8 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Binding } from "../../src/bindings/binding";
-import { BindingScope } from "../../src/bindings/binding_scope";
+import Binding from "../../src/bindings/binding";
+import BindingScope from "../../src/bindings/binding_scope";
 import BindingInSyntax from "../../src/syntax/binding_in_syntax";
 
 describe("BindingInSyntax", () => {

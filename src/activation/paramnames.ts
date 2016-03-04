@@ -16,4 +16,4 @@ function ParamNames(...paramNames: string[]) {
   };
 }
 
-export { ParamNames };
+export default ParamNames;

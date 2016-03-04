@@ -16,4 +16,4 @@ function Inject(...paramTypes: string[]) {
   };
 }
 
-export { Inject };
+export default Inject;

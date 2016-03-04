@@ -12,4 +12,4 @@ class KeyValuePair<T> implements IKeyValuePair<T> {
     }
 }
 
-export { KeyValuePair };
+export default KeyValuePair;

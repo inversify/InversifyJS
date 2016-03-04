@@ -15,11 +15,11 @@
 // to be told which implementation type (classes) to associate
 // with each service type (interfaces).
 
-import { BindingCountEnum } from "../bindings/binding_count";
-import { Binding } from "../bindings/binding";
-import { Lookup } from "./lookup";
-import { Planner } from "../planning/planner";
-import { Resolver } from "../resolution/resolver";
+import BindingCount from "../bindings/binding_count";
+import Binding from "../bindings/binding";
+import Lookup from "./lookup";
+import Planner from "../planning/planner";
+import Resolver from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingToSyntax from "../syntax/binding_to_syntax";
 
@@ -70,15 +70,15 @@ class Kernel implements IKernel {
         switch (bindings.length) {
 
             // CASE 1: There are no bindings
-            case BindingCountEnum.NoBindingsAvailable:
+            case BindingCount.NoBindingsAvailable:
                 throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
 
             // CASE 2: There is 1 binding    
-            case BindingCountEnum.OnlyOneBindingAvailable:
+            case BindingCount.OnlyOneBindingAvailable:
                 return this._planAndResolve<Service>(bindings[0]);
 
             // CASE 3: There are multiple bindings throw as don't have enough information (metadata)    
-            case BindingCountEnum.MultipleBindingsAvailable:
+            case BindingCount.MultipleBindingsAvailable:
             default:
                 throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${runtimeIdentifier}`);
         }
@@ -93,12 +93,12 @@ class Kernel implements IKernel {
         switch (bindings.length) {
 
             // CASE 1: There are no bindings
-            case BindingCountEnum.NoBindingsAvailable:
+            case BindingCount.NoBindingsAvailable:
                 throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
 
             // CASE 2: There is AT LEAST 1 binding    
-            case BindingCountEnum.OnlyOneBindingAvailable:
-            case BindingCountEnum.MultipleBindingsAvailable:
+            case BindingCount.OnlyOneBindingAvailable:
+            case BindingCount.MultipleBindingsAvailable:
             default:
                 return bindings.map((binding) => {
                     return this._planAndResolve<Service>(binding);
@@ -133,4 +133,4 @@ class Kernel implements IKernel {
 
 }
 
-export { Kernel };
+export default Kernel;

@@ -1,7 +1,7 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Lookup } from "../../src/kernel/lookup";
+import Lookup from "../../src/kernel/lookup";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Lookup", () => {

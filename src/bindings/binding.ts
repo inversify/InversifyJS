@@ -7,7 +7,7 @@
 // (an interface), and an implementation type to be used to satisfy such
 // a service requirement.
 
-import { BindingScope } from "./binding_scope";
+import BindingScope from "./binding_scope";
 import BindingType from "./binding_type";
 
 class Binding<T> implements IBinding<T> {
@@ -40,4 +40,4 @@ class Binding<T> implements IBinding<T> {
     }
 }
 
-export { Binding };
+export default Binding;

@@ -1,9 +1,5 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-// import { Context } from "./context";
-// import { Request } from "./request";
-// import { Target } from "./target";
-
 class Plan implements IPlan {
 
     public parentContext: IContext;
@@ -15,4 +11,4 @@ class Plan implements IPlan {
     }
 }
 
-export { Plan };
+export default Plan;

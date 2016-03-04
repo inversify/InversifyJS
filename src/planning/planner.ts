@@ -1,10 +1,10 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 import "reflect-metadata";
-import { Plan } from "./plan";
-import { Context } from "./context";
-import { Request } from "./request";
-import { Target } from "./target";
+import Plan from "./plan";
+import Context from "./context";
+import Request from "./request";
+import Target from "./target";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
@@ -86,4 +86,4 @@ class Planner implements IPlanner {
     }
 }
 
-export { Planner };
+export default Planner;

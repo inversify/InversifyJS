@@ -5,7 +5,7 @@
 
 // A dictionary with support for duplicate keys
 
-import { KeyValuePair } from "./key_value_pair";
+import KeyValuePair from "./key_value_pair";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Lookup<T> implements ILookup<T> {
@@ -84,4 +84,4 @@ class Lookup<T> implements ILookup<T> {
 
 }
 
-export { Lookup };
+export default Lookup;

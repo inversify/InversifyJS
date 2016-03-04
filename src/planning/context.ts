@@ -14,4 +14,4 @@ class Context<TService> implements IContext {
     }
 }
 
-export { Context };
+export default Context;

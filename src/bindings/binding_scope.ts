@@ -5,4 +5,4 @@ enum BindingScope {
   Singleton
 }
 
-export { BindingScope };
+export default BindingScope;
