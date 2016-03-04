@@ -65,7 +65,7 @@ class Kernel implements IKernel {
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<Service>(runtimeIdentifier: string): Service {
 
-        let bindings = this._getBindingsByRuntimeIdentifier<Service>(runtimeIdentifier);
+        let bindings = this._planner.getBindings<Service>(this, runtimeIdentifier);
 
         switch (bindings.length) {
 
@@ -73,7 +73,7 @@ class Kernel implements IKernel {
             case BindingCount.NoBindingsAvailable:
                 throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
 
-            // CASE 2: There is 1 binding    
+            // CASE 2: There is 1 binding 
             case BindingCount.OnlyOneBindingAvailable:
                 return this._planAndResolve<Service>(bindings[0]);
 
@@ -88,7 +88,7 @@ class Kernel implements IKernel {
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<Service>(runtimeIdentifier: string): Service[] {
 
-        let bindings = this._getBindingsByRuntimeIdentifier<Service>(runtimeIdentifier);
+        let bindings = this._planner.getBindings<Service>(this, runtimeIdentifier);
 
         switch (bindings.length) {
 
@@ -104,15 +104,6 @@ class Kernel implements IKernel {
                     return this._planAndResolve<Service>(binding);
                 });
         }
-    }
-
-    // Returns all the available bindings for a selected runtime identifier
-    private _getBindingsByRuntimeIdentifier<Service>(runtimeIdentifier: string): IBinding<Service>[] {
-        let bindings: IBinding<Service>[] = [];
-        if (this._bindingDictionary.hasKey(runtimeIdentifier)) {
-            bindings = this._bindingDictionary.get(runtimeIdentifier);
-        }
-        return bindings;
     }
 
     // Generates an executes a resolution plan

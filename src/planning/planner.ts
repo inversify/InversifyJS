@@ -34,10 +34,20 @@ class Planner implements IPlanner {
         return plan;
     }
 
+    public getBindings<T>(kernel: IKernel, service: string): IBinding<T>[] {
+        let bindings: IBinding<T>[] = [];
+        let _kernel: any = kernel;
+        let _bindingDictionary = _kernel._bindingDictionary;
+        if (_bindingDictionary.hasKey(service)) {
+            bindings = _bindingDictionary.get(service);
+        }
+        return bindings;
+    }
+
     private _createSubRequest(parentRequest: IRequest, target: ITarget) {
 
         try {
-            let bindings = this._getBindings(parentRequest.parentContext, target.service.value());
+            let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service.value());
 
             // mutiple bindings available
             if (bindings.length > 1) {
@@ -86,12 +96,6 @@ class Planner implements IPlanner {
             }
 
         });
-    }
-
-    private _getBindings(context: IContext, service: string) {
-        let kernel: any = context.kernel;
-        let bindingDictionary: ILookup<IBinding<any>> = kernel._bindingDictionary;
-        return bindingDictionary.get(service);
     }
 
     private _getDependencies(func: Function): Target[] {
