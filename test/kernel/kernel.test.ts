@@ -3,7 +3,6 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import { Kernel } from "../../src/kernel/kernel";
-import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Kernel", () => {
@@ -22,14 +21,14 @@ describe("Kernel", () => {
 
       interface INinja {}
       class Ninja implements INinja {}
+      let ninjaId = "INinja";
 
       let kernel = new Kernel();
-      let binding = new Binding<INinja>("INinja", Ninja);
-      kernel.bind(binding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
       let runtimeIdentifier = _kernel._bindingDictionary._dictionary[0].key;
-      expect(runtimeIdentifier).eql(binding.runtimeIdentifier);
+      expect(runtimeIdentifier).eql(ninjaId);
 
   });
 
@@ -37,16 +36,16 @@ describe("Kernel", () => {
 
       interface INinja {}
       class Ninja implements INinja {}
+      let ninjaId = "INinja";
 
       let kernel = new Kernel();
-      let binding = new Binding<INinja>("INinja", Ninja);
-      kernel.bind(binding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
       let runtimeIdentifier = _kernel._bindingDictionary._dictionary[0].key;
-      expect(runtimeIdentifier).eql(binding.runtimeIdentifier);
+      expect(runtimeIdentifier).eql(ninjaId);
 
-      kernel.unbind("INinja");
+      kernel.unbind(ninjaId);
       let length = _kernel._bindingDictionary._dictionary.length;
       expect(length).eql(0);
 
@@ -75,11 +74,8 @@ describe("Kernel", () => {
       let samuraiId = "ISamurai";
 
       let kernel = new Kernel();
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      let samuraiBinding = new Binding<ISamurai>(samuraiId, Samurai);
-
-      kernel.bind(ninjaBinding);
-      kernel.bind(samuraiBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<ISamurai>(samuraiId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -94,10 +90,6 @@ describe("Kernel", () => {
 
   });
 
-  it("Should NOT be able to get unbound dependencies", () => {
-    // TODO
-  });
-
   it("Should be able unbound all dependencies", () => {
 
       interface INinja {}
@@ -109,11 +101,8 @@ describe("Kernel", () => {
       let samuraiId = "ISamurai";
 
       let kernel = new Kernel();
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      let samuraiBinding = new Binding<ISamurai>(samuraiId, Samurai);
-
-      kernel.bind(ninjaBinding);
-      kernel.bind(samuraiBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<ISamurai>(samuraiId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -159,8 +148,7 @@ describe("Kernel", () => {
       let ninjaName = "Ryu Hayabusa";
 
       let kernel = new Kernel();
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      kernel.bind(ninjaBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -198,11 +186,8 @@ describe("Kernel", () => {
       let warriorId = "IWarrior";
 
       let kernel = new Kernel();
-      let ninjaBinding = new Binding<IWarrior>(warriorId, Ninja);
-      let samuraiBinding = new Binding<IWarrior>(warriorId, Samurai);
-
-      kernel.bind(ninjaBinding);
-      kernel.bind(samuraiBinding);
+      kernel.bind<IWarrior>(warriorId).to(Ninja);
+      kernel.bind<IWarrior>(warriorId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -248,8 +233,7 @@ describe("Kernel", () => {
       let ninjaName = "Ryu Hayabusa";
 
       let kernel = new Kernel();
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      kernel.bind(ninjaBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -308,11 +292,8 @@ describe("Kernel", () => {
       let samuraiName = "Katsumoto";
 
       let kernel = new Kernel();
-      let ninjaBinding = new Binding<IWarrior>(warriorId, Ninja);
-      let samuraiBinding = new Binding<IWarrior>(warriorId, Samurai);
-
-      kernel.bind(ninjaBinding);
-      kernel.bind(samuraiBinding);
+      kernel.bind<IWarrior>(warriorId).to(Ninja);
+      kernel.bind<IWarrior>(warriorId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;

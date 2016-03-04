@@ -5,13 +5,11 @@ import * as sinon from "sinon";
 import { Resolver } from "../../src/resolution/resolver";
 import { Planner } from "../../src/planning/planner";
 import { Kernel } from "../../src/kernel/kernel";
-import { Binding } from "../../src/bindings/binding";
 import { Request } from "../../src/planning/request";
 import { Plan } from "../../src/planning/plan";
 import { Target } from "../../src/planning/target";
 import { Inject } from "../../src/activation/inject";
 import { ParamNames } from "../../src/activation/paramnames";
-import { BindingScope } from "../../src/bindings/binding_scope";
 
 describe("Resolver", () => {
 
@@ -74,18 +72,19 @@ describe("Resolver", () => {
       let katanaHandlerId = "IKatanaHandler";
       let katanaBladeId = "IKatanaBlade";
 
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      let shurikenBinding = new Binding<IShuriken>(shurikenId, Shuriken);
-      let katanaBinding = new Binding<IKatana>(katanaId, Katana);
-      let katanaBladeBinding = new Binding<IKatanaBlade>(katanaBladeId, KatanaBlade);
-      let katanaHandlerBinding = new Binding<IKatanaHandler>(katanaHandlerId, KatanaHandler);
-
       let kernel = new Kernel();
-      kernel.bind(ninjaBinding);
-      kernel.bind(shurikenBinding);
-      kernel.bind(katanaBinding);
-      kernel.bind(katanaBladeBinding);
-      kernel.bind(katanaHandlerBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+      kernel.bind<IKatana>(katanaId).to(Katana);
+      kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
+      kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let katanaBinding = _kernel._bindingDictionary.get(katanaId)[0];
+      let katanaHandlerBinding = _kernel._bindingDictionary.get(katanaHandlerId)[0];
+      let katanaBladeBinding = _kernel._bindingDictionary.get(katanaBladeId)[0];
+      let shurikenBinding = _kernel._bindingDictionary.get(shurikenId)[0];
 
       let planner = new Planner();
       let context = planner.createContext(kernel);
@@ -167,18 +166,19 @@ describe("Resolver", () => {
       let katanaHandlerId = "IKatanaHandler";
       let katanaBladeId = "IKatanaBlade";
 
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      let shurikenBinding = new Binding<IShuriken>(shurikenId, Shuriken);
-      let katanaBinding = new Binding<IKatana>(katanaId, Katana, BindingScope.Singleton); // SINGLETON!
-      let katanaBladeBinding = new Binding<IKatanaBlade>(katanaBladeId, KatanaBlade);
-      let katanaHandlerBinding = new Binding<IKatanaHandler>(katanaHandlerId, KatanaHandler, BindingScope.Singleton); // SINGLETON!
-
       let kernel = new Kernel();
-      kernel.bind(ninjaBinding);
-      kernel.bind(shurikenBinding);
-      kernel.bind(katanaBinding);
-      kernel.bind(katanaBladeBinding);
-      kernel.bind(katanaHandlerBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+      kernel.bind<IKatana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
+      kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
+      kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let katanaBinding = _kernel._bindingDictionary.get(katanaId)[0];
+      let katanaHandlerBinding = _kernel._bindingDictionary.get(katanaHandlerId)[0];
+      let katanaBladeBinding = _kernel._bindingDictionary.get(katanaBladeId)[0];
+      let shurikenBinding = _kernel._bindingDictionary.get(shurikenId)[0];
 
       let planner = new Planner();
       let context = planner.createContext(kernel);
@@ -203,7 +203,6 @@ describe("Resolver", () => {
       let resolver = new Resolver();
       let createInstanceSpy = sandbox.spy(resolver, "_createInstance");
 
-      let _kernel: any = kernel;
       expect(_kernel._bindingDictionary.get("IKatana")[0].cache === null).eql(true);
 
       expect(createInstanceSpy.callCount).eql(0);

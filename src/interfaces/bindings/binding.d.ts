@@ -1,6 +1,8 @@
-interface IBinding<TService> {
+interface IBinding<T> {
   runtimeIdentifier: string;
-  implementationType: { new(): TService; };
-  cache: TService;
-  scope: number;
+  implementationType: { new(): T; };
+  factory: (context) => T;
+  cache: T;
+  scope: number; // BindingScope
+  type: number; // BindingType
 }

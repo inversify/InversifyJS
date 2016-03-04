@@ -18,3 +18,7 @@
 /// <reference path="./planning/queryable_string.d.ts" />
 
 /// <reference path="./middleware/middleware.d.ts" />
+
+/// <reference path="./syntax/binding_when_syntax.d.ts" />
+/// <reference path="./syntax/binding_to_syntax.d.ts" />
+/// <reference path="./syntax/binding_in_syntax.d.ts" />

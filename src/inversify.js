@@ -1,10 +1,6 @@
 "use strict";
 var kernel_1 = require("./kernel/kernel");
 exports.Kernel = kernel_1.Kernel;
-var binding_1 = require("./bindings/binding");
-exports.Binding = binding_1.Binding;
-var binding_scope_1 = require("./bindings/binding_scope");
-exports.BindingScope = binding_scope_1.BindingScope;
 var inject_1 = require("./activation/inject");
 exports.Inject = inject_1.Inject;
 var tagged_1 = require("./activation/tagged");

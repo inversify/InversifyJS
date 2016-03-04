@@ -1,86 +1,60 @@
 /// <reference path="inversify.d.ts" />
 
-import { BindingScope, Binding, Kernel, Inject } from "inversify";
+import { Kernel, Inject } from "inversify";
 
 module inversify_external_module_test {
 
-    interface FooInterface {
-        name: string;
-        greet(): string;
+    interface INinja {
+        fight(): string;
+        sneak(): string;
     }
 
-    interface BarInterface {
-        name: string;
-        greet(): string;
+    interface IKatana {
+        hit(): string;
     }
 
-    interface FooBarInterface {
-        foo: FooInterface;
-        bar: BarInterface;
-        greet(): string;
+    interface IShuriken {
+        throw();
     }
 
-    class Foo implements FooInterface {
-        public name: string;
-        constructor() {
-            this.name = "foo";
-        }
-        public greet(): string {
-            return this.name;
+    class Katana implements IKatana {
+        public hit() {
+            return "cut!";
         }
     }
 
-    class Bar implements BarInterface {
-        public name: string;
-        constructor() {
-            this.name = "bar";
-        }
-        public greet(): string {
-            return this.name;
+    class Shuriken implements IShuriken {
+        public throw() {
+            return "hit!";
         }
     }
 
-    @Inject("FooInterface", "BarInterface")
-    class FooBar implements FooBarInterface {
-        public foo: FooInterface;
-        public bar: BarInterface;
-        constructor(foo: FooInterface, bar: BarInterface) {
-            this.foo = foo;
-            this.bar = bar;
+    @Inject("IKatana", "IShuriken")
+    class Ninja implements INinja {
+
+        private _katana: IKatana;
+        private _shuriken: IShuriken;
+
+        public constructor(katana: IKatana, shuriken: IShuriken) {
+            this._katana = katana;
+            this._shuriken = shuriken;
         }
-        public greet(): string {
-            return this.foo.greet() + this.bar.greet();
-        }
+
+        public fight() { return this._katana.hit(); };
+        public sneak() { return this._shuriken.throw(); };
+
     }
 
-    // Kernel
     let kernel = new Kernel();
+    kernel.bind<INinja>("INinja").to(Ninja);
+    kernel.bind<IKatana>("IKatana").to(Katana);
+    kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 
-    // Identifiers
-    let fooRuntimeIdentifier = "FooInterface";
-    let barRuntimeIdentifier = "BarInterface";
-    let fooBarRuntimeIdentifier = "FooBarInterface";
-
-    // Bindings
-    let fooBinding = new Binding<FooInterface>(fooRuntimeIdentifier, Foo);
-    let barBinding = new Binding<BarInterface>(barRuntimeIdentifier, Bar);
-    let fooBarBinding = new Binding<FooBarInterface>(fooBarRuntimeIdentifier, FooBar, BindingScope.Singleton);
-
-    kernel.bind(fooBinding);
-    kernel.bind(barBinding);
-    kernel.bind(fooBarBinding);
-
-    // Resolve
-    let foo = kernel.get<Foo>(fooRuntimeIdentifier);
-    let bar = kernel.get<Bar>(barRuntimeIdentifier);
-    let fooBar = kernel.get<FooBar>(fooBarRuntimeIdentifier);
-
-    console.log(foo);
-    console.log(bar);
-    console.log(fooBar);
+    let ninja = kernel.get<INinja>("INinja");
+    console.log(ninja);
 
     // Unbind
-    kernel.unbind(fooRuntimeIdentifier);
+    kernel.unbind("INinja");
     kernel.unbindAll();
 
 }

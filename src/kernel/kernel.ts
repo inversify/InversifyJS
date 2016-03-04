@@ -16,10 +16,12 @@
 // with each service type (interfaces).
 
 import { BindingCountEnum } from "../bindings/binding_count";
+import { Binding } from "../bindings/binding";
 import { Lookup } from "./lookup";
 import { Planner } from "../planning/planner";
 import { Resolver } from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import BindingToSyntax from "../syntax/binding_to_syntax";
 
 class Kernel implements IKernel {
 
@@ -38,8 +40,10 @@ class Kernel implements IKernel {
     }
 
     // Regiters a type binding
-    public bind(typeBinding: IBinding<any>): void {
-        this._bindingDictionary.add(typeBinding.runtimeIdentifier, typeBinding);
+    public bind<T>(runtimeIdentifier: string): IBindingToSyntax<T> {
+        let binding = new Binding<T>(runtimeIdentifier);
+        this._bindingDictionary.add(runtimeIdentifier, binding);
+        return new BindingToSyntax<T>(binding);
     }
 
     // Removes a type binding from the registry by its key

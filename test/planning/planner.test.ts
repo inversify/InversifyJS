@@ -4,7 +4,6 @@ import { expect } from "chai";
 import { Planner } from "../../src/planning/planner";
 import { Context } from "../../src/planning/context";
 import { Kernel } from "../../src/kernel/kernel";
-import { Binding } from "../../src/bindings/binding";
 import { Request } from "../../src/planning/request";
 import { Plan } from "../../src/planning/plan";
 import { Target } from "../../src/planning/target";
@@ -66,18 +65,12 @@ describe("Planner", () => {
       let katanaHandlerId = "IKatanaHandler";
       let katanaBladeId = "IKatanaBlade";
 
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      let shurikenBinding = new Binding<IShuriken>(shurikenId, Shuriken);
-      let katanaBinding = new Binding<IKatana>(katanaId, Katana);
-      let katanaBladeBinding = new Binding<IKatanaBlade>(katanaBladeId, KatanaBlade);
-      let katanaHandlerBinding = new Binding<IKatanaHandler>(katanaHandlerId, KatanaHandler);
-
       let kernel = new Kernel();
-      kernel.bind(ninjaBinding);
-      kernel.bind(shurikenBinding);
-      kernel.bind(katanaBinding);
-      kernel.bind(katanaBladeBinding);
-      kernel.bind(katanaHandlerBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+      kernel.bind<IKatana>(katanaId).to(Katana);
+      kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
+      kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
       let planner = new Planner();
       let context = planner.createContext(kernel);
@@ -99,6 +92,8 @@ describe("Planner", () => {
       let shurikenRequest = expectedPlan.rootRequest.addChildRequest(shurikenId, null, new Target("shuriken", shurikenId));
 
       // Actual
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let actualPlan = planner.createPlan(context, ninjaBinding);
       let actualNinjaRequest = actualPlan.rootRequest;
       let actualKatanaRequest = actualNinjaRequest.childRequests[0];
@@ -195,14 +190,11 @@ describe("Planner", () => {
 
       let ninjaId = "INinja";
       let weaponId = "IWeapon";
-      let ninjaBinding = new Binding<INinja>(ninjaId, Ninja);
-      let shurikenBinding = new Binding<IWeapon>(weaponId, Shuriken);
-      let katanaBinding = new Binding<IWeapon>(weaponId, Katana);
 
       let kernel = new Kernel();
-      kernel.bind(ninjaBinding);
-      kernel.bind(shurikenBinding);
-      kernel.bind(katanaBinding);
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken);
+      kernel.bind<IWeapon>(weaponId).to(Katana);
 
       let throwErroFunction = () => {
           kernel.get(ninjaId);
@@ -252,16 +244,11 @@ describe("Planner", () => {
       let cId = "IC";
       let dId = "ID";
 
-      let aBinding = new Binding<IA>(aId, A);
-      let bBinding = new Binding<IB>(bId, B);
-      let cBinding = new Binding<IC>(cId, C);
-      let dBinding = new Binding<ID>(dId, D);
-
       let kernel = new Kernel();
-      kernel.bind(aBinding);
-      kernel.bind(bBinding);
-      kernel.bind(cBinding);
-      kernel.bind(dBinding);
+      kernel.bind<IA>(aId).to(A);
+      kernel.bind<IB>(bId).to(B);
+      kernel.bind<IC>(cId).to(C);
+      kernel.bind<ID>(dId).to(D);
 
       let throwErroFunction = () => {
           kernel.get(aId);

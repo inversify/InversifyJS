@@ -44,107 +44,123 @@ If you are planing to use inversify as a global you will need to add a reference
 ```
 
 # The Basics (with TypeScript)
-The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles. Many of these principles refer to the usage of interfaces. The main reason why it is not possible to write native SOLID JavaScript is because the language lacks interfaces. In the other hand, TypeScript features interfaces, so, if you are going to use InversifyJS it is recommended to work with TypeScript to get the most out of it.
+The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles. 
+Many of these principles refer to the usage of interfaces. 
+The main reason why it is not possible to write native SOLID JavaScript is because the language lacks interfaces. 
+In the other hand, TypeScript features interfaces, so, if you are going to use InversifyJS it is recommended 
+to work with TypeScript to get the most out of it.
 
 #### 1. Declare interfaces & implementations
 
-Our goal is to write SOLID code. This means that we should "depend upon Abstractions. Do not depend upon concretions." so we will start by declaring some interfaces (abstractions).
+Our goal is to write SOLID code. This means that we should "depend upon Abstractions. Do not depend upon concretions." 
+so we will start by declaring some interfaces (abstractions).
 
 ```
-interface FooInterface {
-  log() : void;
+interface INinja {
+    fight(): string;
+    sneak(): string;
 }
 
-interface BarInterface {
-  log() : void;
+interface IKatana {
+    hit(): string;
 }
 
-interface FooBarInterface {
-  log() : void;
-}
-```
-
-We can continue declaring some classes which implement them (concretions). We will start by declaring two classes (Foo & Bar) which don't have any dependencies.
-
-```
-class Foo implements FooInterface {
-  public log(){
-    console.log("foo");
-  }
-}
-
-class Bar implements BarInterface {
-  public log(){
-    console.log("bar");
-  }
+interface IShuriken {
+    throw();
 }
 ```
 
-Now we are going to declare a class named FooBar, which has two dependencies (FooInterface & BarInterface). Note that the names of the arguments in the Inject decorator are significant because the injector uses these to look up the dependencies.
+We can continue declaring some classes which implement them (concretions). 
+We will start by declaring two classes (`Katana` & `Shuriken`) which don't have any dependencies.
 
 ```
-import { Inject } from "inversify";
+class Katana implements IKatana {
+    public hit() {
+        return "cut!";
+    }
+}
 
-@Inject("FooInterface", "BarInterface")
-class FooBar implements FooBarInterface {
-  public foo : FooInterface;
-  public bar : BarInterface;
-  public log(){
-    console.log("foobar");
-  }
-  constructor(foo : FooInterface, bar : BarInterface) {
-    this.foo = foo;
-    this.bar = bar;
-  }
+class Shuriken implements IShuriken {
+    public throw() {
+        return "hit!";
+    }
+}
+```
+
+Now we are going to declare a class named `Ninja`, which has two dependencies (`IKatana` & `IShuriken`):
+
+```
+@Inject("IKatana", "IShuriken")
+class Ninja implements INinja {
+
+    private _katana: IKatana;
+    private _shuriken: IShuriken;
+
+    public constructor(katana: IKatana, shuriken: IShuriken) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
 }
 ```
 
 #### 2. Bind interfaces to implementations
 
-Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. The Kernel will automatically detect is a class has some dependencies by examining its constructor. The Kernel will automatically detect if a class has some dependencies by examining the metadata provided by the Inject decorator.
+Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. 
+The Kernel will automatically detect is a class has some dependencies by examining the `@Inject` annotation. 
+The Kernel will automatically detect if a class has some dependencies by examining the metadata provided by the Inject decorator.
 
 ```
-import { Binding, BindingScope, Kernel } from "inversify";
+import { Kernel } from "inversify";
 var kernel = new Kernel();
 ```
 
-In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
+In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). 
+We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
 
 ```
-kernel.bind(new Binding<FooInterface>("FooInterface", Foo, BindingScope.Transient));
-kernel.bind(new Binding<BarInterface>("BarInterface", Bar, BindingScope.Singleton));
-kernel.bind(new Binding<FooBarInterface>("FooBarInterface", FooBar));
+kernel.bind<INinja>("INinja").to(Ninja);
+      kernel.bind<IKatana>("IKatana").to(Katana);
+      kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 ```
 
 When we declare a type binding, the TypeScript compiler will check that the implementation type (class) is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
 
 ```
-// Compilation error: Bar does not implement FooInterface
-kernel.bind(new Binding<FooInterface>("FooInterface", Bar));
+// Compilation error: Shuriken is not assignable to type IKatana
+kernel.bind<IKatana>("IKatana").to(Shuriken);
 ```
 
-We should keep the InversifyJS Kernel instantiation and type bindings centralized in one unique IoC configuration file. This will help us to abstract our application from the IoC configuration.
+We should keep the InversifyJS Kernel instantiation and type bindings centralized in one unique IoC configuration file. 
+This will help us to abstract our application from the IoC configuration.
 
 #### 3. Resolve & inject dependencies
 
-After declaring the type bindings, we can invoke the kernel resolve method to resolve a dependency. We will use a string as the interface identifier (instead of the interface itself) because the TypeScript interfaces are not available at runtime.
+After declaring the type bindings, we can invoke the kernel resolve method to resolve a dependency. 
+We will use a string as the interface identifier (instead of the interface itself) because the TypeScript interfaces are not available at runtime.
 
 ```
-var foobar = kernel.get<FooBarInterface>("FooBarInterface");
+let ninja = kernel.get<INinja>("INinja");
 ```
 
-If the interface that we are trying to resolve is bind to a class that has some dependencies, InversifyJS will resolve and inject them into a new instance via the class constructor.
+If the interface that we are trying to resolve is bind to a class that has some dependencies, InversifyJS will 
+resolve and inject them into a new instance via the class constructor.
 
 ```
-// Foo and Bar instances has been injected into a new Foobar instance via its constructor
-foobar.foo.log(); // foo
-foobar.bar.log(); // bar
-foobar.log();     // foobar
+// Katana and Shuriken instances has been injected into a new Ninja instance via its constructor
+expect(ninja.fight()).eql("cut!"); // true
+expect(ninja.sneak()).eql("hit!"); // true
 ```
 
-Our application dependency tree should have one unique root element, known as the application composition root, which is the only place where we should invoke the resolve method.
+Our application dependency tree should have one unique root element, known as the application composition root, which is the 
+only place where we should invoke the resolve method.
 
-Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. If we are working with an MVC framework the composition root should be located in the application class, somewhere along the routing logic or in a controller factory class. Please refer to the integration examples if you need additional help.
+Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. 
+If we are working with an MVC framework the composition root should be located in the application class, somewhere 
+along the routing logic or in a controller factory class. Please refer to the integration examples if you need additional help.
 
 # Integration with popular frameworks
 
