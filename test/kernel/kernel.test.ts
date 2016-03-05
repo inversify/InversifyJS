@@ -17,6 +17,42 @@ describe("Kernel", () => {
     sandbox.restore();
   });
 
+  it("Should be able to use middleware as configuration", () => {
+
+      let logger = (context) => {
+          console.log(context);
+      };
+
+      let kernel = new Kernel({ middleware: [ logger ] });
+      let _kernel: any = kernel;
+      expect(_kernel._resolver._middleWare.length).eql(1);
+
+  });
+
+  it("Shoule be able to use modules as configuration", () => {
+
+      interface INinja {}
+      interface IKatana {}
+      interface IShuriken {}
+
+      class Katana implements IKatana {}
+      class Shuriken implements IShuriken {}
+      class Ninja implements INinja {}
+
+      let module = (kernel: IKernel) => {
+          kernel.bind<IKatana>("IKatana").to(Katana);
+          kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+          kernel.bind<INinja>("INinja").to(Ninja);
+      };
+
+      let kernel = new Kernel({ modules: [ module ] });
+      let _kernel: any = kernel;
+      expect(_kernel._bindingDictionary._dictionary[0].key).eql("IKatana");
+      expect(_kernel._bindingDictionary._dictionary[1].key).eql("IShuriken");
+      expect(_kernel._bindingDictionary._dictionary[2].key).eql("INinja");
+
+  });
+
   it("Should be able to store bindings", () => {
 
       interface INinja {}

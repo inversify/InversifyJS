@@ -25,18 +25,18 @@ import BindingToSyntax from "../syntax/binding_to_syntax";
 
 class Kernel implements IKernel {
 
-    private _parentKernel: IKernel;
     private _planner: IPlanner;
     private _resolver: IResolver;
     private _bindingDictionary: ILookup<IBinding<any>>;
 
     // Initialize private properties
-    public constructor() {
-        let middleWare = [];
-        this._parentKernel = null;
+    public constructor(options: IKernelOptions = { middleware: [], modules: [] }) {
         this._planner = new Planner();
-        this._resolver = new Resolver(middleWare);
+        this._resolver = new Resolver(options.middleware);
         this._bindingDictionary = new Lookup<IBinding<any>>();
+        if (Array.isArray(options.modules) === true) {
+            options.modules.forEach((module) => { module(this); });
+        }
     }
 
     // Regiters a type binding

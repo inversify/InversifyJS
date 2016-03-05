@@ -3,12 +3,33 @@
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
+interface IMiddleware extends Function {
+    (...args: any[]): any;
+}
+
+interface IKernelModule extends Function {
+    (kernel: IKernel): void;
+}
+
+interface IKernelOptions {
+    middleware?: IMiddleware[];
+    modules?: IKernelModule[];
+}
+
+interface IKernelConstructor {
+    new(options?: IKernelOptions): IKernel;
+}
+
 interface IKernel {
     bind<T>(runtimeIdentifier: string): IBindingToSyntax<T>;
     unbind(runtimeIdentifier: string): void;
     unbindAll(): void;
     get<Service>(runtimeIdentifier: string): Service;
     getAll<Service>(runtimeIdentifier: string): Service[];
+}
+
+interface IBindingWhenSyntax<T> {
+    when(constraint: Constraint): void;
 }
 
 interface IBindingToSyntax<T> {
@@ -101,16 +122,5 @@ interface IRequest {
 
 declare type Constraint = (request: IRequest) => boolean;
 
-interface IBindingWhenSyntax<T> {
-    when(constraint: Constraint): void;
-}
-
-export class Kernel implements IKernel {
-    public bind<T>(runtimeIdentifier: string): IBindingToSyntax<T>;
-    public unbind(runtimeIdentifier: string): void;
-    public unbindAll(): void;
-    public get<Service>(runtimeIdentifier: string): Service;
-    public getAll<Service>(runtimeIdentifier: string): Service[];
-}
-
+export var Kernel: IKernelConstructor;
 export function Inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;

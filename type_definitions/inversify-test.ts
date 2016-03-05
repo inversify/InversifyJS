@@ -1,6 +1,6 @@
 /// <reference path="inversify.d.ts" />
 
-import { Kernel, Inject } from "inversify";
+import { Kernel, Inject, IKernel, IKernelOptions, IKernelModule } from "inversify";
 
 module inversify_external_module_test {
 
@@ -45,16 +45,32 @@ module inversify_external_module_test {
 
     }
 
-    let kernel = new Kernel();
-    kernel.bind<INinja>("INinja").to(Ninja);
-    kernel.bind<IKatana>("IKatana").to(Katana);
-    kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
+    let kernel1 = new Kernel();
+    kernel1.bind<INinja>("INinja").to(Ninja);
+    kernel1.bind<IKatana>("IKatana").to(Katana);
+    kernel1.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 
-    let ninja = kernel.get<INinja>("INinja");
+    let ninja = kernel1.get<INinja>("INinja");
     console.log(ninja);
 
     // Unbind
-    kernel.unbind("INinja");
-    kernel.unbindAll();
+    kernel1.unbind("INinja");
+    kernel1.unbindAll();
+
+    // Kernel modules
+    let module: IKernelModule = (kernel: IKernel) => {
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<IKatana>("IKatana").to(Katana);
+        kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
+    };
+
+    let options: IKernelOptions = {
+        middleware: [],
+        modules: [module]
+    };
+
+    let kernel2 = new Kernel(options);
+    let ninja2 = kernel2.get<INinja>("INinja");
+    console.log(ninja2);
 
 }

@@ -4,9 +4,9 @@ import BindingScope from "../bindings/binding_scope";
 
 class Resolver implements IResolver {
 
-    private _middleWare: Middleware[];
+    private _middleWare: IMiddleware[];
 
-    public constructor(middleWare: Middleware[] = []) {
+    public constructor(middleWare: IMiddleware[] = []) {
         this._middleWare = middleWare;
     }
 

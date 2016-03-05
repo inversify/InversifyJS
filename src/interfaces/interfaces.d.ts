@@ -1,4 +1,6 @@
 /// <reference path="./kernel/kernel.d.ts" />
+/// <reference path="./kernel/kernel_module.d.ts" />
+/// <reference path="./kernel/kernel_options.d.ts" />
 /// <reference path="./kernel/key_value_pair.d.ts" />
 /// <reference path="./kernel/lookup.d.ts" />
 

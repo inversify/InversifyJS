@@ -5,12 +5,33 @@
 
 declare namespace inversify {
 
-    interface IKernel {
+    export interface IMiddleware extends Function {
+        (...args: any[]): any;
+    }
+
+    export interface IKernelModule extends Function {
+        (kernel: IKernel): void;
+    }
+
+    export interface IKernelOptions {
+        middleware?: IMiddleware[];
+        modules?: IKernelModule[];
+    }
+
+    export interface IKernelConstructor {
+        new(options?: IKernelOptions): IKernel;
+    }
+
+    export interface IKernel {
         bind<T>(runtimeIdentifier: string): IBindingToSyntax<T>;
         unbind(runtimeIdentifier: string): void;
         unbindAll(): void;
         get<Service>(runtimeIdentifier: string): Service;
         getAll<Service>(runtimeIdentifier: string): Service[];
+    }
+
+    interface IBindingWhenSyntax<T> {
+        when(constraint: Constraint): void;
     }
 
     interface IBindingToSyntax<T> {
@@ -25,7 +46,7 @@ declare namespace inversify {
         inSingletonScope(): IBindingWhenSyntax<T>;
     }
 
-    interface IBinding<T> {
+    export interface IBinding<T> {
         runtimeIdentifier: string;
         implementationType: { new(): T; };
         factory: (context) => T;
@@ -34,7 +55,7 @@ declare namespace inversify {
         type: number; // BindingType
     }
 
-    interface IContext {
+    export interface IContext {
 
             /// Gets the kernel that is driving the activation.
             kernel: IKernel;
@@ -45,17 +66,17 @@ declare namespace inversify {
             addPlan(plan: IPlan);
     }
 
-    interface IMetadata {
+    export interface IMetadata {
         key: string;
         value: any;
     }
 
-    interface IPlan {
+    export interface IPlan {
             parentContext: IContext;
             rootRequest: IRequest;
     }
 
-    interface ITarget {
+    export interface ITarget {
         service: IQueryableString;
         name: IQueryableString;
         metadata: Array<IMetadata>;
@@ -66,7 +87,7 @@ declare namespace inversify {
         matchesTag(name: IMetadata): boolean;
     }
 
-    interface IQueryableString {
+    export interface IQueryableString {
         startsWith(searchString: string): boolean;
         endsWith(searchString: string): boolean;
         contains(searchString: string): boolean;
@@ -74,7 +95,7 @@ declare namespace inversify {
         value(): string;
     }
 
-    interface IRequest {
+    export interface IRequest {
 
             /// The service that was requested.
             service: string;
@@ -101,19 +122,8 @@ declare namespace inversify {
                 target: ITarget): IRequest;
     }
 
-    type Constraint = (request: IRequest) => boolean;
+    export type Constraint = (request: IRequest) => boolean;
 
-    interface IBindingWhenSyntax<T> {
-        when(constraint: Constraint): void;
-    }
-
-    export class Kernel implements IKernel {
-        public bind<T>(runtimeIdentifier: string): IBindingToSyntax<T>;
-        public unbind(runtimeIdentifier: string): void;
-        public unbindAll(): void;
-        public get<Service>(runtimeIdentifier: string): Service;
-        public getAll<Service>(runtimeIdentifier: string): Service[];
-    }
-
+    export var Kernel: IKernelConstructor;
     export function Inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;
 }

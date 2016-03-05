@@ -1,1 +1,3 @@
-declare type Middleware = (...args: any[]) => any;
+interface IMiddleware extends Function {
+    (...args: any[]): any;
+}
