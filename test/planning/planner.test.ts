@@ -1,6 +1,7 @@
 ///<reference path="../../typings/browser.d.ts" />
 
 import { expect } from "chai";
+import * as sinon from "sinon";
 import Planner from "../../src/planning/planner";
 import Context from "../../src/planning/context";
 import Kernel from "../../src/kernel/kernel";
@@ -12,6 +13,16 @@ import ParamNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Planner", () => {
+
+  let sandbox: Sinon.SinonSandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
 
   it("Should be able to create instances of Context", () => {
 
@@ -40,7 +51,8 @@ describe("Planner", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(handler: IKatanaHandler, blade: IKatanaBlade) {
-              // DO NOTHING
+              this.handler = handler;
+              this.blade = blade;
           }
       }
 
@@ -55,7 +67,8 @@ describe("Planner", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(katana: IKatana, shuriken: IShuriken) {
-              // DO NOTHING
+              this.katana = katana;
+              this.shuriken = shuriken;
           }
       }
 
@@ -184,7 +197,8 @@ describe("Planner", () => {
           public katana: IWeapon;
           public shuriken: IWeapon;
           public constructor(katana: IWeapon, shuriken: IWeapon) {
-              // DO NOTHING
+              this.katana = katana;
+              this.shuriken = shuriken;
           }
       }
 
@@ -255,6 +269,75 @@ describe("Planner", () => {
       };
 
       expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${aId} and ${dId}`);
+
+  });
+
+  it("Should only plan sub-dependencies when binding type is BindingType.Instance", () => {
+
+      interface IKatanaBlade {}
+      class KatanaBlade implements IKatanaBlade {}
+
+      interface IKatanaHandler {}
+      class KatanaHandler implements IKatanaHandler {}
+
+      interface IKatana {}
+
+      @Inject("IKatanaHandler", "IKatanaBlade")
+      @ParamNames("handler", "blade")
+      class Katana implements IKatana {
+          public handler: IKatanaHandler;
+          public blade: IKatanaBlade;
+          public constructor(handler: IKatanaHandler, blade: IKatanaBlade) {
+              this.handler = handler;
+              this.blade = blade;
+          }
+      }
+
+      interface IShuriken {}
+      class Shuriken implements IShuriken {}
+
+      interface INinja {}
+
+      @Inject("IFactory<IKatana>", "IShuriken")
+      @ParamNames("katanaFactory", "shuriken")
+      class Ninja implements INinja {
+          public katanaFactory: IFactory<IKatana>;
+          public shuriken: IShuriken;
+          public constructor(katanaFactory: IFactory<IKatana>, shuriken: IShuriken) {
+              this.katanaFactory = katanaFactory;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let shurikenId = "IShuriken";
+      let katanaId = "IKatana";
+      let katanaHandlerId = "IKatanaHandler";
+      let katanaBladeId = "IKatanaBlade";
+      let katanaFactoryId = "IFactory<IKatana>";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+      kernel.bind<IKatana>(katanaBladeId).to(Katana);
+      kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
+      kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler);
+      kernel.bind<IFactory<IKatana>>(katanaFactoryId).toFactory((context) => {
+          return context.kernel.get(katanaId);
+      });
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let actualPlan = planner.createPlan(context, ninjaBinding);
+
+      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.childRequests[0].service).eql(katanaFactoryId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(0); // IMPORTANT!
+      expect(actualPlan.rootRequest.childRequests[1].service).eql(shurikenId);
+      expect(actualPlan.rootRequest.childRequests[1].childRequests.length).eql(0);
+      expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
   });
 
