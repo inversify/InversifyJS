@@ -28,7 +28,10 @@ class Binding<T> implements IBinding<T> {
     public type: BindingType;
 
     // A factory method used in BindingType.Factory bindings
-    public factory: (context) => T;
+    public factory: IFactory<T>;
+
+    // An async factory method used in BindingType.Provider bindings
+    public provider: IProvider<T>;
 
     constructor(runtimeIdentifier: string) {
       this.runtimeIdentifier = runtimeIdentifier;

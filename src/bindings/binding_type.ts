@@ -4,7 +4,8 @@ enum BindingType {
   Instance,
   Value,
   Constructor,
-  Factory
+  Factory,
+  Provider
 }
 
 export default BindingType;

@@ -35,18 +35,31 @@ describe("BindingToSyntax", () => {
 
         bindingToSyntax.to(Ninja);
         expect(binding.type).eql(BindingType.Instance);
+        expect(binding.implementationType).not.to.eql(null);
 
         bindingToSyntax.toValue(new Ninja());
         expect(binding.type).eql(BindingType.Value);
+        expect(binding.cache instanceof Ninja).eql(true);
 
         bindingToSyntax.toConstructor(Ninja);
         expect(binding.type).eql(BindingType.Constructor);
+        expect(binding.implementationType).not.to.eql(null);
 
-        bindingToSyntax.toConstructor(Ninja);
-        expect(binding.type).eql(BindingType.Constructor);
+        bindingToSyntax.toFactory((context) => {
+            return new Ninja();
+        });
 
-        bindingToSyntax.toFactory((context) => { return new Ninja(); });
         expect(binding.type).eql(BindingType.Factory);
+        expect(binding.factory).not.to.eql(null);
+
+        bindingToSyntax.toProvider((context) => {
+            return new Promise<INinja>((resolve) => {
+                resolve(new Ninja());
+            });
+        });
+
+        expect(binding.type).eql(BindingType.Provider);
+        expect(binding.provider).not.to.eql(null);
 
     });
 

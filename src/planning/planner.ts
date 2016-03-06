@@ -1,12 +1,12 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import "reflect-metadata";
 import Plan from "./plan";
 import Context from "./context";
 import Request from "./request";
 import Target from "./target";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import BindingType from "../bindings/binding_type";
 
 class Planner implements IPlanner {
 
@@ -61,13 +61,26 @@ class Planner implements IPlanner {
                 // TODO 2.0.0-alpha.2 handle value, factory, etc here
                 let binding = bindings[0];
 
-                let childRequest = parentRequest.addChildRequest(target.service.value(), binding, target);
+                switch (binding.type) {
+                    case BindingType.Value:
+                        break;
+                    case BindingType.Constructor:
+                        break;
+                    case BindingType.Factory:
+                        break;
+                    case BindingType.Provider:
+                        break;
+                    case BindingType.Instance:
+                    default:
+                        let childRequest = parentRequest.addChildRequest(target.service.value(), binding, target);
+                        let subDependencies = this._getDependencies(binding.implementationType);
 
-                let subDependencies = this._getDependencies(binding.implementationType);
+                        subDependencies.forEach((d, index) => {
+                            this._createSubRequest(childRequest, d);
+                        });
 
-                subDependencies.forEach((d, index) => {
-                    this._createSubRequest(childRequest, d);
-                });
+                        break;
+                }
             }
         } catch (error) {
             if (error instanceof RangeError) {

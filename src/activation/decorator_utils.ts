@@ -1,7 +1,5 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import "reflect-metadata";
-
 function tagParameter(target: any, targetKey: string, index: number, metadata: IMetadata) {
     let metadataKey = "inversify:tagged";
     let paramsMetadata: Object = null;

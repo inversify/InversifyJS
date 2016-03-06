@@ -30,9 +30,15 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenSyntax<T>(this._binding);
     }
 
-    public toFactory(factory: (context) => T): IBindingWhenSyntax<T> {
+    public toFactory(factory: IFactory<T>): IBindingWhenSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = factory;
+        return new BindingWhenSyntax<T>(this._binding);
+    }
+
+    public toProvider(provider: IProvider<T>) {
+        this._binding.type = BindingType.Provider;
+        this._binding.provider = provider;
         return new BindingWhenSyntax<T>(this._binding);
     }
 
