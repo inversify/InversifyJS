@@ -35,11 +35,11 @@ class Binding<T> implements IBinding<T> {
 
     constructor(runtimeIdentifier: string) {
       this.runtimeIdentifier = runtimeIdentifier;
-      this.type = BindingType.Instance;
+      this.scope = BindingScope.Transient;
+      this.type = BindingType.Invalid;
       this.implementationType = null;
       this.cache = null;
       this.factory = null;
-      this.scope = BindingScope.Transient;
     }
 }
 

@@ -1,6 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 enum BindingType {
+  Invalid,
   Instance,
   Value,
   Constructor,

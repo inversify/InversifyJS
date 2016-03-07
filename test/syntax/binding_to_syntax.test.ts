@@ -31,7 +31,7 @@ describe("BindingToSyntax", () => {
         let binding = new Binding<INinja>(ninjaIdentifier);
         let bindingToSyntax = new BindingToSyntax<INinja>(binding);
 
-        expect(binding.type).eql(BindingType.Instance);
+        expect(binding.type).eql(BindingType.Invalid);
 
         bindingToSyntax.to(Ninja);
         expect(binding.type).eql(BindingType.Instance);

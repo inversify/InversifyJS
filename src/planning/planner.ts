@@ -7,7 +7,6 @@ import Target from "./target";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
-import "reflect-metadata";
 
 class Planner implements IPlanner {
 

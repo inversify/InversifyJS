@@ -10,6 +10,8 @@ import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
 import Inject from "../../src/activation/inject";
 import ParamNames from "../../src/activation/paramnames";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import BindingType from "../../src/bindings/binding_type";
 
 describe("Resolver", () => {
 
@@ -23,7 +25,7 @@ describe("Resolver", () => {
     sandbox.restore();
   });
 
-  it("Should be able to resolve a basic plan", () => {
+  it("Should be able to resolve BindingType.Instance bindings", () => {
 
       interface IKatanaBlade {}
       class KatanaBlade implements IKatanaBlade {}
@@ -220,5 +222,62 @@ describe("Resolver", () => {
       expect(_kernel._bindingDictionary.get("IKatana")[0].cache instanceof Katana).eql(true);
 
   });
+
+  it("Should throw when an invalid BindingType is detected", () => {
+
+      interface IKatana {}
+      class Katana implements IKatana {}
+
+      interface IShuriken {}
+      class Shuriken implements IShuriken {}
+
+      interface INinja {
+          katana: IKatana;
+          shuriken: IShuriken;
+      }
+
+      @Inject("IKatana", "IShuriken")
+      @ParamNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IKatana;
+          public shuriken: IShuriken;
+          public constructor(katana: IKatana, shuriken: IShuriken) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      // kernel and bindings
+      let ninjaId = "INinja";
+      let kernel = new Kernel();
+      let _kernel: any = kernel;
+      kernel.bind<INinja>(ninjaId); // IMPORTAN! (Invalid binding)
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+
+      // context and plan
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
+      let plan = new Plan(context, ninjaRequest);
+      context.addPlan(plan);
+
+      // resolver
+      let resolver = new Resolver([]);
+      let _resolver: any = resolver;
+      let _inject = _resolver._inject;
+
+      let throwFunction = () => {
+          _inject(ninjaRequest);
+      };
+
+      expect(ninjaRequest.bindings[0].type).eql(BindingType.Invalid);
+      expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
+
+  });
+
+  it("Should be able to resolve BindingType.Value bindings");
+  it("Should be able to resolve BindingType.Constructor bindings");
+  it("Should be able to resolve BindingType.Factory bindings");
+  it("Should be able to resolve BindingType.Provider bindings");
 
 });
