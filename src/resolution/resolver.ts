@@ -17,7 +17,7 @@ class Resolver implements IResolver {
         return this._inject(rootRequest);
     }
 
-    private _inject(request) {
+    private _inject(request: IRequest) {
 
         let childRequests = request.childRequests;
         let binding = request.bindings[0]; // TODO handle multi-injection
@@ -30,10 +30,10 @@ class Resolver implements IResolver {
                 return binding.implementationType;
 
             case BindingType.Factory:
-                return binding.factory;
+                return binding.factory(request.parentContext);
 
             case BindingType.Provider:
-                return binding.provider;
+                return binding.provider(request.parentContext);
 
             case BindingType.Instance:
                 let constr = binding.implementationType;

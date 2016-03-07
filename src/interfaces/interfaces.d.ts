@@ -22,6 +22,8 @@
 /// <reference path="./bindings/constraint.d.ts" />
 /// <reference path="./bindings/factory.d.ts" />
 /// <reference path="./bindings/provider.d.ts" />
+/// <reference path="./bindings/factory_creator.d.ts" />
+/// <reference path="./bindings/provider_creator.d.ts" />
 /// <reference path="./bindings/newable.d.ts" />
 
 // ACTIVATION

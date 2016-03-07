@@ -3,8 +3,8 @@
 interface IBinding<T> {
   runtimeIdentifier: string;
   implementationType: { new(): T; };
-  factory: IFactory<T>;
-  provider: IProvider<T>;
+  factory: IFactoryCreator<any>;
+  provider: IProviderCreator<any>;
   cache: T;
   scope: number; // BindingScope
   type: number; // BindingType

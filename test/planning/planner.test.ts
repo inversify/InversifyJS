@@ -322,8 +322,10 @@ describe("Planner", () => {
       kernel.bind<IKatana>(katanaBladeId).to(Katana);
       kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
       kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler);
-      kernel.bind<IFactory<IKatana>>(katanaFactoryId).toFactory((context) => {
-          return context.kernel.get(katanaId);
+      kernel.bind<IFactory<IKatana>>(katanaFactoryId).toFactory<IKatana>((context) => {
+          return () => {
+              return context.kernel.get<IKatana>(katanaId);
+          };
       });
 
       let _kernel: any = kernel;
