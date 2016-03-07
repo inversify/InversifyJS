@@ -22,6 +22,7 @@
 /// <reference path="./bindings/constraint.d.ts" />
 /// <reference path="./bindings/factory.d.ts" />
 /// <reference path="./bindings/provider.d.ts" />
+/// <reference path="./bindings/newable.d.ts" />
 
 // ACTIVATION
 /// <reference path="./activation/metadata.d.ts" />
