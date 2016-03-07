@@ -131,7 +131,6 @@ gulp.task("bundle", function () {
 //******************************************************************************
 gulp.task("mocha", function() {
   return gulp.src([
-      "node_modules/bluebird/js/release/bluebird.js",
       "node_modules/reflect-metadata/Reflect.js",
       "test/**/*.test.js"
     ])
