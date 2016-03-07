@@ -407,7 +407,7 @@ describe("Resolver", () => {
       let kernel = new Kernel();
       kernel.bind<INinja>(ninjaId).to(Ninja);
       kernel.bind<IShuriken>(shurikenId).to(Shuriken);
-      kernel.bind<IKatana>(newableKatanaId).toConstructor(Katana);  // IMPORTANT!
+      kernel.bind<INewable<IKatana>>(newableKatanaId).toConstructor<IKatana>(Katana);  // IMPORTANT!
 
       let _kernel: any = kernel;
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];

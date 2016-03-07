@@ -41,7 +41,7 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingType.Value);
         expect(binding.cache instanceof Ninja).eql(true);
 
-        bindingToSyntax.toConstructor(Ninja);
+        bindingToSyntax.toConstructor<INinja>(Ninja);
         expect(binding.type).eql(BindingType.Constructor);
         expect(binding.implementationType).not.to.eql(null);
 

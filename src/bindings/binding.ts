@@ -16,7 +16,7 @@ class Binding<T> implements IBinding<T> {
     public runtimeIdentifier: string;
 
     // The constructor of a class which must implement T
-    public implementationType: { new(): T; };
+    public implementationType: INewable<T>;
 
     // Cache used to allow singleton scope and BindingType.Value bindings
     public cache: T;
@@ -28,10 +28,10 @@ class Binding<T> implements IBinding<T> {
     public type: BindingType;
 
     // A factory method used in BindingType.Factory bindings
-    public factory: IFactoryCreator<any>;
+    public factory: IFactoryCreator<T>;
 
     // An async factory method used in BindingType.Provider bindings
-    public provider: IProviderCreator<any>;
+    public provider: IProviderCreator<T>;
 
     constructor(runtimeIdentifier: string) {
       this.runtimeIdentifier = runtimeIdentifier;

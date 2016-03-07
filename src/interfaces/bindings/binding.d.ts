@@ -2,7 +2,7 @@
 
 interface IBinding<T> {
   runtimeIdentifier: string;
-  implementationType: { new(): T; };
+  implementationType: INewable<T>;
   factory: IFactoryCreator<any>;
   provider: IProviderCreator<any>;
   cache: T;

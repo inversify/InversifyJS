@@ -1,6 +1,6 @@
 /// <reference path="inversify.d.ts" />
 
-import { Kernel, Inject, IKernel, IKernelOptions, IKernelModule } from "inversify";
+import { Kernel, Inject, IKernel, IKernelOptions, INewable, IKernelModule, IFactory, IProvider } from "inversify";
 
 module inversify_external_module_test {
 
@@ -72,5 +72,26 @@ module inversify_external_module_test {
     let kernel2 = new Kernel(options);
     let ninja2 = kernel2.get<INinja>("INinja");
     console.log(ninja2);
+
+    // binding types
+    kernel2.bind<IKatana>("IKatana").to(Katana);
+    kernel2.bind<IKatana>("IKatana").toValue(new Katana());
+
+    kernel2.bind<INewable<IKatana>>("IKatana").toConstructor<IKatana>(Katana);
+
+    kernel2.bind<IFactory<IKatana>>("IKatana").toFactory<IKatana>((context) => {
+        return () => {
+            return kernel2.get<IKatana>("IKatana");
+        };
+    });
+
+    kernel2.bind<IProvider<IKatana>>("IKatana").toProvider<IKatana>((context) => {
+        return () => {
+            return new Promise<IKatana>((resolve) => {
+                let katana = kernel2.get<IKatana>("IKatana");
+                resolve(katana);
+            });
+        };
+    });
 
 }

@@ -75,4 +75,25 @@ module inversify_global_test {
     let ninja2 = kernel2.get<INinja>("INinja");
     console.log(ninja2);
 
+    // binding types
+    kernel2.bind<IKatana>("IKatana").to(Katana);
+    kernel2.bind<IKatana>("IKatana").toValue(new Katana());
+
+    kernel2.bind<__inversify.INewable<IKatana>>("IKatana").toConstructor<IKatana>(Katana);
+
+    kernel2.bind<__inversify.IFactory<IKatana>>("IKatana").toFactory<IKatana>((context) => {
+        return () => {
+            return kernel2.get<IKatana>("IKatana");
+        };
+    });
+
+    kernel2.bind<__inversify.IProvider<IKatana>>("IKatana").toProvider<IKatana>((context) => {
+        return () => {
+            return new Promise<IKatana>((resolve) => {
+                let katana = kernel2.get<IKatana>("IKatana");
+                resolve(katana);
+            });
+        };
+    });
+
 }

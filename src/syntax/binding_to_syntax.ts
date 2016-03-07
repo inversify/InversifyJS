@@ -24,21 +24,21 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenSyntax<T>(this._binding);
     }
 
-    public toConstructor(constructor: { new(...args: any[]): T; }): IBindingWhenSyntax<T> {
+    public toConstructor<T2>(constructor: INewable<T2>): IBindingWhenSyntax<T> {
         this._binding.type = BindingType.Constructor;
-        this._binding.implementationType = constructor;
+        this._binding.implementationType = <any>constructor;
         return new BindingWhenSyntax<T>(this._binding);
     }
 
     public toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenSyntax<T> {
         this._binding.type = BindingType.Factory;
-        this._binding.factory = factory;
+        this._binding.factory = <any>factory;
         return new BindingWhenSyntax<T>(this._binding);
     }
 
     public toProvider<T2>(provider: IProviderCreator<T2>) {
         this._binding.type = BindingType.Provider;
-        this._binding.provider = provider;
+        this._binding.provider = <any>provider;
         return new BindingWhenSyntax<T>(this._binding);
     }
 
