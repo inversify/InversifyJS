@@ -8,8 +8,8 @@ import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
-import Inject from "../../src/activation/inject";
-import ParamNames from "../../src/activation/paramnames";
+import inject from "../../src/activation/inject";
+import paramNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import BindingType from "../../src/bindings/binding_type";
 
@@ -38,8 +38,8 @@ describe("Resolver", () => {
           blade: IKatanaBlade;
       }
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -57,8 +57,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -132,8 +132,8 @@ describe("Resolver", () => {
           blade: IKatanaBlade;
       }
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -151,8 +151,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -236,8 +236,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -305,8 +305,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -370,8 +370,8 @@ describe("Resolver", () => {
           blade: IKatanaBlade;
       }
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -389,8 +389,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -451,8 +451,8 @@ describe("Resolver", () => {
           (): IKatana;
       }
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -470,8 +470,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -543,8 +543,8 @@ describe("Resolver", () => {
           (): IKatana;
       }
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -563,8 +563,8 @@ describe("Resolver", () => {
           shuriken: IShuriken;
       }
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public katanaProvider: IProvider<IKatana>;

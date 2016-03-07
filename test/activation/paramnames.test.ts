@@ -2,12 +2,12 @@
 
 import { expect } from "chai";
 import { decorate } from "../../src/activation/decorator_utils";
-import ParamNames from "../../src/activation/paramnames";
+import paramNames from "../../src/activation/paramnames";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as Stubs from "../utils/stubs";
 
-describe("@ParamNames", () => {
+describe("@paramNames", () => {
 
     it("Should not generate metadata when not applied", () => {
 
@@ -29,7 +29,7 @@ describe("@ParamNames", () => {
 
     it("Should generate metadata if declared parameter names", () => {
 
-        @ParamNames("katana", "shuriken")
+        @paramNames("katana", "shuriken")
         class Warrior {
 
             public katana: Stubs.IKatana;
@@ -65,8 +65,8 @@ describe("@ParamNames", () => {
         }
 
         let useDecoratorMoreThanOnce = function() {
-            decorate(ParamNames("katana", "shuriken"), Warrior);
-            decorate(ParamNames("katana", "shuriken"), Warrior);
+            decorate(paramNames("katana", "shuriken"), Warrior);
+            decorate(paramNames("katana", "shuriken"), Warrior);
         };
 
         expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_PARAM_NAMES_DECORATOR);
@@ -81,7 +81,7 @@ describe("@ParamNames", () => {
             return VanillaJSWarrior;
         })();
 
-        decorate(ParamNames("katana", "shuriken"), VanillaJSWarrior);
+        decorate(paramNames("katana", "shuriken"), VanillaJSWarrior);
 
         let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, VanillaJSWarrior);
         expect(metadata).to.be.instanceof(Array);

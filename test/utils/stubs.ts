@@ -1,4 +1,4 @@
-import { Inject, Named, Tagged, ParamNames } from "../../src/inversify";
+import { inject, named, tagged, paramNames } from "../../src/inversify";
 
 export interface FooInterface {
   name: string;
@@ -36,7 +36,7 @@ export class Bar implements BarInterface {
   }
 }
 
-@Inject("FooInterface", "BarInterface")
+@inject("FooInterface", "BarInterface")
 export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
@@ -60,10 +60,10 @@ export class Shuriken implements IShuriken {}
 
 export class WarriotWithoutInjections {}
 
-@Inject()
+@inject()
 export class DecoratedWarriotWithoutInjections {}
 
-@Inject("IKatana","IShuriken")
+@inject("IKatana", "IShuriken")
 export class Warrior {
     private _primaryWeapon: IKatana;
     private _secondaryWeapon: IShuriken;
@@ -99,28 +99,28 @@ export class MissingInjectionWarrior {
     }
 }
 
-@Inject("IKatana","IShuriken")
+@inject("IKatana", "IShuriken")
 export class NamedWarrior {
 
     private _primaryWeapon: IWeapon;
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @Named("strong") primary: IWeapon,
-      @Named("weak") secondary: IWeapon) {
+      @named("strong") primary: IWeapon,
+      @named("weak") secondary: IWeapon) {
         // ...
     }
 }
 
-@Inject("IKatana","IShuriken")
+@inject("IKatana", "IShuriken")
 export class TaggedWarrior {
 
     private _primaryWeapon: IWeapon;
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @Tagged("power", 5) primary: IWeapon,
-      @Tagged("power", 1) secondary: IWeapon) {
+      @tagged("power", 5) primary: IWeapon,
+      @tagged("power", 1) secondary: IWeapon) {
         // ...
     }
 }

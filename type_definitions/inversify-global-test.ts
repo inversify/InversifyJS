@@ -27,9 +27,9 @@ module inversify_global_test {
         }
     }
 
-    let Inject = inversify.Inject;
+    let inject = inversify.inject;
 
-    @Inject("IKatana", "IShuriken")
+    @inject("IKatana", "IShuriken")
     class Ninja implements INinja {
 
         private _katana: IKatana;

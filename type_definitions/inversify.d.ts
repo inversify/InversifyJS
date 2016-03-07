@@ -149,7 +149,7 @@ declare namespace __inversify {
     export type Constraint = (request: IRequest) => boolean;
 
     export var Kernel: IKernelConstructor;
-    export function Inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;
+    export function inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;
 }
 
 declare module "inversify" {

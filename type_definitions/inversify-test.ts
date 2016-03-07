@@ -1,6 +1,6 @@
 /// <reference path="inversify.d.ts" />
 
-import { Kernel, Inject, IKernel, IKernelOptions, INewable, IKernelModule, IFactory, IProvider } from "inversify";
+import { Kernel, inject, IKernel, IKernelOptions, INewable, IKernelModule, IFactory, IProvider } from "inversify";
 
 module inversify_external_module_test {
 
@@ -29,7 +29,7 @@ module inversify_external_module_test {
         }
     }
 
-    @Inject("IKatana", "IShuriken")
+    @inject("IKatana", "IShuriken")
     class Ninja implements INinja {
 
         private _katana: IKatana;

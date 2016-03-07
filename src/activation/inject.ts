@@ -3,7 +3,7 @@
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERRORS_MSGS from "../constants/error_msgs";
 
-function Inject(...paramTypes: string[]) {
+function inject(...paramTypes: string[]) {
   return function(target: any) {
 
     if (Reflect.hasOwnMetadata(METADATA_KEY.INJECT, target) === true) {
@@ -16,4 +16,4 @@ function Inject(...paramTypes: string[]) {
   };
 }
 
-export default Inject;
+export default inject;

@@ -8,8 +8,8 @@ import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
-import Inject from "../../src/activation/inject";
-import ParamNames from "../../src/activation/paramnames";
+import inject from "../../src/activation/inject";
+import paramNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Planner", () => {
@@ -45,8 +45,8 @@ describe("Planner", () => {
 
       interface IKatana {}
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -61,8 +61,8 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -191,8 +191,8 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @Inject("IWeapon", "IWeapon")
-      @ParamNames("katana", "shuriken")
+      @inject("IWeapon", "IWeapon")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IWeapon;
           public shuriken: IWeapon;
@@ -225,7 +225,7 @@ describe("Planner", () => {
       interface IC {}
       interface ID {}
 
-      @Inject("IA")
+      @inject("IA")
       class D implements IC {
           public a: IA;
           public constructor(a: IA) { // circular dependency
@@ -233,7 +233,7 @@ describe("Planner", () => {
           }
       }
 
-      @Inject("ID")
+      @inject("ID")
       class C implements IC {
           public d: ID;
           public constructor(d: ID) {
@@ -243,7 +243,7 @@ describe("Planner", () => {
 
       class B implements IB {}
 
-      @Inject("IB", "IC")
+      @inject("IB", "IC")
       class A implements IA {
           public b: IB;
           public c: IC;
@@ -282,8 +282,8 @@ describe("Planner", () => {
 
       interface IKatana {}
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -298,8 +298,8 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @Inject("IFactory<IKatana>", "IShuriken")
-      @ParamNames("katanaFactory", "shuriken")
+      @inject("IFactory<IKatana>", "IShuriken")
+      @paramNames("katanaFactory", "shuriken")
       class Ninja implements INinja {
           public katanaFactory: IFactory<IKatana>;
           public shuriken: IShuriken;
