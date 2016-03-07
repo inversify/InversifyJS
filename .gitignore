@@ -35,6 +35,8 @@ typings
 
 dist
 
+src/*.js
 src/**/*.js
+test/*.js
 test/**/*.js
 type_definitions/*.js

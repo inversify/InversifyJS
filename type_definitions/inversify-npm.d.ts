@@ -1,7 +1,9 @@
-// Type definitions for inversify 1.2.2
+// Type definitions for inversify 2.0.0-alpha.2
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
+
+/// <reference path="../typings/browser/ambient/bluebird/bluebird.d.ts" />
 
 interface IMiddleware extends Function {
     (...args: any[]): any;
@@ -32,11 +34,32 @@ interface IBindingWhenSyntax<T> {
     when(constraint: Constraint): void;
 }
 
+interface IFactoryCreator<T> extends Function {
+    (context: IContext): IFactory<T>;
+}
+
+interface IProviderCreator<T> extends Function {
+    (context: IContext): IProvider<T>;
+}
+
+interface IFactory<T> extends Function {
+    (): T;
+}
+
+interface IProvider<T> extends Function {
+    (): Promise<T>;
+}
+
+interface INewable<T> {
+    new(...args: any[]): T;
+}
+
 interface IBindingToSyntax<T> {
     to(constructor: { new(...args: any[]): T; }): IBindingInSyntax<T>;
     toValue(value: T): IBindingWhenSyntax<T>;
-    toConstructor(constructor: { new(...args: any[]): T; }): IBindingWhenSyntax<T>;
-    toFactory(factory: (context) => T): IBindingWhenSyntax<T>;
+    toConstructor<T2>(constructor: INewable<T2>): IBindingWhenSyntax<T>;
+    toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenSyntax<T>;
+    toProvider<T2>(provider: IProviderCreator<T2>): IBindingWhenSyntax<T>;
 }
 
 interface IBindingInSyntax<T> {
@@ -47,7 +70,8 @@ interface IBindingInSyntax<T> {
 interface IBinding<T> {
   runtimeIdentifier: string;
   implementationType: { new(): T; };
-  factory: (context) => T;
+  factory: IFactoryCreator<any>;
+  provider: IProviderCreator<any>;
   cache: T;
   scope: number; // BindingScope
   type: number; // BindingType

@@ -1,10 +1,12 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 enum BindingType {
+  Invalid,
   Instance,
   Value,
   Constructor,
-  Factory
+  Factory,
+  Provider
 }
 
 export default BindingType;

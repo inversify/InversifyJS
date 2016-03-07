@@ -1,13 +1,12 @@
 language: node_js
 node_js:
 - stable
-- 4.2.3
-- 4.2.0
-- 4.1.2
-- 4.1.0
-- 4.0.0
+- 5.4.1
+- 5.4.0
+- 5.3.0
+- 5.2.0
+- 5.1.1
 - '0.12'
-- '0.10'
 before_install:
 - npm install -g typings
 - typings install

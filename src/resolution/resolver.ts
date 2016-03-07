@@ -1,6 +1,8 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 import BindingScope from "../bindings/binding_scope";
+import BindingType from "../bindings/binding_type";
+import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Resolver implements IResolver {
 
@@ -12,31 +14,53 @@ class Resolver implements IResolver {
 
     public resolve<Service>(context: IContext): Service {
         let rootRequest = context.plan.rootRequest;
-        return this._construct(rootRequest);
+        return this._inject(rootRequest);
     }
 
-    private _construct(request) {
+    private _inject(request: IRequest) {
 
         let childRequests = request.childRequests;
         let binding = request.bindings[0]; // TODO handle multi-injection
-        let constr = binding.implementationType;
-        let isSingleton = binding.scope === BindingScope.Singleton;
 
-        if (isSingleton && binding.cache !== null) {
-           return binding.cache;
-        }
+        switch (binding.type) {
+            case BindingType.Value:
+                return binding.cache;
 
-        if (childRequests.length > 0) {
-            let injections = childRequests.map((childRequest) => {
-                return this._construct(childRequest);
-            });
-            let instance = this._createInstance(constr, injections);
-            if (isSingleton) { binding.cache = instance; }
-            return instance;
-        } else {
-            let instance = new constr();
-            if (isSingleton) { binding.cache = instance; }
-            return instance;
+            case BindingType.Constructor:
+                return binding.implementationType;
+
+            case BindingType.Factory:
+                return binding.factory(request.parentContext);
+
+            case BindingType.Provider:
+                return binding.provider(request.parentContext);
+
+            case BindingType.Instance:
+                let constr = binding.implementationType;
+                let isSingleton = binding.scope === BindingScope.Singleton;
+
+                if (isSingleton && binding.cache !== null) {
+                    return binding.cache;
+                }
+
+                if (childRequests.length > 0) {
+                    let injections = childRequests.map((childRequest) => {
+                        return this._inject(childRequest);
+                    });
+                    let instance = this._createInstance(constr, injections);
+                    if (isSingleton) { binding.cache = instance; }
+                    return instance;
+                } else {
+                    let instance = new constr();
+                    if (isSingleton) { binding.cache = instance; }
+                    return instance;
+                }
+
+            case BindingType.Invalid:
+            default:
+                // The user probably created a binding but didn't finish it
+                // e.g. kernel.bind<T>("ISomething"); missing BindingToSyntax
+                throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${request.service}`);
         }
     }
 
