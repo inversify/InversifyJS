@@ -9,7 +9,7 @@ var gulp        = require("gulp"),
     buffer      = require("vinyl-buffer"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
-    coveralls   = require('gulp-coveralls'),
+    coveralls   = require("gulp-coveralls"),
     uglify      = require("gulp-uglify"),
     typedoc     = require("gulp-typedoc"),
     rename      = require("gulp-rename"),
@@ -46,7 +46,7 @@ gulp.task("build-source", function() {
         "node_modules/reflect-metadata/reflect-metadata.d.ts"
     ])
     .pipe(tsc(tsProject))
-    .on('error', function (err) {
+    .on("error", function (err) {
         process.exit(1);
     })
     .js.pipe(gulp.dest("src/"));
@@ -61,7 +61,7 @@ gulp.task("build-test", function() {
         "node_modules/reflect-metadata/reflect-metadata.d.ts"
     ])
     .pipe(tsc(tsTestProject))
-    .on('error', function (err) {
+    .on("error", function (err) {
         process.exit(1);
     })
     .js.pipe(gulp.dest("test/"));
@@ -72,7 +72,7 @@ var tsTypeDefinitionsProject = tsc.createProject("tsconfig.json");
 gulp.task("build-type-definitions", function() {
   return gulp.src("type_definitions/**/*.ts")
              .pipe(tsc(tsTypeDefinitionsProject))
-             .on('error', function (err) {
+             .on("error", function (err) {
                  process.exit(1);
              })
              .js.pipe(gulp.dest("type_definitions/"));
@@ -114,7 +114,7 @@ gulp.task("document", function () {
 gulp.task("bundle", function () {
     
   var b = browserify({
-    standalone : 'inversify',
+    standalone : "inversify",
     entries:  "src/inversify.js",
     debug: true
   });
@@ -131,15 +131,16 @@ gulp.task("bundle", function () {
 //******************************************************************************
 gulp.task("mocha", function() {
   return gulp.src([
-      'node_modules/reflect-metadata/Reflect.js',
-      'test/**/*.test.js'
+      "node_modules/bluebird/js/release/bluebird.js",
+      "node_modules/reflect-metadata/Reflect.js",
+      "test/**/*.test.js"
     ])
-    .pipe(mocha({ui: 'bdd'}))
+    .pipe(mocha({ui: "bdd"}))
     .pipe(istanbul.writeReports());
 });
 
 gulp.task("istanbul:hook", function() {
-  return gulp.src(['src/**/*.js'])
+  return gulp.src(["src/**/*.js"])
       // Covering files
       .pipe(istanbul())
       // Force `require` to return covered files
@@ -168,7 +169,7 @@ gulp.task("compress", function() {
   return gulp.src("bundled/src/inversify.js")
              .pipe(uglify({ preserveComments : false }))
              .pipe(rename({
-                extname: '.min.js'
+                extname: ".min.js"
               }))
              .pipe(gulp.dest("dist/"))
 });

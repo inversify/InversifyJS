@@ -34,6 +34,7 @@
   "engines": {},
   "dependencies": {},
   "devDependencies": {
+    "bluebird": "^3.3.3",
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
     "gulp": "^3.9.0",
