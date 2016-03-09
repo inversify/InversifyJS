@@ -33,6 +33,12 @@ class Binding<T> implements IBinding<T> {
     // An async factory method used in BindingType.Provider bindings
     public provider: IProviderCreator<T>;
 
+    // A constraint used to limit the contexts in which this binding is applicable
+    public constraint: (request: IRequest) => boolean;
+
+    // A method used to create a proxy for a dependency
+    public proxyMaker: (injectable: T) => T;
+
     constructor(runtimeIdentifier: string) {
       this.runtimeIdentifier = runtimeIdentifier;
       this.scope = BindingScope.Transient;
@@ -40,6 +46,9 @@ class Binding<T> implements IBinding<T> {
       this.implementationType = null;
       this.cache = null;
       this.factory = null;
+      this.provider = null;
+      this.constraint = null;
+      this.proxyMaker = null;
     }
 }
 

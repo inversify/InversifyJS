@@ -52,9 +52,23 @@ class Planner implements IPlanner {
             // mutiple bindings available
             if (bindings.length > 1) {
 
-                // TODO 2.0.0-alpha.3 
-                // TODO handle multi-injection, named, tagged and contextual binsingd here
-                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.service.value()}`);
+                let activeBindings = [];
+
+                if (target.isArray()) {
+                    // TODO
+                } else if (target.isNamed()) {
+                    // activeBindings = bindings.map((b) => { b.named === target.metadata.name });
+                } else if (target.isTagged()) {
+                    // activeBindings = bindings.map((b) => { b.tagged === target.metadata.tagged });
+                } else {
+                    activeBindings = bindings;
+                }
+
+                // TODO custom constraints??
+
+                if (activeBindings.length > 1) {
+                    throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.service.value()}`);
+                }
 
             } else {
 

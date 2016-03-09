@@ -578,7 +578,7 @@ describe("Resolver", () => {
 
       let ninjaId = "INinja";
       let shurikenId = "IShuriken";
-      let katanaFactoryId = "IFactory<IKatana>";
+      let katanaProviderId = "IProvider<IKatana>";
       let katanaId = "IKatana";
       let katanaHandlerId = "IKatanaHandler";
       let katanaBladeId = "IKatanaBlade";
@@ -590,7 +590,7 @@ describe("Resolver", () => {
       kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
       kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      kernel.bind<IProvider<IKatana>>(katanaFactoryId).toProvider<IKatana>((context: IContext) => {
+      kernel.bind<IProvider<IKatana>>(katanaProviderId).toProvider<IKatana>((context: IContext) => {
           return () => {
               return new Promise<IKatana>((resolve) => {
                   // Using setTimeout to simulate complex initialization
@@ -601,7 +601,7 @@ describe("Resolver", () => {
 
       let _kernel: any = kernel;
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
-      let katanaFactoryBinding = _kernel._bindingDictionary.get(katanaFactoryId)[0];
+      let katanaFactoryBinding = _kernel._bindingDictionary.get(katanaProviderId)[0];
       let shurikenBinding = _kernel._bindingDictionary.get(shurikenId)[0];
 
       let planner = new Planner();
@@ -609,7 +609,7 @@ describe("Resolver", () => {
 
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(katanaFactoryId, katanaFactoryBinding, new Target("makeKatana", katanaFactoryId));
+      plan.rootRequest.addChildRequest(katanaProviderId, katanaFactoryBinding, new Target("katanaProvider", katanaProviderId));
       plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
       context.addPlan(plan);
 

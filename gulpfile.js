@@ -87,7 +87,11 @@ gulp.task("build", function(cb) {
 //******************************************************************************
 gulp.task("document", function () {
 	return gulp
-		.src(["src/*.ts"])
+		.src([
+            "src/**/**.ts",
+            "typings/browser.d.ts",
+            "node_modules/reflect-metadata/reflect-metadata.d.ts"
+        ])
 		.pipe(typedoc({ 
 			// TypeScript options (see typescript docs) 
             target: "es5",
@@ -102,9 +106,10 @@ gulp.task("document", function () {
             preserveConstEnums: true,
             suppressImplicitAnyIndexErrors: true,
 			// Output options (see typedoc docs) 
-			out: "./documentation",
+			out: "./docs",
 			name: "InversifyJS",
-			version: true
+			version: true,
+            theme: "minimal"
 		}));
 });
 
