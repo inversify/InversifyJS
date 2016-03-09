@@ -49,13 +49,13 @@ describe("BindingInWhenProxySyntax", () => {
         let binding = new Binding<INinja>(ninjaIdentifier);
         let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
 
-        expect(binding.constraint).eql(null);
-
         bindingInWhenProxySyntax.when((request: IRequest) => {
             return request.target.name.equals("ninja");
         });
 
-        expect(binding.constraint).not.to.eql(null);
+        let target = new Target("ninja", ninjaIdentifier);
+        let request = new Request(ninjaIdentifier, null, null, binding, target);
+        expect(binding.constraint(request)).eql(true);
 
     });
 
@@ -69,7 +69,6 @@ describe("BindingInWhenProxySyntax", () => {
 
         let named = "primary";
 
-        expect(binding.constraint).eql(null);
         bindingInWhenProxySyntax.whenTargetNamed(named);
         expect(binding.constraint).not.to.eql(null);
 
@@ -91,7 +90,6 @@ describe("BindingInWhenProxySyntax", () => {
         let binding = new Binding<INinja>(ninjaIdentifier);
         let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
 
-        expect(binding.constraint).eql(null);
         bindingInWhenProxySyntax.whenTargetTagged("canSwim", true);
         expect(binding.constraint).not.to.eql(null);
 

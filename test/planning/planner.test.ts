@@ -307,8 +307,6 @@ describe("Planner", () => {
 
   it("Should generate plans with multi-injections", () => {
 
-      // TODO 2.0.0-alpha.3 throw for now
-
       interface IWeapon {}
 
       class Katana implements IWeapon {}
@@ -372,8 +370,86 @@ describe("Planner", () => {
 
   });
 
-  it("Should throw when an ambiguous match is found");
-  it("Should throw when an not matching bindings are found");
+  it("Should throw when an not matching bindings are found", () => {
+
+      interface IKatana {}
+      class Katana implements IKatana { }
+
+      interface IShuriken {}
+      class Shuriken implements IShuriken {}
+
+      interface INinja {}
+
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IKatana;
+          public shuriken: IShuriken;
+          public constructor(katana: IKatana, shuriken: IShuriken) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let shurikenId = "IShuriken";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => { planner.createPlan(context, ninjaBinding); };
+      expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} IKatana`);
+
+  });
+
+  it("Should throw when an ambiguous match is found", () => {
+
+      interface IKatana {}
+      class Katana implements IKatana { }
+      class SharpKatana implements IKatana { }
+
+      interface IShuriken {}
+      class Shuriken implements IShuriken {}
+
+      interface INinja {}
+
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IKatana;
+          public shuriken: IShuriken;
+          public constructor(katana: IKatana, shuriken: IShuriken) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let katanaId = "IKatana";
+      let shurikenId = "IShuriken";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IKatana>(katanaId).to(Katana);
+      kernel.bind<IKatana>(katanaId).to(SharpKatana);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => { planner.createPlan(context, ninjaBinding); };
+      expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} IKatana`);
+
+  });
+
   it("Should apply constrains when an ambiguous match is found");
 
 });

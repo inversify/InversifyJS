@@ -65,8 +65,7 @@ class Planner implements IPlanner {
                         target
                     );
 
-                    let constraint = binding.constraint;
-                    return (typeof constraint === "function") ? constraint(request) : false;
+                    return binding.constraint(request);
 
                 });
 

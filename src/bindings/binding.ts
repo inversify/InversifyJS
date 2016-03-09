@@ -43,11 +43,11 @@ class Binding<T> implements IBinding<T> {
       this.runtimeIdentifier = runtimeIdentifier;
       this.scope = BindingScope.Transient;
       this.type = BindingType.Invalid;
+      this.constraint = (request: IRequest) => { return true; };
       this.implementationType = null;
       this.cache = null;
       this.factory = null;
       this.provider = null;
-      this.constraint = null;
       this.proxyMaker = null;
     }
 }
