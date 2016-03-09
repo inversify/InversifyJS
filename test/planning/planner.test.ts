@@ -180,44 +180,6 @@ describe("Planner", () => {
 
   });
 
-  it("Should generate plans with multi-injections", () => {
-
-      // TODO 2.0.0-alpha.3 throw for now
-
-      interface IWeapon {}
-
-      class Katana implements IWeapon {}
-      class Shuriken implements IWeapon {}
-
-      interface INinja {}
-
-      @inject("IWeapon", "IWeapon")
-      @paramNames("katana", "shuriken")
-      class Ninja implements INinja {
-          public katana: IWeapon;
-          public shuriken: IWeapon;
-          public constructor(katana: IWeapon, shuriken: IWeapon) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      let ninjaId = "INinja";
-      let weaponId = "IWeapon";
-
-      let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
-      kernel.bind<IWeapon>(weaponId).to(Shuriken);
-      kernel.bind<IWeapon>(weaponId).to(Katana);
-
-      let throwErroFunction = () => {
-          kernel.get(ninjaId);
-      };
-
-      expect(throwErroFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${weaponId}`);
-
-  });
-
   it("Should throw when circular dependencies found", () => {
 
       interface IA {}
@@ -342,5 +304,76 @@ describe("Planner", () => {
       expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
   });
+
+  it("Should generate plans with multi-injections", () => {
+
+      // TODO 2.0.0-alpha.3 throw for now
+
+      interface IWeapon {}
+
+      class Katana implements IWeapon {}
+      class Shuriken implements IWeapon {}
+
+      interface INinja {}
+
+      @inject("IWeapon[]")
+      @paramNames("weapons")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(weapons: IWeapon[]) {
+              this.katana = weapons[0];
+              this.shuriken = weapons[1];
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken);
+      kernel.bind<IWeapon>(weaponId).to(Katana);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let actualPlan = planner.createPlan(context, ninjaBinding);
+
+      // root request has no target
+      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.target).eql(null);
+
+      // root request should only have one child request with target weapons/IWeapon[]
+      expect(actualPlan.rootRequest.childRequests[0].service).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[1]).eql(undefined);
+      expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("weapons");
+      expect(actualPlan.rootRequest.childRequests[0].target.service.value()).eql("IWeapon[]");
+
+      // child request should have to child requests with targets weapons/IWeapon[] but bindings Katana and Shuriken
+      expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(2);
+
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.name.value()).eql("weapons");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].runtimeIdentifier).eql("IWeapon");
+      let shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
+      expect(shurikenImplementationType.name).eql("Shuriken");
+
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.name.value()).eql("weapons");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].runtimeIdentifier).eql("IWeapon");
+      let katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
+      expect(katanaImplementationType.name).eql("Katana");
+
+  });
+
+  it("Should throw when an ambiguous match is found");
+  it("Should throw when an not matching bindings are found");
+  it("Should apply constrains when an ambiguous match is found");
 
 });

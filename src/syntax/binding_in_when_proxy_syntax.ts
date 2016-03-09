@@ -1,6 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 import BindingScope from "../bindings/binding_scope";
+import Metadata from "../activation/metadata";
 
 class BindingInWhenProxySyntax<T> implements IBindingInWhenProxySyntax<T> {
 
@@ -22,6 +23,20 @@ class BindingInWhenProxySyntax<T> implements IBindingInWhenProxySyntax<T> {
 
     public when(constraint: (request: IRequest) => boolean): IBindingInWhenProxySyntax<T> {
         this._binding.constraint = constraint;
+        return new BindingInWhenProxySyntax<T>(this._binding);
+    }
+
+    public whenTargetNamed(name: string): IBindingInWhenProxySyntax<T> {
+        this._binding.constraint = (request: IRequest) => {
+            return request.target.matchesName(name);
+        };
+        return new BindingInWhenProxySyntax<T>(this._binding);
+    }
+
+    public whenTargetTagged(tag: string, value: any): IBindingInWhenProxySyntax<T> {
+        this._binding.constraint = (request: IRequest) => {
+            return request.target.matchesTag(new Metadata(tag, value));
+        };
         return new BindingInWhenProxySyntax<T>(this._binding);
     }
 
