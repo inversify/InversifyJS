@@ -13,12 +13,13 @@ A lightweight IoC container written in TypeScript.
 Visit http://inversify.io/ for more information.
 
 ### About
-InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. A pico IoC container uses a class constructor to identify and inject its dependencies.
-
-InversifyJS is easy to integrate with the majority of existing JavaScript frameworks and encourage the usage of the best OOP and IoC practices.
+InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. 
+A pico IoC container uses a class constructor to identify and inject its dependencies.
+InversifyJS has a friendly API and encourage the usage of the best OOP and IoC practices.
 
 ### Motivation
-JavaScript applications are becoming larger and larger day after day. As a result we are using a lot of our architecture experience from languages like Java or C# in JavaScript. We are embracing OOP with JavaScript but we are not writing SOLID JavaScript. InversifyJS has been designed to allow JavaScript developers to write code that adheres to the SOLID principles.
+JavaScript applications are becoming larger and larger day after day. 
+InversifyJS has been designed to allow JavaScript developers to write code that adheres to the SOLID principles.
 
 ### Philosophy
 InversifyJS has been developed with 3 main goals:
@@ -31,24 +32,28 @@ InversifyJS has been developed with 3 main goals:
 
 # Installation
 
-You can get the latest release and the type definitions using npm.
+You can get the latest release and the type definitions using npm:
 ```
 npm install inversify --save
 ```
-**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd. The InversifyJS type definitions are included in the npm package as it is [recommended by the TypeScript development team](https://github.com/Microsoft/TypeScript/wiki/Typings-for-npm-packages).
+**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd. 
 
-If you are planing to use inversify as a global you will need to add a reference to the file named `inversify-global.d.ts` this file is included in the npm package:
+The InversifyJS type definitions are included in the npm package:
 
 ```
-/// <reference path="./node_modules/inversify/type_definitions/inversify-global.d.ts" />
+/// <reference path="node_modules/inversify/dist/inversify.d.ts" />
+```
+
+The inversify type definitions can be installed using [typings](https://github.com/typings/typings):
+
+```
+$ npm install -g typings
+$ typings init
+$ typings install inversify --save --ambient
 ```
 
 # The Basics (with TypeScript)
-The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles. 
-Many of these principles refer to the usage of interfaces. 
-The main reason why it is not possible to write native SOLID JavaScript is because the language lacks interfaces. 
-In the other hand, TypeScript features interfaces, so, if you are going to use InversifyJS it is recommended 
-to work with TypeScript to get the most out of it.
+The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles
 
 #### 1. Declare interfaces & implementations
 
@@ -118,8 +123,9 @@ import { Kernel } from "inversify";
 var kernel = new Kernel();
 ```
 
-In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate with each service type (interfaces). 
-We will use type bindings for this purpose. A type binding (or just a binding) is a mapping between a service type (an interface), and an implementation type (class).
+In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate 
+with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a 
+binding) is a mapping between a service type (an interface), and an implementation type (class).
 
 ```
 kernel.bind<INinja>("INinja").to(Ninja);
@@ -127,7 +133,8 @@ kernel.bind<INinja>("INinja").to(Ninja);
       kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 ```
 
-When we declare a type binding, the TypeScript compiler will check that the implementation type (class) is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
+When we declare a type binding, the TypeScript compiler will check that the implementation type (class) 
+is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
 
 ```
 // Compilation error: Shuriken is not assignable to type IKatana
@@ -140,7 +147,8 @@ This will help us to abstract our application from the IoC configuration.
 #### 3. Resolve & inject dependencies
 
 After declaring the type bindings, we can invoke the kernel resolve method to resolve a dependency. 
-We will use a string as the interface identifier (instead of the interface itself) because the TypeScript interfaces are not available at runtime.
+We will use a string as the interface identifier (instead of the interface itself) because the 
+TypeScript interfaces are not available at runtime.
 
 ```
 let ninja = kernel.get<INinja>("INinja");
@@ -159,48 +167,78 @@ Our application dependency tree should have one unique root element, known as th
 only place where we should invoke the resolve method.
 
 Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. 
-If we are working with an MVC framework the composition root should be located in the application class, somewhere 
-along the routing logic or in a controller factory class. Please refer to the integration examples if you need additional help.
+If we are working with an MVC framework the composition root should be located in the application class, 
+somewhere along the routing logic or in a controller factory class. Please refer to the integration 
+examples if you need additional help.
 
-# Integration with popular frameworks
-
-InversifyJS was designed with many popular JavaScript frameworks in mind. As a result, it is really easy to integrate with existing JavaScript frameworks and examples of integration with many popular frameworks are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
+# Integration with other frameworks
+Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
 # Good Practices
-Dependency Inversion (DI) isn't rocket science. We just need to try to avoid new and singleton except when there's a compelling reason to use them, such as a utility method that has no external dependencies, or a utility class that could not possibly have any purpose outside the framework (interop wrappers and dictionary keys are common examples of this).
+Dependency Inversion (DI) isn't rocket science. 
+We just need to try to avoid new and singleton except when there's a compelling reason to use them, 
+such as a utility method that has no external dependencies, or a utility class that could not possibly 
+have any purpose outside the framework (interop wrappers and dictionary keys are common examples of this).
 
-Many of the problems with IoC frameworks come up when developers are first learning how to use them, and instead of actually changing the way they handle dependencies and abstractions to fit the IoC model, instead try to manipulate the IoC container to meet the expectations of their old coding style, which would often involve high coupling and low cohesion.
+Many of the problems with IoC frameworks come up when developers are first learning how to use them, 
+and instead of actually changing the way they handle dependencies and abstractions to fit the IoC model, 
+instead try to manipulate the IoC container to meet the expectations of their old coding style, which 
+would often involve high coupling and low cohesion.
 
 #### Use a Composition Root to avoid the Service Locator anti-pattern
 
-Our application dependency tree should have one unique root element (known as the application composition root) which is the only component where we should invoke the resolve method.
+Our application dependency tree should have one unique root element (known as the application composition 
+root) which is the only component where we should invoke the resolve method.
 
-Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. If we are working with an MVC framework the composition root should be located in the application class, somewhere along the routing logic or in a controller factory class.
+Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. 
+If we are working with an MVC framework the composition root should be located in the application class, 
+somewhere along the routing logic or in a controller factory class.
 
 #### Avoid Constructor over-injection
 
-Constructor over-injection is a violation of the Single Responsibility Principle. Too many constructor arguments indicates too many dependencies; too many dependencies indicates that the class is trying to do too much. Usually this error correlates with other code smells, such as unusually long or ambiguous ("manager") class names.
+Constructor over-injection is a violation of the Single Responsibility Principle. Too many constructor 
+arguments indicates too many dependencies; too many dependencies indicates that the class is trying to 
+do too much. Usually this error correlates with other code smells, such as unusually long or 
+ambiguous ("manager") class names.
 
 #### Avoid the injection of data, as opposed to behaviour
 
-Injection of data, as opposed to behaviour, is a subtype of the poltergeist anti-pattern, with the 'geist in this case being the container. If a class needs to be aware of the current date and time, you don't inject a DateTime, which is data; instead, you inject an abstraction over the system clock. This is not only correct for DI; it is absolutely essential for testability, so that you can test time-varying functions without needing to actually wait on them.
+Injection of data, as opposed to behaviour, is a subtype of the poltergeist anti-pattern, 
+with the 'geist in this case being the container. If a class needs to be aware of the current 
+date and time, you don't inject a DateTime, which is data; instead, you inject an abstraction 
+over the system clock. This is not only correct for DI; it is absolutely essential for testability, 
+so that you can test time-varying functions without needing to actually wait on them.
 
 #### Avoid declaring every life cycle as Singleton
 
-Declaring every life cycle as Singleton is, to me, a perfect example of cargo cult programming and to a lesser degree the colloquially-named "object cesspool". I've seen more singleton abuse than I care to remember, and very little of it involves DI.
+Declaring every life cycle as Singleton is, to me, a perfect example of cargo cult programming and to 
+a lesser degree the colloquially-named "object cesspool". I've seen more singleton abuse than I care 
+to remember, and very little of it involves DI.
 
 #### Avoid implementation-specific interface types
 
-Another common error is implementation-specific interface types done just to be able to register it in the container. This is in and of itself a violation of the Dependency Inversion Principle (just because it's an interface, does not mean it's truly abstract) and often also includes interface bloat which violates the Interface Segregation Principle.
+Another common error is implementation-specific interface types done just to be able to register it in 
+the container. This is in and of itself a violation of the Dependency Inversion Principle (just because 
+it's an interface, does not mean it's truly abstract) and often also includes interface bloat which 
+violates the Interface Segregation Principle.
 
 #### Avoid optional dependencies
 
-In other words, there is a constructor that accepts dependency injection, but also another constructor that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations as well, as developers, over time, start making assumptions around the default implementation, and/or start new-ing up instances using the default constructor.
+In other words, there is a constructor that accepts dependency injection, but also another constructor 
+that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations 
+as well, as developers, over time, start making assumptions around the default implementation, and/or 
+start new-ing up instances using the default constructor.
 
 # Support
-If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
+If you are experience any kind of issues we will be happy to help. You can report an issue using the 
+[issues page](https://github.com/inversify/InversifyJS/issues) or the 
+[chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at 
+[Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
-If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the [development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
+If you want to share your thoughts with the development team or join us you will be able to do so using the 
+[official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the 
+[development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the 
+[documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
 # License
 
@@ -208,8 +246,17 @@ License under the MIT License (MIT)
 
 Copyright © 2015 [Remo H. Jansen](http://www.remojansen.com)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+documentation files (the "Software"), to deal in the Software without restriction, including without 
+limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
+of the Software, and to permit persons to whom the Software is furnished to do so, subject to the 
+following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial 
+portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

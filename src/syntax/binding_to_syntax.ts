@@ -35,6 +35,17 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingInWhenProxySyntax<T>(this._binding);
     }
 
+    public toAutoFactory<T2>(): IBindingInWhenProxySyntax<T> {
+        this._binding.type = BindingType.Factory;
+        let id = this._binding.runtimeIdentifier.split("IFactory<").join("").split(">").join("");
+        this._binding.factory = (context) => {
+            return () => {
+                return context.kernel.get<T2>(id);
+            };
+        };
+        return new BindingInWhenProxySyntax<T>(this._binding);
+    }
+
     public toProvider<T2>(provider: IProviderCreator<T2>): IBindingInWhenProxySyntax<T> {
         this._binding.type = BindingType.Provider;
         this._binding.provider = <any>provider;

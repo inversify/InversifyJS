@@ -5,7 +5,7 @@
 
 /// <reference path="../typings/browser/ambient/bluebird/bluebird.d.ts" />
 
-declare namespace __inversify {
+declare namespace inversify {
 
     export interface IMiddleware extends Function {
         (...args: any[]): any;
@@ -149,9 +149,13 @@ declare namespace __inversify {
     export type Constraint = (request: IRequest) => boolean;
 
     export var Kernel: IKernelConstructor;
+    export var decorate: any;
     export function inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;
+    export var tagged: any;
+    export var named: any;
+    export var paramNames: any;
 }
 
 declare module "inversify" {
-  export = __inversify;
+  export = inversify;
 }
