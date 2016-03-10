@@ -1,4 +1,5 @@
 /// <reference path="inversify.d.ts" />
+/// <reference path="../typings/browser/ambient/bluebird/bluebird.d.ts" />
 
 import { Kernel, inject, IKernel, IKernelOptions, INewable, IKernelModule, IFactory, IProvider } from "inversify";
 

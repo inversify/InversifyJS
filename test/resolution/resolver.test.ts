@@ -9,6 +9,8 @@ import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
 import inject from "../../src/activation/inject";
+import tagged from "../../src/activation/tagged";
+import named from "../../src/activation/named";
 import paramNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import BindingType from "../../src/bindings/binding_type";
@@ -625,6 +627,273 @@ describe("Resolver", () => {
           expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
           done();
       });
+
+  });
+
+  it("Should be able to resolve plans with constraints on tagged targets", () => {
+
+      interface IWeapon {}
+      class Katana implements IWeapon { }
+      class Shuriken implements IWeapon {}
+
+      interface INinja {
+          katana: IWeapon;
+          shuriken: IWeapon;
+      }
+
+      @inject("IWeapon", "IWeapon")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(
+              @tagged("canThrow", false) katana: IWeapon,
+              @tagged("canThrow", true) shuriken: IWeapon
+          ) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let plan = planner.createPlan(context, ninjaBinding);
+      context.addPlan(plan);
+
+      let resolver = new Resolver();
+      let ninja = resolver.resolve<INinja>(context);
+
+      expect(ninja instanceof Ninja).eql(true);
+      expect(ninja.katana instanceof Katana).eql(true);
+      expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+  });
+
+  it("Should be able to resolve plans with constraints on named targets", () => {
+
+      interface IWeapon {}
+      class Katana implements IWeapon { }
+      class Shuriken implements IWeapon {}
+
+      interface INinja {
+          katana: IWeapon;
+          shuriken: IWeapon;
+      }
+
+      @inject("IWeapon", "IWeapon")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(
+              @named("strong")katana: IWeapon,
+              @named("weak") shuriken: IWeapon
+          ) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetNamed("strong");
+      kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let plan = planner.createPlan(context, ninjaBinding);
+      context.addPlan(plan);
+
+      let resolver = new Resolver();
+      let ninja = resolver.resolve<INinja>(context);
+
+      expect(ninja instanceof Ninja).eql(true);
+      expect(ninja.katana instanceof Katana).eql(true);
+      expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+  });
+
+  it("Should be able to resolve plans with custom contextual constraints", () => {
+
+      interface IWeapon {}
+      class Katana implements IWeapon { }
+      class Shuriken implements IWeapon {}
+
+      interface INinja {
+          katana: IWeapon;
+          shuriken: IWeapon;
+      }
+
+      @inject("IWeapon", "IWeapon")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(
+              @tagged("canThrow", false) katana: IWeapon,
+              @tagged("canThrow", true) shuriken: IWeapon
+          ) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+
+      kernel.bind<IWeapon>(weaponId).to(Katana).when((request: IRequest) => {
+          return request.target.name.equals("katana");
+      });
+
+      kernel.bind<IWeapon>(weaponId).to(Shuriken).when((request: IRequest) => {
+          return request.target.name.equals("shuriken");
+      });
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let plan = planner.createPlan(context, ninjaBinding);
+      context.addPlan(plan);
+
+      let resolver = new Resolver();
+      let ninja = resolver.resolve<INinja>(context);
+
+      expect(ninja instanceof Ninja).eql(true);
+      expect(ninja.katana instanceof Katana).eql(true);
+      expect(ninja.shuriken instanceof Shuriken).eql(true);
+  });
+
+  it("Should be able to resolve plans with multi-injections", () => {
+
+      interface IWeapon {
+          name: string;
+      }
+
+      class Katana implements IWeapon {
+          public name = "Katana";
+      }
+      class Shuriken implements IWeapon {
+          public name = "Shuriken";
+      }
+
+      interface INinja {
+          katana: IWeapon;
+          shuriken: IWeapon;
+      }
+
+      @inject("IWeapon[]")
+      @paramNames("weapons")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(weapons: IWeapon[]) {
+              this.katana = weapons[0];
+              this.shuriken = weapons[1];
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Katana);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let plan = planner.createPlan(context, ninjaBinding);
+      context.addPlan(plan);
+
+      let resolver = new Resolver();
+      let ninja = resolver.resolve<INinja>(context);
+
+      expect(ninja instanceof Ninja).eql(true);
+      expect(ninja.katana instanceof Katana).eql(true);
+      expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+  });
+
+  it("Should be able to resolve plans with proxy injections", () => {
+
+        interface IKatana {
+            use: () => void;
+        }
+
+        class Katana implements IKatana {
+            public use() {
+                console.log("Used Katana!");
+            }
+        }
+
+        interface INinja {
+            katana: IKatana;
+        }
+
+        @inject("IKatana")
+        class Ninja implements INinja {
+            public katana: IKatana;
+            public constructor(katana: IKatana) {
+                this.katana = katana;
+            }
+        }
+
+        let ninjaId = "INinja";
+        let katanaId = "IKatana";
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>(ninjaId).to(Ninja);
+
+        // This is a global for unit testing but remember 
+        // that it is not a good idea to use globals
+        let timeTracker = [];
+
+        kernel.bind<IKatana>(katanaId).to(Katana).proxy((ninja) => {
+            let handler = {
+                apply: function(target, thisArgument, argumentsList) {
+                    timeTracker.push(`Starting ${target.name} ${performance.now()}`);
+                    let result = target.apply(thisArgument, argumentsList);
+                    timeTracker.push(`Finished ${target.name} ${performance.now()}`);
+                    return result;
+                }
+            };
+            return new Proxy(ninja, handler);
+        });
+
+        let _kernel: any = kernel;
+        let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+        let planner = new Planner();
+        let context = planner.createContext(kernel);
+        let plan = planner.createPlan(context, ninjaBinding);
+        context.addPlan(plan);
+
+        let resolver = new Resolver();
+        let ninja = resolver.resolve<INinja>(context);
+
+        ninja.katana.use();
+
+        expect(timeTracker.length).eql(2);
 
   });
 

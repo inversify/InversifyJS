@@ -1,4 +1,5 @@
 /// <reference path="inversify-global.d.ts" />
+/// <reference path="../typings/browser/ambient/bluebird/bluebird.d.ts" />
 
 module inversify_global_test {
 

@@ -19,49 +19,77 @@ class Resolver implements IResolver {
 
     private _inject(request: IRequest) {
 
+        let bindings = request.bindings;
         let childRequests = request.childRequests;
-        let binding = request.bindings[0]; // TODO handle multi-injection
 
-        switch (binding.type) {
-            case BindingType.Value:
+        if (request.target && request.target.isArray() && bindings.length > 1) {
+
+            // Create an array instead of creating an instance
+            return childRequests.map((childRequest) => { return this._inject(childRequest); });
+
+        } else {
+
+            let result = null;
+            let binding = bindings[0];
+            let isSingleton = binding.scope === BindingScope.Singleton;
+
+            if (isSingleton && binding.cache !== null) {
                 return binding.cache;
+            }
 
-            case BindingType.Constructor:
-                return binding.implementationType;
+            switch (binding.type) {
 
-            case BindingType.Factory:
-                return binding.factory(request.parentContext);
+                case BindingType.Value:
+                    result = binding.cache;
+                    break;
 
-            case BindingType.Provider:
-                return binding.provider(request.parentContext);
+                case BindingType.Constructor:
+                    result = binding.implementationType;
+                    break;
 
-            case BindingType.Instance:
-                let constr = binding.implementationType;
-                let isSingleton = binding.scope === BindingScope.Singleton;
+                case BindingType.Factory:
+                    result = binding.factory(request.parentContext);
+                    break;
 
-                if (isSingleton && binding.cache !== null) {
-                    return binding.cache;
-                }
+                case BindingType.Provider:
+                    result = binding.provider(request.parentContext);
+                    break;
 
-                if (childRequests.length > 0) {
-                    let injections = childRequests.map((childRequest) => {
-                        return this._inject(childRequest);
-                    });
-                    let instance = this._createInstance(constr, injections);
-                    if (isSingleton) { binding.cache = instance; }
-                    return instance;
-                } else {
-                    let instance = new constr();
-                    if (isSingleton) { binding.cache = instance; }
-                    return instance;
-                }
+                case BindingType.Instance:
 
-            case BindingType.Invalid:
-            default:
-                // The user probably created a binding but didn't finish it
-                // e.g. kernel.bind<T>("ISomething"); missing BindingToSyntax
-                throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${request.service}`);
+                    let constr = binding.implementationType;
+
+                    if (childRequests.length > 0) {
+                        let injections = childRequests.map((childRequest) => {
+                            return this._inject(childRequest);
+                        });
+                        result = this._createInstance(constr, injections);
+                    } else {
+                        result = new constr();
+                    }
+
+                    break;
+
+                case BindingType.Invalid:
+                default:
+                    // The user probably created a binding but didn't finish it
+                    // e.g. kernel.bind<T>("ISomething"); missing BindingToSyntax
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${request.service}`);
+            }
+
+            // create proxy if requested
+            if (typeof binding.proxyMaker === "function") {
+                result = binding.proxyMaker(result);
+            }
+
+            // store in cache if scope is singleton
+            if (isSingleton) {
+                binding.cache = result;
+            }
+
+            return result;
         }
+
     }
 
     private _createInstance(Func: { new(...args: any[]) : any }, injections: Object[]) {

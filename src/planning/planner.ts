@@ -30,7 +30,7 @@ class Planner implements IPlanner {
 
         let dependencies = this._getDependencies(binding.implementationType);
 
-        dependencies.forEach((d) => { this._createSubRequest(rootRequest, d); });
+        dependencies.forEach((target) => { this._createSubRequest(rootRequest, target); });
         return plan;
     }
 
@@ -151,12 +151,14 @@ class Planner implements IPlanner {
         let paramNames = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, func) || [];
         let tags = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
-        return injections.map((inject, index) => {
+        let targets = injections.map((inject, index) => {
             let targetName = paramNames[index];
             let target = new Target(targetName, inject);
             target.metadata = tags[index.toString()] || [];
             return target;
         });
+
+        return targets;
     }
 }
 

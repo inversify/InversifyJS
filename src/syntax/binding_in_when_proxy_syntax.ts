@@ -35,7 +35,8 @@ class BindingInWhenProxySyntax<T> implements IBindingInWhenProxySyntax<T> {
 
     public whenTargetTagged(tag: string, value: any): IBindingInWhenProxySyntax<T> {
         this._binding.constraint = (request: IRequest) => {
-            return request.target.matchesTag(new Metadata(tag, value));
+            let metadata = new Metadata(tag, value);
+            return request.target.matchesTag(metadata);
         };
         return new BindingInWhenProxySyntax<T>(this._binding);
     }
