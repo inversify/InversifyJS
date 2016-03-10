@@ -45,7 +45,7 @@ interface IFactory<T> extends Function {
 }
 
 interface IProvider<T> extends Function {
-    (): Promise<T>;
+    (): any;
 }
 
 interface INewable<T> {
