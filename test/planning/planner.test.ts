@@ -11,6 +11,7 @@ import Target from "../../src/planning/target";
 import inject from "../../src/activation/inject";
 import paramNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import tagged from "../../src/activation/tagged";
 
 describe("Planner", () => {
 
@@ -450,6 +451,58 @@ describe("Planner", () => {
 
   });
 
-  it("Should apply constrains when an ambiguous match is found");
+  it("Should apply constrains when an ambiguous match is found", () => {
+
+      interface IWeapon {}
+      class Katana implements IWeapon { }
+      class Shuriken implements IWeapon {}
+
+      interface INinja {}
+
+      @inject("IWeapon", "IWeapon")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(
+              @tagged("canThrow", false) katana: IWeapon,
+              @tagged("canThrow", true) shuriken: IWeapon
+          ) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let actualPlan = planner.createPlan(context, ninjaBinding);
+
+      // root request has no target
+      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.target).eql(null);
+
+      // root request should have 2 child requests
+      expect(actualPlan.rootRequest.childRequests[0].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("katana");
+      expect(actualPlan.rootRequest.childRequests[0].target.service.value()).eql(weaponId);
+
+      expect(actualPlan.rootRequest.childRequests[1].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[1].target.name.value()).eql("shuriken");
+      expect(actualPlan.rootRequest.childRequests[1].target.service.value()).eql(weaponId);
+
+      expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
+
+  });
 
 });
