@@ -35,6 +35,8 @@ typings
 
 dist
 
+type_definitions/inversify/*.js
+
 src/*.js
 src/**/*.js
 
