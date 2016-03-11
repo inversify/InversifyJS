@@ -30,7 +30,7 @@ class Planner implements IPlanner {
 
         let dependencies = this._getDependencies(binding.implementationType);
 
-        dependencies.forEach((d) => { this._createSubRequest(rootRequest, d); });
+        dependencies.forEach((target) => { this._createSubRequest(rootRequest, target); });
         return plan;
     }
 
@@ -38,8 +38,9 @@ class Planner implements IPlanner {
         let bindings: IBinding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
-        if (_bindingDictionary.hasKey(service)) {
-            bindings = _bindingDictionary.get(service);
+        let _service = service.split("[]").join("");
+        if (_bindingDictionary.hasKey(_service)) {
+            bindings = _bindingDictionary.get(_service);
         }
         return bindings;
     }
@@ -47,31 +48,49 @@ class Planner implements IPlanner {
     private _createSubRequest(parentRequest: IRequest, target: ITarget) {
 
         try {
+
             let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service.value());
+            let activeBindings = [];
 
-            // mutiple bindings available
-            if (bindings.length > 1) {
+            if (bindings.length > 1 && target.isArray() === false) {
 
-                // TODO 2.0.0-alpha.3 
-                // TODO handle multi-injection, named, tagged and contextual binsingd here
+                // apply constraints if available to reduce the number of active bindings
+                activeBindings = bindings.filter((binding) => {
+
+                    let request =  new Request(
+                        binding.runtimeIdentifier,
+                        parentRequest.parentContext,
+                        parentRequest,
+                        binding,
+                        target
+                    );
+
+                    return binding.constraint(request);
+
+                });
+
+            } else {
+                activeBindings = bindings;
+            }
+
+            if (activeBindings.length === 0) {
+
+                // no matching bindings found
+                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${target.service.value()}`);
+
+            } else if (activeBindings.length > 1 && target.isArray() === false) {
+
+                // more than one matching binding found but target is not an array
                 throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.service.value()}`);
 
             } else {
 
-                // Use the only active binding to create a child request
-                let binding = bindings[0];
-                let childRequest = parentRequest.addChildRequest(target.service.value(), binding, target);
+                // one ore more than one matching bindings found 
+                // when more than 1 matching bindings found target is an array 
+                this._createChildRequest(parentRequest, target, activeBindings);
 
-                // Only try to plan sub-dependencies when binding type is BindingType.Instance
-                if (binding.type === BindingType.Instance) {
-
-                    // Create child requests for sub-dependencies if any
-                    let subDependencies = this._getDependencies(binding.implementationType);
-                    subDependencies.forEach((d, index) => {
-                        this._createSubRequest(childRequest, d);
-                    });
-                }
             }
+
         } catch (error) {
             if (error instanceof RangeError) {
                 this._throwWhenCircularDependenciesFound(parentRequest.parentContext.plan.rootRequest);
@@ -79,6 +98,31 @@ class Planner implements IPlanner {
                 throw new Error(error.message);
             }
         }
+    }
+
+    private _createChildRequest(parentRequest: IRequest, target: ITarget, bindings: IBinding<any>[]) {
+
+        // Use the only active binding to create a child request
+        let childRequest = parentRequest.addChildRequest(target.service.value(), bindings, target);
+        let subChildRequest = childRequest;
+
+        bindings.forEach((binding) => {
+
+            if (target.isArray()) {
+                subChildRequest = childRequest.addChildRequest(binding.runtimeIdentifier, binding, target);
+            }
+
+            // Only try to plan sub-dependencies when binding type is BindingType.Instance
+            if (binding.type === BindingType.Instance) {
+
+                // Create child requests for sub-dependencies if any
+                let subDependencies = this._getDependencies(binding.implementationType);
+                subDependencies.forEach((d, index) => {
+                    this._createSubRequest(subChildRequest, d);
+                });
+            }
+
+        });
     }
 
     private _throwWhenCircularDependenciesFound(request: IRequest, previousServices: string[] = []) {
@@ -107,12 +151,14 @@ class Planner implements IPlanner {
         let paramNames = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, func) || [];
         let tags = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
-        return injections.map((inject, index) => {
+        let targets = injections.map((inject, index) => {
             let targetName = paramNames[index];
             let target = new Target(targetName, inject);
             target.metadata = tags[index.toString()] || [];
             return target;
         });
+
+        return targets;
     }
 }
 

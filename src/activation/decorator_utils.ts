@@ -46,10 +46,10 @@ function _param(paramIndex, decorator) {
 }
 
 // Allows VanillaJS developers to use decorators:
-// decorate(Inject("IFoo", "IBar"), FooBar);
-// decorate(ParamNames("foo", "bar"), FooBar);
-// decorate(Named("foo"), FooBar, 0);
-// decorate(Tagged("bar"), FooBar, 1);
+// decorate(inject("IFoo", "IBar"), FooBar);
+// decorate(paramNames("foo", "bar"), FooBar);
+// decorate(named("foo"), FooBar, 0);
+// decorate(tagged("bar"), FooBar, 1);
 function decorate(
     decorator: (ClassDecorator|ParameterDecorator),
     target: any,

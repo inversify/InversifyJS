@@ -8,9 +8,10 @@ import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
-import Inject from "../../src/activation/inject";
-import ParamNames from "../../src/activation/paramnames";
+import inject from "../../src/activation/inject";
+import paramNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import tagged from "../../src/activation/tagged";
 
 describe("Planner", () => {
 
@@ -45,8 +46,8 @@ describe("Planner", () => {
 
       interface IKatana {}
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -61,8 +62,8 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @Inject("IKatana", "IShuriken")
-      @ParamNames("katana", "shuriken")
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
@@ -180,44 +181,6 @@ describe("Planner", () => {
 
   });
 
-  it("Should generate plans with multi-injections", () => {
-
-      // TODO 2.0.0-alpha.3 throw for now
-
-      interface IWeapon {}
-
-      class Katana implements IWeapon {}
-      class Shuriken implements IWeapon {}
-
-      interface INinja {}
-
-      @Inject("IWeapon", "IWeapon")
-      @ParamNames("katana", "shuriken")
-      class Ninja implements INinja {
-          public katana: IWeapon;
-          public shuriken: IWeapon;
-          public constructor(katana: IWeapon, shuriken: IWeapon) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      let ninjaId = "INinja";
-      let weaponId = "IWeapon";
-
-      let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
-      kernel.bind<IWeapon>(weaponId).to(Shuriken);
-      kernel.bind<IWeapon>(weaponId).to(Katana);
-
-      let throwErroFunction = () => {
-          kernel.get(ninjaId);
-      };
-
-      expect(throwErroFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${weaponId}`);
-
-  });
-
   it("Should throw when circular dependencies found", () => {
 
       interface IA {}
@@ -225,7 +188,7 @@ describe("Planner", () => {
       interface IC {}
       interface ID {}
 
-      @Inject("IA")
+      @inject("IA")
       class D implements IC {
           public a: IA;
           public constructor(a: IA) { // circular dependency
@@ -233,7 +196,7 @@ describe("Planner", () => {
           }
       }
 
-      @Inject("ID")
+      @inject("ID")
       class C implements IC {
           public d: ID;
           public constructor(d: ID) {
@@ -243,7 +206,7 @@ describe("Planner", () => {
 
       class B implements IB {}
 
-      @Inject("IB", "IC")
+      @inject("IB", "IC")
       class A implements IA {
           public b: IB;
           public c: IC;
@@ -282,8 +245,8 @@ describe("Planner", () => {
 
       interface IKatana {}
 
-      @Inject("IKatanaHandler", "IKatanaBlade")
-      @ParamNames("handler", "blade")
+      @inject("IKatanaHandler", "IKatanaBlade")
+      @paramNames("handler", "blade")
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -298,8 +261,8 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @Inject("IFactory<IKatana>", "IShuriken")
-      @ParamNames("katanaFactory", "shuriken")
+      @inject("IFactory<IKatana>", "IShuriken")
+      @paramNames("katanaFactory", "shuriken")
       class Ninja implements INinja {
           public katanaFactory: IFactory<IKatana>;
           public shuriken: IShuriken;
@@ -339,6 +302,205 @@ describe("Planner", () => {
       expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(0); // IMPORTANT!
       expect(actualPlan.rootRequest.childRequests[1].service).eql(shurikenId);
       expect(actualPlan.rootRequest.childRequests[1].childRequests.length).eql(0);
+      expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
+
+  });
+
+  it("Should generate plans with multi-injections", () => {
+
+      interface IWeapon {}
+
+      class Katana implements IWeapon {}
+      class Shuriken implements IWeapon {}
+
+      interface INinja {}
+
+      @inject("IWeapon[]")
+      @paramNames("weapons")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(weapons: IWeapon[]) {
+              this.katana = weapons[0];
+              this.shuriken = weapons[1];
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken);
+      kernel.bind<IWeapon>(weaponId).to(Katana);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+      let actualPlan = planner.createPlan(context, ninjaBinding);
+
+      // root request has no target
+      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.target).eql(null);
+
+      // root request should only have one child request with target weapons/IWeapon[]
+      expect(actualPlan.rootRequest.childRequests[0].service).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[1]).eql(undefined);
+      expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("weapons");
+      expect(actualPlan.rootRequest.childRequests[0].target.service.value()).eql("IWeapon[]");
+
+      // child request should have to child requests with targets weapons/IWeapon[] but bindings Katana and Shuriken
+      expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(2);
+
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.name.value()).eql("weapons");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].runtimeIdentifier).eql("IWeapon");
+      let shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
+      expect(shurikenImplementationType.name).eql("Shuriken");
+
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.name.value()).eql("weapons");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].runtimeIdentifier).eql("IWeapon");
+      let katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
+      expect(katanaImplementationType.name).eql("Katana");
+
+  });
+
+  it("Should throw when an not matching bindings are found", () => {
+
+      interface IKatana {}
+      class Katana implements IKatana { }
+
+      interface IShuriken {}
+      class Shuriken implements IShuriken {}
+
+      interface INinja {}
+
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IKatana;
+          public shuriken: IShuriken;
+          public constructor(katana: IKatana, shuriken: IShuriken) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let shurikenId = "IShuriken";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => { planner.createPlan(context, ninjaBinding); };
+      expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} IKatana`);
+
+  });
+
+  it("Should throw when an ambiguous match is found", () => {
+
+      interface IKatana {}
+      class Katana implements IKatana { }
+      class SharpKatana implements IKatana { }
+
+      interface IShuriken {}
+      class Shuriken implements IShuriken {}
+
+      interface INinja {}
+
+      @inject("IKatana", "IShuriken")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IKatana;
+          public shuriken: IShuriken;
+          public constructor(katana: IKatana, shuriken: IShuriken) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let katanaId = "IKatana";
+      let shurikenId = "IShuriken";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IKatana>(katanaId).to(Katana);
+      kernel.bind<IKatana>(katanaId).to(SharpKatana);
+      kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => { planner.createPlan(context, ninjaBinding); };
+      expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} IKatana`);
+
+  });
+
+  it("Should apply constrains when an ambiguous match is found", () => {
+
+      interface IWeapon {}
+      class Katana implements IWeapon { }
+      class Shuriken implements IWeapon {}
+
+      interface INinja {}
+
+      @inject("IWeapon", "IWeapon")
+      @paramNames("katana", "shuriken")
+      class Ninja implements INinja {
+          public katana: IWeapon;
+          public shuriken: IWeapon;
+          public constructor(
+              @tagged("canThrow", false) katana: IWeapon,
+              @tagged("canThrow", true) shuriken: IWeapon
+          ) {
+              this.katana = katana;
+              this.shuriken = shuriken;
+          }
+      }
+
+      let ninjaId = "INinja";
+      let weaponId = "IWeapon";
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+      kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let actualPlan = planner.createPlan(context, ninjaBinding);
+
+      // root request has no target
+      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.target).eql(null);
+
+      // root request should have 2 child requests
+      expect(actualPlan.rootRequest.childRequests[0].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("katana");
+      expect(actualPlan.rootRequest.childRequests[0].target.service.value()).eql(weaponId);
+
+      expect(actualPlan.rootRequest.childRequests[1].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[1].target.name.value()).eql("shuriken");
+      expect(actualPlan.rootRequest.childRequests[1].target.service.value()).eql(weaponId);
+
       expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
   });

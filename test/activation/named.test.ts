@@ -5,7 +5,7 @@ declare function __param(paramIndex, decorator);
 
 import { expect } from "chai";
 import { decorate } from "../../src/activation/decorator_utils";
-import Named from "../../src/activation/named";
+import named from "../../src/activation/named";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 interface IWeapon {}
@@ -32,8 +32,8 @@ class NamedWarrior {
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @Named("more_powerful") primary: IWeapon,
-      @Named("less_powerful") secondary: IWeapon) {
+      @named("more_powerful") primary: IWeapon,
+      @named("less_powerful") secondary: IWeapon) {
 
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -55,7 +55,7 @@ class InvalidDecoratorUsageWarrior {
     public test(a: string) { /*...*/ }
 }
 
-describe("@Named", () => {
+describe("@named", () => {
 
   it("Should not generate metadata for unnamed parameters", () => {
     let metadataKey = METADATA_KEY.TAGGED;
@@ -89,7 +89,7 @@ describe("@Named", () => {
   it("Should throw when applayed mutiple times", () => {
 
     let useDecoratorMoreThanOnce = function() {
-      __decorate([ __param(0, Named("a")), __param(0, Named("b")) ], InvalidDecoratorUsageWarrior);
+      __decorate([ __param(0, named("a")), __param(0, named("b")) ], InvalidDecoratorUsageWarrior);
     };
 
     let msg = "Metadadata key named was used more than once in a parameter.";
@@ -99,7 +99,7 @@ describe("@Named", () => {
   it("Should throw when not applayed to a constructor", () => {
 
     let useDecoratorOnMethodThatIsNotAContructor = function() {
-      __decorate([ __param(0, Named("a")) ],
+      __decorate([ __param(0, named("a")) ],
       InvalidDecoratorUsageWarrior.prototype,
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
@@ -117,8 +117,8 @@ describe("@Named", () => {
         return NamedVanillaJSWarrior;
     })();
 
-    decorate(Named("more_powerful"), VanillaJSWarrior, 0);
-    decorate(Named("less_powerful"), VanillaJSWarrior, 1);
+    decorate(named("more_powerful"), VanillaJSWarrior, 0);
+    decorate(named("less_powerful"), VanillaJSWarrior, 1);
 
     let metadataKey = METADATA_KEY.TAGGED;
     let paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior);

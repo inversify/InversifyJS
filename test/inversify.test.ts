@@ -1,7 +1,7 @@
 ///<reference path="../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, Inject } from "../src/inversify";
+import { Kernel, inject } from "../src/inversify";
 
 describe("InversifyJS", () => {
 
@@ -32,7 +32,7 @@ describe("InversifyJS", () => {
           }
       }
 
-      @Inject("IKatana", "IShuriken")
+      @inject("IKatana", "IShuriken")
       class Ninja implements INinja {
 
           private _katana: IKatana;

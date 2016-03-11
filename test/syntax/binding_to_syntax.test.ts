@@ -54,6 +54,11 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingType.Factory);
         expect(binding.factory).not.to.eql(null);
 
+        bindingToSyntax.toAutoFactory<INinja>();
+
+        expect(binding.type).eql(BindingType.Factory);
+        expect(binding.factory).not.to.eql(null);
+
         bindingToSyntax.toProvider<INinja>((context) => {
             return () => {
                 return new Promise<INinja>((resolve) => {

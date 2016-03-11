@@ -6,15 +6,15 @@
 // The Inversify main file, the library entry point.
 
 import Kernel from "./kernel/kernel";
-import Inject from "./activation/inject";
-import Tagged from "./activation/tagged";
-import Named from "./activation/named";
-import ParamNames from "./activation/paramnames";
+import inject from "./activation/inject";
+import tagged from "./activation/tagged";
+import named from "./activation/named";
+import paramNames from "./activation/paramnames";
 import { decorate } from "./activation/decorator_utils";
 
 export { Kernel };
 export { decorate };
-export { Inject };
-export { Tagged };
-export { Named };
-export { ParamNames };
+export { inject };
+export { tagged };
+export { named };
+export { paramNames };

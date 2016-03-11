@@ -4,6 +4,6 @@ interface IKernel {
   bind<T>(runtimeIdentifier: string): IBindingToSyntax<T>;
   unbind(runtimeIdentifier: string): void;
   unbindAll(): void;
-  get<Service>(runtimeIdentifier: string): Service;
-  getAll<Service>(runtimeIdentifier: string): Service[];
+  get<T>(runtimeIdentifier: string): T;
+  getAll<T>(runtimeIdentifier: string): T[];
 }
