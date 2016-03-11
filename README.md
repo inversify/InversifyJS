@@ -41,25 +41,13 @@ npm install inversify --save
 The InversifyJS type definitions are included in the npm package:
 
 ```
-/// <reference path="node_modules/inversify/dist/inversify.d.ts" />
+/// <reference path="node_modules/inversify/type_definitions/inversify.d.ts" />
 ```
 
-The inversify type definitions can be installed using [typings](https://github.com/typings/typings):
+# The Basics
+Let’s take a look to the basic usage and APIs of InversifyJS:
 
-```
-$ npm install -g typings
-$ typings init
-$ typings install inversify --save --ambient
-```
-
-# The Basics (with TypeScript)
-The main goal of InversifyJS is top allow JavaScript developers to write code that adheres to the SOLID principles
-
-#### 1. Declare interfaces & implementations
-
-Our goal is to write SOLID code. This means that we should "depend upon Abstractions. Do not depend upon concretions." 
-so we will start by declaring some interfaces (abstractions).
-
+#### Step 1: Declare your interfaces
 ```
 interface INinja {
     fight(): string;
@@ -75,10 +63,10 @@ interface IShuriken {
 }
 ```
 
-We can continue declaring some classes which implement them (concretions). 
-We will start by declaring two classes (`Katana` & `Shuriken`) which don't have any dependencies.
-
+#### Step 2: Implement the interfaces and declare dependencies using the `@inject` decorator
 ```
+import { inject } from "inversify";
+
 class Katana implements IKatana {
     public hit() {
         return "cut!";
@@ -90,12 +78,8 @@ class Shuriken implements IShuriken {
         return "hit!";
     }
 }
-```
 
-Now we are going to declare a class named `Ninja`, which has two dependencies (`IKatana` & `IShuriken`):
-
-```
-@Inject("IKatana", "IShuriken")
+@inject("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -112,122 +96,433 @@ class Ninja implements INinja {
 }
 ```
 
-#### 2. Bind interfaces to implementations
-
-Before we can start resolving and injecting dependencies we need to create an instance of the InversifyJS Kernel class. 
-The Kernel will automatically detect is a class has some dependencies by examining the `@Inject` annotation. 
-The Kernel will automatically detect if a class has some dependencies by examining the metadata provided by the Inject decorator.
-
+#### Step 3: Create and configure a Kernel
+We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling. 
+In the rest of your application your classes should be free of references to other classes.
 ```
 import { Kernel } from "inversify";
+
+import { Ninja } from "./entities/ninja";
+import { Katana } from "./entities/katana";
+import { Shuriken} from "./entities/shuriken";
+
 var kernel = new Kernel();
-```
-
-In order to resolve a dependency, the kernel needs to be told which implementation type (classes) to associate 
-with each service type (interfaces). We will use type bindings for this purpose. A type binding (or just a 
-binding) is a mapping between a service type (an interface), and an implementation type (class).
-
-```
 kernel.bind<INinja>("INinja").to(Ninja);
-      kernel.bind<IKatana>("IKatana").to(Katana);
-      kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
+kernel.bind<IKatana>("IKatana").to(Katana);
+kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+
+export default kernel;
 ```
 
-When we declare a type binding, the TypeScript compiler will check that the implementation type (class) 
-is actually and implementation of the service type (interface) and throw a compilation error if that is not the case.
+#### Step 4: Resolve dependencies
+You can use the method `get<T>` from the `Kernel` classs to resolve a dependency. 
+Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) 
+to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```
-// Compilation error: Shuriken is not assignable to type IKatana
-kernel.bind<IKatana>("IKatana").to(Shuriken);
-```
+import kernel = from "./inversify.config";
 
-We should keep the InversifyJS Kernel instantiation and type bindings centralized in one unique IoC configuration file. 
-This will help us to abstract our application from the IoC configuration.
+var ninja = kernel.get<INinja>("INinja");
 
-#### 3. Resolve & inject dependencies
-
-After declaring the type bindings, we can invoke the kernel resolve method to resolve a dependency. 
-We will use a string as the interface identifier (instead of the interface itself) because the 
-TypeScript interfaces are not available at runtime.
-
-```
-let ninja = kernel.get<INinja>("INinja");
-```
-
-If the interface that we are trying to resolve is bind to a class that has some dependencies, InversifyJS will 
-resolve and inject them into a new instance via the class constructor.
-
-```
-// Katana and Shuriken instances has been injected into a new Ninja instance via its constructor
 expect(ninja.fight()).eql("cut!"); // true
 expect(ninja.sneak()).eql("hit!"); // true
 ```
 
-Our application dependency tree should have one unique root element, known as the application composition root, which is the 
-only place where we should invoke the resolve method.
+As we can see the `IKatana` and `IShuriken` were successfully resolved and injected into `Ninja`.
 
-Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. 
-If we are working with an MVC framework the composition root should be located in the application class, 
-somewhere along the routing logic or in a controller factory class. Please refer to the integration 
-examples if you need additional help.
+# Features (v2.0.0 alpha.3)
+## Declaring kernel modules
+
+Kernel modules can help you to manage the complexity of your bindings in very large applications.
+```
+let someModule: IKernelModule = (kernel: IKernel) => {
+    kernel.bind<INinja>("INinja").to(Ninja);
+    kernel.bind<IKatana>("IKatana").to(Katana);
+    kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+};
+
+let kernel = new Kernel({ modules: [ someModule ] });
+```
+
+## Controlling the scope of the dependencies
+
+InversifyJS uses transient scope by default but you can also use singleton scope:
+```
+kernel.bind<IShuriken>("IShuriken").to(Shuriken).inTransientScope(); // Default
+kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
+```
+
+## Injecting a value
+Binds an abstraction to a constant value.
+```
+kernel.bind<IKatana>("IKatana").toValue(new Katana());
+```
+
+## Injecting a class constructor
+Binds an abstraction to a class constructor.
+```
+@inject("IKatana", "IShuriken")
+class Ninja implements INinja {
+
+    private _katana: IKatana;
+    private _shuriken: IShuriken;
+
+    public constructor(Katana: INewable<IKatana>, shuriken: IShuriken) {
+        this._katana = new Katana();
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+```
+
+```
+kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katana);
+```
+
+## Injecting a Factory
+Binds an abstraction to a user defined Factory.
+```
+@inject("IKatana", "IShuriken")
+class Ninja implements INinja {
+
+    private _katana: IKatana;
+    private _shuriken: IShuriken;
+
+    public constructor(katanaFactory: IFactory<IKatana>, shuriken: IShuriken) {
+        this._katana = katanaFactory();
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+```
+
+```
+kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context) => {
+    return () => {
+        return context.kernel.get<IKatana>("IKatana");
+    };
+});
+```
+
+## Auto factory
+Binds an abstraction to a auto-generated Factory.
+```
+@inject("IKatana", "IShuriken")
+class Ninja implements INinja {
+
+    private _katana: IKatana;
+    private _shuriken: IShuriken;
+
+    public constructor(katanaFactory: IFactory<IKatana>, shuriken: IShuriken) {
+        this._katana = katanaFactory();
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+```
+
+```
+kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
+```
+
+## Injecting a Provider (asynchronous Factory)
+Binds an abstraction to a Provider. A provider is an asynchronous factory, this is useful when dealing with asynchronous  I/O operations.
+```
+@inject("IKatana", "IShuriken")
+class Ninja implements INinja {
+
+    public katana: IKatana;
+    public shuriken: IShuriken;
+    public katanaProvider: IProvider<IKatana>;
+
+    public constructor(katanaProvider: IProvider<IKatana>, shuriken: IShuriken) {
+        this.katanaProvider = katanaProvider;
+        this.katana= null;
+        this.shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+
+var ninja = kernel.get<INinja>("INinja");
+
+ninja.katanaProvider()
+     .then((katana) => { ninja.katana = katana; })
+     .catch((e) => { console.log(e); });
+```
+
+```
+kernel.bind<IProvider<IKatana>>("IProvider<IKatana>").toProvider<IKatana>((context) => {
+    return () => {
+        return new Promise<IKatana>((resolve) => {
+            let katana = context.kernel.get<IKatana>("IKatana");
+            resolve(katana);
+        });
+    };
+});
+```
+
+## Injecting a proxy
+It is possible to create a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) of 
+a dependency just before it is injected. This is useful to keep our dependencies agnostic of the implementation of crosscutting 
+concerns like caching or logging.
+```
+interface IKatana {
+    use: () => void;
+}
+
+class Katana implements IKatana {
+    public use() {
+        console.log("Used Katana!");
+    }
+}
+
+interface INinja {
+    katana: IKatana;
+}
+
+@inject("IKatana")
+class Ninja implements INinja {
+    public katana: IKatana;
+    public constructor(katana: IKatana) {
+        this.katana = katana;
+    }
+}
+```
+
+```
+kernel.bind<INinja>("INinja").to(Ninja);
+
+kernel.bind<IKatana>("IKatana").to(Katana).proxy((ninja) => {
+    let handler = {
+        apply: function(target, thisArgument, argumentsList) {
+            console.log(`Starting: ${performance.now()}`);
+            let result = target.apply(thisArgument, argumentsList);
+            console.log(`Finished: ${performance.now()}`);
+            return result;
+        }
+    };
+    return new Proxy(ninja, handler);
+});
+```
+
+```
+let ninja = kernelget<INinja>();
+ninja.katana.use();
+> Starting: 460495.88000000006
+> Used Katana!
+> Finished: 460496.585
+```
+
+## Multi-injection
+We can use multi-injection When two or more concretions have been bound to the an abstraction. 
+Notice how an array of `IWeapon` is injected into the `Ninja` class via its constructor:
+```
+interface IWeapon {
+    name: string;
+}
+
+class Katana implements IWeapon {
+    public name = "Katana";
+}
+class Shuriken implements IWeapon {
+    public name = "Shuriken";
+}
+
+interface INinja {
+    katana: IWeapon;
+    shuriken: IWeapon;
+}
+
+@inject("IWeapon[]")
+class Ninja implements INinja {
+    public katana: IWeapon;
+    public shuriken: IWeapon;
+    public constructor(weapons: IWeapon[]) {
+        this.katana = weapons[0];
+        this.shuriken = weapons[1];
+    }
+}
+```
+
+We are binding `Katana` and `Shuriken` to `IWeapon`:
+
+```
+kernel.bind<INinja>("INinja").to(Ninja);
+kernel.bind<IWeapon>("IWeapon").to(Katana);
+kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+```
+
+## Tagged bindings
+We can use tagged bindings to fix `AMBIGUOUS_MATCH` errors when two or more 
+concretions have been bound to the an abstraction. Notice how the  constructor 
+arguments of the `Ninja` class have been annotated using the `@tagged` decorator:
+```
+interface IWeapon {}
+class Katana implements IWeapon { }
+class Shuriken implements IWeapon {}
+
+interface INinja {
+    katana: IWeapon;
+    shuriken: IWeapon;
+}
+
+@inject("IWeapon", "IWeapon")
+class Ninja implements INinja {
+    public katana: IWeapon;
+    public shuriken: IWeapon;
+    public constructor(
+        @tagged("canThrow", false) katana: IWeapon,
+        @tagged("canThrow", true) shuriken: IWeapon
+    ) {
+        this.katana = katana;
+        this.shuriken = shuriken;
+    }
+}
+```
+
+We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetTagged` 
+constraint is added to avoid `AMBIGUOUS_MATCH` errors:
+
+```
+kernel.bind<INinja>(ninjaId).to(Ninja);
+kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+```
+
+## Create your own tag decorators
+
+Creating your own decorators is really simple:
+
+```
+let throwable = tagged("canThrow", true);
+let notThrowable = tagged("canThrow", false);
+
+@inject("IWeapon", "IWeapon")
+class Ninja implements INinja {
+    public katana: IWeapon;
+    public shuriken: IWeapon;
+    public constructor(
+        @notThrowable katana: IWeapon,
+        @throwable shuriken: IWeapon
+    ) {
+        this.katana = katana;
+        this.shuriken = shuriken;
+    }
+}
+```
+
+## Named bindings
+We can use named bindings to fix `AMBIGUOUS_MATCH` errors when two or more concretions have 
+been bound to the an abstraction. Notice how the constructor arguments of the `Ninja` class 
+have been annotated using the `@named` decorator:
+```
+interface IWeapon {}
+class Katana implements IWeapon { }
+class Shuriken implements IWeapon {}
+
+interface INinja {
+    katana: IWeapon;
+    shuriken: IWeapon;
+}
+
+@inject("IWeapon", "IWeapon")
+class Ninja implements INinja {
+    public katana: IWeapon;
+    public shuriken: IWeapon;
+    public constructor(
+        @named("strong")katana: IWeapon,
+        @named("weak") shuriken: IWeapon
+    ) {
+        this.katana = katana;
+        this.shuriken = shuriken;
+    }
+}
+```
+We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetNamed` constraint is 
+added to avoid `AMBIGUOUS_MATCH` errors:
+```
+kernel.bind<INinja>("INinja").to(Ninja);
+kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
+kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
+```
+
+## Contextual bindings & @paramNames
+The `@paramNames` decorator is used to access the names of the constructor arguments from a 
+contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...` 
+becomes `constructor(a, b) { ...` after compression but thanks to `@paramNames` we can still 
+refer to the design-time names `katana` and `shuriken`.
+```
+interface IWeapon {}
+class Katana implements IWeapon { }
+class Shuriken implements IWeapon {}
+
+interface INinja {
+    katana: IWeapon;
+    shuriken: IWeapon;
+}
+
+@inject("IWeapon", "IWeapon")
+@paramNames("katana","shuriken")
+class Ninja implements INinja {
+    public katana: IWeapon;
+    public shuriken: IWeapon;
+    public constructor(
+        katana: IWeapon,
+        shuriken: IWeapon
+    ) {
+        this.katana = katana;
+        this.shuriken = shuriken;
+    }
+}
+```
+We are binding `Katana` and `Shuriken` to `IWeapon` but a custom `when` constraint is added to avoid `AMBIGUOUS_MATCH` errors:
+```
+kernel.bind<INinja>(ninjaId).to(Ninja);
+
+kernel.bind<IWeapon>("IWeapon").to(Katana).when((request: IRequest) => {
+    return request.target.name.equals("katana");
+});
+
+kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
+    return request.target.name.equals("shuriken");
+});
+```
+The target fields implement the `IQueryableString` interface to help you to create your custom constraints:
+```
+interface IQueryableString {
+  startsWith(searchString: string): boolean;
+  endsWith(searchString: string): boolean;
+  contains(searchString: string): boolean;
+  equals(compareString: string): boolean;
+  value(): string;
+}
+```
+
+## Circular dependencies
+InversifyJS is able to identify circular dependencies and will throw an exception to help you to 
+identify the location of the problem if a circular dependency is detected:
+
+```
+Error: Circular dependency found between services: IKatana and INinja
+```
+
+Plese refer to the [wiki](https://github.com/inversify/InversifyJS/wiki) for additional details.
 
 # Integration with other frameworks
 Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
-# Good Practices
-Dependency Inversion (DI) isn't rocket science. 
-We just need to try to avoid new and singleton except when there's a compelling reason to use them, 
-such as a utility method that has no external dependencies, or a utility class that could not possibly 
-have any purpose outside the framework (interop wrappers and dictionary keys are common examples of this).
-
-Many of the problems with IoC frameworks come up when developers are first learning how to use them, 
-and instead of actually changing the way they handle dependencies and abstractions to fit the IoC model, 
-instead try to manipulate the IoC container to meet the expectations of their old coding style, which 
-would often involve high coupling and low cohesion.
-
-#### Use a Composition Root to avoid the Service Locator anti-pattern
-
-Our application dependency tree should have one unique root element (known as the application composition 
-root) which is the only component where we should invoke the resolve method.
-
-Invoking resolve every time we need to inject something, as if it was a Service Locator is an anti-pattern. 
-If we are working with an MVC framework the composition root should be located in the application class, 
-somewhere along the routing logic or in a controller factory class.
-
-#### Avoid Constructor over-injection
-
-Constructor over-injection is a violation of the Single Responsibility Principle. Too many constructor 
-arguments indicates too many dependencies; too many dependencies indicates that the class is trying to 
-do too much. Usually this error correlates with other code smells, such as unusually long or 
-ambiguous ("manager") class names.
-
-#### Avoid the injection of data, as opposed to behaviour
-
-Injection of data, as opposed to behaviour, is a subtype of the poltergeist anti-pattern, 
-with the 'geist in this case being the container. If a class needs to be aware of the current 
-date and time, you don't inject a DateTime, which is data; instead, you inject an abstraction 
-over the system clock. This is not only correct for DI; it is absolutely essential for testability, 
-so that you can test time-varying functions without needing to actually wait on them.
-
-#### Avoid declaring every life cycle as Singleton
-
-Declaring every life cycle as Singleton is, to me, a perfect example of cargo cult programming and to 
-a lesser degree the colloquially-named "object cesspool". I've seen more singleton abuse than I care 
-to remember, and very little of it involves DI.
-
-#### Avoid implementation-specific interface types
-
-Another common error is implementation-specific interface types done just to be able to register it in 
-the container. This is in and of itself a violation of the Dependency Inversion Principle (just because 
-it's an interface, does not mean it's truly abstract) and often also includes interface bloat which 
-violates the Interface Segregation Principle.
-
-#### Avoid optional dependencies
-
-In other words, there is a constructor that accepts dependency injection, but also another constructor 
-that uses a "default" implementation. This also violates the DIP and tends to lead to LSP violations 
-as well, as developers, over time, start making assumptions around the default implementation, and/or 
-start new-ing up instances using the default constructor.
 
 # Support
 If you are experience any kind of issues we will be happy to help. You can report an issue using the 
