@@ -130,7 +130,13 @@ expect(ninja.sneak()).eql("hit!"); // true
 
 As we can see the `IKatana` and `IShuriken` were successfully resolved and injected into `Ninja`.
 
+# Live demo
+You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3).
+[![](http://i.imgur.com/4l8RJGA.png)](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3)
+
 # Features (v2.0.0 alpha.3)
+Let's take a look to the InversifyJS features!
+
 ## Declaring kernel modules
 
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
