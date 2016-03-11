@@ -13,12 +13,12 @@ A lightweight IoC container written in TypeScript.
 Visit http://inversify.io/ for more information.
 
 ### About
-InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps. 
+InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps.
 A pico IoC container uses a class constructor to identify and inject its dependencies.
 InversifyJS has a friendly API and encourage the usage of the best OOP and IoC practices.
 
 ### Motivation
-JavaScript applications are becoming larger and larger day after day. 
+JavaScript applications are becoming larger and larger day after day.
 InversifyJS has been designed to allow JavaScript developers to write code that adheres to the SOLID principles.
 
 ### Philosophy
@@ -36,7 +36,7 @@ You can get the latest release and the type definitions using npm:
 ```
 npm install inversify --save
 ```
-**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd. 
+**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
 The InversifyJS type definitions are included in the npm package:
 
@@ -97,7 +97,7 @@ class Ninja implements INinja {
 ```
 
 #### Step 3: Create and configure a Kernel
-We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling. 
+We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
 In the rest of your application your classes should be free of references to other classes.
 ```
 import { Kernel } from "inversify";
@@ -115,8 +115,8 @@ export default kernel;
 ```
 
 #### Step 4: Resolve dependencies
-You can use the method `get<T>` from the `Kernel` classs to resolve a dependency. 
-Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/) 
+You can use the method `get<T>` from the `Kernel` class to resolve a dependency.
+Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```
@@ -280,8 +280,8 @@ kernel.bind<IProvider<IKatana>>("IProvider<IKatana>").toProvider<IKatana>((conte
 ```
 
 ## Injecting a proxy
-It is possible to create a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) of 
-a dependency just before it is injected. This is useful to keep our dependencies agnostic of the implementation of crosscutting 
+It is possible to create a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) of
+a dependency just before it is injected. This is useful to keep our dependencies agnostic of the implementation of crosscutting
 concerns like caching or logging.
 ```
 interface IKatana {
@@ -332,7 +332,7 @@ ninja.katana.use();
 ```
 
 ## Multi-injection
-We can use multi-injection When two or more concretions have been bound to the an abstraction. 
+We can use multi-injection When two or more concretions have been bound to the an abstraction.
 Notice how an array of `IWeapon` is injected into the `Ninja` class via its constructor:
 ```
 interface IWeapon {
@@ -371,8 +371,8 @@ kernel.bind<IWeapon>("IWeapon").to(Shuriken);
 ```
 
 ## Tagged bindings
-We can use tagged bindings to fix `AMBIGUOUS_MATCH` errors when two or more 
-concretions have been bound to the an abstraction. Notice how the  constructor 
+We can use tagged bindings to fix `AMBIGUOUS_MATCH` errors when two or more
+concretions have been bound to the an abstraction. Notice how the  constructor
 arguments of the `Ninja` class have been annotated using the `@tagged` decorator:
 ```
 interface IWeapon {}
@@ -398,7 +398,7 @@ class Ninja implements INinja {
 }
 ```
 
-We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetTagged` 
+We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetTagged`
 constraint is added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```
@@ -430,8 +430,8 @@ class Ninja implements INinja {
 ```
 
 ## Named bindings
-We can use named bindings to fix `AMBIGUOUS_MATCH` errors when two or more concretions have 
-been bound to the an abstraction. Notice how the constructor arguments of the `Ninja` class 
+We can use named bindings to fix `AMBIGUOUS_MATCH` errors when two or more concretions have
+been bound to the an abstraction. Notice how the constructor arguments of the `Ninja` class
 have been annotated using the `@named` decorator:
 ```
 interface IWeapon {}
@@ -456,7 +456,7 @@ class Ninja implements INinja {
     }
 }
 ```
-We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetNamed` constraint is 
+We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetNamed` constraint is
 added to avoid `AMBIGUOUS_MATCH` errors:
 ```
 kernel.bind<INinja>("INinja").to(Ninja);
@@ -465,9 +465,9 @@ kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 ```
 
 ## Contextual bindings & @paramNames
-The `@paramNames` decorator is used to access the names of the constructor arguments from a 
-contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...` 
-becomes `constructor(a, b) { ...` after compression but thanks to `@paramNames` we can still 
+The `@paramNames` decorator is used to access the names of the constructor arguments from a
+contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...`
+becomes `constructor(a, b) { ...` after compression but thanks to `@paramNames` we can still
 refer to the design-time names `katana` and `shuriken`.
 ```
 interface IWeapon {}
@@ -517,7 +517,7 @@ interface IQueryableString {
 ```
 
 ## Circular dependencies
-InversifyJS is able to identify circular dependencies and will throw an exception to help you to 
+InversifyJS is able to identify circular dependencies and will throw an exception to help you to
 identify the location of the problem if a circular dependency is detected:
 
 ```
@@ -531,14 +531,14 @@ Some integration examples are available in the [official examples repository](ht
 
 
 # Support
-If you are experience any kind of issues we will be happy to help. You can report an issue using the 
-[issues page](https://github.com/inversify/InversifyJS/issues) or the 
-[chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at 
+If you are experience any kind of issues we will be happy to help. You can report an issue using the
+[issues page](https://github.com/inversify/InversifyJS/issues) or the
+[chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at
 [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
-If you want to share your thoughts with the development team or join us you will be able to do so using the 
-[official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the 
-[development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the 
+If you want to share your thoughts with the development team or join us you will be able to do so using the
+[official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
+[development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the
 [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
 # License
@@ -547,17 +547,17 @@ License under the MIT License (MIT)
 
 Copyright © 2015 [Remo H. Jansen](http://www.remojansen.com)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-documentation files (the "Software"), to deal in the Software without restriction, including without 
-limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
-of the Software, and to permit persons to whom the Software is furnished to do so, subject to the 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without
+limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
 following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
+The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
