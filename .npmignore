@@ -18,3 +18,11 @@ wallaby.js
 .travis.yml
 .gitignore
 .vscode
+
+# This will ignore:
+# inversify-test.js, inversify-test.ts
+# inversify-global-tests.js, inversify-global-tests.ts
+type_definitions/inversify/*-test.js
+type_definitions/inversify/*-test.ts
+type_definitions/inversify/*-tests.js
+type_definitions/inversify/*-tests.ts
