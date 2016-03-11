@@ -63,9 +63,9 @@ class Kernel implements IKernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
-    public get<Service>(runtimeIdentifier: string): Service {
+    public get<T>(runtimeIdentifier: string): T {
 
-        let bindings = this._planner.getBindings<Service>(this, runtimeIdentifier);
+        let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
 
         switch (bindings.length) {
 
@@ -75,7 +75,7 @@ class Kernel implements IKernel {
 
             // CASE 2: There is 1 binding 
             case BindingCount.OnlyOneBindingAvailable:
-                return this._planAndResolve<Service>(bindings[0]);
+                return this._planAndResolve<T>(bindings[0]);
 
             // CASE 3: There are multiple bindings throw as don't have enough information (metadata)    
             case BindingCount.MultipleBindingsAvailable:
@@ -86,9 +86,9 @@ class Kernel implements IKernel {
 
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
-    public getAll<Service>(runtimeIdentifier: string): Service[] {
+    public getAll<T>(runtimeIdentifier: string): T[] {
 
-        let bindings = this._planner.getBindings<Service>(this, runtimeIdentifier);
+        let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
 
         switch (bindings.length) {
 
@@ -101,13 +101,13 @@ class Kernel implements IKernel {
             case BindingCount.MultipleBindingsAvailable:
             default:
                 return bindings.map((binding) => {
-                    return this._planAndResolve<Service>(binding);
+                    return this._planAndResolve<T>(binding);
                 });
         }
     }
 
     // Generates an executes a resolution plan
-    private _planAndResolve<Service>(binding: IBinding<Service>): Service {
+    private _planAndResolve<T>(binding: IBinding<T>): T {
 
         // STEP 1: generate resolution context
         let context = this._planner.createContext(this);
@@ -116,7 +116,7 @@ class Kernel implements IKernel {
         this._planner.createPlan(context, binding);
 
         // STEP 3: execute resolution plan
-        return this._resolver.resolve<Service>(context);
+        return this._resolver.resolve<T>(context);
     }
 
 }

@@ -37,6 +37,16 @@ dist
 
 src/*.js
 src/**/*.js
+
+src/*.d.ts
+src/activation/*.d.ts
+src/bindings/*.d.ts
+src/constants/*.d.ts
+src/kernel/*.d.ts
+src/planning/*.d.ts
+src/resolution/*.d.ts
+src/syntax/*.d.ts
+
 test/*.js
 test/**/*.js
 type_definitions/*.js

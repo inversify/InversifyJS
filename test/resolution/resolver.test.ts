@@ -925,6 +925,11 @@ describe("Resolver", () => {
 
   it("Should be able to resolve plans with proxy injections", () => {
 
+        console.log(`
+            WARNING: Proxy canot be tested due to blocking issue:
+            http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
+        `);
+
         interface IKatana {
             use: () => void;
         }

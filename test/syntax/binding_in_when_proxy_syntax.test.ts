@@ -112,8 +112,10 @@ describe("BindingInWhenProxySyntax", () => {
         let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
 
         bindingInWhenProxySyntax.proxy((ninja: INinja) => {
-            let handler = {};
-            return new Proxy<INinja>(ninja, handler);
+            // let handler = {};
+            // return new Proxy<INinja>(ninja, handler);
+            // BLOCK http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
+            return ninja;
         });
 
         expect(binding.proxyMaker).not.to.eql(null);

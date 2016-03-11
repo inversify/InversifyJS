@@ -28,7 +28,7 @@ gulp.task("lint", function() {
     return gulp.src([
         "src/**/**.ts",
         "test/**/**.test.ts",
-        "type_definitions/**/**.ts"
+        "type_definitions/inversify/*.ts"
     ])
     .pipe(tslint())
     .pipe(tslint.report("verbose", config));

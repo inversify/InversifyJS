@@ -19,7 +19,6 @@
 
 // BINDINGS
 /// <reference path="./bindings/binding.d.ts" />
-/// <reference path="./bindings/constraint.d.ts" />
 /// <reference path="./bindings/factory.d.ts" />
 /// <reference path="./bindings/provider.d.ts" />
 /// <reference path="./bindings/factory_creator.d.ts" />
@@ -35,4 +34,3 @@
 // SYNTAX
 /// <reference path="./syntax/binding_to_syntax.d.ts" />
 /// <reference path="./syntax/binding_in_when_proxy_syntax.d.ts" />
-/// <reference path="./syntax/proxy.d.ts" />
