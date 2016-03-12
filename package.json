@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "gulp",
-    "preinstall":"npm install -g typings && typings install",
+    "preinstall":"npm install typings && typings install",
     "prepublish": "gulp build && gulp test && gulp dist"
   },
   "repository": {

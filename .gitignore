@@ -28,7 +28,7 @@ build
 build
 node_modules
 bower_components
-documentation
+docs
 bundled
 
 typings
