@@ -30,7 +30,7 @@ InversifyJS has been developed with 3 main goals:
 
 3. Add as little runtime overhead as possible.
 
-# Installation
+### Installation
 
 You can get the latest release and the type definitions using npm:
 ```
@@ -44,7 +44,7 @@ The InversifyJS type definitions are included in the npm package:
 /// <reference path="node_modules/inversify/type_definitions/inversify.d.ts" />
 ```
 
-# The Basics
+### The Basics
 Let’s take a look to the basic usage and APIs of InversifyJS:
 
 #### Step 1: Declare your interfaces
@@ -130,14 +130,10 @@ expect(ninja.sneak()).eql("hit!"); // true
 
 As we can see the `IKatana` and `IShuriken` were successfully resolved and injected into `Ninja`.
 
-# Live demo
-You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3).
-[![](http://i.imgur.com/4l8RJGA.png)](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3)
-
-# Features (v2.0.0 alpha.3)
+### Features (v2.0.0 alpha.3)
 Let's take a look to the InversifyJS features!
 
-## Declaring kernel modules
+#### Declaring kernel modules
 
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
 ```
@@ -150,7 +146,7 @@ let someModule: IKernelModule = (kernel: IKernel) => {
 let kernel = new Kernel({ modules: [ someModule ] });
 ```
 
-## Controlling the scope of the dependencies
+#### Controlling the scope of the dependencies
 
 InversifyJS uses transient scope by default but you can also use singleton scope:
 ```
@@ -158,13 +154,13 @@ kernel.bind<IShuriken>("IShuriken").to(Shuriken).inTransientScope(); // Default
 kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 ```
 
-## Injecting a value
+#### Injecting a value
 Binds an abstraction to a constant value.
 ```
 kernel.bind<IKatana>("IKatana").toValue(new Katana());
 ```
 
-## Injecting a class constructor
+#### Injecting a class constructor
 Binds an abstraction to a class constructor.
 ```
 @inject("IKatana", "IShuriken")
@@ -188,7 +184,7 @@ class Ninja implements INinja {
 kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katana);
 ```
 
-## Injecting a Factory
+#### Injecting a Factory
 Binds an abstraction to a user defined Factory.
 ```
 @inject("IKatana", "IShuriken")
@@ -216,7 +212,7 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
 });
 ```
 
-## Auto factory
+#### Auto factory
 Binds an abstraction to a auto-generated Factory.
 ```
 @inject("IKatana", "IShuriken")
@@ -240,7 +236,7 @@ class Ninja implements INinja {
 kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
 ```
 
-## Injecting a Provider (asynchronous Factory)
+#### Injecting a Provider (asynchronous Factory)
 Binds an abstraction to a Provider. A provider is an asynchronous factory, this is useful when dealing with asynchronous  I/O operations.
 ```
 @inject("IKatana", "IShuriken")
@@ -279,7 +275,7 @@ kernel.bind<IProvider<IKatana>>("IProvider<IKatana>").toProvider<IKatana>((conte
 });
 ```
 
-## Injecting a proxy
+#### Injecting a proxy
 It is possible to create a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) of
 a dependency just before it is injected. This is useful to keep our dependencies agnostic of the implementation of crosscutting
 concerns like caching or logging.
@@ -331,7 +327,7 @@ ninja.katana.use();
 > Finished: 460496.585
 ```
 
-## Multi-injection
+#### Multi-injection
 We can use multi-injection When two or more concretions have been bound to the an abstraction.
 Notice how an array of `IWeapon` is injected into the `Ninja` class via its constructor:
 ```
@@ -370,7 +366,7 @@ kernel.bind<IWeapon>("IWeapon").to(Katana);
 kernel.bind<IWeapon>("IWeapon").to(Shuriken);
 ```
 
-## Tagged bindings
+#### Tagged bindings
 We can use tagged bindings to fix `AMBIGUOUS_MATCH` errors when two or more
 concretions have been bound to the an abstraction. Notice how the  constructor
 arguments of the `Ninja` class have been annotated using the `@tagged` decorator:
@@ -407,7 +403,7 @@ kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
 kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 ```
 
-## Create your own tag decorators
+#### Create your own tag decorators
 
 Creating your own decorators is really simple:
 
@@ -429,7 +425,7 @@ class Ninja implements INinja {
 }
 ```
 
-## Named bindings
+#### Named bindings
 We can use named bindings to fix `AMBIGUOUS_MATCH` errors when two or more concretions have
 been bound to the an abstraction. Notice how the constructor arguments of the `Ninja` class
 have been annotated using the `@named` decorator:
@@ -464,7 +460,7 @@ kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
 kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 ```
 
-## Contextual bindings & @paramNames
+#### Contextual bindings & @paramNames
 The `@paramNames` decorator is used to access the names of the constructor arguments from a
 contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...`
 becomes `constructor(a, b) { ...` after compression but thanks to `@paramNames` we can still
@@ -516,7 +512,7 @@ interface IQueryableString {
 }
 ```
 
-## Circular dependencies
+#### Circular dependencies
 InversifyJS is able to identify circular dependencies and will throw an exception to help you to
 identify the location of the problem if a circular dependency is detected:
 
@@ -526,11 +522,10 @@ Error: Circular dependency found between services: IKatana and INinja
 
 Plese refer to the [wiki](https://github.com/inversify/InversifyJS/wiki) for additional details.
 
-# Integration with other frameworks
-Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
+### Live demo & examples
+You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3). Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
-
-# Support
+### Support
 If you are experience any kind of issues we will be happy to help. You can report an issue using the
 [issues page](https://github.com/inversify/InversifyJS/issues) or the
 [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at
@@ -541,7 +536,7 @@ If you want to share your thoughts with the development team or join us you will
 [development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the
 [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
-# License
+### License
 
 License under the MIT License (MIT)
 
