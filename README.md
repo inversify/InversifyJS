@@ -10,7 +10,6 @@
 <img src="https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/logo.png" width="500"  />
 
 A lightweight IoC container written in TypeScript.
-Visit http://inversify.io/ for more information.
 
 ### About
 InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps.
@@ -44,10 +43,14 @@ The InversifyJS type definitions are included in the npm package:
 /// <reference path="node_modules/inversify/type_definitions/inversify.d.ts" />
 ```
 
-### The Basics
-Let’s take a look to the basic usage and APIs of InversifyJS:
+### The Basics (TypeScript)
+Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
 
 #### Step 1: Declare your interfaces
+Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle). 
+This means that we should "depend upon Abstractions and do not depend upon concretions". 
+Let's start by declaring some interfaces (abstractions).
+
 ```
 interface INinja {
     fight(): string;
@@ -64,6 +67,7 @@ interface IShuriken {
 ```
 
 #### Step 2: Implement the interfaces and declare dependencies using the `@inject` decorator
+Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared.
 ```
 import { inject } from "inversify";
 
@@ -129,6 +133,55 @@ expect(ninja.sneak()).eql("hit!"); // true
 ```
 
 As we can see the `IKatana` and `IShuriken` were successfully resolved and injected into `Ninja`.
+
+### The Basics (JavaScript)
+It is recommended to use TypeScript for the best development experience but you can use plain JavaScript
+if you preffer it. The following code snippet implements the previous example without TypeScript in Node.js v5.71: 
+
+```
+var inversify = require("inversify");
+require("reflect-metadata");
+
+var TYPES = {
+    Ninja: "Ninja",
+    Katana: "Katana",
+    Shuriken: "Shuriken"
+};
+
+class Katana {
+    hit() {
+        return "cut!";
+    }
+}
+
+class Shuriken {
+    throw() {
+        return "hit!";
+    }
+}
+
+class Ninja {
+    constructor(katana, shuriken) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+    }
+    fight() { return this._katana.hit(); };
+    sneak() { return this._shuriken.throw(); };
+}
+
+// Declare injections
+inversify.inject(TYPES.Katana, TYPES.Shuriken)(Ninja);
+
+// Declare bindings
+var kernel = new inversify.Kernel();
+kernel.bind(TYPES.Ninja).to(Ninja);
+kernel.bind(TYPES.Katana).to(Katana);
+kernel.bind(TYPES.Shuriken).to(Shuriken);
+
+// Resolve dependencies
+var ninja = kernel.get(TYPES.Ninja);
+return ninja;
+```
 
 ### Features (v2.0.0 alpha.3)
 Let's take a look to the InversifyJS features!
