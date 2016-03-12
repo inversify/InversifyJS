@@ -1,10 +1,9 @@
-// Place your settings in this file to overwrite default and user settings.
 {
 	"files.exclude": {
 		"**/.git": true,
 		"**/.DS_Store": true,
-        "src/**/*.js": true,
-        "test/**/*.js": true,
-        "type_definitions/**/*.js": true
+		"src/**/*.js": true,
+		"test/**/*.js": true,
+		"type_definitions/**/*.js": true
 	}
 }
