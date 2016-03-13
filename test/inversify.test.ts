@@ -60,4 +60,19 @@ describe("InversifyJS", () => {
 
   });
 
+  it("Should should support Kernel modules");
+  it("Should should support controll over the scope of the dependencies");
+  it("Should should support the injection of constant values");
+  it("Should should support the injection of class constructors");
+  it("Should should support the injection of user defined factories");
+  it("Should should support the injection of auto factories");
+  it("Should should support the injection of providers");
+  it("Should should support the injection of proxied objects");
+  it("Should should support the injection of multiple values");
+  it("Should should support tagged bindings");
+  it("Should should support custom tag decorators");
+  it("Should should support named bindings");
+  it("Should should support contextual bindings and paramNames annotations");
+  it("Should should throw if circular dependencies found");
+
 });
