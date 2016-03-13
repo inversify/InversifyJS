@@ -7,6 +7,6 @@
     "chai": "github:DefinitelyTyped/DefinitelyTyped/chai/chai.d.ts#1914a00b3c740348dae407ee0d2be89b0b58ad7f",
     "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#d6dd320291705694ba8e1a79497a908e9f5e6617",
     "sinon": "github:DefinitelyTyped/DefinitelyTyped/sinon/sinon.d.ts#6e7d83167d86d857817bd492786f8304f5c4a0e4",
-    "harmony-proxy": "github:remojansen/DefinitelyTyped/blob/harmony-proxy/harmony-proxy/harmony-proxy.d.ts#7338a71aa356b586844b608b860fab08a3d12a3d"
+    "harmony-proxy": "github:remojansen/DefinitelyTyped/harmony-proxy/harmony-proxy.d.ts#10756244ac7a50df9b047db91b4865e7d80b720c"
   }
 }
