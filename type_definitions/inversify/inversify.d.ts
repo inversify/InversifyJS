@@ -4,6 +4,7 @@
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 /// <reference path="../bluebird/bluebird.d.ts" />
+/// <reference path="../harmony-proxy/harmony-proxy.d.ts" />
 
 declare namespace inversify {
 

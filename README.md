@@ -360,25 +360,26 @@ class Ninja implements INinja {
 ```
 kernel.bind<INinja>("INinja").to(Ninja);
 
-kernel.bind<IKatana>("IKatana").to(Katana).proxy((ninja) => {
+kernel.bind<IKatana>("IKatana").to(Katana).proxy((katana) => {
     let handler = {
         apply: function(target, thisArgument, argumentsList) {
-            console.log(`Starting: ${performance.now()}`);
+            console.log(`Starting: ${new Date().getTime()}`);
             let result = target.apply(thisArgument, argumentsList);
-            console.log(`Finished: ${performance.now()}`);
+            console.log(`Finished: ${new Date().getTime()}`);
             return result;
         }
     };
-    return new Proxy(ninja, handler);
+    katana.use = new Proxy(katana.use, handler);
+    return katana;
 });
 ```
 
 ```
 let ninja = kernelget<INinja>();
 ninja.katana.use();
-> Starting: 460495.88000000006
+> Starting: 1457895135761
 > Used Katana!
-> Finished: 460496.585
+> Finished: 1457895135762
 ```
 
 #### Multi-injection

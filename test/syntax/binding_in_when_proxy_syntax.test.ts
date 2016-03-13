@@ -7,6 +7,7 @@ import Target from "../../src/planning/target";
 import Metadata from "../../src/activation/metadata";
 import BindingScope from "../../src/bindings/binding_scope";
 import BindingInWhenProxySyntax from "../../src/syntax/binding_in_when_proxy_syntax";
+import * as Proxy from "harmony-proxy";
 
 describe("BindingInWhenProxySyntax", () => {
 
@@ -112,10 +113,8 @@ describe("BindingInWhenProxySyntax", () => {
         let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
 
         bindingInWhenProxySyntax.proxy((ninja: INinja) => {
-            // let handler = {};
-            // return new Proxy<INinja>(ninja, handler);
-            // BLOCK http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
-            return ninja;
+            let handler = {};
+            return new Proxy<INinja>(ninja, handler);
         });
 
         expect(binding.proxyMaker).not.to.eql(null);

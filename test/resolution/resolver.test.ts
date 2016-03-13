@@ -14,6 +14,7 @@ import named from "../../src/activation/named";
 import paramNames from "../../src/activation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import BindingType from "../../src/bindings/binding_type";
+import * as Proxy from "harmony-proxy";
 
 describe("Resolver", () => {
 
@@ -925,18 +926,13 @@ describe("Resolver", () => {
 
   it("Should be able to resolve plans with proxy injections", () => {
 
-        console.log(`
-            WARNING: Proxy canot be tested due to blocking issue:
-            http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
-        `);
-
         interface IKatana {
             use: () => void;
         }
 
         class Katana implements IKatana {
             public use() {
-                console.log("Used Katana!");
+                return "Used Katana!";
             }
         }
 
@@ -962,20 +958,18 @@ describe("Resolver", () => {
         // that it is not a good idea to use globals
         let timeTracker = [];
 
-        kernel.bind<IKatana>(katanaId).to(Katana).proxy((ninja) => {
-            // BLOCK http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
-            /* 
+        kernel.bind<IKatana>(katanaId).to(Katana).proxy((katana) => {
             let handler = {
                 apply: function(target, thisArgument, argumentsList) {
-                    timeTracker.push(`Starting ${target.name} ${performance.now()}`);
+                    timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);
                     let result = target.apply(thisArgument, argumentsList);
-                    timeTracker.push(`Finished ${target.name} ${performance.now()}`);
+                    timeTracker.push(`Finished ${target.name} ${new Date().getTime()}`);
                     return result;
                 }
             };
-            return new Proxy(ninja, handler);
-            */
-            return ninja;
+            /// create a proxy for method use() own by katana instance about to be injected
+            katana.use = new Proxy(katana.use, handler);
+            return katana;
         });
 
         let _kernel: any = kernel;
@@ -988,11 +982,9 @@ describe("Resolver", () => {
         let resolver = new Resolver();
         let ninja = resolver.resolve<INinja>(context);
 
-        ninja.katana.use();
+        expect(ninja.katana.use()).eql("Used Katana!");
         expect(Array.isArray(timeTracker)).eql(true);
-
-        // BLOCK http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
-        // expect(timeTracker.length).eql(2);
+        expect(timeTracker.length).eql(2);
 
   });
 
