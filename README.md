@@ -35,13 +35,14 @@ You can get the latest release and the type definitions using npm:
 ```
 npm install inversify --save
 ```
-**Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
+> **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
 The InversifyJS type definitions are included in the npm package:
 
 ```
 /// <reference path="node_modules/inversify/type_definitions/inversify.d.ts" />
 ```
+> **Note**: InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. If your environment don't support one of these you will need to import a shim or polypill. Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/wiki/Environmemt-support-and-polyfills) page in the wiki to learn more.
 
 ### The Basics (TypeScript)
 Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
