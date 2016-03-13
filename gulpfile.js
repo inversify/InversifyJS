@@ -3,6 +3,10 @@
 //******************************************************************************
 //* DEPENDENCIES
 //******************************************************************************
+
+// Enable ES6
+require("harmonize")();
+
 var gulp        = require("gulp"),
     browserify  = require("browserify"),
     source      = require("vinyl-source-stream"),

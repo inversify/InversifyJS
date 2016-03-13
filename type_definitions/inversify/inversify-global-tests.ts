@@ -1,5 +1,7 @@
 /// <reference path="inversify.d.ts" />
 
+import * as Proxy from "harmony-proxy";
+
 module global_module_test {
 
     interface INinja {
@@ -95,8 +97,6 @@ module global_module_test {
     });
 
     kernel.bind<IKatana>("IKatana").to(Katana).proxy((katanaToBeInjected: IKatana) => {
-        // BLOCK http://stackoverflow.com/questions/35906938/how-to-enable-harmony-proxies-in-gulp-mocha
-        /*
         let handler = {
             apply: function(target, thisArgument, argumentsList) {
                 console.log(`Starting: ${performance.now()}`);
@@ -106,8 +106,6 @@ module global_module_test {
             }
         };
         return new Proxy(katanaToBeInjected, handler);
-        */
-        return katanaToBeInjected;
     });
 
     interface IWeapon {}
