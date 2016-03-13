@@ -580,6 +580,13 @@ Plese refer to the [wiki](https://github.com/inversify/InversifyJS/wiki) for add
 ### Live demo & examples
 You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3). Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
+### Testimonies
+
+**[Nate Kohari](https://twitter.com/nkohari)** - Author of [Ninject](https://github.com/ninject/Ninject)
+
+> *"Ninject author here. Nice work! I've taken a couple shots at creating DI frameworks for JavaScript and TypeScript, but the lack of RTTI really hinders things.* 
+> *The ES7 metadata gets us part of the way there (as you've discovered). Keep up the great work!"*
+
 ### Support
 If you are experience any kind of issues we will be happy to help. You can report an issue using the
 [issues page](https://github.com/inversify/InversifyJS/issues) or the
