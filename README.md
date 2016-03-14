@@ -33,7 +33,7 @@ InversifyJS has been developed with 3 main goals:
 
 You can get the latest release and the type definitions using npm:
 ```
-npm install inversify --save
+npm install inversify@2.0.0-alpha.3 --save
 ```
 > **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
