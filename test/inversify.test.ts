@@ -62,7 +62,34 @@ describe("InversifyJS", () => {
 
   it("Should should support Kernel modules");
   it("Should should support controll over the scope of the dependencies");
-  it("Should should support the injection of constant values");
+
+  it("Should should support the injection of constant values", () => {
+
+    interface IHero {
+        name: string;
+    }
+
+    const TYPES = {
+        IHero: "IHero"
+    };
+
+    let heroName = "superman";
+
+    class Hero implements IHero {
+        public name: string;
+        public constructor() {
+            this.name = heroName;
+        }
+    }
+
+    const kernel = new Kernel();
+    kernel.bind(TYPES.IHero).toValue(new Hero());
+    let hero = kernel.get<IHero>(TYPES.IHero);
+
+    expect(hero.name).eql(heroName);
+
+  });
+
   it("Should should support the injection of class constructors");
   it("Should should support the injection of user defined factories");
   it("Should should support the injection of auto factories");

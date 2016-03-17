@@ -1,6 +1,7 @@
 /// <reference path="../interfaces.d.ts" />
 
 interface IBinding<T> {
+  activated: boolean;
   runtimeIdentifier: string;
   implementationType: INewable<T>;
   factory: IFactoryCreator<any>;
