@@ -74,8 +74,11 @@ describe("@paramNames", () => {
 
     it("Should be usable in VanillaJS applications", () => {
 
+        interface IKatana {}
+        interface IShurien {}
+
         let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary, secondary) {
+            function VanillaJSWarrior(primary: IKatana, secondary: IShurien) {
                 // ...
             }
             return VanillaJSWarrior;

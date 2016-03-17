@@ -19,7 +19,7 @@ describe("InversifyJS", () => {
       }
 
       interface IShuriken {
-          throw();
+          throw(): string;
       }
 
       class Katana implements IKatana {
@@ -74,7 +74,7 @@ describe("InversifyJS", () => {
         }
 
         interface IShuriken {
-            throw();
+            throw(): string;
         }
 
         class Katana implements IKatana {
@@ -131,7 +131,7 @@ describe("InversifyJS", () => {
         }
 
         interface IShuriken {
-            throw();
+            throw(): string;
         }
 
         class Katana implements IKatana {
@@ -228,7 +228,7 @@ describe("InversifyJS", () => {
       }
 
       interface IShuriken {
-          throw();
+          throw(): string;
       }
 
       class Katana implements IKatana {
@@ -283,7 +283,7 @@ describe("InversifyJS", () => {
         }
 
         interface IShuriken {
-            throw();
+            throw(): string;
         }
 
         class Katana implements IKatana {
@@ -343,7 +343,7 @@ describe("InversifyJS", () => {
         }
 
         interface IShuriken {
-            throw();
+            throw(): string;
         }
 
         class Katana implements IKatana {
@@ -467,11 +467,11 @@ describe("InversifyJS", () => {
 
         let kernel = new Kernel();
         kernel.bind<INinja>("INinja").to(Ninja);
-        let log = [];
+        let log: string[] = [];
 
         kernel.bind<IKatana>("IKatana").to(Katana).proxy((katana) => {
             let handler = {
-                apply: function(target, thisArgument, argumentsList) {
+                apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     log.push(`Starting: ${new Date().getTime()}`);
                     let result = target.apply(thisArgument, argumentsList);
                     log.push(`Finished: ${new Date().getTime()}`);

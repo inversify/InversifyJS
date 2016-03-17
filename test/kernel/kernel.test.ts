@@ -19,7 +19,7 @@ describe("Kernel", () => {
 
   it("Should be able to use middleware as configuration", () => {
 
-      let logger = (context) => {
+      let logger = (context: IContext) => {
           console.log(context);
       };
 
@@ -175,7 +175,7 @@ describe("Kernel", () => {
 
           public name: string;
 
-          public constructor(name) {
+          public constructor(name: string) {
               this.name = name;
           }
       }
@@ -260,7 +260,7 @@ describe("Kernel", () => {
 
           public name: string;
 
-          public constructor(name) {
+          public constructor(name: string) {
               this.name = name;
           }
       }
@@ -309,7 +309,7 @@ describe("Kernel", () => {
 
           public name: string;
 
-          public constructor(name) {
+          public constructor(name: string) {
               this.name = name;
           }
       }
@@ -318,7 +318,7 @@ describe("Kernel", () => {
 
           public name: string;
 
-          public constructor(name) {
+          public constructor(name: string) {
               this.name = name;
           }
       }

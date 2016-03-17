@@ -6,5 +6,5 @@ interface IContext {
         /// Gets or sets the activation plan.
         plan: IPlan;
 
-        addPlan(plan: IPlan);
+        addPlan(plan: IPlan): void;
 }

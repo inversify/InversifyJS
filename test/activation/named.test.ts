@@ -1,5 +1,5 @@
-declare function __decorate(decorators, target, key?, desc?);
-declare function __param(paramIndex, decorator);
+declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 ///<reference path="../../typings/browser.d.ts" />
 
@@ -110,8 +110,11 @@ describe("@named", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
+    interface IKatana {}
+    interface IShurien {}
+
     let VanillaJSWarrior = (function () {
-        function NamedVanillaJSWarrior(primary, secondary) {
+        function NamedVanillaJSWarrior(primary: IKatana, secondary: IShurien) {
             // ...
         }
         return NamedVanillaJSWarrior;
