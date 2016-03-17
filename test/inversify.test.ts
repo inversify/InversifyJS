@@ -298,8 +298,8 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
-        class Ninja implements INinja {
+        @inject("IFactory<IKatana>", "IShuriken")
+        class NinjaWithUserDefinedFactory implements INinja {
 
             private _katana: IKatana;
             private _shuriken: IShuriken;
@@ -315,7 +315,7 @@ describe("InversifyJS", () => {
         }
 
         let kernel = new Kernel();
-        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<INinja>("INinja").to(NinjaWithUserDefinedFactory);
         kernel.bind<IShuriken>("IShuriken").to(Shuriken);
         kernel.bind<IKatana>("IKatana").to(Katana);
         kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context) => {
@@ -358,8 +358,8 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
-        class Ninja implements INinja {
+        @inject("IFactory<IKatana>", "IShuriken")
+        class NinjaWithAutoFactory implements INinja {
 
             private _katana: IKatana;
             private _shuriken: IShuriken;
@@ -375,7 +375,7 @@ describe("InversifyJS", () => {
         }
 
         let kernel = new Kernel();
-        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<INinja>("INinja").to(NinjaWithAutoFactory);
         kernel.bind<IShuriken>("IShuriken").to(Shuriken);
         kernel.bind<IKatana>("IKatana").to(Katana);
         kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
@@ -404,8 +404,8 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
-        class Ninja implements INinja {
+        @inject("IProvider<IKatana>")
+        class NinjaWithProvider implements INinja {
 
             public katana: IKatana;
             public katanaProvider: IProvider<IKatana>;
@@ -418,7 +418,7 @@ describe("InversifyJS", () => {
         }
 
         let kernel = new Kernel();
-        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<INinja>("INinja").to(NinjaWithProvider);
         kernel.bind<IKatana>("IKatana").to(Katana);
         kernel.bind<IProvider<IKatana>>("IProvider<IKatana>").toProvider<IKatana>((context) => {
             return () => {
