@@ -1,7 +1,9 @@
 ///<reference path="../typings/browser.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, inject } from "../src/inversify";
+import { Kernel, inject, tagged, named, paramNames } from "../src/inversify";
+import * as ERROR_MSGS from "../src/constants/error_msgs";
+import * as Proxy from "harmony-proxy";
 
 describe("InversifyJS", () => {
 
@@ -117,7 +119,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support controll over the scope of the dependencies", () => {
+    it("Should should support control over the scope of the dependencies", () => {
 
         interface INinja {
             fight(): string;
@@ -439,12 +441,293 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of proxied objects");
-    it("Should should support the injection of multiple values");
-    it("Should should support tagged bindings");
-    it("Should should support custom tag decorators");
-    it("Should should support named bindings");
-    it("Should should support contextual bindings and paramNames annotations");
-    it("Should should throw if circular dependencies found");
+    it("Should should support the injection of proxied objects", () => {
+
+        interface IKatana {
+            use: () => void;
+        }
+
+        class Katana implements IKatana {
+            public use() {
+                return "Used Katana!";
+            }
+        }
+
+        interface INinja {
+            katana: IKatana;
+        }
+
+        @inject("IKatana")
+        class Ninja implements INinja {
+            public katana: IKatana;
+            public constructor(katana: IKatana) {
+                this.katana = katana;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+        let log = [];
+
+        kernel.bind<IKatana>("IKatana").to(Katana).proxy((katana) => {
+            let handler = {
+                apply: function(target, thisArgument, argumentsList) {
+                    log.push(`Starting: ${new Date().getTime()}`);
+                    let result = target.apply(thisArgument, argumentsList);
+                    log.push(`Finished: ${new Date().getTime()}`);
+                    return result;
+                }
+            };
+            katana.use = new Proxy(katana.use, handler);
+            return katana;
+        });
+
+        let ninja = kernel.get<INinja>("INinja");
+        ninja.katana.use();
+
+        expect(log.length).eql(2);
+        expect(log[0].indexOf(`Starting: `)).not.to.eql(-1);
+        expect(log[1].indexOf(`Finished: `)).not.to.eql(-1);
+
+    });
+
+    it("Should should support the injection of multiple values", () => {
+
+        interface IWeapon {
+            name: string;
+        }
+
+        class Katana implements IWeapon {
+            public name = "Katana";
+        }
+
+        class Shuriken implements IWeapon {
+            public name = "Shuriken";
+        }
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        @inject("IWeapon[]")
+        class Ninja implements INinja {
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+            public constructor(weapons: IWeapon[]) {
+                this.katana = weapons[0];
+                this.shuriken = weapons[1];
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<IWeapon>("IWeapon").to(Katana);
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+
+        let ninja = kernel.get<INinja>("INinja");
+        expect(ninja.katana.name).eql("Katana");
+        expect(ninja.shuriken.name).eql("Shuriken");
+
+    });
+
+    it("Should should support tagged bindings", () => {
+
+        interface IWeapon {}
+        class Katana implements IWeapon { }
+        class Shuriken implements IWeapon {}
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        @inject("IWeapon", "IWeapon")
+        class Ninja implements INinja {
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+            public constructor(
+                @tagged("canThrow", false) katana: IWeapon,
+                @tagged("canThrow", true) shuriken: IWeapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetTagged("canThrow", false);
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetTagged("canThrow", true);
+
+        let ninja = kernel.get<INinja>("INinja");
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should should support custom tag decorators", () => {
+
+        interface IWeapon {}
+        class Katana implements IWeapon { }
+        class Shuriken implements IWeapon {}
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        let throwable = tagged("canThrow", true);
+        let notThrowable = tagged("canThrow", false);
+
+        @inject("IWeapon", "IWeapon")
+        class Ninja implements INinja {
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+            public constructor(
+                @notThrowable katana: IWeapon,
+                @throwable shuriken: IWeapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetTagged("canThrow", false);
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetTagged("canThrow", true);
+
+        let ninja = kernel.get<INinja>("INinja");
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should should support named bindings", () => {
+        interface IWeapon {}
+        class Katana implements IWeapon { }
+        class Shuriken implements IWeapon {}
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        @inject("IWeapon", "IWeapon")
+        class Ninja implements INinja {
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+            public constructor(
+                @named("strong")katana: IWeapon,
+                @named("weak") shuriken: IWeapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
+
+        let ninja = kernel.get<INinja>("INinja");
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should should support contextual bindings and paramNames annotations", () => {
+
+        interface IWeapon {}
+        class Katana implements IWeapon { }
+        class Shuriken implements IWeapon {}
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        @inject("IWeapon", "IWeapon")
+        @paramNames("katana", "shuriken")
+        class Ninja implements INinja {
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+            public constructor(
+                katana: IWeapon,
+                shuriken: IWeapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        kernel.bind<IWeapon>("IWeapon").to(Katana).when((request: IRequest) => {
+            return request.target.name.equals("katana");
+        });
+
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
+            return request.target.name.equals("shuriken");
+        });
+
+        let ninja = kernel.get<INinja>("INinja");
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should should throw if circular dependencies found", () => {
+
+        interface IA {}
+        interface IB {}
+        interface IC {}
+        interface ID {}
+
+        @inject("IB", "IC")
+        class A implements IA {
+            public b: IB;
+            public c: IC;
+            public constructor(b: IB, c: IC) {
+                this.b = b;
+                this.c = c;
+            }
+        }
+
+        class B implements IB {}
+
+        @inject("ID")
+        class C implements IC {
+            public d: ID;
+            public constructor(d: ID) {
+                this.d = d;
+            }
+        }
+
+        @inject("IA")
+        class D implements ID {
+            public a: IA;
+            public constructor(a: IA) {
+                this.a = a;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<IA>("IA").to(A);
+        kernel.bind<IB>("IB").to(B);
+        kernel.bind<IC>("IC").to(C);
+        kernel.bind<ID>("ID").to(D);
+
+        function willThrow() {
+            let a = kernel.get<IA>("IA");
+            return a;
+        }
+
+        expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} IA and ID`);
+
+    });
 
 });
