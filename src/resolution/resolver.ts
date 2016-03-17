@@ -33,7 +33,7 @@ class Resolver implements IResolver {
             let binding = bindings[0];
             let isSingleton = binding.scope === BindingScope.Singleton;
 
-            if (isSingleton && binding.cache !== null) {
+            if (isSingleton && binding.activated === true) {
                 return binding.cache;
             }
 
@@ -85,6 +85,7 @@ class Resolver implements IResolver {
             // store in cache if scope is singleton
             if (isSingleton) {
                 binding.cache = result;
+                binding.activated = true;
             }
 
             return result;

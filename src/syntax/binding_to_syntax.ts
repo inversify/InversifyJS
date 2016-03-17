@@ -20,6 +20,7 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
     public toValue(value: T): IBindingInWhenProxySyntax<T> {
         this._binding.type = BindingType.Value;
         this._binding.cache = value;
+        this._binding.implementationType = null;
         return new BindingInWhenProxySyntax<T>(this._binding);
     }
 
