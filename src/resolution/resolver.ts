@@ -78,6 +78,7 @@ class Resolver implements IResolver {
             }
 
             // create proxy if requested
+
             if (typeof binding.proxyMaker === "function") {
                 result = binding.proxyMaker(result);
             }
