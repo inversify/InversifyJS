@@ -956,11 +956,11 @@ describe("Resolver", () => {
 
         // This is a global for unit testing but remember 
         // that it is not a good idea to use globals
-        let timeTracker = [];
+        let timeTracker: string[] = [];
 
         kernel.bind<IKatana>(katanaId).to(Katana).proxy((katana) => {
             let handler = {
-                apply: function(target, thisArgument, argumentsList) {
+                apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);
                     let result = target.apply(thisArgument, argumentsList);
                     timeTracker.push(`Finished ${target.name} ${new Date().getTime()}`);

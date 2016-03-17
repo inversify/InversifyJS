@@ -105,7 +105,7 @@ module external_module_test {
 
     kernel.bind<IKatana>("IKatana").to(Katana).proxy((katanaToBeInjected: IKatana) => {
         let handler = {
-            apply: function(target, thisArgument, argumentsList) {
+            apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                 console.log(`Starting: ${performance.now()}`);
                 let result = target.apply(thisArgument, argumentsList);
                 console.log(`Finished: ${performance.now()}`);

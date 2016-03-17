@@ -1,8 +1,12 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
+interface IReflectResult {
+    [key: string]: IMetadata[];
+}
+
 function tagParameter(target: any, targetKey: string, index: number, metadata: IMetadata) {
     let metadataKey = "inversify:tagged";
-    let paramsMetadata: Object = null;
+    let paramsMetadata: IReflectResult = null;
 
     // this decorator can be used in a constructor not a method
     if (targetKey !== undefined) {
@@ -37,12 +41,12 @@ function tagParameter(target: any, targetKey: string, index: number, metadata: I
     return target;
 }
 
-function _decorate(decorators, target) {
+function _decorate(decorators: ClassDecorator[], target: any): void {
     Reflect.decorate(decorators, target);
 }
 
-function _param(paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); };
+function _param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator {
+    return function (target: any, key?: string) { decorator(target, key, paramIndex); };
 }
 
 // Allows VanillaJS developers to use decorators:
@@ -56,9 +60,9 @@ function decorate(
     parameterIndex?: number): void {
 
     if (typeof parameterIndex === "number") {
-        _decorate([_param(parameterIndex, decorator)], target);
+        _decorate([_param(parameterIndex, <ParameterDecorator>decorator)], target);
     } else {
-        _decorate([decorator], target);
+        _decorate([<ClassDecorator>decorator], target);
     }
 }
 

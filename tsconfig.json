@@ -8,10 +8,10 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "declaration": false,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "removeComments": true,
         "noLib": false,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true
+        "suppressImplicitAnyIndexErrors": false
     }
 }

@@ -17,7 +17,7 @@ class Resolver implements IResolver {
         return this._inject(rootRequest);
     }
 
-    private _inject(request: IRequest) {
+    private _inject(request: IRequest): any {
 
         let bindings = request.bindings;
         let childRequests = request.childRequests;
@@ -29,7 +29,7 @@ class Resolver implements IResolver {
 
         } else {
 
-            let result = null;
+            let result: any = null;
             let binding = bindings[0];
             let isSingleton = binding.scope === BindingScope.Singleton;
 

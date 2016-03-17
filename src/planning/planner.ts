@@ -50,7 +50,7 @@ class Planner implements IPlanner {
         try {
 
             let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service.value());
-            let activeBindings = [];
+            let activeBindings: IBinding<any>[] = [];
 
             if (bindings.length > 1 && target.isArray() === false) {
 
@@ -153,9 +153,9 @@ class Planner implements IPlanner {
         let paramNames = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, func) || [];
         let tags = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
-        let targets = injections.map((inject, index) => {
+        let targets = injections.map((injection: string, index: number) => {
             let targetName = paramNames[index];
-            let target = new Target(targetName, inject);
+            let target = new Target(targetName, injection);
             target.metadata = tags[index.toString()] || [];
             return target;
         });

@@ -40,8 +40,11 @@ describe("@inject", () => {
 
     it("Should be usable in VanillaJS applications", () => {
 
+        interface IKatana {}
+        interface IShuriken {}
+
         let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary, secondary) {
+            function VanillaJSWarrior(primary: IKatana, secondary: IShuriken) {
                 // ...
             }
             return VanillaJSWarrior;
