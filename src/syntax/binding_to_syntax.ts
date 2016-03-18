@@ -1,6 +1,6 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import BindingInWhenProxySyntax from "./binding_in_when_proxy_syntax";
+import BindingInWhenOnSyntax from "./binding_in_when_on_syntax";
 import BindingType from "../bindings/binding_type";
 
 class BindingToSyntax<T> implements IBindingToSyntax<T> {
@@ -11,32 +11,32 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         this._binding = binding;
     }
 
-    public to(constructor: { new(...args: any[]): T; }): IBindingInWhenProxySyntax<T> {
+    public to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Instance;
         this._binding.implementationType = constructor;
-        return new BindingInWhenProxySyntax<T>(this._binding);
+        return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public toValue(value: T): IBindingInWhenProxySyntax<T> {
+    public toValue(value: T): BindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Value;
         this._binding.cache = value;
         this._binding.implementationType = null;
-        return new BindingInWhenProxySyntax<T>(this._binding);
+        return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public toConstructor<T2>(constructor: INewable<T2>): IBindingInWhenProxySyntax<T> {
+    public toConstructor<T2>(constructor: INewable<T2>): IBindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Constructor;
         this._binding.implementationType = <any>constructor;
-        return new BindingInWhenProxySyntax<T>(this._binding);
+        return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public toFactory<T2>(factory: IFactoryCreator<T2>): IBindingInWhenProxySyntax<T> {
+    public toFactory<T2>(factory: IFactoryCreator<T2>): IBindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = <any>factory;
-        return new BindingInWhenProxySyntax<T>(this._binding);
+        return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public toAutoFactory<T2>(): IBindingInWhenProxySyntax<T> {
+    public toAutoFactory<T2>(): IBindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Factory;
         let id = this._binding.runtimeIdentifier.split("IFactory<").join("").split(">").join("");
         this._binding.factory = (context) => {
@@ -44,13 +44,13 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
                 return context.kernel.get<T2>(id);
             };
         };
-        return new BindingInWhenProxySyntax<T>(this._binding);
+        return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public toProvider<T2>(provider: IProviderCreator<T2>): IBindingInWhenProxySyntax<T> {
+    public toProvider<T2>(provider: IProviderCreator<T2>): IBindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Provider;
         this._binding.provider = <any>provider;
-        return new BindingInWhenProxySyntax<T>(this._binding);
+        return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
 }

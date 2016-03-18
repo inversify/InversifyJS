@@ -469,7 +469,7 @@ describe("InversifyJS", () => {
         kernel.bind<INinja>("INinja").to(Ninja);
         let log: string[] = [];
 
-        kernel.bind<IKatana>("IKatana").to(Katana).proxy((katana) => {
+        kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     log.push(`Starting: ${new Date().getTime()}`);

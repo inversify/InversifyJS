@@ -77,10 +77,9 @@ class Resolver implements IResolver {
                     throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${request.service}`);
             }
 
-            // create proxy if requested
-
-            if (typeof binding.proxyMaker === "function") {
-                result = binding.proxyMaker(result);
+            // use activation handler if available
+            if (typeof binding.onActivation === "function") {
+                result = binding.onActivation(result);
             }
 
             // store in cache if scope is singleton

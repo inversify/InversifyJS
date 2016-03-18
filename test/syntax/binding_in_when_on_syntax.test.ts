@@ -6,10 +6,10 @@ import Request from "../../src/planning/request";
 import Target from "../../src/planning/target";
 import Metadata from "../../src/planning/metadata";
 import BindingScope from "../../src/bindings/binding_scope";
-import BindingInWhenProxySyntax from "../../src/syntax/binding_in_when_proxy_syntax";
+import BindingInWhenOnSyntax from "../../src/syntax/binding_in_when_on_syntax";
 import * as Proxy from "harmony-proxy";
 
-describe("BindingInWhenProxySyntax", () => {
+describe("BindingInWhenOnSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
@@ -17,12 +17,12 @@ describe("BindingInWhenProxySyntax", () => {
         let ninjaIdentifier = "INinja";
 
         let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInSyntax = new BindingInWhenProxySyntax<INinja>(binding);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
         // cast to any to be able to access private props
-        let _bindingInSyntax: any = bindingInSyntax;
+        let _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
 
-        expect(_bindingInSyntax._binding.runtimeIdentifier).eql(ninjaIdentifier);
+        expect(_bindingInWhenOnSyntax._binding.runtimeIdentifier).eql(ninjaIdentifier);
 
     });
 
@@ -32,12 +32,12 @@ describe("BindingInWhenProxySyntax", () => {
         let ninjaIdentifier = "INinja";
 
         let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
-        bindingInWhenProxySyntax.inSingletonScope();
+        bindingInWhenOnSyntax.inSingletonScope();
         expect(binding.scope).eql(BindingScope.Singleton);
 
-        bindingInWhenProxySyntax.inTransientScope();
+        bindingInWhenOnSyntax.inTransientScope();
         expect(binding.scope).eql(BindingScope.Transient);
 
     });
@@ -48,9 +48,9 @@ describe("BindingInWhenProxySyntax", () => {
         let ninjaIdentifier = "INinja";
 
         let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
-        bindingInWhenProxySyntax.when((request: IRequest) => {
+        bindingInWhenOnSyntax.when((request: IRequest) => {
             return request.target.name.equals("ninja");
         });
 
@@ -66,11 +66,11 @@ describe("BindingInWhenProxySyntax", () => {
         let ninjaIdentifier = "INinja";
 
         let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
         let named = "primary";
 
-        bindingInWhenProxySyntax.whenTargetNamed(named);
+        bindingInWhenOnSyntax.whenTargetNamed(named);
         expect(binding.constraint).not.to.eql(null);
 
         let target = new Target("ninja", ninjaIdentifier, named);
@@ -89,9 +89,9 @@ describe("BindingInWhenProxySyntax", () => {
         let ninjaIdentifier = "INinja";
 
         let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
-        bindingInWhenProxySyntax.whenTargetTagged("canSwim", true);
+        bindingInWhenOnSyntax.whenTargetTagged("canSwim", true);
         expect(binding.constraint).not.to.eql(null);
 
         let target = new Target("ninja", ninjaIdentifier, new Metadata("canSwim", true));
@@ -104,20 +104,20 @@ describe("BindingInWhenProxySyntax", () => {
 
     });
 
-    it("Should be able to configure the proxyMaker of a binding", () => {
+    it("Should be able to configure the activation handler of a binding", () => {
 
         interface INinja {}
         let ninjaIdentifier = "INinja";
 
         let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenProxySyntax = new BindingInWhenProxySyntax<INinja>(binding);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
-        bindingInWhenProxySyntax.proxy((ninja: INinja) => {
+        bindingInWhenOnSyntax.onActivation((ninja: INinja) => {
             let handler = {};
             return new Proxy<INinja>(ninja, handler);
         });
 
-        expect(binding.proxyMaker).not.to.eql(null);
+        expect(binding.onActivation).not.to.eql(null);
 
     });
 

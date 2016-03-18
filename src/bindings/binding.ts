@@ -41,8 +41,8 @@ class Binding<T> implements IBinding<T> {
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: IRequest) => boolean;
 
-    // A method used to create a proxy for a dependency
-    public proxyMaker: (injectable: T) => T;
+    // On activation handler
+    public onActivation: (injectable: T) => T;
 
     constructor(runtimeIdentifier: string) {
         this.activated = false;
@@ -54,7 +54,7 @@ class Binding<T> implements IBinding<T> {
         this.cache = null;
         this.factory = null;
         this.provider = null;
-        this.proxyMaker = null;
+        this.onActivation = null;
     }
 }
 

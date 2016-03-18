@@ -34,21 +34,21 @@ declare namespace inversify {
     }
 
     interface IBindingToSyntax<T> {
-        to(constructor: { new(...args: any[]): T; }): IBindingInWhenProxySyntax<T>;
-        toValue(value: T): IBindingInWhenProxySyntax<T>;
-        toConstructor<T2>(constructor: INewable<T2>): IBindingInWhenProxySyntax<T>;
-        toFactory<T2>(factory: IFactoryCreator<T2>): IBindingInWhenProxySyntax<T>;
-        toAutoFactory<T2>(): IBindingInWhenProxySyntax<T>;
-        toProvider<T2>(provider: IProviderCreator<T2>): IBindingInWhenProxySyntax<T>;
+        to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T>;
+        toValue(value: T): IBindingInWhenOnSyntax<T>;
+        toConstructor<T2>(constructor: INewable<T2>): IBindingInWhenOnSyntax<T>;
+        toFactory<T2>(factory: IFactoryCreator<T2>): IBindingInWhenOnSyntax<T>;
+        toAutoFactory<T2>(): IBindingInWhenOnSyntax<T>;
+        toProvider<T2>(provider: IProviderCreator<T2>): IBindingInWhenOnSyntax<T>;
     }
 
-    interface IBindingInWhenProxySyntax<T> {
-        inTransientScope(): IBindingInWhenProxySyntax<T>;
-        inSingletonScope(): IBindingInWhenProxySyntax<T>;
-        when(constraint: (request: IRequest) => boolean): IBindingInWhenProxySyntax<T>;
-        whenTargetNamed(name: string): IBindingInWhenProxySyntax<T>;
-        whenTargetTagged(tag: string, value: any): IBindingInWhenProxySyntax<T>;
-        proxy(fn: (injectable: T) => T): IBindingInWhenProxySyntax<T>;
+    interface IBindingInWhenOnSyntax<T> {
+        inTransientScope(): IBindingInWhenOnSyntax<T>;
+        inSingletonScope(): IBindingInWhenOnSyntax<T>;
+        when(constraint: (request: IRequest) => boolean): IBindingInWhenOnSyntax<T>;
+        whenTargetNamed(name: string): IBindingInWhenOnSyntax<T>;
+        whenTargetTagged(tag: string, value: any): IBindingInWhenOnSyntax<T>;
+        onActivation(fn: (injectable: T) => T): IBindingInWhenOnSyntax<T>;
     }
 
     export interface IFactory<T> extends Function {
