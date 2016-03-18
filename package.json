@@ -8,7 +8,6 @@
   },
   "scripts": {
     "test": "gulp",
-    "preinstall": "npm install typings && typings install",
     "prepublish": "gulp build && gulp test"
   },
   "repository": {
