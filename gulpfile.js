@@ -111,20 +111,22 @@ gulp.task("build-bundle-compress-src", function() {
 //******************************************************************************
 //* TESTS
 //******************************************************************************
-var tsTestProject = tsc.createProject("tsconfig.json");
+var tstProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-src", function() {
     return gulp.src([
         "src/**/*.ts"
     ])
-    .pipe(tsc(tsTestProject))
+    .pipe(tsc(tstProject))
     .on("error", function (err) {
         process.exit(1);
     })
     .js.pipe(gulp.dest("src/"));
 });
 
-gulp.task("build-test", ["build-src"], function() {
+var tsTestProject = tsc.createProject("tsconfig.json");
+
+gulp.task("build-test", function() {
     return gulp.src([
         "test/**/*.ts"
     ])
@@ -181,6 +183,7 @@ gulp.task("build", function(cb) {
       "lint", 
       "build-bundle-src",          // for nodejs
       "build-bundle-compress-src", // for browsers
+      "build-src",                 // tests
       "build-test", 
       "build-type-definitions", cb);
 });
