@@ -13,7 +13,7 @@ import BindingType from "./binding_type";
 class Binding<T> implements IBinding<T> {
 
     // Determines wether the bindings has been already activated
-    // The activation actions when an instance is resolved
+    // The activation action takes place when an instance is resolved
     // If the scope is singleton it only happens once
     public activated: boolean;
 

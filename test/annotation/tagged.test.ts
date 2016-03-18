@@ -4,8 +4,8 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 ///<reference path="../../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { decorate } from "../../src/activation/decorator_utils";
-import Tagged from "../../src/activation/tagged";
+import { decorate } from "../../src/annotation/decorator_utils";
+import Tagged from "../../src/annotation/tagged";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 interface IWeapon {}

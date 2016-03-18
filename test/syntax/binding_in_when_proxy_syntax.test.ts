@@ -4,7 +4,7 @@ import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import Request from "../../src/planning/request";
 import Target from "../../src/planning/target";
-import Metadata from "../../src/activation/metadata";
+import Metadata from "../../src/planning/metadata";
 import BindingScope from "../../src/bindings/binding_scope";
 import BindingInWhenProxySyntax from "../../src/syntax/binding_in_when_proxy_syntax";
 import * as Proxy from "harmony-proxy";

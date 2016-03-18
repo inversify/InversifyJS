@@ -1,7 +1,7 @@
 ///<reference path="../../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import Metadata from "../../src/activation/metadata";
+import Metadata from "../../src/planning/metadata";
 
 describe("Metadata", () => {
 

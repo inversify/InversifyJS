@@ -34,7 +34,7 @@ docs
 bundled
 
 typings
-
+.typingsrc
 dist
 
 type_definitions/inversify/*.js
@@ -46,7 +46,7 @@ src/*.js.map
 src/**/*.js.map
 
 src/*.d.ts
-src/activation/*.d.ts
+src/annotation/*.d.ts
 src/bindings/*.d.ts
 src/constants/*.d.ts
 src/kernel/*.d.ts

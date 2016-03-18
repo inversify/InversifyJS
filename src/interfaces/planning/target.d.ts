@@ -1,5 +1,5 @@
 /// <reference path="./queryable_string.d.ts" />
-/// <reference path="../activation/metadata.d.ts" />
+/// <reference path="./metadata.d.ts" />
 
 interface ITarget {
   service: IQueryableString;

@@ -15,6 +15,7 @@
 /// <reference path="./planning/context.d.ts" />
 /// <reference path="./planning/target.d.ts" />
 /// <reference path="./planning/queryable_string.d.ts" />
+/// <reference path="./planning/metadata.d.ts" />
 
 // RESOLUTION
 /// <reference path="./resolution/resolver.d.ts" />
@@ -26,9 +27,6 @@
 /// <reference path="./bindings/factory_creator.d.ts" />
 /// <reference path="./bindings/provider_creator.d.ts" />
 /// <reference path="./bindings/newable.d.ts" />
-
-// ACTIVATION
-/// <reference path="./activation/metadata.d.ts" />
 
 // MIDDLEWARE
 /// <reference path="./middleware/middleware.d.ts" />
