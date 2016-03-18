@@ -1,6 +1,6 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import { guid } from "../utils/utils";
+import guid from "../utils/utils";
 
 class Request implements IRequest {
 

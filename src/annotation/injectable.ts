@@ -2,7 +2,7 @@
 
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERRORS_MSGS from "../constants/error_msgs";
-import { guid } from "../utils/utils";
+import guid from "../utils/utils";
 
 function injectable(...paramTypes: string[]) {
   return function(target: any) {

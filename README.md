@@ -70,7 +70,7 @@ interface IShuriken {
 #### Step 2: Implement the interfaces and declare dependencies using the `@injectable` decorator
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared.
 ```
-import { inject } from "inversify";
+import { injectable } from "inversify";
 
 class Katana implements IKatana {
     public hit() {
@@ -403,7 +403,59 @@ Middleware can be used to implement powerful development tools.
 This kind of tools will help developers to identify problems during the development process.
 
 ```
-EXAMPLES COMING SOON
+function logger(next: (context: IContext) => any) {
+    return (context: IContext) => {
+        let result = next(context);
+        console.log("CONTEXT: ", context);
+        console.log("RESULT: ", result);
+        return result;
+    };
+};
+
+function crashReporter(next: (context: IContext) => any) {
+    return (context: IContext) => {
+        try {
+            return next(context);
+        } catch (err) {
+            Raven.captureException(err, { extra: { context } });
+            throw err;
+        }
+    };
+};
+```
+
+```
+interface INinja {}
+class Ninja implements INinja {}
+
+let kernel = new Kernel();
+kernel.bind<INinja>("INinja").to(Ninja);
+
+kernel.applyMiddleware(logger, crashReporter);
+```
+
+```
+let ninja = kernel.get<INinja>("INinja");
+> CONTEXT:  Context {
+  kernel: 
+   Kernel {
+     _planner: Planner {},
+     _resolver: Resolver {},
+     _bindingDictionary: Lookup { _dictionary: [Object] },
+     _middleware: [Function] },
+  plan: 
+   Plan {
+     parentContext: [Circular],
+     rootRequest: 
+      Request {
+        guid: '9b5d5435-d784-c9e2-c666-5b5e2cf98221',
+        service: 'INinja',
+        parentContext: [Circular],
+        parentRequest: null,
+        target: null,
+        childRequests: [],
+        bindings: [Object] } } }
+> RESULT:  Ninja {}
 ```
 
 #### Multi-injection

@@ -1,3 +1,3 @@
 interface IMiddleware extends Function {
-    (...args: any[]): any;
+    (next: (context: IContext) => any): (context: IContext) => any;
 }

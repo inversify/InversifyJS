@@ -62,6 +62,40 @@ describe("InversifyJS", () => {
 
   });
 
+     it("Should should support middleware", () => {
+
+        interface INinja {}
+        class Ninja implements INinja {}
+
+        let log: string[] = [];
+
+        function middleware1(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        function middleware2(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        let kernel = new Kernel();
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`Middleware1: INinja`);
+        expect(log[1]).eql(`Middleware2: INinja`);
+
+    });
+
     it("Should should support Kernel modules", () => {
 
         interface INinja {

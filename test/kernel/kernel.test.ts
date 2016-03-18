@@ -7,28 +7,65 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Kernel", () => {
 
-  let sandbox: Sinon.SinonSandbox;
+    let sandbox: Sinon.SinonSandbox;
 
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create();
-  });
+    beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+    });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+    afterEach(() => {
+        sandbox.restore();
+    });
 
-  it("Should be able to use middleware as configuration", () => {
+    it("Should be able to use middleware as configuration", () => {
 
-      let logger = (context: IContext) => {
-          console.log(context);
-      };
+        function logger(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                console.log(context);
+                return next(context);
+            };
+        };
 
-      let kernel = new Kernel();
-      kernel.applyMiddleware(logger);
-      let _kernel: any = kernel;
-      expect(_kernel._middleware != null).eql(true);
+        let kernel = new Kernel();
+        kernel.applyMiddleware(logger);
+        let _kernel: any = kernel;
+        expect(_kernel._middleware).not.to.eql(null);
 
-  });
+    });
+
+    it("Should invoke middleware", () => {
+
+        interface INinja {}
+        class Ninja implements INinja {}
+
+        let log: string[] = [];
+
+        function middleware1(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        function middleware2(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        let kernel = new Kernel();
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`Middleware1: INinja`);
+        expect(log[1]).eql(`Middleware2: INinja`);
+
+    });
 
   it("Shoule be able to use modules as configuration", () => {
 
