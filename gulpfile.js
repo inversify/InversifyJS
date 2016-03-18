@@ -9,10 +9,12 @@ require("harmonize")();
 
 var gulp        = require("gulp"),
     browserify  = require("browserify"),
+    tsify       = require("tsify"),
     source      = require("vinyl-source-stream"),
     buffer      = require("vinyl-buffer"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
+    sourcemaps  = require('gulp-sourcemaps'),
     coveralls   = require("gulp-coveralls"),
     uglify      = require("gulp-uglify"),
     typedoc     = require("gulp-typedoc"),
@@ -39,30 +41,81 @@ gulp.task("lint", function() {
 });
 
 //******************************************************************************
-//* BUILD
+//* SOURCE
 //******************************************************************************
-var tsProject = tsc.createProject("tsconfig.json");
+gulp.task("build-bundle-src", function() {
 
-gulp.task("build-source", function() {
-    return gulp.src([
-        "src/**/**.ts",
-        "typings/browser.d.ts",
-        "node_modules/reflect-metadata/reflect-metadata.d.ts"
-    ])
-    .pipe(tsc(tsProject))
-    .on("error", function (err) {
-        process.exit(1);
-    })
-    .js.pipe(gulp.dest("src/"));
+  var mainTsFilePath = "src/inversify.ts";
+  var outputFolder   = "dist/";
+  var outputFileName = "inversify.js";
+  var pkg            = require("./package.json");
+
+  var banner = ["/**",
+    " * <%= pkg.name %> v.<%= pkg.version %> - <%= pkg.description %>",
+    " * Copyright (c) 2015 <%= pkg.author %>",
+    " * <%= pkg.license %> inversify.io/LICENSE",
+    " * <%= pkg.homepage %>",
+    " */",
+    ""].join("\n");
+
+  var bundler = browserify({
+    debug: true,
+    standalone : "inversify"
+  });
+
+  // TS compiler options are in tsconfig.json file
+  return bundler.add(mainTsFilePath)
+                .plugin(tsify)
+                .bundle()
+                .pipe(source(outputFileName))
+                .pipe(buffer())
+                .pipe(sourcemaps.init({ loadMaps: true }))
+                .pipe(header(banner, { pkg : pkg } ))
+                .pipe(sourcemaps.write('.'))
+                .pipe(gulp.dest(outputFolder));
 });
 
+gulp.task("build-bundle-compress-src", function() {
+
+  var mainTsFilePath = "src/inversify.ts";
+  var outputFolder   = "dist/";
+  var outputFileName = "inversify.min.js";
+  var pkg            = require("./package.json");
+
+  var banner = ["/**",
+    " * <%= pkg.name %> v.<%= pkg.version %> - <%= pkg.description %>",
+    " * Copyright (c) 2015 <%= pkg.author %>",
+    " * <%= pkg.license %> inversify.io/LICENSE",
+    " * <%= pkg.homepage %>",
+    " */",
+    ""].join("\n");
+
+  var bundler = browserify({
+    debug: true,
+    standalone : "inversify"
+  });
+
+  // TS compiler options are in tsconfig.json file
+  return bundler.add(mainTsFilePath)
+                .plugin(tsify)
+                .bundle()
+                .pipe(source(outputFileName))
+                .pipe(buffer())
+                .pipe(sourcemaps.init({ loadMaps: true }))
+                .pipe(uglify())
+                .pipe(header(banner, { pkg : pkg } ))
+                .pipe(sourcemaps.write('.'))
+                .pipe(gulp.dest(outputFolder));
+});
+
+//******************************************************************************
+//* TESTS
+//******************************************************************************
 var tsTestProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-test", function() {
     return gulp.src([
-        "test/**/*.ts",
-        "typings/browser.d.ts",
-        "node_modules/reflect-metadata/reflect-metadata.d.ts"
+        "test/**/*.ts"
     ])
     .pipe(tsc(tsTestProject))
     .on("error", function (err) {
@@ -71,6 +124,36 @@ gulp.task("build-test", function() {
     .js.pipe(gulp.dest("test/"));
 });
 
+gulp.task("mocha", function() {
+  return gulp.src([
+      "node_modules/reflect-metadata/Reflect.js",
+      "test/**/*.test.js"
+    ])
+    .pipe(mocha({ui: "bdd"}))
+    .pipe(istanbul.writeReports());
+});
+
+gulp.task("istanbul:hook", function() {
+  return gulp.src(["src/**/*.js"])
+      // Covering files
+      .pipe(istanbul())
+      // Force `require` to return covered files
+      .pipe(istanbul.hookRequire());
+});
+
+gulp.task("cover", function() {
+  if (!process.env.CI) return;
+  return gulp.src("coverage/**/lcov.info")
+      .pipe(coveralls());
+});
+
+gulp.task("test", function(cb) {
+  runSequence("istanbul:hook", "mocha", "cover", cb);
+});
+
+//******************************************************************************
+//* TYPE DEFINITIONS
+//******************************************************************************
 var tsTypeDefinitionsProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-type-definitions", function() {
@@ -83,11 +166,16 @@ gulp.task("build-type-definitions", function() {
 });
 
 gulp.task("build", function(cb) {
-  runSequence("lint", "build-source", "build-test", "build-type-definitions", cb);
+  runSequence(
+      "lint", 
+      "build-bundle-src",          // for nodejs
+      "build-bundle-compress-src", // for browsers
+      "build-test", 
+      "build-type-definitions", cb);
 });
 
 //******************************************************************************
-//* DOCUMENT
+//* DOCS
 //******************************************************************************
 gulp.task("document", function () {
 	return gulp
@@ -118,102 +206,11 @@ gulp.task("document", function () {
 });
 
 //******************************************************************************
-//* BUNDLE
-//******************************************************************************
-gulp.task("bundle", function () {
-    
-  var b = browserify({
-    standalone : "inversify",
-    entries:  "src/inversify.js",
-    debug: true
-  });
-
-  return b.bundle()
-    .pipe(source("inversify.js"))
-    .pipe(buffer())
-    .pipe(gulp.dest("bundled/src/"));
-
-});
-
-//******************************************************************************
-//* TEST
-//******************************************************************************
-gulp.task("mocha", function() {
-  return gulp.src([
-      "node_modules/reflect-metadata/Reflect.js",
-      "test/**/*.test.js"
-    ])
-    .pipe(mocha({ui: "bdd"}))
-    .pipe(istanbul.writeReports());
-});
-
-gulp.task("istanbul:hook", function() {
-  return gulp.src(["src/**/*.js"])
-      // Covering files
-      .pipe(istanbul())
-      // Force `require` to return covered files
-      .pipe(istanbul.hookRequire());
-});
-
-gulp.task("cover", function() {
-  if (!process.env.CI) return;
-  return gulp.src("coverage/**/lcov.info")
-      .pipe(coveralls());
-});
-
-gulp.task("test", function(cb) {
-  runSequence("istanbul:hook", "mocha", "cover", cb);
-});
-
-//******************************************************************************
-//* BAKE
-//******************************************************************************
-gulp.task("copy", function() {
-  return gulp.src("bundled/src/inversify.js")
-    .pipe(gulp.dest("dist/"));
-});
-
-gulp.task("compress", function() {
-  return gulp.src("bundled/src/inversify.js")
-             .pipe(uglify({ preserveComments : false }))
-             .pipe(rename({
-                extname: ".min.js"
-              }))
-             .pipe(gulp.dest("dist/"))
-});
-
-gulp.task("header", function() {
-
-  var pkg = require(__dirname + "/package.json");
-
-  var banner = ["/**",
-    " * <%= pkg.name %> v.<%= pkg.version %> - <%= pkg.description %>",
-    " * Copyright (c) 2015 <%= pkg.author %>",
-    " * <%= pkg.license %> inversify.io/LICENSE",
-    " * <%= pkg.homepage %>",
-    " */",
-    ""].join("\n");
-
-  gulp.src("dist/inversify.js")
-             .pipe(header(banner, { pkg : pkg } ))
-             .pipe(gulp.dest("dist/"));
-
-  return gulp.src("dist/inversify.min.js")
-             .pipe(header(banner, { pkg : pkg } ))
-             .pipe(gulp.dest("dist/"));
-});
-
-gulp.task("dist", function(cb) {
-  runSequence("bundle", "copy", "compress", "header", cb);
-});
-
-//******************************************************************************
 //* DEFAULT
 //******************************************************************************
 gulp.task("default", function (cb) {
   runSequence(
     "build",
     "test",
-    "dist",
     cb);
 });

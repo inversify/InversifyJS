@@ -1,4 +1,4 @@
-import { inject, named, tagged, paramNames } from "../../src/inversify";
+import { inject, named, tagged } from "../../src/inversify";
 
 export interface FooInterface {
   name: string;

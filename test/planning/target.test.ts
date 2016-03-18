@@ -1,4 +1,4 @@
-///<reference path="../../typings/browser.d.ts" />
+///<reference path="../../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
 import Target from "../../src/planning/target";

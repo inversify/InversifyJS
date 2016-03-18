@@ -1,3 +1,5 @@
+/// <reference path="../../typings/browser.d.ts" />
+/// <reference path="../../node_modules/reflect-metadata/reflect-metadata.d.ts" />
 
 // KERNEL
 /// <reference path="./kernel/kernel.d.ts" />

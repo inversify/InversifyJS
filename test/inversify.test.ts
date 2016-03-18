@@ -1,4 +1,4 @@
-///<reference path="../typings/browser.d.ts" />
+///<reference path="../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
 import { Kernel, inject, tagged, named, paramNames } from "../src/inversify";

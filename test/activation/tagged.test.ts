@@ -1,7 +1,7 @@
 declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
-///<reference path="../../typings/browser.d.ts" />
+///<reference path="../../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
 import { decorate } from "../../src/activation/decorator_utils";
