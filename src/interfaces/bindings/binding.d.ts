@@ -7,7 +7,7 @@ interface IBinding<T> {
   factory: IFactoryCreator<any>;
   provider: IProviderCreator<any>;
   constraint: (request: IRequest) => boolean;
-  proxyMaker: (injectable: T) => T;
+  onActivation: (injectable: T) => T;
   cache: T;
   scope: number; // BindingScope
   type: number; // BindingType

@@ -329,10 +329,13 @@ kernel.bind<IProvider<IKatana>>("IProvider<IKatana>").toProvider<IKatana>((conte
 });
 ```
 
-#### Injecting a proxy
-It is possible to create a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) of
-a dependency just before it is injected. This is useful to keep our dependencies agnostic of the implementation of crosscutting
-concerns like caching or logging.
+#### Activation handler
+It is possible to add an activation handler for a type. The activation handler is invoked after a dependency has been resolved
+and before it is added to the cache (if singleton) and injected. This is useful to keep our dependencies agnostic of the 
+implementation of crosscutting concerns like caching or logging. The following example uses a 
+[proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) to incercept one of the methods
+(`use`) of a dependency (`IKatana`).
+
 ```
 interface IKatana {
     use: () => void;
@@ -360,7 +363,7 @@ class Ninja implements INinja {
 ```
 kernel.bind<INinja>("INinja").to(Ninja);
 
-kernel.bind<IKatana>("IKatana").to(Katana).proxy((katana) => {
+kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katana) => {
     let handler = {
         apply: function(target, thisArgument, argumentsList) {
             console.log(`Starting: ${new Date().getTime()}`);

@@ -924,7 +924,7 @@ describe("Resolver", () => {
 
   });
 
-  it("Should be able to resolve plans with proxy injections", () => {
+  it("Should be able to resolve plans with activation handlers", () => {
 
         interface IKatana {
             use: () => void;
@@ -958,7 +958,7 @@ describe("Resolver", () => {
         // that it is not a good idea to use globals
         let timeTracker: string[] = [];
 
-        kernel.bind<IKatana>(katanaId).to(Katana).proxy((katana) => {
+        kernel.bind<IKatana>(katanaId).to(Katana).onActivation((katana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);

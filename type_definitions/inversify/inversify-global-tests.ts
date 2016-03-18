@@ -96,7 +96,7 @@ module global_module_test {
         };
     });
 
-    kernel.bind<IKatana>("IKatana").to(Katana).proxy((katanaToBeInjected: IKatana) => {
+    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katanaToBeInjected: IKatana) => {
         let handler = {
             apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                 console.log(`Starting: ${performance.now()}`);

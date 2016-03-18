@@ -33,4 +33,4 @@
 
 // SYNTAX
 /// <reference path="./syntax/binding_to_syntax.d.ts" />
-/// <reference path="./syntax/binding_in_when_proxy_syntax.d.ts" />
+/// <reference path="./syntax/binding_in_when_on_syntax.d.ts" />
