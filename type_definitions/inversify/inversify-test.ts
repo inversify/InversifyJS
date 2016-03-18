@@ -89,17 +89,17 @@ module external_module_test {
         };
     };
 
-    function crashReporter(next: (context: IContext) => any) {
+    function visualReporter(next: (context: IContext) => any) {
         return (context: IContext) => {
-            try {
-                return next(context);
-            } catch (err) {
-                // log exception in server
-                throw err;
-            }
+            let result = next(context);
+            let _window: any = window;
+            let devTools = _window.__inversify_devtools__;
+            if (devTools !== undefined) { devTools.log(context, result); }
+            return result;
         };
     };
-    kernel.applyMiddleware(logger, crashReporter);
+
+    kernel.applyMiddleware(logger, visualReporter);
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);

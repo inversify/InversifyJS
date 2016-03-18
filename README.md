@@ -416,18 +416,18 @@ function logger(next: (context: IContext) => any) {
     };
 };
 
-function crashReporter(next: (context: IContext) => any) {
+function devTools(next: (context: IContext) => any) {
     return (context: IContext) => {
-        try {
-            return next(context);
-        } catch (err) {
-            Raven.captureException(err, { extra: { context } });
-            throw err;
-        }
+        let result = next(context);
+        let _window: any = window;
+        let __inversify_devtools__ = _window.__inversify_devtools__;
+        if (__inversify_devtools__ !== undefined) { __inversify_devtools__.log(context, result); }
+        return result;
     };
 };
 ```
-
+Now that we have declared two middlewares we can create a new `Kernel` and 
+use its `applyMiddleware` method to apply them,
 ```
 interface INinja {}
 class Ninja implements INinja {}
@@ -435,9 +435,10 @@ class Ninja implements INinja {}
 let kernel = new Kernel();
 kernel.bind<INinja>("INinja").to(Ninja);
 
-kernel.applyMiddleware(logger, crashReporter);
+kernel.applyMiddleware(logger, devTools);
 ```
-
+The `logger` middleware will log in console the context and result. The `crashReporter` middleware
+is not invoked because `__inversify_devtools__` is undefined.
 ```
 let ninja = kernel.get<INinja>("INinja");
 > CONTEXT:  Context {
