@@ -12,7 +12,6 @@ tsconfig.json
 CONTRIBUTING.md
 ISSUE_TEMPLATE.md
 PULL_REQUEST_TEMPLATE.md
-typings.json
 tslint.json
 wallaby.js
 .travis.yml
