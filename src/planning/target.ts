@@ -1,6 +1,6 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import Metadata from "../activation/metadata";
+import Metadata from "../planning/metadata";
 import QueryableString from "./queryable_string";
 
 class Target implements ITarget {

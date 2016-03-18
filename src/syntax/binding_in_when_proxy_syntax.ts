@@ -1,7 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
 import BindingScope from "../bindings/binding_scope";
-import Metadata from "../activation/metadata";
+import Metadata from "../planning/metadata";
 
 class BindingInWhenProxySyntax<T> implements IBindingInWhenProxySyntax<T> {
 

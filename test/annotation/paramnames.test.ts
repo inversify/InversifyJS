@@ -1,8 +1,8 @@
 ///<reference path="../../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { decorate } from "../../src/activation/decorator_utils";
-import paramNames from "../../src/activation/paramnames";
+import { decorate } from "../../src/annotation/decorator_utils";
+import paramNames from "../../src/annotation/paramnames";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as Stubs from "../utils/stubs";

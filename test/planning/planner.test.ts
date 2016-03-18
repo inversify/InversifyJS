@@ -8,10 +8,10 @@ import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
-import inject from "../../src/activation/inject";
-import paramNames from "../../src/activation/paramnames";
+import inject from "../../src/annotation/inject";
+import paramNames from "../../src/annotation/paramnames";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import tagged from "../../src/activation/tagged";
+import tagged from "../../src/annotation/tagged";
 
 describe("Planner", () => {
 

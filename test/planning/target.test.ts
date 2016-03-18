@@ -2,7 +2,7 @@
 
 import { expect } from "chai";
 import Target from "../../src/planning/target";
-import Metadata from "../../src/activation/metadata";
+import Metadata from "../../src/planning/metadata";
 
 describe("Target", () => {
 
