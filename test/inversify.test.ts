@@ -62,7 +62,7 @@ describe("InversifyJS", () => {
 
   });
 
-     it("Should should support middleware", () => {
+     it("Should support middleware", () => {
 
         interface INinja {}
         class Ninja implements INinja {}
@@ -96,7 +96,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support Kernel modules", () => {
+    it("Should support Kernel modules", () => {
 
         interface INinja {
             fight(): string;
@@ -158,7 +158,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support control over the scope of the dependencies", () => {
+    it("Should support control over the scope of the dependencies", () => {
 
         interface INinja {
             fight(): string;
@@ -228,7 +228,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of constant values", () => {
+    it("Should support the injection of constant values", () => {
 
         interface IHero {
             name: string;
@@ -255,7 +255,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of class constructors", () => {
+    it("Should support the injection of class constructors", () => {
 
       interface INinja {
           fight(): string;
@@ -310,7 +310,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of user defined factories", () => {
+    it("Should support the injection of user defined factories", () => {
 
         interface INinja {
             fight(): string;
@@ -370,7 +370,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of auto factories", () => {
+    it("Should support the injection of auto factories", () => {
 
         interface INinja {
             fight(): string;
@@ -426,7 +426,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of providers", (done) => {
+    it("Should support the injection of providers", (done) => {
 
         interface INinja {
             katana: IKatana;
@@ -480,7 +480,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of proxied objects", () => {
+    it("Should support the injection of proxied objects", () => {
 
         interface IKatana {
             use: () => void;
@@ -530,7 +530,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of multiple values", () => {
+    it("Should support the injection of multiple values", () => {
 
         interface IWeapon {
             name: string;
@@ -570,7 +570,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support tagged bindings", () => {
+    it("Should support tagged bindings", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -605,7 +605,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support custom tag decorators", () => {
+    it("Should support custom tag decorators", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -643,7 +643,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support named bindings", () => {
+    it("Should support named bindings", () => {
         interface IWeapon {}
         class Katana implements IWeapon { }
         class Shuriken implements IWeapon {}
@@ -677,7 +677,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support contextual bindings and paramNames annotations", () => {
+    it("Should support contextual bindings and paramNames annotations", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -719,7 +719,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should throw if circular dependencies found", () => {
+    it("Should throw if circular dependencies found", () => {
 
         interface IA {}
         interface IB {}
