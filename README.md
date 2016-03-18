@@ -184,7 +184,7 @@ var ninja = kernel.get(TYPES.Ninja);
 return ninja;
 ```
 
-### Features (v2.0.0 alpha.3)
+### Features (v2.0.0-alpha.6)
 Let's take a look to the InversifyJS features!
 
 #### Declaring kernel modules
