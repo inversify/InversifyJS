@@ -2,7 +2,7 @@
 
 import {
     Kernel,
-    inject, tagged, named, paramNames,
+    injectable, tagged, named, paramNames,
     IKernel, IKernelOptions, INewable,
     IKernelModule, IFactory, IProvider, IRequest
 } from "inversify";
@@ -36,7 +36,7 @@ module external_module_test {
         }
     }
 
-    @inject("IKatana", "IShuriken")
+    @injectable("IKatana", "IShuriken")
     class Ninja implements INinja {
 
         private _katana: IKatana;
@@ -121,7 +121,7 @@ module external_module_test {
         shuriken: IWeapon;
     }
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     class Samurai implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -141,7 +141,7 @@ module external_module_test {
     let throwable = tagged("canThrow", true);
     let notThrowable = tagged("canThrow", false);
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     class Samurai2 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -154,7 +154,7 @@ module external_module_test {
         }
     }
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     class Samurai3 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -171,7 +171,7 @@ module external_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     @paramNames("katana", "shuriken")
     class Samurai4 implements ISamurai {
         public katana: IWeapon;

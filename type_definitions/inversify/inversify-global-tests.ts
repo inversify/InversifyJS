@@ -29,7 +29,7 @@ module global_module_test {
         }
     }
 
-    @inversify.inject("IKatana", "IShuriken")
+    @inversify.injectable("IKatana", "IShuriken")
     class Ninja implements INinja {
 
         private _katana: IKatana;
@@ -114,7 +114,7 @@ module global_module_test {
         shuriken: IWeapon;
     }
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     class Samurai implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -134,7 +134,7 @@ module global_module_test {
     let throwable = inversify.tagged("canThrow", true);
     let notThrowable = inversify.tagged("canThrow", false);
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     class Samurai2 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -147,7 +147,7 @@ module global_module_test {
         }
     }
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     class Samurai3 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -164,7 +164,7 @@ module global_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     @inversify.paramNames("katana", "shuriken")
     class Samurai4 implements ISamurai {
         public katana: IWeapon;

@@ -9,12 +9,8 @@
 
 import BindingScope from "./binding_scope";
 import BindingType from "./binding_type";
-import { guid } from "../utils/utils";
 
 class Binding<T> implements IBinding<T> {
-
-    // guid
-    public guid: string;
 
     // Determines wether the bindings has been already activated
     // The activation action takes place when an instance is resolved
@@ -49,7 +45,6 @@ class Binding<T> implements IBinding<T> {
     public onActivation: (injectable: T) => T;
 
     constructor(runtimeIdentifier: string) {
-        this.guid = guid();
         this.activated = false;
         this.runtimeIdentifier = runtimeIdentifier;
         this.scope = BindingScope.Transient;

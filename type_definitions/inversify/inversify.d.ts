@@ -133,7 +133,7 @@ declare namespace inversify {
 
     export var Kernel: IKernelConstructor;
     export var decorate: any;
-    export function inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;
+    export function injectable(...typeIdentifiers: string[]): (typeConstructor: any) => void;
     export var tagged: any;
     export var named: any;
     export var paramNames: any;

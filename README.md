@@ -67,7 +67,7 @@ interface IShuriken {
 }
 ```
 
-#### Step 2: Implement the interfaces and declare dependencies using the `@inject` decorator
+#### Step 2: Implement the interfaces and declare dependencies using the `@injectable` decorator
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared.
 ```
 import { inject } from "inversify";
@@ -84,7 +84,7 @@ class Shuriken implements IShuriken {
     }
 }
 
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -170,8 +170,8 @@ class Ninja {
     sneak() { return this._shuriken.throw(); };
 }
 
-// Declare injections
-inversify.inject(TYPES.Katana, TYPES.Shuriken)(Ninja);
+// Declare as injectable and its dependencies
+inversify.injectable(TYPES.Katana, TYPES.Shuriken)(Ninja);
 
 // Declare bindings
 var kernel = new inversify.Kernel();
@@ -217,7 +217,7 @@ kernel.bind<IKatana>("IKatana").toValue(new Katana());
 #### Injecting a class constructor
 Binds an abstraction to a class constructor.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -241,7 +241,7 @@ kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katan
 #### Injecting a Factory
 Binds an abstraction to a user defined Factory.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -269,7 +269,7 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
 #### Auto factory
 Binds an abstraction to a auto-generated Factory.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -293,7 +293,7 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
 #### Injecting a Provider (asynchronous Factory)
 Binds an abstraction to a Provider. A provider is an asynchronous factory, this is useful when dealing with asynchronous  I/O operations.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     public katana: IKatana;
@@ -351,7 +351,7 @@ interface INinja {
     katana: IKatana;
 }
 
-@inject("IKatana")
+@injectable("IKatana")
 class Ninja implements INinja {
     public katana: IKatana;
     public constructor(katana: IKatana) {
@@ -426,7 +426,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon[]")
+@injectable("IWeapon[]")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -459,7 +459,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -490,7 +490,7 @@ Creating your own decorators is really simple:
 let throwable = tagged("canThrow", true);
 let notThrowable = tagged("canThrow", false);
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -518,7 +518,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -554,7 +554,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 @paramNames("katana","shuriken")
 class Ninja implements INinja {
     public katana: IWeapon;

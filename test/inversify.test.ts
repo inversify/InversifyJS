@@ -1,7 +1,7 @@
 ///<reference path="../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, inject, tagged, named, paramNames } from "../src/inversify";
+import { Kernel, injectable, tagged, named, paramNames } from "../src/inversify";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
 
@@ -34,7 +34,7 @@ describe("InversifyJS", () => {
           }
       }
 
-      @inject("IKatana", "IShuriken")
+      @injectable("IKatana", "IShuriken")
       class Ninja implements INinja {
 
           private _katana: IKatana;
@@ -89,7 +89,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
+        @injectable("IKatana", "IShuriken")
         class Ninja implements INinja {
 
             private _katana: IKatana;
@@ -161,7 +161,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
+        @injectable("IKatana", "IShuriken")
         class Ninja implements INinja {
 
             private _katana: IKatana;
@@ -248,7 +248,7 @@ describe("InversifyJS", () => {
           }
       }
 
-      @inject("IKatana", "IShuriken")
+      @injectable("IKatana", "IShuriken")
       class Ninja implements INinja {
 
           private _katana: IKatana;
@@ -303,7 +303,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IFactory<IKatana>", "IShuriken")
+        @injectable("IFactory<IKatana>", "IShuriken")
         class NinjaWithUserDefinedFactory implements INinja {
 
             private _katana: IKatana;
@@ -363,7 +363,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IFactory<IKatana>", "IShuriken")
+        @injectable("IFactory<IKatana>", "IShuriken")
         class NinjaWithAutoFactory implements INinja {
 
             private _katana: IKatana;
@@ -409,7 +409,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IProvider<IKatana>")
+        @injectable("IProvider<IKatana>")
         class NinjaWithProvider implements INinja {
 
             public katana: IKatana;
@@ -462,7 +462,7 @@ describe("InversifyJS", () => {
             katana: IKatana;
         }
 
-        @inject("IKatana")
+        @injectable("IKatana")
         class Ninja implements INinja {
             public katana: IKatana;
             public constructor(katana: IKatana) {
@@ -515,7 +515,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon[]")
+        @injectable("IWeapon[]")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -547,7 +547,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -585,7 +585,7 @@ describe("InversifyJS", () => {
         let throwable = tagged("canThrow", true);
         let notThrowable = tagged("canThrow", false);
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -619,7 +619,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -654,7 +654,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         @paramNames("katana", "shuriken")
         class Ninja implements INinja {
             public katana: IWeapon;
@@ -692,7 +692,7 @@ describe("InversifyJS", () => {
         interface IC {}
         interface ID {}
 
-        @inject("IB", "IC")
+        @injectable("IB", "IC")
         class A implements IA {
             public b: IB;
             public c: IC;
@@ -704,7 +704,7 @@ describe("InversifyJS", () => {
 
         class B implements IB {}
 
-        @inject("ID")
+        @injectable("ID")
         class C implements IC {
             public d: ID;
             public constructor(d: ID) {
@@ -712,7 +712,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IA")
+        @injectable("IA")
         class D implements ID {
             public a: IA;
             public constructor(a: IA) {
