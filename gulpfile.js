@@ -113,7 +113,18 @@ gulp.task("build-bundle-compress-src", function() {
 //******************************************************************************
 var tsTestProject = tsc.createProject("tsconfig.json");
 
-gulp.task("build-test", function() {
+gulp.task("build-src", function() {
+    return gulp.src([
+        "src/**/*.ts"
+    ])
+    .pipe(tsc(tsTestProject))
+    .on("error", function (err) {
+        process.exit(1);
+    })
+    .js.pipe(gulp.dest("src/"));
+});
+
+gulp.task("build-test", ["build-src"], function() {
     return gulp.src([
         "test/**/*.ts"
     ])
