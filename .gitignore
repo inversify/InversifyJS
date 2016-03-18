@@ -42,6 +42,9 @@ type_definitions/inversify/*.js
 src/*.js
 src/**/*.js
 
+src/*.js.map
+src/**/*.js.map
+
 src/*.d.ts
 src/activation/*.d.ts
 src/bindings/*.d.ts

@@ -30,3 +30,6 @@
 * Environment name and version (e.g. Chrome 39, node.js 5.4):
 * Operating System and version (desktop or mobile):
 * Link to your project:
+
+# Stack trace
+<!--- Include stack trace -->
