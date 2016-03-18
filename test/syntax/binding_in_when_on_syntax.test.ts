@@ -112,7 +112,7 @@ describe("BindingInWhenOnSyntax", () => {
         let binding = new Binding<INinja>(ninjaIdentifier);
         let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
 
-        bindingInWhenOnSyntax.onActivation((ninja: INinja) => {
+        bindingInWhenOnSyntax.onActivation((context: IContext, ninja: INinja) => {
             let handler = {};
             return new Proxy<INinja>(ninja, handler);
         });

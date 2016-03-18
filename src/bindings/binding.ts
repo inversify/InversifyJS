@@ -42,7 +42,7 @@ class Binding<T> implements IBinding<T> {
     public constraint: (request: IRequest) => boolean;
 
     // On activation handler
-    public onActivation: (injectable: T) => T;
+    public onActivation: (context: IContext, injectable: T) => T;
 
     constructor(runtimeIdentifier: string) {
         this.activated = false;

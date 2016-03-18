@@ -958,7 +958,7 @@ describe("Resolver", () => {
         // that it is not a good idea to use globals
         let timeTracker: string[] = [];
 
-        kernel.bind<IKatana>(katanaId).to(Katana).onActivation((katana) => {
+        kernel.bind<IKatana>(katanaId).to(Katana).onActivation((context: IContext, katana: IKatana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);

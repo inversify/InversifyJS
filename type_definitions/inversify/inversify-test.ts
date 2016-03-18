@@ -124,7 +124,7 @@ module external_module_test {
         };
     });
 
-    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katanaToBeInjected: IKatana) => {
+    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context: IContext, katanaToBeInjected: IKatana) => {
         let handler = {
             apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                 console.log(`Starting: ${performance.now()}`);

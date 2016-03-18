@@ -73,7 +73,7 @@ class Resolver implements IResolver {
 
             // use activation handler if available
             if (typeof binding.onActivation === "function") {
-                result = binding.onActivation(result);
+                result = binding.onActivation(request.parentContext, result);
             }
 
             // store in cache if scope is singleton

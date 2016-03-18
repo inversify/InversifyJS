@@ -367,7 +367,7 @@ class Ninja implements INinja {
 ```
 kernel.bind<INinja>("INinja").to(Ninja);
 
-kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katana) => {
+kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context, katana) => {
     let handler = {
         apply: function(target, thisArgument, argumentsList) {
             console.log(`Starting: ${new Date().getTime()}`);

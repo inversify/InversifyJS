@@ -45,7 +45,7 @@ declare namespace inversify {
         when(constraint: (request: IRequest) => boolean): IBindingInWhenOnSyntax<T>;
         whenTargetNamed(name: string): IBindingInWhenOnSyntax<T>;
         whenTargetTagged(tag: string, value: any): IBindingInWhenOnSyntax<T>;
-        onActivation(fn: (injectable: T) => T): IBindingInWhenOnSyntax<T>;
+        onActivation(fn: (context: IContext, injectable: T) => T): IBindingInWhenOnSyntax<T>;
     }
 
     export interface IFactory<T> extends Function {
