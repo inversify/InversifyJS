@@ -58,20 +58,42 @@ module global_module_test {
     kernel.unbindAll();
 
     // Kernel modules
-    let module: inversify.IKernelModule = (k: inversify.IKernel) => {
+    let warriors: inversify.IKernelModule = (k: inversify.IKernel) => {
         k.bind<INinja>("INinja").to(Ninja);
+    };
+
+    let weapons: inversify.IKernelModule = (k: inversify.IKernel) => {
         k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
         k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
     };
 
-    let options: inversify.IKernelOptions = {
-        middleware: [],
-        modules: [module]
-    };
-
-    kernel = new inversify.Kernel(options);
+    kernel = new inversify.Kernel();
+    kernel.load(warriors, weapons);
     let ninja2 = kernel.get<INinja>("INinja");
     console.log(ninja2);
+
+    // middleware
+    function logger(next: (context: inversify.IContext) => any) {
+        return (context: inversify.IContext) => {
+            let result = next(context);
+            console.log("CONTEXT: ", context);
+            console.log("RESULT: ", result);
+            return result;
+        };
+    };
+
+    function crashReporter(next: (context: inversify.IContext) => any) {
+        return (context: inversify.IContext) => {
+            try {
+                return next(context);
+            } catch (err) {
+                // log exception in server
+                throw err;
+            }
+        };
+    };
+
+    kernel.applyMiddleware(logger, crashReporter);
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);

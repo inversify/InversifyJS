@@ -191,13 +191,17 @@ Let's take a look to the InversifyJS features!
 
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
 ```
-let someModule: IKernelModule = (kernel: IKernel) => {
-    kernel.bind<INinja>("INinja").to(Ninja);
-    kernel.bind<IKatana>("IKatana").to(Katana);
-    kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+let warriors: IKernelModule = (k: IKernel) => {
+    k.bind<INinja>("INinja").to(Ninja);
 };
 
-let kernel = new Kernel({ modules: [ someModule ] });
+let weapons: IKernelModule = (k: IKernel) => {
+    k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
+    k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
+};
+
+kernel = new Kernel();
+kernel.load(warriors, weapons);
 ```
 
 #### Controlling the scope of the dependencies

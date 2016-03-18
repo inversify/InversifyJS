@@ -8,8 +8,12 @@
 
 declare namespace inversify {
 
-    interface IKernelConstructor {
-        new(options?: IKernelOptions): IKernel;
+    export interface IKernelConstructor {
+        new(): IKernel;
+    }
+
+    interface IMiddleware extends Function {
+        (next: (context: IContext) => any): (context: IContext) => any;
     }
 
     export interface IKernel {
@@ -18,15 +22,8 @@ declare namespace inversify {
         unbindAll(): void;
         get<T>(runtimeIdentifier: string): T;
         getAll<T>(runtimeIdentifier: string): T[];
-    }
-
-    export interface IKernelOptions {
-        middleware?: IMiddleware[];
-        modules?: IKernelModule[];
-    }
-
-    interface IMiddleware extends Function {
-        (...args: any[]): any;
+        load(...modules: IKernelModule[]): void;
+        applyMiddleware(...middleware: IMiddleware[]): void;
     }
 
     export interface IKernelModule extends Function {

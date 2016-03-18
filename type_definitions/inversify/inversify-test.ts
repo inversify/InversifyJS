@@ -3,7 +3,7 @@
 import {
     Kernel,
     injectable, tagged, named, paramNames,
-    IKernel, IKernelOptions, INewable,
+    IKernel, INewable, IContext,
     IKernelModule, IFactory, IProvider, IRequest
 } from "inversify";
 
@@ -65,20 +65,41 @@ module external_module_test {
     kernel.unbindAll();
 
     // Kernel modules
-    let module: IKernelModule = (k: IKernel) => {
+    let warriors: IKernelModule = (k: IKernel) => {
         k.bind<INinja>("INinja").to(Ninja);
+    };
+
+    let weapons: IKernelModule = (k: IKernel) => {
         k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
         k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
     };
 
-    let options: IKernelOptions = {
-        middleware: [],
-        modules: [module]
-    };
-
-    kernel = new Kernel(options);
+    kernel = new Kernel();
+    kernel.load(warriors, weapons);
     let ninja2 = kernel.get<INinja>("INinja");
     console.log(ninja2);
+
+    // middleware
+    function logger(next: (context: IContext) => any) {
+        return (context: IContext) => {
+            let result = next(context);
+            console.log("CONTEXT: ", context);
+            console.log("RESULT: ", result);
+            return result;
+        };
+    };
+
+    function crashReporter(next: (context: IContext) => any) {
+        return (context: IContext) => {
+            try {
+                return next(context);
+            } catch (err) {
+                // log exception in server
+                throw err;
+            }
+        };
+    };
+    kernel.applyMiddleware(logger, crashReporter);
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);
