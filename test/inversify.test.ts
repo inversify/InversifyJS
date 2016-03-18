@@ -105,13 +105,18 @@ describe("InversifyJS", () => {
 
         }
 
-        let someModule: IKernelModule = (kernel: IKernel) => {
+        let warriors: IKernelModule = (kernel: IKernel) => {
             kernel.bind<INinja>("INinja").to(Ninja);
+        };
+
+        let weapons: IKernelModule = (kernel: IKernel) => {
             kernel.bind<IKatana>("IKatana").to(Katana);
             kernel.bind<IShuriken>("IShuriken").to(Shuriken);
         };
 
-        let kernel = new Kernel({ modules: [ someModule ] });
+        let kernel = new Kernel();
+        kernel.load(warriors, weapons);
+
         let ninja = kernel.get<INinja>("INinja");
 
         expect(ninja.fight()).eql("cut!");

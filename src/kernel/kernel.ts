@@ -22,21 +22,29 @@ import Planner from "../planning/planner";
 import Resolver from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingToSyntax from "../syntax/binding_to_syntax";
+import { compose } from "../utils/utils";
 
 class Kernel implements IKernel {
 
     private _planner: IPlanner;
     private _resolver: IResolver;
+    private _middleware: IMiddleware;
     private _bindingDictionary: ILookup<IBinding<any>>;
 
     // Initialize private properties
-    public constructor(options: IKernelOptions = { middleware: [], modules: [] }) {
+    public constructor() {
         this._planner = new Planner();
-        this._resolver = new Resolver(options.middleware);
+        this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();
-        if (Array.isArray(options.modules) === true) {
-            options.modules.forEach((module) => { module(this); });
-        }
+        this._middleware = null;
+    }
+
+    public load(...modules: IKernelModule[]): void {
+        modules.forEach((module) => { module(this); });
+    }
+
+    public applyMiddleware(...middlewares: IMiddleware[]): void {
+        this._middleware = compose(...middlewares);
     }
 
     // Regiters a type binding
@@ -115,8 +123,12 @@ class Kernel implements IKernel {
         // STEP 2: generate a resolutioin plan and link it to the context
         this._planner.createPlan(context, binding);
 
-        // STEP 3: execute resolution plan
-        return this._resolver.resolve<T>(context);
+        // STEP 3, 4 & 5: use middleware (optional), execute resolution plan and activation
+        if (typeof this._middleware === "function") {
+            return this._middleware(context);
+        } else {
+            return this._resolver.resolve<T>(context);
+        }
     }
 
 }

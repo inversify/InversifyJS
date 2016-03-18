@@ -23,9 +23,10 @@ describe("Kernel", () => {
           console.log(context);
       };
 
-      let kernel = new Kernel({ middleware: [ logger ] });
+      let kernel = new Kernel();
+      kernel.applyMiddleware(logger);
       let _kernel: any = kernel;
-      expect(_kernel._resolver._middleWare.length).eql(1);
+      expect(_kernel._middleware != null).eql(true);
 
   });
 
@@ -39,17 +40,22 @@ describe("Kernel", () => {
       class Shuriken implements IShuriken {}
       class Ninja implements INinja {}
 
-      let module = (kernel: IKernel) => {
-          kernel.bind<IKatana>("IKatana").to(Katana);
-          kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+      let warriors = (kernel: IKernel) => {
           kernel.bind<INinja>("INinja").to(Ninja);
       };
 
-      let kernel = new Kernel({ modules: [ module ] });
+      let weapons = (kernel: IKernel) => {
+          kernel.bind<IKatana>("IKatana").to(Katana);
+          kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+      };
+
+      let kernel = new Kernel();
+      kernel.load(warriors, weapons);
+
       let _kernel: any = kernel;
-      expect(_kernel._bindingDictionary._dictionary[0].key).eql("IKatana");
-      expect(_kernel._bindingDictionary._dictionary[1].key).eql("IShuriken");
-      expect(_kernel._bindingDictionary._dictionary[2].key).eql("INinja");
+      expect(_kernel._bindingDictionary._dictionary[0].key).eql("INinja");
+      expect(_kernel._bindingDictionary._dictionary[1].key).eql("IKatana");
+      expect(_kernel._bindingDictionary._dictionary[2].key).eql("IShuriken");
 
   });
 

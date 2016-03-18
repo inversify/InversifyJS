@@ -385,6 +385,27 @@ ninja.katana.use();
 > Finished: 1457895135762
 ```
 
+#### Middleware
+InversifyJS performs **3 mandatory operations** before resolving a dependency: 
+
+- **Annotation**
+- **Planning**
+- **Middleware (optional)**
+- **Resolution**
+- **Activation (optional)**
+
+In some cases there will be some **additional operations (middleware & activation)**.
+
+If we have configured some Middleware it will be executed just before the 
+[resolution phase](https://github.com/inversify/InversifyJS/wiki/Architecture-overview) takes place. 
+
+Middleware can be used to implement powerful development tools. 
+This kind of tools will help developers to identify problems during the development process.
+
+```
+EXAMPLES COMING SOON
+```
+
 #### Multi-injection
 We can use multi-injection When two or more concretions have been bound to the an abstraction.
 Notice how an array of `IWeapon` is injected into the `Ninja` class via its constructor:

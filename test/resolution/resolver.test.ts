@@ -265,7 +265,7 @@ describe("Resolver", () => {
       context.addPlan(plan);
 
       // resolver
-      let resolver = new Resolver([]);
+      let resolver = new Resolver();
       let _resolver: any = resolver;
       let _inject = _resolver._inject;
 

@@ -6,12 +6,6 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Resolver implements IResolver {
 
-    private _middleWare: IMiddleware[];
-
-    public constructor(middleWare: IMiddleware[] = []) {
-        this._middleWare = middleWare;
-    }
-
     public resolve<Service>(context: IContext): Service {
         let rootRequest = context.plan.rootRequest;
         return this._inject(rootRequest);
