@@ -149,7 +149,7 @@ class Planner implements IPlanner {
 
         if (func === null) { return []; }
 
-        let injections = Reflect.getMetadata(METADATA_KEY.INJECT, func) || [];
+        let injections = Reflect.getMetadata(METADATA_KEY.INJECTABLE, func) || [];
         let paramNames = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, func) || [];
         let tags = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 

@@ -7,27 +7,65 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Kernel", () => {
 
-  let sandbox: Sinon.SinonSandbox;
+    let sandbox: Sinon.SinonSandbox;
 
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create();
-  });
+    beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+    });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+    afterEach(() => {
+        sandbox.restore();
+    });
 
-  it("Should be able to use middleware as configuration", () => {
+    it("Should be able to use middleware as configuration", () => {
 
-      let logger = (context: IContext) => {
-          console.log(context);
-      };
+        function logger(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                console.log(context);
+                return next(context);
+            };
+        };
 
-      let kernel = new Kernel({ middleware: [ logger ] });
-      let _kernel: any = kernel;
-      expect(_kernel._resolver._middleWare.length).eql(1);
+        let kernel = new Kernel();
+        kernel.applyMiddleware(logger);
+        let _kernel: any = kernel;
+        expect(_kernel._middleware).not.to.eql(null);
 
-  });
+    });
+
+    it("Should invoke middleware", () => {
+
+        interface INinja {}
+        class Ninja implements INinja {}
+
+        let log: string[] = [];
+
+        function middleware1(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        function middleware2(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        let kernel = new Kernel();
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`Middleware1: INinja`);
+        expect(log[1]).eql(`Middleware2: INinja`);
+
+    });
 
   it("Shoule be able to use modules as configuration", () => {
 
@@ -39,17 +77,22 @@ describe("Kernel", () => {
       class Shuriken implements IShuriken {}
       class Ninja implements INinja {}
 
-      let module = (kernel: IKernel) => {
-          kernel.bind<IKatana>("IKatana").to(Katana);
-          kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+      let warriors = (kernel: IKernel) => {
           kernel.bind<INinja>("INinja").to(Ninja);
       };
 
-      let kernel = new Kernel({ modules: [ module ] });
+      let weapons = (kernel: IKernel) => {
+          kernel.bind<IKatana>("IKatana").to(Katana);
+          kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+      };
+
+      let kernel = new Kernel();
+      kernel.load(warriors, weapons);
+
       let _kernel: any = kernel;
-      expect(_kernel._bindingDictionary._dictionary[0].key).eql("IKatana");
-      expect(_kernel._bindingDictionary._dictionary[1].key).eql("IShuriken");
-      expect(_kernel._bindingDictionary._dictionary[2].key).eql("INinja");
+      expect(_kernel._bindingDictionary._dictionary[0].key).eql("INinja");
+      expect(_kernel._bindingDictionary._dictionary[1].key).eql("IKatana");
+      expect(_kernel._bindingDictionary._dictionary[2].key).eql("IShuriken");
 
   });
 

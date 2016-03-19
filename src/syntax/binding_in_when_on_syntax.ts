@@ -41,7 +41,7 @@ class BindingInWhenOnSyntax<T> implements IBindingInWhenOnSyntax<T> {
         return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public onActivation(handler: (injectable: T) => T): IBindingInWhenOnSyntax<T> {
+    public onActivation(handler: (context: IContext, injectable: T) => T): IBindingInWhenOnSyntax<T> {
         this._binding.onActivation = handler;
         return new BindingInWhenOnSyntax<T>(this._binding);
     }

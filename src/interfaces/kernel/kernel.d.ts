@@ -6,4 +6,6 @@ interface IKernel {
   unbindAll(): void;
   get<T>(runtimeIdentifier: string): T;
   getAll<T>(runtimeIdentifier: string): T[];
+  load(...modules: IKernelModule[]): void;
+  applyMiddleware(...middleware: IMiddleware[]): void;
 }

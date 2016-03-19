@@ -1,5 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
+import guid from "../utils/utils";
+
 class Request implements IRequest {
 
         public guid: string;
@@ -17,7 +19,7 @@ class Request implements IRequest {
             bindings: (IBinding<any>|IBinding<any>[]),
             target: ITarget = null) {
 
-                this.guid = this._guid();
+                this.guid = guid();
                 this.service = service;
                 this.parentContext = parentContext;
                 this.parentRequest = parentRequest;
@@ -40,17 +42,6 @@ class Request implements IRequest {
                 );
                 this.childRequests.push(child);
                 return child;
-        }
-
-        private _s4(): string {
-            return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-        }
-
-        private _guid() {
-            return this._s4() + this._s4() + "-" + this._s4() + "-" + this._s4() + "-" +
-                   this._s4() + "-" + this._s4() + this._s4() + this._s4();
         }
 }
 

@@ -1,7 +1,7 @@
 ///<reference path="../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, inject, tagged, named, paramNames } from "../src/inversify";
+import { Kernel, injectable, tagged, named, paramNames } from "../src/inversify";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
 
@@ -34,7 +34,7 @@ describe("InversifyJS", () => {
           }
       }
 
-      @inject("IKatana", "IShuriken")
+      @injectable("IKatana", "IShuriken")
       class Ninja implements INinja {
 
           private _katana: IKatana;
@@ -62,7 +62,41 @@ describe("InversifyJS", () => {
 
   });
 
-    it("Should should support Kernel modules", () => {
+     it("Should support middleware", () => {
+
+        interface INinja {}
+        class Ninja implements INinja {}
+
+        let log: string[] = [];
+
+        function middleware1(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        function middleware2(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
+        };
+
+        let kernel = new Kernel();
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`Middleware1: INinja`);
+        expect(log[1]).eql(`Middleware2: INinja`);
+
+    });
+
+    it("Should support Kernel modules", () => {
 
         interface INinja {
             fight(): string;
@@ -89,7 +123,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
+        @injectable("IKatana", "IShuriken")
         class Ninja implements INinja {
 
             private _katana: IKatana;
@@ -105,13 +139,18 @@ describe("InversifyJS", () => {
 
         }
 
-        let someModule: IKernelModule = (kernel: IKernel) => {
+        let warriors: IKernelModule = (kernel: IKernel) => {
             kernel.bind<INinja>("INinja").to(Ninja);
+        };
+
+        let weapons: IKernelModule = (kernel: IKernel) => {
             kernel.bind<IKatana>("IKatana").to(Katana);
             kernel.bind<IShuriken>("IShuriken").to(Shuriken);
         };
 
-        let kernel = new Kernel({ modules: [ someModule ] });
+        let kernel = new Kernel();
+        kernel.load(warriors, weapons);
+
         let ninja = kernel.get<INinja>("INinja");
 
         expect(ninja.fight()).eql("cut!");
@@ -119,7 +158,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support control over the scope of the dependencies", () => {
+    it("Should support control over the scope of the dependencies", () => {
 
         interface INinja {
             fight(): string;
@@ -156,7 +195,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IKatana", "IShuriken")
+        @injectable("IKatana", "IShuriken")
         class Ninja implements INinja {
 
             private _katana: IKatana;
@@ -189,7 +228,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of constant values", () => {
+    it("Should support the injection of constant values", () => {
 
         interface IHero {
             name: string;
@@ -216,7 +255,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of class constructors", () => {
+    it("Should support the injection of class constructors", () => {
 
       interface INinja {
           fight(): string;
@@ -243,7 +282,7 @@ describe("InversifyJS", () => {
           }
       }
 
-      @inject("IKatana", "IShuriken")
+      @injectable("IKatana", "IShuriken")
       class Ninja implements INinja {
 
           private _katana: IKatana;
@@ -271,7 +310,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of user defined factories", () => {
+    it("Should support the injection of user defined factories", () => {
 
         interface INinja {
             fight(): string;
@@ -298,7 +337,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IFactory<IKatana>", "IShuriken")
+        @injectable("IFactory<IKatana>", "IShuriken")
         class NinjaWithUserDefinedFactory implements INinja {
 
             private _katana: IKatana;
@@ -331,7 +370,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of auto factories", () => {
+    it("Should support the injection of auto factories", () => {
 
         interface INinja {
             fight(): string;
@@ -358,7 +397,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IFactory<IKatana>", "IShuriken")
+        @injectable("IFactory<IKatana>", "IShuriken")
         class NinjaWithAutoFactory implements INinja {
 
             private _katana: IKatana;
@@ -387,7 +426,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of providers", (done) => {
+    it("Should support the injection of providers", (done) => {
 
         interface INinja {
             katana: IKatana;
@@ -404,7 +443,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IProvider<IKatana>")
+        @injectable("IProvider<IKatana>")
         class NinjaWithProvider implements INinja {
 
             public katana: IKatana;
@@ -441,7 +480,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of proxied objects", () => {
+    it("Should support the injection of proxied objects", () => {
 
         interface IKatana {
             use: () => void;
@@ -457,7 +496,7 @@ describe("InversifyJS", () => {
             katana: IKatana;
         }
 
-        @inject("IKatana")
+        @injectable("IKatana")
         class Ninja implements INinja {
             public katana: IKatana;
             public constructor(katana: IKatana) {
@@ -469,7 +508,7 @@ describe("InversifyJS", () => {
         kernel.bind<INinja>("INinja").to(Ninja);
         let log: string[] = [];
 
-        kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katana) => {
+        kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context: IContext, katana: IKatana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     log.push(`Starting: ${new Date().getTime()}`);
@@ -491,7 +530,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support the injection of multiple values", () => {
+    it("Should support the injection of multiple values", () => {
 
         interface IWeapon {
             name: string;
@@ -510,7 +549,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon[]")
+        @injectable("IWeapon[]")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -531,7 +570,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support tagged bindings", () => {
+    it("Should support tagged bindings", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -542,7 +581,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -566,7 +605,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support custom tag decorators", () => {
+    it("Should support custom tag decorators", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -580,7 +619,7 @@ describe("InversifyJS", () => {
         let throwable = tagged("canThrow", true);
         let notThrowable = tagged("canThrow", false);
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -604,7 +643,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support named bindings", () => {
+    it("Should support named bindings", () => {
         interface IWeapon {}
         class Katana implements IWeapon { }
         class Shuriken implements IWeapon {}
@@ -614,7 +653,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
@@ -638,7 +677,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should support contextual bindings and paramNames annotations", () => {
+    it("Should support contextual bindings and paramNames annotations", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -649,7 +688,7 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @inject("IWeapon", "IWeapon")
+        @injectable("IWeapon", "IWeapon")
         @paramNames("katana", "shuriken")
         class Ninja implements INinja {
             public katana: IWeapon;
@@ -680,14 +719,14 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should should throw if circular dependencies found", () => {
+    it("Should throw if circular dependencies found", () => {
 
         interface IA {}
         interface IB {}
         interface IC {}
         interface ID {}
 
-        @inject("IB", "IC")
+        @injectable("IB", "IC")
         class A implements IA {
             public b: IB;
             public c: IC;
@@ -699,7 +738,7 @@ describe("InversifyJS", () => {
 
         class B implements IB {}
 
-        @inject("ID")
+        @injectable("ID")
         class C implements IC {
             public d: ID;
             public constructor(d: ID) {
@@ -707,7 +746,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        @inject("IA")
+        @injectable("IA")
         class D implements ID {
             public a: IA;
             public constructor(a: IA) {

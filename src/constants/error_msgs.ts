@@ -1,6 +1,6 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-export const DUPLICATED_INJECT_DECORATOR = "Cannot apply @Inject decorator multiple times.";
+export const DUPLICATED_INJECTABLE_DECORATOR = "Cannot apply @injectable decorator multiple times.";
 export const DUPLICATED_PARAM_NAMES_DECORATOR = "Cannot apply @paramNames decorator multiple times.";
 export const NULL_ARGUMENT = "NULL argument";
 export const KEY_NOT_FOUND = "Key Not Found";

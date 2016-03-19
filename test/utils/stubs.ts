@@ -1,4 +1,4 @@
-import { inject, named, tagged } from "../../src/inversify";
+import { injectable, named, tagged } from "../../src/inversify";
 
 export interface FooInterface {
   name: string;
@@ -36,7 +36,7 @@ export class Bar implements BarInterface {
   }
 }
 
-@inject("FooInterface", "BarInterface")
+@injectable("FooInterface", "BarInterface")
 export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
@@ -60,10 +60,10 @@ export class Shuriken implements IShuriken {}
 
 export class WarriotWithoutInjections {}
 
-@inject()
+@injectable()
 export class DecoratedWarriotWithoutInjections {}
 
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 export class Warrior {
     private _primaryWeapon: IKatana;
     private _secondaryWeapon: IShuriken;
@@ -99,7 +99,7 @@ export class MissingInjectionWarrior {
     }
 }
 
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 export class NamedWarrior {
 
     private _primaryWeapon: IWeapon;
@@ -112,7 +112,7 @@ export class NamedWarrior {
     }
 }
 
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 export class TaggedWarrior {
 
     private _primaryWeapon: IWeapon;

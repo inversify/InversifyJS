@@ -2,8 +2,8 @@
 
 import {
     Kernel,
-    inject, tagged, named, paramNames,
-    IKernel, IKernelOptions, INewable,
+    injectable, tagged, named, paramNames,
+    IKernel, INewable, IContext,
     IKernelModule, IFactory, IProvider, IRequest
 } from "inversify";
 
@@ -36,7 +36,7 @@ module external_module_test {
         }
     }
 
-    @inject("IKatana", "IShuriken")
+    @injectable("IKatana", "IShuriken")
     class Ninja implements INinja {
 
         private _katana: IKatana;
@@ -65,20 +65,41 @@ module external_module_test {
     kernel.unbindAll();
 
     // Kernel modules
-    let module: IKernelModule = (k: IKernel) => {
+    let warriors: IKernelModule = (k: IKernel) => {
         k.bind<INinja>("INinja").to(Ninja);
+    };
+
+    let weapons: IKernelModule = (k: IKernel) => {
         k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
         k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
     };
 
-    let options: IKernelOptions = {
-        middleware: [],
-        modules: [module]
-    };
-
-    kernel = new Kernel(options);
+    kernel = new Kernel();
+    kernel.load(warriors, weapons);
     let ninja2 = kernel.get<INinja>("INinja");
     console.log(ninja2);
+
+    // middleware
+    function logger(next: (context: IContext) => any) {
+        return (context: IContext) => {
+            let result = next(context);
+            console.log("CONTEXT: ", context);
+            console.log("RESULT: ", result);
+            return result;
+        };
+    };
+
+    function visualReporter(next: (context: IContext) => any) {
+        return (context: IContext) => {
+            let result = next(context);
+            let _window: any = window;
+            let devTools = _window.__inversify_devtools__;
+            if (devTools !== undefined) { devTools.log(context, result); }
+            return result;
+        };
+    };
+
+    kernel.applyMiddleware(logger, visualReporter);
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);
@@ -103,7 +124,7 @@ module external_module_test {
         };
     });
 
-    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katanaToBeInjected: IKatana) => {
+    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context: IContext, katanaToBeInjected: IKatana) => {
         let handler = {
             apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                 console.log(`Starting: ${performance.now()}`);
@@ -121,7 +142,7 @@ module external_module_test {
         shuriken: IWeapon;
     }
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     class Samurai implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -141,7 +162,7 @@ module external_module_test {
     let throwable = tagged("canThrow", true);
     let notThrowable = tagged("canThrow", false);
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     class Samurai2 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -154,7 +175,7 @@ module external_module_test {
         }
     }
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     class Samurai3 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -171,7 +192,7 @@ module external_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 
-    @inject("IWeapon", "IWeapon")
+    @injectable("IWeapon", "IWeapon")
     @paramNames("katana", "shuriken")
     class Samurai4 implements ISamurai {
         public katana: IWeapon;

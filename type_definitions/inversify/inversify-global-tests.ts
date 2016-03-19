@@ -29,7 +29,7 @@ module global_module_test {
         }
     }
 
-    @inversify.inject("IKatana", "IShuriken")
+    @inversify.injectable("IKatana", "IShuriken")
     class Ninja implements INinja {
 
         private _katana: IKatana;
@@ -58,20 +58,41 @@ module global_module_test {
     kernel.unbindAll();
 
     // Kernel modules
-    let module: inversify.IKernelModule = (k: inversify.IKernel) => {
+    let warriors: inversify.IKernelModule = (k: inversify.IKernel) => {
         k.bind<INinja>("INinja").to(Ninja);
+    };
+
+    let weapons: inversify.IKernelModule = (k: inversify.IKernel) => {
         k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
         k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
     };
 
-    let options: inversify.IKernelOptions = {
-        middleware: [],
-        modules: [module]
-    };
-
-    kernel = new inversify.Kernel(options);
+    kernel = new inversify.Kernel();
+    kernel.load(warriors, weapons);
     let ninja2 = kernel.get<INinja>("INinja");
     console.log(ninja2);
+
+    // middleware
+    function logger(next: (context: inversify.IContext) => any) {
+        return (context: inversify.IContext) => {
+            let result = next(context);
+            console.log("CONTEXT: ", context);
+            console.log("RESULT: ", result);
+            return result;
+        };
+    };
+
+    function visualReporter(next: (context: inversify.IContext) => any) {
+        return (context: inversify.IContext) => {
+            let result = next(context);
+            let _window: any = window;
+            let devTools = _window.__inversify_devtools__;
+            if (devTools !== undefined) { devTools.log(context, result); }
+            return result;
+        };
+    };
+
+    kernel.applyMiddleware(logger, visualReporter);
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);
@@ -96,7 +117,7 @@ module global_module_test {
         };
     });
 
-    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katanaToBeInjected: IKatana) => {
+    kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context: inversify.IContext, katanaToBeInjected: IKatana) => {
         let handler = {
             apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                 console.log(`Starting: ${performance.now()}`);
@@ -114,7 +135,7 @@ module global_module_test {
         shuriken: IWeapon;
     }
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     class Samurai implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -134,7 +155,7 @@ module global_module_test {
     let throwable = inversify.tagged("canThrow", true);
     let notThrowable = inversify.tagged("canThrow", false);
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     class Samurai2 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -147,7 +168,7 @@ module global_module_test {
         }
     }
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     class Samurai3 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
@@ -164,7 +185,7 @@ module global_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 
-    @inversify.inject("IWeapon", "IWeapon")
+    @inversify.injectable("IWeapon", "IWeapon")
     @inversify.paramNames("katana", "shuriken")
     class Samurai4 implements ISamurai {
         public katana: IWeapon;

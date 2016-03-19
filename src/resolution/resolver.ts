@@ -6,18 +6,12 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Resolver implements IResolver {
 
-    private _middleWare: IMiddleware[];
-
-    public constructor(middleWare: IMiddleware[] = []) {
-        this._middleWare = middleWare;
-    }
-
     public resolve<Service>(context: IContext): Service {
         let rootRequest = context.plan.rootRequest;
-        return this._inject(rootRequest);
+        return this._resolve(rootRequest);
     }
 
-    private _inject(request: IRequest): any {
+    private _resolve(request: IRequest): any {
 
         let bindings = request.bindings;
         let childRequests = request.childRequests;
@@ -25,7 +19,7 @@ class Resolver implements IResolver {
         if (request.target && request.target.isArray() && bindings.length > 1) {
 
             // Create an array instead of creating an instance
-            return childRequests.map((childRequest) => { return this._inject(childRequest); });
+            return childRequests.map((childRequest) => { return this._resolve(childRequest); });
 
         } else {
 
@@ -61,7 +55,7 @@ class Resolver implements IResolver {
 
                     if (childRequests.length > 0) {
                         let injections = childRequests.map((childRequest) => {
-                            return this._inject(childRequest);
+                            return this._resolve(childRequest);
                         });
                         result = this._createInstance(constr, injections);
                     } else {
@@ -79,7 +73,7 @@ class Resolver implements IResolver {
 
             // use activation handler if available
             if (typeof binding.onActivation === "function") {
-                result = binding.onActivation(result);
+                result = binding.onActivation(request.parentContext, result);
             }
 
             // store in cache if scope is singleton

@@ -8,8 +8,12 @@
 
 declare namespace inversify {
 
-    interface IKernelConstructor {
-        new(options?: IKernelOptions): IKernel;
+    export interface IKernelConstructor {
+        new(): IKernel;
+    }
+
+    interface IMiddleware extends Function {
+        (next: (context: IContext) => any): (context: IContext) => any;
     }
 
     export interface IKernel {
@@ -18,15 +22,8 @@ declare namespace inversify {
         unbindAll(): void;
         get<T>(runtimeIdentifier: string): T;
         getAll<T>(runtimeIdentifier: string): T[];
-    }
-
-    export interface IKernelOptions {
-        middleware?: IMiddleware[];
-        modules?: IKernelModule[];
-    }
-
-    interface IMiddleware extends Function {
-        (...args: any[]): any;
+        load(...modules: IKernelModule[]): void;
+        applyMiddleware(...middleware: IMiddleware[]): void;
     }
 
     export interface IKernelModule extends Function {
@@ -48,7 +45,7 @@ declare namespace inversify {
         when(constraint: (request: IRequest) => boolean): IBindingInWhenOnSyntax<T>;
         whenTargetNamed(name: string): IBindingInWhenOnSyntax<T>;
         whenTargetTagged(tag: string, value: any): IBindingInWhenOnSyntax<T>;
-        onActivation(fn: (injectable: T) => T): IBindingInWhenOnSyntax<T>;
+        onActivation(fn: (context: IContext, injectable: T) => T): IBindingInWhenOnSyntax<T>;
     }
 
     export interface IFactory<T> extends Function {
@@ -133,7 +130,7 @@ declare namespace inversify {
 
     export var Kernel: IKernelConstructor;
     export var decorate: any;
-    export function inject(...typeIdentifiers: string[]): (typeConstructor: any) => void;
+    export function injectable(...typeIdentifiers: string[]): (typeConstructor: any) => void;
     export var tagged: any;
     export var named: any;
     export var paramNames: any;

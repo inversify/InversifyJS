@@ -67,10 +67,10 @@ interface IShuriken {
 }
 ```
 
-#### Step 2: Implement the interfaces and declare dependencies using the `@inject` decorator
+#### Step 2: Implement the interfaces and declare dependencies using the `@injectable` decorator
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared.
 ```
-import { inject } from "inversify";
+import { injectable } from "inversify";
 
 class Katana implements IKatana {
     public hit() {
@@ -84,7 +84,7 @@ class Shuriken implements IShuriken {
     }
 }
 
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -170,8 +170,8 @@ class Ninja {
     sneak() { return this._shuriken.throw(); };
 }
 
-// Declare injections
-inversify.inject(TYPES.Katana, TYPES.Shuriken)(Ninja);
+// Declare as injectable and its dependencies
+inversify.injectable(TYPES.Katana, TYPES.Shuriken)(Ninja);
 
 // Declare bindings
 var kernel = new inversify.Kernel();
@@ -191,13 +191,17 @@ Let's take a look to the InversifyJS features!
 
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
 ```
-let someModule: IKernelModule = (kernel: IKernel) => {
-    kernel.bind<INinja>("INinja").to(Ninja);
-    kernel.bind<IKatana>("IKatana").to(Katana);
-    kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+let warriors: IKernelModule = (k: IKernel) => {
+    k.bind<INinja>("INinja").to(Ninja);
 };
 
-let kernel = new Kernel({ modules: [ someModule ] });
+let weapons: IKernelModule = (k: IKernel) => {
+    k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
+    k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
+};
+
+kernel = new Kernel();
+kernel.load(warriors, weapons);
 ```
 
 #### Controlling the scope of the dependencies
@@ -217,7 +221,7 @@ kernel.bind<IKatana>("IKatana").toValue(new Katana());
 #### Injecting a class constructor
 Binds an abstraction to a class constructor.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -241,7 +245,7 @@ kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katan
 #### Injecting a Factory
 Binds an abstraction to a user defined Factory.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -269,7 +273,7 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
 #### Auto factory
 Binds an abstraction to a auto-generated Factory.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     private _katana: IKatana;
@@ -293,7 +297,7 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
 #### Injecting a Provider (asynchronous Factory)
 Binds an abstraction to a Provider. A provider is an asynchronous factory, this is useful when dealing with asynchronous  I/O operations.
 ```
-@inject("IKatana", "IShuriken")
+@injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
     public katana: IKatana;
@@ -351,7 +355,7 @@ interface INinja {
     katana: IKatana;
 }
 
-@inject("IKatana")
+@injectable("IKatana")
 class Ninja implements INinja {
     public katana: IKatana;
     public constructor(katana: IKatana) {
@@ -363,7 +367,7 @@ class Ninja implements INinja {
 ```
 kernel.bind<INinja>("INinja").to(Ninja);
 
-kernel.bind<IKatana>("IKatana").to(Katana).onActivation((katana) => {
+kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context, katana) => {
     let handler = {
         apply: function(target, thisArgument, argumentsList) {
             console.log(`Starting: ${new Date().getTime()}`);
@@ -383,6 +387,80 @@ ninja.katana.use();
 > Starting: 1457895135761
 > Used Katana!
 > Finished: 1457895135762
+```
+
+#### Middleware
+InversifyJS performs **3 mandatory operations** before resolving a dependency: 
+
+- **Annotation**
+- **Planning**
+- **Middleware (optional)**
+- **Resolution**
+- **Activation (optional)**
+
+In some cases there will be some **additional operations (middleware & activation)**.
+
+If we have configured some Middleware it will be executed just before the 
+[resolution phase](https://github.com/inversify/InversifyJS/wiki/Architecture-overview) takes place. 
+
+Middleware can be used to implement powerful development tools. 
+This kind of tools will help developers to identify problems during the development process.
+
+```
+function logger(next: (context: IContext) => any) {
+    return (context: IContext) => {
+        let result = next(context);
+        console.log("CONTEXT: ", context);
+        console.log("RESULT: ", result);
+        return result;
+    };
+};
+
+function devTools(next: (context: IContext) => any) {
+    return (context: IContext) => {
+        let result = next(context);
+        let _window: any = window;
+        let __inversify_devtools__ = _window.__inversify_devtools__;
+        if (__inversify_devtools__ !== undefined) { __inversify_devtools__.log(context, result); }
+        return result;
+    };
+};
+```
+Now that we have declared two middlewares we can create a new `Kernel` and 
+use its `applyMiddleware` method to apply them,
+```
+interface INinja {}
+class Ninja implements INinja {}
+
+let kernel = new Kernel();
+kernel.bind<INinja>("INinja").to(Ninja);
+
+kernel.applyMiddleware(logger, devTools);
+```
+The `logger` middleware will log in console the context and result. The `crashReporter` middleware
+is not invoked because `__inversify_devtools__` is undefined.
+```
+let ninja = kernel.get<INinja>("INinja");
+> CONTEXT:  Context {
+  kernel: 
+   Kernel {
+     _planner: Planner {},
+     _resolver: Resolver {},
+     _bindingDictionary: Lookup { _dictionary: [Object] },
+     _middleware: [Function] },
+  plan: 
+   Plan {
+     parentContext: [Circular],
+     rootRequest: 
+      Request {
+        guid: '9b5d5435-d784-c9e2-c666-5b5e2cf98221',
+        service: 'INinja',
+        parentContext: [Circular],
+        parentRequest: null,
+        target: null,
+        childRequests: [],
+        bindings: [Object] } } }
+> RESULT:  Ninja {}
 ```
 
 #### Multi-injection
@@ -405,7 +483,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon[]")
+@injectable("IWeapon[]")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -438,7 +516,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -469,7 +547,7 @@ Creating your own decorators is really simple:
 let throwable = tagged("canThrow", true);
 let notThrowable = tagged("canThrow", false);
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -497,7 +575,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
@@ -533,7 +611,7 @@ interface INinja {
     shuriken: IWeapon;
 }
 
-@inject("IWeapon", "IWeapon")
+@injectable("IWeapon", "IWeapon")
 @paramNames("katana","shuriken")
 class Ninja implements INinja {
     public katana: IWeapon;

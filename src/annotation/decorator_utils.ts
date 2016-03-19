@@ -50,7 +50,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator): ClassDecorat
 }
 
 // Allows VanillaJS developers to use decorators:
-// decorate(inject("IFoo", "IBar"), FooBar);
+// decorate(injectable("IFoo", "IBar"), FooBar);
 // decorate(paramNames("foo", "bar"), FooBar);
 // decorate(named("foo"), FooBar, 0);
 // decorate(tagged("bar"), FooBar, 1);

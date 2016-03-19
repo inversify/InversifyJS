@@ -27,16 +27,25 @@ class Kernel implements IKernel {
 
     private _planner: IPlanner;
     private _resolver: IResolver;
+    private _middleware: (context: IContext) => any;
     private _bindingDictionary: ILookup<IBinding<any>>;
 
     // Initialize private properties
-    public constructor(options: IKernelOptions = { middleware: [], modules: [] }) {
+    public constructor() {
         this._planner = new Planner();
-        this._resolver = new Resolver(options.middleware);
+        this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();
-        if (Array.isArray(options.modules) === true) {
-            options.modules.forEach((module) => { module(this); });
-        }
+        this._middleware = null;
+    }
+
+    public load(...modules: IKernelModule[]): void {
+        modules.forEach((module) => { module(this); });
+    }
+
+    public applyMiddleware(...middlewares: IMiddleware[]): void {
+        this._middleware = middlewares.reverse().reduce((prev, curr) => {
+            return curr(prev);
+        }, this._resolver.resolve.bind(this._resolver));
     }
 
     // Regiters a type binding
@@ -112,11 +121,11 @@ class Kernel implements IKernel {
         // STEP 1: generate resolution context
         let context = this._planner.createContext(this);
 
-        // STEP 2: generate a resolutioin plan and link it to the context
+        // STEP 2: generate a resolutioin plan & link it to the context
         this._planner.createPlan(context, binding);
 
-        // STEP 3: execute resolution plan
-        return this._resolver.resolve<T>(context);
+        // STEP 3, 4 & 5: use middleware (optional), execute resolution plan & activation
+        return (this._middleware !== null) ? this._middleware(context) : this._resolver.resolve<T>(context);
     }
 
 }
