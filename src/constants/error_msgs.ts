@@ -10,3 +10,4 @@ export const NOT_REGISTERED = "No bindigns found for service:";
 export const CIRCULAR_DEPENDENCY = "Circular dependency found between services:";
 export const NOT_IMPLEMENTED = "Sorry, this feature is not fully implemented yet.";
 export const INVALID_BINDING_TYPE = "Invalid binding type:";
+export const NOT_INJECTABLE = "// TODO";

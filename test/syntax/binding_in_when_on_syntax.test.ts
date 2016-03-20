@@ -4,7 +4,6 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import Binding from "../../src/bindings/binding";
 import BindingInWhenOnSyntax from "../../src/syntax/binding_in_when_on_syntax";
-import BindingOnSyntax from "../../src/syntax/binding_on_syntax";
 
 describe("BindingInWhenOnSyntax", () => {
 
