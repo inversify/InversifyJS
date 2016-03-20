@@ -1,12 +1,10 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import BindingInSyntax from "./binding_in_syntax";
 import BindingWhenSyntax from "./binding_when_syntax";
 import BindingOnSyntax from "./binding_on_syntax";
 
-class BindingInWhenOnSyntax<T> implements IBindingInSyntax<T>, IBindingWhenSyntax<T>, IBindingOnSyntax<T>  {
+class BindingWhenOnSyntax<T> implements IBindingWhenSyntax<T>, IBindingOnSyntax<T> {
 
-    private _bindingInSyntax: BindingInSyntax<T>;
     private _bindingWhenSyntax: IBindingWhenSyntax<T>;
     private _bindingOnSyntax: IBindingOnSyntax<T>;
     private _binding: IBinding<T>;
@@ -15,11 +13,6 @@ class BindingInWhenOnSyntax<T> implements IBindingInSyntax<T>, IBindingWhenSynta
         this._binding = binding;
         this._bindingWhenSyntax = new BindingWhenSyntax<T>(this._binding);
         this._bindingOnSyntax = new BindingOnSyntax<T>(this._binding);
-        this._bindingInSyntax = new BindingInSyntax<T>(binding);
-    }
-
-    public inSingletonScope(): IBindingWhenOnSyntax<T> {
-        return this._bindingInSyntax.inSingletonScope();
     }
 
     public when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T> {
@@ -76,4 +69,4 @@ class BindingInWhenOnSyntax<T> implements IBindingInSyntax<T>, IBindingWhenSynta
 
 }
 
-export default BindingInWhenOnSyntax;
+export default BindingWhenOnSyntax;

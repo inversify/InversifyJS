@@ -63,7 +63,7 @@ module global_module_test {
     };
 
     let weapons: inversify.IKernelModule = (k: inversify.IKernel) => {
-        k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
+        k.bind<IKatana>("IKatana").to(Katana);
         k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
     };
 

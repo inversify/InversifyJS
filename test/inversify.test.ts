@@ -214,7 +214,7 @@ describe("InversifyJS", () => {
         let kernel = new Kernel();
         kernel.bind<INinja>("INinja").to(Ninja);
         kernel.bind<IKatana>("IKatana").to(Katana).inSingletonScope();
-        kernel.bind<IShuriken>("IShuriken").to(Shuriken).inTransientScope();
+        kernel.bind<IShuriken>("IShuriken").to(Shuriken);
 
         let ninja1 = kernel.get<INinja>("INinja");
         expect(ninja1.fight()).eql(`This katana was used 1 times!`);

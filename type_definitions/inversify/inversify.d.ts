@@ -40,7 +40,6 @@ declare namespace inversify {
     }
 
     interface IBindingInWhenOnSyntax<T> {
-        inTransientScope(): IBindingInWhenOnSyntax<T>;
         inSingletonScope(): IBindingInWhenOnSyntax<T>;
         when(constraint: (request: IRequest) => boolean): IBindingInWhenOnSyntax<T>;
         whenTargetNamed(name: string): IBindingInWhenOnSyntax<T>;

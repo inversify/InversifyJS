@@ -647,6 +647,23 @@ interface IQueryableString {
   value(): string;
 }
 ```
+The InversifyJS fluent syntax for bindings has already implemented some common contextual constraints:
+```
+interface IBindingWhenSyntax<T> {
+    when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+    whenTargetNamed(name: string): IBindingOnSyntax<T>;
+    whenTargetTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T>;
+    whenParentNamed(name: string): IBindingOnSyntax<T>;
+    whenParentTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenAnyAncestorNamed(name: string): IBindingOnSyntax<T>;
+    whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenNoAncestorNamed(name: string): IBindingOnSyntax<T>;
+    whenNoAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenAnyAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+    whenNoAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+}
+```
 
 #### Circular dependencies
 InversifyJS is able to identify circular dependencies and will throw an exception to help you to
@@ -659,7 +676,8 @@ Error: Circular dependency found between services: IKatana and INinja
 Plese refer to the [wiki](https://github.com/inversify/InversifyJS/wiki) for additional details.
 
 ### Live demo & examples
-You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3). Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
+You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3). 
+Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
 ### Testimonies
 
