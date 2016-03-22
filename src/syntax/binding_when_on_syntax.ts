@@ -39,6 +39,14 @@ class BindingWhenOnSyntax<T> implements IBindingWhenSyntax<T>, IBindingOnSyntax<
         return this._bindingWhenSyntax.whenParentTagged(tag, value);
     }
 
+    public whenAnyAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T> {
+        return this._bindingWhenSyntax.whenAnyAncestorIs(ancestor);
+    }
+
+    public whenNoAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T> {
+        return this._bindingWhenSyntax.whenNoAncestorIs(ancestor);
+    }
+
     public whenAnyAncestorNamed(name: string): IBindingOnSyntax<T> {
         return this._bindingWhenSyntax.whenAnyAncestorNamed(name);
     }

@@ -25,7 +25,7 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to configure custom constraints of a binding", () => {
+    it("Should be able to configure custom constraint of a binding", () => {
 
         interface INinja {}
         let ninjaIdentifier = "INinja";
@@ -43,7 +43,7 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to constraints a binding to a named target", () => {
+    it("Should be able to constraint a binding to a named target", () => {
 
         interface INinja {}
         let ninjaIdentifier = "INinja";
@@ -66,7 +66,7 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to constraints a binding to a tagged target", () => {
+    it("Should be able to constraint a binding to a tagged target", () => {
 
         interface INinja {}
         let ninjaIdentifier = "INinja";
@@ -87,7 +87,7 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to constraints a binding to a parent", () => {
+    it("Should be able to constraint a binding to a parent", () => {
 
         interface IWeapon {
             name: string;
@@ -178,13 +178,15 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to constraints a binding to a named parent");
-    it("Should be able to constraints a binding to a tagged parent");
-    it("Should be able to constraints a binding to ANY named ancestor");
-    it("Should be able to constraints a binding to ANY tagged ancestor");
-    it("Should be able to constraints a binding to NO named ancestor");
-    it("Should be able to constraints a binding to NO tagged ancestor");
-    it("Should be able to apply a custom constraints to ANY named ancestor");
-    it("Should be able to apply a custom constraints to NO named ancestor");
+    it("Should be able to constraint a binding to a named parent");
+    it("Should be able to constraint a binding to a tagged parent");
+    it("Should be able to constraint a binding to ANY ancestors");
+    it("Should be able to constraint a binding to NO ancestors");
+    it("Should be able to constraint a binding to ANY named ancestor");
+    it("Should be able to constraint a binding to ANY tagged ancestor");
+    it("Should be able to constraint a binding to NO named ancestor");
+    it("Should be able to constraint a binding to NO tagged ancestor");
+    it("Should be able to apply a custom constraint to ANY named ancestor");
+    it("Should be able to apply a custom constraint to NO named ancestor");
 
 });

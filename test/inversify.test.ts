@@ -769,4 +769,15 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should be able to apply a contextual bindings constraint to a named parent");
+    it("Should be able to apply a contextual bindings constraint to a tagged parent");
+    it("Should be able to apply a contextual bindings constraint to ANY ancestors");
+    it("Should be able to apply a contextual bindings constraint to NO ancestors");
+    it("Should be able to apply a contextual bindings constraint to ANY named ancestor");
+    it("Should be able to apply a contextual bindings constraint toANY tagged ancestor");
+    it("Should be able to apply a contextual bindings constraint to NO named ancestor");
+    it("Should be able to apply a contextual bindings constraint to NO tagged ancestor");
+    it("Should be able to apply a custom contextual constraint to ANY named ancestor");
+    it("Should be able to apply a custom contextual constraint to NO named ancestor");
+
 });

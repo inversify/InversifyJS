@@ -59,6 +59,9 @@ describe("BindingInWhenOnSyntax", () => {
         interface IArmy {}
         class Army implements IArmy {}
 
+        interface IZombieArmy {}
+        class ZombieArmy implements IZombieArmy {}
+
         interface INinja {}
         let ninjaIdentifier = "INinja";
 
@@ -75,7 +78,15 @@ describe("BindingInWhenOnSyntax", () => {
         let whenInjectedIntoStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, "whenInjectedInto").returns(null);
         let whenParentNamedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, "whenParentNamed").returns(null);
         let whenParentTaggedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, "whenParentTagged").returns(null);
-        let whenNoAncestorNamedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorNamed").returns(null);
+
+        let whenAnyAncestorIsStub = sinon.stub(
+            _bindingInWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorIs").returns(null);
+
+        let whenNoAncestorIsStub = sinon.stub(
+            _bindingInWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorIs").returns(null);
+
+        let whenNoAncestorNamedStub = sinon.stub(
+            _bindingInWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorNamed").returns(null);
 
         let whenAnyAncestorNamedStub = sinon.stub(
             _bindingInWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorNamed").returns(null);
@@ -100,6 +111,8 @@ describe("BindingInWhenOnSyntax", () => {
         bindingInWhenOnSyntax.whenInjectedInto(Army);
         bindingInWhenOnSyntax.whenParentNamed("test");
         bindingInWhenOnSyntax.whenParentTagged("test", true);
+        bindingInWhenOnSyntax.whenAnyAncestorIs(Army);
+        bindingInWhenOnSyntax.whenNoAncestorIs(ZombieArmy);
         bindingInWhenOnSyntax.whenAnyAncestorNamed("test");
         bindingInWhenOnSyntax.whenAnyAncestorTagged("test", true);
         bindingInWhenOnSyntax.whenNoAncestorNamed("test");
@@ -113,6 +126,8 @@ describe("BindingInWhenOnSyntax", () => {
         expect(whenTargetTaggedStub.callCount).eql(1);
         expect(whenInjectedIntoStub.callCount).eql(2);
         expect(whenParentNamedStub.callCount).eql(1);
+        expect(whenAnyAncestorIsStub.callCount).eql(1);
+        expect(whenNoAncestorIsStub.callCount).eql(1);
         expect(whenParentTaggedStub.callCount).eql(1);
         expect(whenAnyAncestorNamedStub.callCount).eql(1);
         expect(whenAnyAncestorTaggedStub.callCount).eql(1);

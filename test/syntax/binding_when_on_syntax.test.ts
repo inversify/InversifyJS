@@ -37,6 +37,9 @@ describe("BindingWhenOnSyntax", () => {
         interface IArmy {}
         class Army implements IArmy {}
 
+        interface IZombieArmy {}
+        class ZombieArmy implements IZombieArmy {}
+
         interface INinja {}
         let ninjaIdentifier = "INinja";
 
@@ -53,9 +56,21 @@ describe("BindingWhenOnSyntax", () => {
         let whenInjectedIntoStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenInjectedInto").returns(null);
         let whenParentNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentNamed").returns(null);
         let whenParentTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentTagged").returns(null);
-        let whenAnyAncestorNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorNamed").returns(null);
-        let whenNoAncestorNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorNamed").returns(null);
-        let whenNoAncestorTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorTagged").returns(null);
+
+        let whenAnyAncestorIsStub = sinon.stub(
+            _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorIs").returns(null);
+
+        let whenNoAncestorIsStub = sinon.stub(
+            _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorIs").returns(null);
+
+        let whenAnyAncestorNamedStub = sinon.stub(
+            _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorNamed").returns(null);
+
+        let whenNoAncestorNamedStub = sinon.stub(
+            _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorNamed").returns(null);
+
+        let whenNoAncestorTaggedStub = sinon.stub(
+            _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorTagged").returns(null);
 
         let whenAnyAncestorTaggedStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorTagged").returns(null);
@@ -74,6 +89,8 @@ describe("BindingWhenOnSyntax", () => {
         bindingWhenOnSyntax.whenInjectedInto(Army);
         bindingWhenOnSyntax.whenParentNamed("test");
         bindingWhenOnSyntax.whenParentTagged("test", true);
+        bindingWhenOnSyntax.whenAnyAncestorIs(Army);
+        bindingWhenOnSyntax.whenNoAncestorIs(ZombieArmy);
         bindingWhenOnSyntax.whenAnyAncestorNamed("test");
         bindingWhenOnSyntax.whenAnyAncestorTagged("test", true);
         bindingWhenOnSyntax.whenNoAncestorNamed("test");
@@ -88,6 +105,8 @@ describe("BindingWhenOnSyntax", () => {
         expect(whenInjectedIntoStub.callCount).eql(2);
         expect(whenParentNamedStub.callCount).eql(1);
         expect(whenParentTaggedStub.callCount).eql(1);
+        expect(whenAnyAncestorIsStub.callCount).eql(1);
+        expect(whenNoAncestorIsStub.callCount).eql(1);
         expect(whenAnyAncestorNamedStub.callCount).eql(1);
         expect(whenAnyAncestorTaggedStub.callCount).eql(1);
         expect(whenNoAncestorNamedStub.callCount).eql(1);
