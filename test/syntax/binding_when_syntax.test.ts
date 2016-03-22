@@ -6,6 +6,7 @@ import Request from "../../src/planning/request";
 import Target from "../../src/planning/target";
 import Metadata from "../../src/planning/metadata";
 import BindingWhenSyntax from "../../src/syntax/binding_when_syntax";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 describe("BindingWhenSyntax", () => {
 
@@ -86,7 +87,97 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to constraints a binding to a parent");
+    it("Should be able to constraints a binding to a parent", () => {
+
+        interface IWeapon {
+            name: string;
+        }
+
+        class Katana implements IWeapon {
+            public name = "Katana";
+        }
+
+        class Shuriken implements IWeapon {
+            public name = "Shuriken";
+        }
+
+        interface ISamurai {
+            katana: IWeapon;
+        }
+
+        interface INinja {
+            shuriken: IWeapon;
+        }
+
+        class Ninja implements INinja {
+            public shuriken: IWeapon;
+            public constructor(shuriken: IWeapon) {
+                this.shuriken = shuriken;
+            }
+        }
+
+        class Samurai implements ISamurai {
+            public katana: IWeapon;
+            public constructor(katana: IWeapon) {
+                this.katana = katana;
+            }
+        }
+
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Ninja);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Samurai);
+
+        let samuraiBinding = new Binding<ISamurai>("ISamurai");
+        samuraiBinding.implementationType = Samurai;
+        let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, null);
+
+        let ninjaBinding = new Binding<INinja>("INinja");
+        ninjaBinding.implementationType = Ninja;
+        let ninjaRequest = new Request("ISamurai", null, null, ninjaBinding, null);
+
+        let katanaBinding = new Binding<IWeapon>("IWeapon");
+        let katanaBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(katanaBinding);
+        let katanaTarget = new Target("katana", "IWeapon");
+        let katanaRequest = new Request("IWeapon", null, samuraiRequest, katanaBinding, katanaTarget);
+
+        let shurikenBinding = new Binding<IWeapon>("IWeapon");
+        let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
+        let shurikenTarget = new Target("shuriken", "IWeapon");
+        let shurikenRequest = new Request("IWeapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+
+        katanaBindingWhenSyntax.whenInjectedInto(Samurai);
+        expect(katanaBinding.constraint(katanaRequest)).eql(true);
+        expect(katanaBinding.constraint(shurikenRequest)).eql(false);
+
+        katanaBindingWhenSyntax.whenInjectedInto(Ninja);
+        expect(katanaBinding.constraint(katanaRequest)).eql(false);
+        expect(katanaBinding.constraint(shurikenRequest)).eql(true);
+
+        shurikenBindingWhenSyntax.whenInjectedInto(Samurai);
+        expect(shurikenBinding.constraint(katanaRequest)).eql(true);
+        expect(shurikenBinding.constraint(shurikenRequest)).eql(false);
+
+        shurikenBindingWhenSyntax.whenInjectedInto(Ninja);
+        expect(shurikenBinding.constraint(katanaRequest)).eql(false);
+        expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
+
+        katanaBindingWhenSyntax.whenInjectedInto("ISamurai");
+        expect(katanaBinding.constraint(katanaRequest)).eql(true);
+        expect(katanaBinding.constraint(shurikenRequest)).eql(false);
+
+        katanaBindingWhenSyntax.whenInjectedInto("INinja");
+        expect(katanaBinding.constraint(katanaRequest)).eql(false);
+        expect(katanaBinding.constraint(shurikenRequest)).eql(true);
+
+        shurikenBindingWhenSyntax.whenInjectedInto("ISamurai");
+        expect(shurikenBinding.constraint(katanaRequest)).eql(true);
+        expect(shurikenBinding.constraint(shurikenRequest)).eql(false);
+
+        shurikenBindingWhenSyntax.whenInjectedInto("INinja");
+        expect(shurikenBinding.constraint(katanaRequest)).eql(false);
+        expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
+
+    });
+
     it("Should be able to constraints a binding to a named parent");
     it("Should be able to constraints a binding to a tagged parent");
     it("Should be able to constraints a binding to ANY named ancestor");

@@ -2,6 +2,7 @@
 
 import Metadata from "../planning/metadata";
 import BindingOnSyntax from "./binding_on_syntax";
+import * as METADATA_KEY from "../constants/metadata_keys";
 
 class BindingWhenSyntax<T> implements IBindingWhenSyntax<T> {
 
@@ -32,7 +33,19 @@ class BindingWhenSyntax<T> implements IBindingWhenSyntax<T> {
     }
 
     public whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T> {
-        // TODO
+        if (typeof parent === "string") {
+            this._binding.constraint = (request: IRequest) => {
+                return request.parentRequest.target.service.equals(parent); // TODO root request mast have a target & handle arrays
+            };
+        } else {
+            this._binding.constraint = (request: IRequest) => {
+
+                // Using index 0 because constraints are applied to one binding at a time
+                let actualInjectedIntoSymbol = Reflect.getMetadata(METADATA_KEY.TYPE_ID, parent);
+                let expectedIntoSymbol = Reflect.getMetadata(METADATA_KEY.TYPE_ID, request.parentRequest.bindings[0].implementationType);
+                return actualInjectedIntoSymbol === expectedIntoSymbol;
+            };
+        }
         return new BindingOnSyntax<T>(this._binding);
     }
 

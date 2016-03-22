@@ -1,10 +1,7 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import guid from "../utils/utils";
-
 class Request implements IRequest {
 
-        public guid: string;
         public service: string;
         public parentContext: IContext;
         public parentRequest: IRequest;
@@ -19,7 +16,6 @@ class Request implements IRequest {
             bindings: (IBinding<any>|IBinding<any>[]),
             target: ITarget = null) {
 
-                this.guid = guid();
                 this.service = service;
                 this.parentContext = parentContext;
                 this.parentRequest = parentRequest;

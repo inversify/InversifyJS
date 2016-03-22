@@ -2,7 +2,6 @@
 
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERRORS_MSGS from "../constants/error_msgs";
-import guid from "../utils/utils";
 
 function injectable(...paramTypes: string[]) {
   return function(target: any) {
@@ -12,7 +11,7 @@ function injectable(...paramTypes: string[]) {
     }
 
     Reflect.defineMetadata(METADATA_KEY.INJECTABLE, paramTypes, target);
-    Reflect.defineMetadata(METADATA_KEY.TYPE_ID, guid(), target);
+    Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), target);
 
     return target;
   };

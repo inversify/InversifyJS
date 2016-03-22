@@ -38,8 +38,6 @@ describe("Request", () => {
       );
 
       expect(request1.service).eql(identifiers.INinja);
-      expect(request1.guid.length).eql(36);
-      expect(request2.guid.length).eql(36);
       expect(Array.isArray(request1.bindings)).eql(true);
       expect(Array.isArray(request2.bindings)).eql(true);
 

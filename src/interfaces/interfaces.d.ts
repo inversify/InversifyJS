@@ -7,6 +7,9 @@
 /// <reference path="./kernel/key_value_pair.d.ts" />
 /// <reference path="./kernel/lookup.d.ts" />
 
+// ANNOTATION
+/// <reference path="./annotations/symbol.d.ts" />
+
 // PLANNING
 /// <reference path="./planning/planner.d.ts" />
 /// <reference path="./planning/plan.d.ts" />
