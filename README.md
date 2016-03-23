@@ -657,6 +657,8 @@ interface IBindingWhenSyntax<T> {
     whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T>;
     whenParentNamed(name: string): IBindingOnSyntax<T>;
     whenParentTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenAnyAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
+    whenNoAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
     whenAnyAncestorNamed(name: string): IBindingOnSyntax<T>;
     whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
     whenNoAncestorNamed(name: string): IBindingOnSyntax<T>;
