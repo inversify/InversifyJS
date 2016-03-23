@@ -43,20 +43,20 @@ gulp.task("lint", function() {
 //******************************************************************************
 //* SOURCE
 //******************************************************************************
-gulp.task("build-bundle-src", function() {
-
-  var mainTsFilePath = "src/inversify.ts";
-  var outputFolder   = "dist/";
-  var outputFileName = "inversify.js";
-  var pkg            = require("./package.json");
-
-  var banner = ["/**",
+var banner = ["/**",
     " * <%= pkg.name %> v.<%= pkg.version %> - <%= pkg.description %>",
     " * Copyright (c) 2015 <%= pkg.author %>",
     " * <%= pkg.license %> inversify.io/LICENSE",
     " * <%= pkg.homepage %>",
     " */",
     ""].join("\n");
+var pkg = require("./package.json");
+
+gulp.task("build-bundle-src", function() {
+
+  var mainTsFilePath = "src/inversify.ts";
+  var outputFolder   = "dist/";
+  var outputFileName = "inversify.js";
 
   var bundler = browserify({
     debug: true,
@@ -80,15 +80,6 @@ gulp.task("build-bundle-compress-src", function() {
   var mainTsFilePath = "src/inversify.ts";
   var outputFolder   = "dist/";
   var outputFileName = "inversify.min.js";
-  var pkg            = require("./package.json");
-
-  var banner = ["/**",
-    " * <%= pkg.name %> v.<%= pkg.version %> - <%= pkg.description %>",
-    " * Copyright (c) 2015 <%= pkg.author %>",
-    " * <%= pkg.license %> inversify.io/LICENSE",
-    " * <%= pkg.homepage %>",
-    " */",
-    ""].join("\n");
 
   var bundler = browserify({
     debug: true,
@@ -106,6 +97,36 @@ gulp.task("build-bundle-compress-src", function() {
                 .pipe(header(banner, { pkg : pkg } ))
                 .pipe(sourcemaps.write('.'))
                 .pipe(gulp.dest(outputFolder));
+});
+
+var tsLibProject = tsc.createProject("tsconfig.json", { module : "commonjs" });
+
+gulp.task("build-lib", function() {
+    return gulp.src([
+        "src/**/*.ts"
+    ])
+    .pipe(tsc(tsLibProject ))
+    .on("error", function (err) {
+        process.exit(1);
+    })
+    .js
+      .pipe(header(banner, { pkg : pkg } ))
+      .pipe(gulp.dest("lib/"));
+});
+
+var tsEsProject = tsc.createProject("tsconfig.json", { module : "es2015" });
+
+gulp.task("build-es", function() {
+    return gulp.src([
+        "src/**/*.ts"
+    ])
+    .pipe(tsc(tsEsProject))
+    .on("error", function (err) {
+        process.exit(1);
+    })
+    .js
+      .pipe(header(banner, { pkg : pkg } ))
+      .pipe(gulp.dest("es/"));
 });
 
 //******************************************************************************
@@ -181,9 +202,9 @@ gulp.task("build-type-definitions", function() {
 gulp.task("build", function(cb) {
   runSequence(
       "lint", 
-      "build-bundle-src",          // for nodejs
-      "build-bundle-compress-src", // for browsers
-      "build-src",                 // tests
+      "build-bundle-src",                       // for nodejs
+      "build-bundle-compress-src",              // for browsers
+      ["build-src", "build-es", "build-lib"],   // tests + build es and lib
       "build-test", 
       "build-type-definitions", cb);
 });
