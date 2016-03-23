@@ -318,13 +318,116 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("Should be able to constraint a binding to ANY ancestors");
-    it("Should be able to constraint a binding to NO ancestors");
-    it("Should be able to constraint a binding to ANY named ancestor");
-    it("Should be able to constraint a binding to ANY tagged ancestor");
-    it("Should be able to constraint a binding to NO named ancestor");
-    it("Should be able to constraint a binding to NO tagged ancestor");
-    it("Should be able to apply a custom constraint to ANY named ancestor");
-    it("Should be able to apply a custom constraint to NO named ancestor");
+    describe("BindingWhenSyntax.when*Ancestor*()", () => {
+
+        interface IMaterial {
+            name: string;
+        }
+
+        class Wood implements IMaterial {
+            public name = "Wood";
+        }
+
+        class Iron implements IMaterial {
+            public name = "Wood";
+        }
+
+        interface IWeapon {
+            name: string;
+            material: IMaterial;
+        }
+
+        class Katana implements IWeapon {
+            public name = "Katana";
+            public material: IMaterial;
+            public contructor(material: IMaterial) {
+                this.material = material;
+            }
+        }
+
+        class Shuriken implements IWeapon {
+            public name = "Shuriken";
+            public material: IMaterial;
+            public contructor(material: IMaterial) {
+                this.material = material;
+            }
+        }
+
+        interface ISamurai {
+            katana: IWeapon;
+        }
+
+        interface INinja {
+            shuriken: IWeapon;
+        }
+
+        class NinjaMaster implements INinja {
+            public shuriken: IWeapon;
+            public constructor(shuriken: IWeapon) {
+                this.shuriken = shuriken;
+            }
+        }
+
+        class SamuraiMaster implements ISamurai {
+            public katana: IWeapon;
+            public constructor(katana: IWeapon) {
+                this.katana = katana;
+            }
+        }
+
+        class NinjaStudent {}
+        class SamuraiStudent {}
+
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), NinjaMaster);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), SamuraiMaster);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), NinjaStudent);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), SamuraiStudent);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Katana);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Shuriken);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Wood);
+        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Iron);
+
+        let samuraiBinding = new Binding<ISamurai>("ISamurai");
+        samuraiBinding.implementationType = SamuraiMaster;
+        let samuraiTarget = new Target(null, "ISamurai", new Metadata("sneaky", false));
+        let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, samuraiTarget);
+
+        let ninjaBinding = new Binding<INinja>("INinja");
+        ninjaBinding.implementationType = NinjaMaster;
+        let ninjaTarget = new Target(null, "INinja", new Metadata("sneaky", true));
+        let ninjaRequest = new Request("INinja", null, null, ninjaBinding, ninjaTarget);
+
+        let katanaBinding = new Binding<IWeapon>("IWeapon");
+        let katanaBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(katanaBinding);
+        let katanaTarget = new Target("katana", "IWeapon");
+        let katanaRequest = new Request("IWeapon", null, samuraiRequest, katanaBinding, katanaTarget);
+
+        let shurikenBinding = new Binding<IWeapon>("IWeapon");
+        let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
+        let shurikenTarget = new Target("shuriken", "IWeapon");
+        let shurikenRequest = new Request("IWeapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+/*
+        katanaBindingWhenSyntax.whenParentTagged("sneaky", true);
+        shurikenBindingWhenSyntax.whenParentTagged("sneaky", true);
+        expect(katanaBinding.constraint(katanaRequest)).eql(false);
+        expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
+
+        katanaBindingWhenSyntax.whenParentTagged("sneaky", false);
+        shurikenBindingWhenSyntax.whenParentTagged("sneaky", false);
+        expect(katanaBinding.constraint(katanaRequest)).eql(true);
+        expect(shurikenBinding.constraint(shurikenRequest)).eql(false);
+*/
+
+        // TODO
+        it("Should be able to apply a type constraint to some of its ancestors");
+        it("Should be able to apply a type constraint to none of its ancestors");
+        it("Should be able to apply a named constraint to some of its ancestors");
+        it("Should be able to apply a named constraint to none of its ancestors");
+        it("Should be able to apply a tagged constraint to some of its ancestors");
+        it("Should be able to apply a tagged constraint to none of its ancestors");
+        it("Should be able to apply a custom constraint to some of its ancestors");
+        it("Should be able to apply a custom constraint to none of its ancestors");
+
+    });
 
 });

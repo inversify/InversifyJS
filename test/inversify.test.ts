@@ -719,6 +719,22 @@ describe("InversifyJS", () => {
 
     });
 
+    // TODO
+    it("Should support contextual bindings with a type constraint the request target");
+    it("Should support contextual bindings with a named constraint the request target");
+    it("Should support contextual bindings with a taget constraint the request target");
+    it("Should support contextual bindings with a type constraint the request parent");
+    it("Should support contextual bindings with a type named the target of the request parent");
+    it("Should support contextual bindings with a type tagged the target of the request parent");
+    it("Should support contextual bindings with a type constraint to some of its ancestors");
+    it("Should support contextual bindings with a type constraint to none of its ancestors");
+    it("Should support contextual bindings with a named constraint to some of its ancestors");
+    it("Should support contextual bindings with a named constraint to none of its ancestors");
+    it("Should support contextual bindings with a tagged constraint to some of its ancestors");
+    it("Should support contextual bindings with a tagged constraint to none of its ancestors");
+    it("Should support contextual bindings with a custom constraint to some of its ancestors");
+    it("Should support contextual bindings with a custom constraint to none of its ancestors");
+
     it("Should throw if circular dependencies found", () => {
 
         interface IA {}
@@ -768,16 +784,5 @@ describe("InversifyJS", () => {
         expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} IA and ID`);
 
     });
-
-    it("Should be able to apply a contextual bindings constraint to a named parent");
-    it("Should be able to apply a contextual bindings constraint to a tagged parent");
-    it("Should be able to apply a contextual bindings constraint to ANY ancestors");
-    it("Should be able to apply a contextual bindings constraint to NO ancestors");
-    it("Should be able to apply a contextual bindings constraint to ANY named ancestor");
-    it("Should be able to apply a contextual bindings constraint toANY tagged ancestor");
-    it("Should be able to apply a contextual bindings constraint to NO named ancestor");
-    it("Should be able to apply a contextual bindings constraint to NO tagged ancestor");
-    it("Should be able to apply a custom contextual constraint to ANY named ancestor");
-    it("Should be able to apply a custom contextual constraint to NO named ancestor");
 
 });
