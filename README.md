@@ -33,14 +33,14 @@ InversifyJS has been developed with 3 main goals:
 ### Installation
 
 You can get the latest release and the type definitions using npm:
-```
+```sh
 npm install inversify@2.0.0-alpha.3 --save
 ```
 > **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
 The InversifyJS type definitions are included in the npm package:
 
-```
+```ts
 /// <reference path="node_modules/inversify/type_definitions/inversify.d.ts" />
 ```
 > **Note**: InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. If your environment don't support one of these you will need to import a shim or polypill. Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/wiki/Environmemt-support-and-polyfills) page in the wiki to learn more.
@@ -53,7 +53,7 @@ Our goal is to write code that adheres to the [dependency inversion principle](h
 This means that we should "depend upon Abstractions and do not depend upon concretions". 
 Let's start by declaring some interfaces (abstractions).
 
-```
+```ts
 interface INinja {
     fight(): string;
     sneak(): string;
@@ -70,7 +70,7 @@ interface IShuriken {
 
 #### Step 2: Implement the interfaces and declare dependencies using the `@injectable` decorator
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared.
-```
+```ts
 import { injectable } from "inversify";
 
 class Katana implements IKatana {
@@ -105,7 +105,7 @@ class Ninja implements INinja {
 #### Step 3: Create and configure a Kernel
 We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
 In the rest of your application your classes should be free of references to other classes.
-```
+```ts
 import { Kernel } from "inversify";
 
 import { Ninja } from "./entities/ninja";
@@ -125,7 +125,7 @@ You can use the method `get<T>` from the `Kernel` class to resolve a dependency.
 Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
-```
+```ts
 import kernel = from "./inversify.config";
 
 var ninja = kernel.get<INinja>("INinja");
@@ -140,7 +140,7 @@ As we can see the `IKatana` and `IShuriken` were successfully resolved and injec
 It is recommended to use TypeScript for the best development experience but you can use plain JavaScript
 if you preffer it. The following code snippet implements the previous example without TypeScript in Node.js v5.71: 
 
-```
+```ts
 var inversify = require("inversify");
 require("reflect-metadata");
 
@@ -191,7 +191,7 @@ Let's take a look to the InversifyJS features!
 #### Declaring kernel modules
 
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
-```
+```ts
 let warriors: IKernelModule = (k: IKernel) => {
     k.bind<INinja>("INinja").to(Ninja);
 };
@@ -208,20 +208,20 @@ kernel.load(warriors, weapons);
 #### Controlling the scope of the dependencies
 
 InversifyJS uses transient scope by default but you can also use singleton scope:
-```
+```ts
 kernel.bind<IShuriken>("IShuriken").to(Shuriken).inTransientScope(); // Default
 kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 ```
 
 #### Injecting a value
 Binds an abstraction to a constant value.
-```
+```ts
 kernel.bind<IKatana>("IKatana").toValue(new Katana());
 ```
 
 #### Injecting a class constructor
 Binds an abstraction to a class constructor.
-```
+```ts
 @injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
@@ -239,13 +239,13 @@ class Ninja implements INinja {
 }
 ```
 
-```
+```ts
 kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katana);
 ```
 
 #### Injecting a Factory
 Binds an abstraction to a user defined Factory.
-```
+```ts
 @injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
@@ -263,7 +263,7 @@ class Ninja implements INinja {
 }
 ```
 
-```
+```ts
 kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context) => {
     return () => {
         return context.kernel.get<IKatana>("IKatana");
@@ -273,7 +273,7 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
 
 #### Auto factory
 Binds an abstraction to a auto-generated Factory.
-```
+```ts
 @injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
@@ -291,13 +291,13 @@ class Ninja implements INinja {
 }
 ```
 
-```
+```ts
 kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
 ```
 
 #### Injecting a Provider (asynchronous Factory)
 Binds an abstraction to a Provider. A provider is an asynchronous factory, this is useful when dealing with asynchronous  I/O operations.
-```
+```ts
 @injectable("IKatana", "IShuriken")
 class Ninja implements INinja {
 
@@ -323,7 +323,7 @@ ninja.katanaProvider()
      .catch((e) => { console.log(e); });
 ```
 
-```
+```ts
 kernel.bind<IProvider<IKatana>>("IProvider<IKatana>").toProvider<IKatana>((context) => {
     return () => {
         return new Promise<IKatana>((resolve) => {
@@ -341,7 +341,7 @@ implementation of crosscutting concerns like caching or logging. The following e
 [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) to incercept one of the methods
 (`use`) of a dependency (`IKatana`).
 
-```
+```ts
 interface IKatana {
     use: () => void;
 }
@@ -365,7 +365,7 @@ class Ninja implements INinja {
 }
 ```
 
-```
+```ts
 kernel.bind<INinja>("INinja").to(Ninja);
 
 kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context, katana) => {
@@ -382,7 +382,7 @@ kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context, katana) => {
 });
 ```
 
-```
+```ts
 let ninja = kernelget<INinja>();
 ninja.katana.use();
 > Starting: 1457895135761
@@ -407,7 +407,7 @@ If we have configured some Middleware it will be executed just before the
 Middleware can be used to implement powerful development tools. 
 This kind of tools will help developers to identify problems during the development process.
 
-```
+```ts
 function logger(next: (context: IContext) => any) {
     return (context: IContext) => {
         let result = next(context);
@@ -429,7 +429,7 @@ function devTools(next: (context: IContext) => any) {
 ```
 Now that we have declared two middlewares we can create a new `Kernel` and 
 use its `applyMiddleware` method to apply them,
-```
+```ts
 interface INinja {}
 class Ninja implements INinja {}
 
@@ -440,7 +440,7 @@ kernel.applyMiddleware(logger, devTools);
 ```
 The `logger` middleware will log in console the context and result. The `crashReporter` middleware
 is not invoked because `__inversify_devtools__` is undefined.
-```
+```ts
 let ninja = kernel.get<INinja>("INinja");
 > CONTEXT:  Context {
   kernel: 
@@ -467,7 +467,7 @@ let ninja = kernel.get<INinja>("INinja");
 #### Multi-injection
 We can use multi-injection When two or more concretions have been bound to the an abstraction.
 Notice how an array of `IWeapon` is injected into the `Ninja` class via its constructor:
-```
+```ts
 interface IWeapon {
     name: string;
 }
@@ -497,7 +497,7 @@ class Ninja implements INinja {
 
 We are binding `Katana` and `Shuriken` to `IWeapon`:
 
-```
+```ts
 kernel.bind<INinja>("INinja").to(Ninja);
 kernel.bind<IWeapon>("IWeapon").to(Katana);
 kernel.bind<IWeapon>("IWeapon").to(Shuriken);
@@ -507,7 +507,7 @@ kernel.bind<IWeapon>("IWeapon").to(Shuriken);
 We can use tagged bindings to fix `AMBIGUOUS_MATCH` errors when two or more
 concretions have been bound to the an abstraction. Notice how the  constructor
 arguments of the `Ninja` class have been annotated using the `@tagged` decorator:
-```
+```ts
 interface IWeapon {}
 class Katana implements IWeapon { }
 class Shuriken implements IWeapon {}
@@ -534,7 +534,7 @@ class Ninja implements INinja {
 We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetTagged`
 constraint is added to avoid `AMBIGUOUS_MATCH` errors:
 
-```
+```ts
 kernel.bind<INinja>(ninjaId).to(Ninja);
 kernel.bind<IWeapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
 kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
@@ -544,7 +544,7 @@ kernel.bind<IWeapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
 Creating your own decorators is really simple:
 
-```
+```ts
 let throwable = tagged("canThrow", true);
 let notThrowable = tagged("canThrow", false);
 
@@ -566,7 +566,7 @@ class Ninja implements INinja {
 We can use named bindings to fix `AMBIGUOUS_MATCH` errors when two or more concretions have
 been bound to the an abstraction. Notice how the constructor arguments of the `Ninja` class
 have been annotated using the `@named` decorator:
-```
+```ts
 interface IWeapon {}
 class Katana implements IWeapon { }
 class Shuriken implements IWeapon {}
@@ -591,7 +591,7 @@ class Ninja implements INinja {
 ```
 We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetNamed` constraint is
 added to avoid `AMBIGUOUS_MATCH` errors:
-```
+```ts
 kernel.bind<INinja>("INinja").to(Ninja);
 kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
 kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
@@ -602,7 +602,7 @@ The `@paramNames` decorator is used to access the names of the constructor argum
 contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...`
 becomes `constructor(a, b) { ...` after compression but thanks to `@paramNames` we can still
 refer to the design-time names `katana` and `shuriken`.
-```
+```ts
 interface IWeapon {}
 class Katana implements IWeapon { }
 class Shuriken implements IWeapon {}
@@ -627,7 +627,7 @@ class Ninja implements INinja {
 }
 ```
 We are binding `Katana` and `Shuriken` to `IWeapon` but a custom `when` constraint is added to avoid `AMBIGUOUS_MATCH` errors:
-```
+```ts
 kernel.bind<INinja>(ninjaId).to(Ninja);
 
 kernel.bind<IWeapon>("IWeapon").to(Katana).when((request: IRequest) => {
@@ -639,7 +639,7 @@ kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
 });
 ```
 The target fields implement the `IQueryableString` interface to help you to create your custom constraints:
-```
+```ts
 interface IQueryableString {
   startsWith(searchString: string): boolean;
   endsWith(searchString: string): boolean;

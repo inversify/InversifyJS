@@ -36,6 +36,8 @@ bundled
 typings
 .typingsrc
 dist
+lib
+es
 
 type_definitions/inversify/*.js
 
