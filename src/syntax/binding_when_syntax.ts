@@ -70,15 +70,6 @@ class BindingWhenSyntax<T> implements IBindingWhenSyntax<T> {
         return new BindingOnSyntax<T>(this._binding);
     }
 
-    public whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T> {
-
-        this._binding.constraint = (request: IRequest) => {
-            return traverseAncerstors(request, taggedConstraint(tag)(name));
-        };
-
-        return new BindingOnSyntax<T>(this._binding);
-    }
-
     public whenNoAncestorNamed(name: string): IBindingOnSyntax<T> {
 
         this._binding.constraint = (request: IRequest) => {
@@ -88,10 +79,19 @@ class BindingWhenSyntax<T> implements IBindingWhenSyntax<T> {
         return new BindingOnSyntax<T>(this._binding);
     }
 
+    public whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T> {
+
+        this._binding.constraint = (request: IRequest) => {
+            return traverseAncerstors(request, taggedConstraint(tag)(value));
+        };
+
+        return new BindingOnSyntax<T>(this._binding);
+    }
+
     public whenNoAncestorTagged(tag: string, value: any): IBindingOnSyntax<T> {
 
         this._binding.constraint = (request: IRequest) => {
-            return !traverseAncerstors(request, taggedConstraint(tag)(name));
+            return !traverseAncerstors(request, taggedConstraint(tag)(value));
         };
 
         return new BindingOnSyntax<T>(this._binding);

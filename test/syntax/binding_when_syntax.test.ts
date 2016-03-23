@@ -7,6 +7,7 @@ import Target from "../../src/planning/target";
 import Metadata from "../../src/planning/metadata";
 import BindingWhenSyntax from "../../src/syntax/binding_when_syntax";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import { typeConstraint } from "../../src/syntax/constraint_helpers";
 
 describe("BindingWhenSyntax", () => {
 
@@ -428,25 +429,14 @@ describe("BindingWhenSyntax", () => {
         let ironKatanaRequest = new Request("IWeapon", null, samuraiMasterRequest, katanaBinding, katanaTarget);
         let woodKatanaRequest = new Request("IWeapon", null, samuraiStudentRequest, katanaBinding, katanaTarget);
 
+        // Shuriken
         let shurikenBinding = new Binding<IWeapon>("IWeapon");
         shurikenBinding.implementationType = Shuriken;
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
         let shurikenTarget = new Target("shuriken", "IWeapon");
         let ironShurikenRequest = new Request("IWeapon", null, ninjaMasterRequest, shurikenBinding, shurikenTarget);
         let woodShurikenRequest = new Request("IWeapon", null, ninjaStudentRequest, shurikenBinding, shurikenTarget);
-/*
-        katanaBindingWhenSyntax.whenParentTagged("sneaky", true);
-        shurikenBindingWhenSyntax.whenParentTagged("sneaky", true);
-        expect(katanaBinding.constraint(katanaRequest)).eql(false);
-        expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
 
-        katanaBindingWhenSyntax.whenParentTagged("sneaky", false);
-        shurikenBindingWhenSyntax.whenParentTagged("sneaky", false);
-        expect(katanaBinding.constraint(katanaRequest)).eql(true);
-        expect(shurikenBinding.constraint(shurikenRequest)).eql(false);
-*/
-
-        // TODO
         it("Should be able to apply a type constraint to some of its ancestors", () => {
 
             shurikenBindingWhenSyntax.whenAnyAncestorIs(NinjaMaster);
@@ -467,13 +457,156 @@ describe("BindingWhenSyntax", () => {
 
         });
 
-        it("Should be able to apply a type constraint to none of its ancestors");
-        it("Should be able to apply a named constraint to some of its ancestors");
-        it("Should be able to apply a named constraint to none of its ancestors");
-        it("Should be able to apply a tagged constraint to some of its ancestors");
-        it("Should be able to apply a tagged constraint to none of its ancestors");
-        it("Should be able to apply a custom constraint to some of its ancestors");
-        it("Should be able to apply a custom constraint to none of its ancestors");
+        it("Should be able to apply a type constraint to none of its ancestors", () => {
+
+            shurikenBindingWhenSyntax.whenNoAncestorIs(NinjaMaster);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            shurikenBindingWhenSyntax.whenNoAncestorIs(NinjaStudent);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            katanaBindingWhenSyntax.whenNoAncestorIs(SamuraiMaster);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+            katanaBindingWhenSyntax.whenNoAncestorIs(SamuraiStudent);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+        });
+
+        it("Should be able to apply a named constraint to some of its ancestors", () => {
+
+            shurikenBindingWhenSyntax.whenAnyAncestorNamed("chinese");
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            shurikenBindingWhenSyntax.whenAnyAncestorNamed("chinese");
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            katanaBindingWhenSyntax.whenAnyAncestorNamed("japonese");
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+            katanaBindingWhenSyntax.whenAnyAncestorNamed("japonese");
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+        });
+
+        it("Should be able to apply a named constraint to none of its ancestors", () => {
+
+            shurikenBindingWhenSyntax.whenNoAncestorNamed("chinese");
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            shurikenBindingWhenSyntax.whenNoAncestorNamed("chinese");
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            katanaBindingWhenSyntax.whenNoAncestorNamed("japonese");
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+            katanaBindingWhenSyntax.whenNoAncestorNamed("japonese");
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+        });
+
+        it("Should be able to apply a tagged constraint to some of its ancestors", () => {
+
+            shurikenBindingWhenSyntax.whenAnyAncestorTagged("sneaky", true);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            shurikenBindingWhenSyntax.whenAnyAncestorTagged("sneaky", false);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            katanaBindingWhenSyntax.whenAnyAncestorTagged("sneaky", true);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+            katanaBindingWhenSyntax.whenAnyAncestorTagged("sneaky", false);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+        });
+
+        it("Should be able to apply a tagged constraint to none of its ancestors", () => {
+
+            shurikenBindingWhenSyntax.whenNoAncestorTagged("sneaky", true);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            shurikenBindingWhenSyntax.whenNoAncestorTagged("sneaky", false);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            katanaBindingWhenSyntax.whenNoAncestorTagged("sneaky", true);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+            katanaBindingWhenSyntax.whenNoAncestorTagged("sneaky", false);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+        });
+
+        it("Should be able to apply a custom constraint to some of its ancestors", () => {
+
+            let anyAncestorIsNinjaMasterConstraint = typeConstraint(NinjaMaster);
+            let anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
+
+            shurikenBindingWhenSyntax.whenAnyAncestorMatches(anyAncestorIsNinjaMasterConstraint);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            shurikenBindingWhenSyntax.whenAnyAncestorMatches(anyAncestorIsNinjaStudentConstraint);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            let anyAncestorIsSamuraiMasterConstraint = typeConstraint(SamuraiMaster);
+            let anyAncestorIsSamuraiStudentConstraint = typeConstraint(SamuraiStudent);
+
+            katanaBindingWhenSyntax.whenAnyAncestorMatches(anyAncestorIsSamuraiMasterConstraint);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+            katanaBindingWhenSyntax.whenAnyAncestorMatches(anyAncestorIsSamuraiStudentConstraint);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+        });
+
+        it("Should be able to apply a custom constraint to none of its ancestors", () => {
+
+            let anyAncestorIsNinjaMasterConstraint = typeConstraint(NinjaMaster);
+            let anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
+
+            shurikenBindingWhenSyntax.whenNoAncestorMatches(anyAncestorIsNinjaMasterConstraint);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
+
+            shurikenBindingWhenSyntax.whenNoAncestorMatches(anyAncestorIsNinjaStudentConstraint);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+            let anyAncestorIsSamuraiMasterConstraint = typeConstraint(SamuraiMaster);
+            let anyAncestorIsSamuraiStudentConstraint = typeConstraint(SamuraiStudent);
+
+            katanaBindingWhenSyntax.whenNoAncestorMatches(anyAncestorIsSamuraiMasterConstraint);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
+
+            katanaBindingWhenSyntax.whenNoAncestorMatches(anyAncestorIsSamuraiStudentConstraint);
+            expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
+            expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+        });
 
     });
 
