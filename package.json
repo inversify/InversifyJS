@@ -2,7 +2,8 @@
   "name": "inversify",
   "version": "2.0.0-alpha.6",
   "description": "A lightweight IoC container written in TypeScript.",
-  "main": "dist/inversify.js",
+  "main": "lib/inversify.js",
+  "jsnext:main": "es/inversify.js",
   "directories": {
     "test": "test"
   },
