@@ -3,6 +3,7 @@
 import { expect } from "chai";
 import Target from "../../src/planning/target";
 import Metadata from "../../src/planning/metadata";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 describe("Target", () => {
 
@@ -20,7 +21,7 @@ describe("Target", () => {
     expect(target.name.value()).to.be.eql("katana");
     expect(Array.isArray(target.metadata)).to.be.eql(true);
     expect(target.metadata.length).to.be.eql(1);
-    expect(target.metadata[0].key).to.be.eql("named");
+    expect(target.metadata[0].key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(target.metadata[0].value).to.be.eql("primary");
   });
 

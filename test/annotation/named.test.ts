@@ -71,14 +71,14 @@ describe("@named", () => {
     // assert metadata for first argument
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
     let m1: IMetadata = paramsMetadata["0"][0];
-    expect(m1.key).to.be.eql("named");
+    expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("more_powerful");
     expect(paramsMetadata["0"][1]).to.be.undefined;
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
     let m2: IMetadata = paramsMetadata["1"][0];
-    expect(m2.key).to.be.eql("named");
+    expect(m2.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m2.value).to.be.eql("less_powerful");
     expect(paramsMetadata["1"][1]).to.be.undefined;
 
@@ -130,14 +130,14 @@ describe("@named", () => {
     // assert metadata for first argument
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
     let m1: IMetadata = paramsMetadata["0"][0];
-    expect(m1.key).to.be.eql("named");
+    expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("more_powerful");
     expect(paramsMetadata["0"][1]).to.be.undefined;
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
     let m2: IMetadata = paramsMetadata["1"][0];
-    expect(m2.key).to.be.eql("named");
+    expect(m2.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m2.value).to.be.eql("less_powerful");
     expect(paramsMetadata["1"][1]).to.be.undefined;
 

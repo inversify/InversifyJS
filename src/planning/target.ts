@@ -2,6 +2,7 @@
 
 import Metadata from "../planning/metadata";
 import QueryableString from "./queryable_string";
+import * as METADATA_KEY from "../constants/metadata_keys";
 
 class Target implements ITarget {
 
@@ -18,7 +19,7 @@ class Target implements ITarget {
 
     // is named target
     if (typeof namedOrTagged === "string") {
-        metadataItem = new Metadata("named", namedOrTagged);
+        metadataItem = new Metadata(METADATA_KEY.NAMED_TAG, namedOrTagged);
     } else if (namedOrTagged instanceof Metadata) {
         // is target with metadata
         metadataItem = namedOrTagged;
@@ -37,7 +38,7 @@ class Target implements ITarget {
   public isNamed(): boolean {
     for (let i = 0; i < this.metadata.length; i++) {
       let m = this.metadata[i];
-      if (m.key === "named") {
+      if (m.key === METADATA_KEY.NAMED_TAG) {
         return true;
       }
     }
@@ -47,7 +48,7 @@ class Target implements ITarget {
   public isTagged(): boolean {
     for (let i = 0; i < this.metadata.length; i++) {
       let m = this.metadata[i];
-      if (m.key !== "named") {
+      if (m.key !== METADATA_KEY.NAMED_TAG) {
         return true;
       }
     }
@@ -57,7 +58,7 @@ class Target implements ITarget {
   public matchesName(name: string): boolean {
     for (let i = 0; i < this.metadata.length; i++) {
       let m = this.metadata[i];
-      if (m.key === "named" && m.value === name) {
+      if (m.key === METADATA_KEY.NAMED_TAG && m.value === name) {
         return true;
       }
     }
