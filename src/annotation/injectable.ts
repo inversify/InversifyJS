@@ -11,7 +11,6 @@ function injectable(...paramTypes: string[]) {
     }
 
     Reflect.defineMetadata(METADATA_KEY.INJECTABLE, paramTypes, target);
-    Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), target);
 
     return target;
   };

@@ -30,9 +30,7 @@ let typeConstraint = (type: (Function|string)) => (request: IRequest) => {
         return runtimeIdentifier === type;
     } else {
         let constructor = request.bindings[0].implementationType;
-        let actualInjectedIntoSymbol = Reflect.getMetadata(METADATA_KEY.TYPE_ID, type);
-        let expectedIntoSymbol = Reflect.getMetadata(METADATA_KEY.TYPE_ID, constructor);
-        return actualInjectedIntoSymbol === expectedIntoSymbol;
+        return type === constructor;
     }
 };
 

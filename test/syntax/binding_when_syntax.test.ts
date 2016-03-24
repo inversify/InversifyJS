@@ -124,9 +124,6 @@ describe("BindingWhenSyntax", () => {
             }
         }
 
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Ninja);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Samurai);
-
         let samuraiBinding = new Binding<ISamurai>("ISamurai");
         samuraiBinding.implementationType = Samurai;
         let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, null);
@@ -215,9 +212,6 @@ describe("BindingWhenSyntax", () => {
             }
         }
 
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Ninja);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Samurai);
-
         let samuraiBinding = new Binding<ISamurai>("ISamurai");
         samuraiBinding.implementationType = Samurai;
         let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, new Target(null, "ISamurai", "japonese"));
@@ -283,9 +277,6 @@ describe("BindingWhenSyntax", () => {
                 this.katana = katana;
             }
         }
-
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Ninja);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Samurai);
 
         let samuraiBinding = new Binding<ISamurai>("ISamurai");
         samuraiBinding.implementationType = Samurai;
@@ -389,15 +380,6 @@ describe("BindingWhenSyntax", () => {
                 this.katana = katana;
             }
         }
-
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), NinjaMaster);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), SamuraiMaster);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), NinjaStudent);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), SamuraiStudent);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Katana);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Shuriken);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Wood);
-        Reflect.defineMetadata(METADATA_KEY.TYPE_ID, Symbol(), Iron);
 
         // Samurai
         let samuraiMasterBinding = new Binding<ISamurai>("ISamurai");
