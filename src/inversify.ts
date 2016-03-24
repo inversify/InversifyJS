@@ -11,6 +11,7 @@ import tagged from "./annotation/tagged";
 import named from "./annotation/named";
 import paramNames from "./annotation/paramnames";
 import { decorate } from "./annotation/decorator_utils";
+import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 
 export { Kernel };
 export { decorate };
@@ -18,3 +19,7 @@ export { injectable };
 export { tagged };
 export { named };
 export { paramNames };
+export { traverseAncerstors };
+export { taggedConstraint };
+export { namedConstraint };
+export { typeConstraint };

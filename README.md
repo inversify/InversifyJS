@@ -6,6 +6,7 @@
 [![Dependencies](https://david-dm.org/inversify/InversifyJS.svg)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/dev-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=devDependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/peer-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=peerDependenciess)
+[![Known Vulnerabilities](https://snyk.io/test/github/inversify/InversifyJS/badge.svg)](https://snyk.io/test/github/inversify/InversifyJS)
 
 <img src="https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/logo.png" width="500"  />
 
@@ -647,6 +648,42 @@ interface IQueryableString {
   value(): string;
 }
 ```
+We have included some helpers to facilitate the creation of custom constraints:
+```
+import { Kernel, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
+
+let whenParentNamedCanThrowConstraint = (request: IRequest) => {
+    return namedConstraint("canThrow")(request.parentRequest);
+};
+
+let whenAnyAncestorIsConstraint = (request: IRequest) => {
+    return traverseAncerstors(request, typeConstraint(Ninja));
+};
+
+let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
+    return traverseAncerstors(request, taggedConstraint("canThrow")(true));
+};
+
+```
+The InversifyJS fluent syntax for bindings includes some already implemented common contextual constraints:
+```
+interface IBindingWhenSyntax<T> {
+    when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+    whenTargetNamed(name: string): IBindingOnSyntax<T>;
+    whenTargetTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T>;
+    whenParentNamed(name: string): IBindingOnSyntax<T>;
+    whenParentTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenAnyAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
+    whenNoAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
+    whenAnyAncestorNamed(name: string): IBindingOnSyntax<T>;
+    whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenNoAncestorNamed(name: string): IBindingOnSyntax<T>;
+    whenNoAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
+    whenAnyAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+    whenNoAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+}
+```
 
 #### Circular dependencies
 InversifyJS is able to identify circular dependencies and will throw an exception to help you to
@@ -659,7 +696,8 @@ Error: Circular dependency found between services: IKatana and INinja
 Plese refer to the [wiki](https://github.com/inversify/InversifyJS/wiki) for additional details.
 
 ### Live demo & examples
-You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3). Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
+You can try InversifyJS online at [tonicdev.com](https://tonicdev.com/remojansen/inversify-2.0.0-alpha.3). 
+Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
 ### Testimonies
 

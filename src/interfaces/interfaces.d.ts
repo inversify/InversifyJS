@@ -7,6 +7,9 @@
 /// <reference path="./kernel/key_value_pair.d.ts" />
 /// <reference path="./kernel/lookup.d.ts" />
 
+// ANNOTATION
+/// <reference path="./annotations/symbol.d.ts" />
+
 // PLANNING
 /// <reference path="./planning/planner.d.ts" />
 /// <reference path="./planning/plan.d.ts" />
@@ -32,4 +35,8 @@
 
 // SYNTAX
 /// <reference path="./syntax/binding_to_syntax.d.ts" />
+/// <reference path="./syntax/binding_in_syntax.d.ts" />
+/// <reference path="./syntax/binding_when_syntax.d.ts" />
+/// <reference path="./syntax/binding_on_syntax.d.ts" />
+/// <reference path="./syntax/binding_when_on_syntax.d.ts" />
 /// <reference path="./syntax/binding_in_when_on_syntax.d.ts" />

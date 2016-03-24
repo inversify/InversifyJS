@@ -4,7 +4,8 @@ import {
     Kernel,
     injectable, tagged, named, paramNames,
     IKernel, INewable, IContext,
-    IKernelModule, IFactory, IProvider, IRequest
+    IKernelModule, IFactory, IProvider, IRequest,
+    traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint
 } from "inversify";
 
 import * as Proxy from "harmony-proxy";
@@ -70,7 +71,7 @@ module external_module_test {
     };
 
     let weapons: IKernelModule = (k: IKernel) => {
-        k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
+        k.bind<IKatana>("IKatana").to(Katana);
         k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
     };
 
@@ -167,8 +168,8 @@ module external_module_test {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @throwable("canThrow", false) katana: IWeapon,
-            @notThrowable("canThrow", true) shuriken: IWeapon
+            @throwable katana: IWeapon,
+            @notThrowable shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;
@@ -215,5 +216,40 @@ module external_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
         return request.target.name.equals("shuriken");
     });
+
+    // custom constraints
+    let whenParentNamedCanThrowConstraint = (request: IRequest) => {
+        return namedConstraint("canThrow")(request.parentRequest);
+    };
+
+    let whenAnyAncestorIsConstraint = (request: IRequest) => {
+        return traverseAncerstors(request, typeConstraint(Ninja));
+    };
+
+    let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
+        return traverseAncerstors(request, taggedConstraint("canThrow")(true));
+    };
+
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).when(whenParentNamedCanThrowConstraint);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).when(whenAnyAncestorIsConstraint);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).when(whenAnyAncestorTaggedConstraint);
+
+    // Constraint helpers
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenInjectedInto(Ninja);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenInjectedInto("INinja");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenParentNamed("chinese");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenParentTagged("canThrow", true);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("strong");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetTagged("canThrow", true);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenAnyAncestorIs(Ninja);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenAnyAncestorIs("INinja");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenAnyAncestorNamed("strong");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenAnyAncestorTagged("canThrow", true);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenAnyAncestorMatches(whenParentNamedCanThrowConstraint);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorIs(Ninja);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorIs("INinja");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorNamed("strong");
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorTagged("canThrow", true);
+    kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorMatches(whenParentNamedCanThrowConstraint);
 
 }
