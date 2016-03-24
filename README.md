@@ -648,7 +648,24 @@ interface IQueryableString {
   value(): string;
 }
 ```
-The InversifyJS fluent syntax for bindings has already implemented some common contextual constraints:
+We have included some helpers to facilitate the creation of custom constraints:
+```
+import { Kernel, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
+
+let whenParentNamedCanThrowConstraint = (request: IRequest) => {
+    return namedConstraint("canThrow")(request.parentRequest);
+};
+
+let whenAnyAncestorIsConstraint = (request: IRequest) => {
+    return traverseAncerstors(request, typeConstraint(Ninja));
+};
+
+let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
+    return traverseAncerstors(request, taggedConstraint("canThrow")(true));
+};
+
+```
+The InversifyJS fluent syntax for bindings includes some already implemented common contextual constraints:
 ```
 interface IBindingWhenSyntax<T> {
     when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;

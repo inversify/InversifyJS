@@ -1,4 +1,4 @@
-// Type definitions for inversify 2.0.0-alpha.6
+// Type definitions for inversify 2.0.0-alpha.7
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -30,22 +30,42 @@ declare namespace inversify {
         (kernel: IKernel): void;
     }
 
-    interface IBindingToSyntax<T> {
-        to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T>;
-        toValue(value: T): IBindingInWhenOnSyntax<T>;
-        toConstructor<T2>(constructor: INewable<T2>): IBindingInWhenOnSyntax<T>;
-        toFactory<T2>(factory: IFactoryCreator<T2>): IBindingInWhenOnSyntax<T>;
-        toAutoFactory<T2>(): IBindingInWhenOnSyntax<T>;
-        toProvider<T2>(provider: IProviderCreator<T2>): IBindingInWhenOnSyntax<T>;
+    interface IBindingOnSyntax<T> {
+        onActivation(fn: (context: IContext, injectable: T) => T): IBindingWhenSyntax<T>;
     }
 
-    interface IBindingInWhenOnSyntax<T> {
-        inSingletonScope(): IBindingInWhenOnSyntax<T>;
-        when(constraint: (request: IRequest) => boolean): IBindingInWhenOnSyntax<T>;
-        whenTargetNamed(name: string): IBindingInWhenOnSyntax<T>;
-        whenTargetTagged(tag: string, value: any): IBindingInWhenOnSyntax<T>;
-        onActivation(fn: (context: IContext, injectable: T) => T): IBindingInWhenOnSyntax<T>;
+    interface IBindingInSyntax<T> {
+        inSingletonScope(): IBindingWhenOnSyntax<T>;
     }
+
+    interface IBindingWhenSyntax<T> {
+        when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+        whenTargetNamed(name: string): IBindingOnSyntax<T>;
+        whenTargetTagged(tag: string, value: any): IBindingOnSyntax<T>;
+        whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T>;
+        whenParentNamed(name: string): IBindingOnSyntax<T>;
+        whenParentTagged(tag: string, value: any): IBindingOnSyntax<T>;
+        whenAnyAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
+        whenNoAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
+        whenAnyAncestorNamed(name: string): IBindingOnSyntax<T>;
+        whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
+        whenNoAncestorNamed(name: string): IBindingOnSyntax<T>;
+        whenNoAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
+        whenAnyAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+        whenNoAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+    }
+
+    interface IBindingToSyntax<T> {
+        to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T>;
+        toValue(value: T): IBindingWhenOnSyntax<T>;
+        toConstructor<T2>(constructor: INewable<T2>): IBindingWhenOnSyntax<T>;
+        toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenOnSyntax<T>;
+        toAutoFactory<T2>(): IBindingWhenOnSyntax<T>;
+        toProvider<T2>(provider: IProviderCreator<T2>): IBindingWhenOnSyntax<T>;
+    }
+
+    interface IBindingInWhenOnSyntax<T> extends IBindingInSyntax<T>, IBindingWhenOnSyntax<T> {}
+    interface IBindingWhenOnSyntax<T> extends IBindingWhenSyntax<T>, IBindingOnSyntax<T> {}
 
     export interface IFactory<T> extends Function {
         (): T;
@@ -128,11 +148,17 @@ declare namespace inversify {
     }
 
     export var Kernel: IKernelConstructor;
-    export var decorate: any;
+    export var decorate: (decorator: (ClassDecorator|ParameterDecorator), target: any, parameterIndex?: number) => void;
     export function injectable(...typeIdentifiers: string[]): (typeConstructor: any) => void;
-    export var tagged: any;
-    export var named: any;
-    export var paramNames: any;
+    export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index: number) => any;
+    export function named(name: string): (target: any, targetKey: string, index: number) => any;
+    export function paramNames(...names: string[]): (target: any) => any;
+
+    // constraint helpers
+    export var traverseAncerstors: (request: IRequest, constraint: (request: IRequest) => boolean) => boolean;
+    export var taggedConstraint: (tag: string) => (value: any) => (request: IRequest) => boolean;
+    export var namedConstraint: (value: any) => (request: IRequest) => boolean;
+    export var typeConstraint: (type: (Function|string)) => (request: IRequest) => boolean;
 }
 
 declare module "inversify" {
