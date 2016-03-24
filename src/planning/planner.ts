@@ -34,13 +34,13 @@ class Planner implements IPlanner {
         return plan;
     }
 
-    public getBindings<T>(kernel: IKernel, service: string): IBinding<T>[] {
+    public getBindings<T>(kernel: IKernel, service: (string|Symbol|INewable<T>)): IBinding<T>[] {
         let bindings: IBinding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
-        let _service = service.split("[]").join("");
-        if (_bindingDictionary.hasKey(_service)) {
-            bindings = _bindingDictionary.get(_service);
+        // let _service = service.split("[]").join(""); // TODO replace with @multiinject
+        if (_bindingDictionary.hasKey(service)) {
+            bindings = _bindingDictionary.get(service);
         }
         return bindings;
     }
@@ -125,7 +125,7 @@ class Planner implements IPlanner {
         });
     }
 
-    private _throwWhenCircularDependenciesFound(request: IRequest, previousServices: string[] = []) {
+    private _throwWhenCircularDependenciesFound(request: IRequest, previousServices: (string|Symbol|INewable<any>)[] = []) {
 
         previousServices.push(request.service);
 

@@ -1,7 +1,7 @@
 interface IRequest {
 
         /// The service that was requested.
-        service: string;
+        service: (string|Symbol|INewable<any>);
 
         /// The parent context.
         parentContext: IContext;
@@ -20,7 +20,7 @@ interface IRequest {
 
         // Adds a child request to the request
         addChildRequest(
-            service: string,
+            service: (string|Symbol|INewable<any>),
             bindings: (IBinding<any>|IBinding<any>[]),
             target: ITarget): IRequest;
 }

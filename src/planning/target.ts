@@ -32,7 +32,8 @@ class Target implements ITarget {
   }
 
   public isArray(): boolean {
-      return (this.service.value().indexOf("[]") !== -1);
+      // return (this.service.value().indexOf("[]") !== -1); // TODO fix
+      return false;
   }
 
   public isNamed(): boolean {

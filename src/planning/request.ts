@@ -2,7 +2,7 @@
 
 class Request implements IRequest {
 
-        public service: string;
+        public service: (string|Symbol|INewable<any>);
         public parentContext: IContext;
         public parentRequest: IRequest;
         public bindings: IBinding<any>[];
@@ -10,7 +10,7 @@ class Request implements IRequest {
         public target: ITarget;
 
         public constructor(
-            service: string,
+            service: (string|Symbol|INewable<any>),
             parentContext: IContext,
             parentRequest: IRequest,
             bindings: (IBinding<any>|IBinding<any>[]),

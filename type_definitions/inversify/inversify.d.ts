@@ -12,7 +12,16 @@ declare namespace inversify {
         new(): IKernel;
     }
 
-    interface IMiddleware extends Function {
+    export interface Symbol {
+        toString(): string;
+        valueOf(): Object;
+    }
+
+    export interface SymbolConstructor {
+        (description?: string|number): Symbol;
+    }
+
+    export interface IMiddleware extends Function {
         (next: (context: IContext) => any): (context: IContext) => any;
     }
 
@@ -149,7 +158,7 @@ declare namespace inversify {
 
     export var Kernel: IKernelConstructor;
     export var decorate: (decorator: (ClassDecorator|ParameterDecorator), target: any, parameterIndex?: number) => void;
-    export function injectable(...typeIdentifiers: string[]): (typeConstructor: any) => void;
+    export function injectable(...typeIdentifiers: (string|Symbol|any)[]): (typeConstructor: any) => void;
     export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index: number) => any;
     export function named(name: string): (target: any, targetKey: string, index: number) => any;
     export function paramNames(...names: string[]): (target: any) => any;

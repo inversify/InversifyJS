@@ -62,99 +62,189 @@ describe("InversifyJS", () => {
 
   });
 
-     it("Should support middleware", () => {
+  it("Should be able to use classes as runtime identifiers", () => {
 
-        interface INinja {}
-        class Ninja implements INinja {}
+      class Katana {
+          public hit() {
+              return "cut!";
+          }
+      }
 
-        let log: string[] = [];
+      class Shuriken  {
+          public throw() {
+              return "hit!";
+          }
+      }
 
-        function middleware1(next: (context: IContext) => any) {
-            return (context: IContext) => {
-                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
-                return next(context);
-            };
+      @injectable(Katana, Shuriken)
+      class Ninja  {
+
+          private _katana: Katana;
+          private _shuriken: Shuriken;
+
+          public constructor(katana: Katana, shuriken: Shuriken) {
+              this._katana = katana;
+              this._shuriken = shuriken;
+          }
+
+          public fight() { return this._katana.hit(); };
+          public sneak() { return this._shuriken.throw(); };
+
+      }
+
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(Ninja).to(Ninja);
+      kernel.bind<Katana>(Katana).to(Katana);
+      kernel.bind<Shuriken>(Shuriken).to(Shuriken);
+
+      let ninja = kernel.get<Ninja>(Ninja);
+
+      expect(ninja.fight()).eql("cut!");
+      expect(ninja.sneak()).eql("hit!");
+
+  });
+
+  it("Should be able to use Symbols as runtime identifiers", () => {
+
+      class Katana {
+          public hit() {
+              return "cut!";
+          }
+      }
+
+      class Shuriken  {
+          public throw() {
+              return "hit!";
+          }
+      }
+
+      let TYPES = {
+          Katana: Symbol("Katana"),
+          Ninja: Symbol("Ninja"),
+          Shuriken: Symbol("Shuriken")
+      };
+
+      @injectable(TYPES.Katana, TYPES.Shuriken)
+      class Ninja  {
+
+          private _katana: Katana;
+          private _shuriken: Shuriken;
+
+          public constructor(katana: Katana, shuriken: Shuriken) {
+              this._katana = katana;
+              this._shuriken = shuriken;
+          }
+
+          public fight() { return this._katana.hit(); };
+          public sneak() { return this._shuriken.throw(); };
+
+      }
+
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+      kernel.bind<Katana>(TYPES.Katana).to(Katana);
+      kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+
+      let ninja = kernel.get<Ninja>(TYPES.Ninja);
+
+      expect(ninja.fight()).eql("cut!");
+      expect(ninja.sneak()).eql("hit!");
+
+  });
+
+    it("Should support middleware", () => {
+
+    interface INinja {}
+    class Ninja implements INinja {}
+
+    let log: string[] = [];
+
+    function middleware1(next: (context: IContext) => any) {
+        return (context: IContext) => {
+            log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+            return next(context);
         };
+    };
 
-        function middleware2(next: (context: IContext) => any) {
-            return (context: IContext) => {
-                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
-                return next(context);
-            };
+    function middleware2(next: (context: IContext) => any) {
+        return (context: IContext) => {
+            log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+            return next(context);
         };
+    };
 
-        let kernel = new Kernel();
-        kernel.applyMiddleware(middleware1, middleware2);
-        kernel.bind<INinja>("INinja").to(Ninja);
+    let kernel = new Kernel();
+    kernel.applyMiddleware(middleware1, middleware2);
+    kernel.bind<INinja>("INinja").to(Ninja);
 
-        let ninja = kernel.get<INinja>("INinja");
+    let ninja = kernel.get<INinja>("INinja");
 
-        expect(ninja instanceof Ninja).eql(true);
-        expect(log.length).eql(2);
-        expect(log[0]).eql(`Middleware1: INinja`);
-        expect(log[1]).eql(`Middleware2: INinja`);
+    expect(ninja instanceof Ninja).eql(true);
+    expect(log.length).eql(2);
+    expect(log[0]).eql(`Middleware1: INinja`);
+    expect(log[1]).eql(`Middleware2: INinja`);
 
     });
 
     it("Should support Kernel modules", () => {
 
-        interface INinja {
-            fight(): string;
-            sneak(): string;
+    interface INinja {
+        fight(): string;
+        sneak(): string;
+    }
+
+    interface IKatana {
+        hit(): string;
+    }
+
+    interface IShuriken {
+        throw(): string;
+    }
+
+    class Katana implements IKatana {
+        public hit() {
+            return "cut!";
+        }
+    }
+
+    class Shuriken implements IShuriken {
+        public throw() {
+            return "hit!";
+        }
+    }
+
+    @injectable("IKatana", "IShuriken")
+    class Ninja implements INinja {
+
+        private _katana: IKatana;
+        private _shuriken: IShuriken;
+
+        public constructor(katana: IKatana, shuriken: IShuriken) {
+            this._katana = katana;
+            this._shuriken = shuriken;
         }
 
-        interface IKatana {
-            hit(): string;
-        }
+        public fight() { return this._katana.hit(); };
+        public sneak() { return this._shuriken.throw(); };
 
-        interface IShuriken {
-            throw(): string;
-        }
+    }
 
-        class Katana implements IKatana {
-            public hit() {
-                return "cut!";
-            }
-        }
+    let warriors: IKernelModule = (kernel: IKernel) => {
+        kernel.bind<INinja>("INinja").to(Ninja);
+    };
 
-        class Shuriken implements IShuriken {
-            public throw() {
-                return "hit!";
-            }
-        }
+    let weapons: IKernelModule = (kernel: IKernel) => {
+        kernel.bind<IKatana>("IKatana").to(Katana);
+        kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+    };
 
-        @injectable("IKatana", "IShuriken")
-        class Ninja implements INinja {
+    let kernel = new Kernel();
+    kernel.load(warriors, weapons);
 
-            private _katana: IKatana;
-            private _shuriken: IShuriken;
+    let ninja = kernel.get<INinja>("INinja");
 
-            public constructor(katana: IKatana, shuriken: IShuriken) {
-                this._katana = katana;
-                this._shuriken = shuriken;
-            }
-
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
-
-        }
-
-        let warriors: IKernelModule = (kernel: IKernel) => {
-            kernel.bind<INinja>("INinja").to(Ninja);
-        };
-
-        let weapons: IKernelModule = (kernel: IKernel) => {
-            kernel.bind<IKatana>("IKatana").to(Katana);
-            kernel.bind<IShuriken>("IShuriken").to(Shuriken);
-        };
-
-        let kernel = new Kernel();
-        kernel.load(warriors, weapons);
-
-        let ninja = kernel.get<INinja>("INinja");
-
-        expect(ninja.fight()).eql("cut!");
-        expect(ninja.sneak()).eql("hit!");
+    expect(ninja.fight()).eql("cut!");
+    expect(ninja.sneak()).eql("hit!");
 
     });
 

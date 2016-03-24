@@ -49,7 +49,7 @@ class Kernel implements IKernel {
     }
 
     // Regiters a type binding
-    public bind<T>(runtimeIdentifier: (string|Symbol|T)): IBindingToSyntax<T> {
+    public bind<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T> {
         let binding = new Binding<T>(runtimeIdentifier);
         this._bindingDictionary.add(runtimeIdentifier, binding);
         return new BindingToSyntax<T>(binding);
@@ -72,7 +72,7 @@ class Kernel implements IKernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
-    public get<T>(runtimeIdentifier: (string|Symbol|T)): T {
+    public get<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T {
 
         let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
 
@@ -95,7 +95,7 @@ class Kernel implements IKernel {
 
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
-    public getAll<T>(runtimeIdentifier: (string|Symbol|T)): T[] {
+    public getAll<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T[] {
 
         let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
 
