@@ -2,7 +2,7 @@
 
 interface IBinding<T> {
   activated: boolean;
-  runtimeIdentifier: string;
+  runtimeIdentifier: (string|Symbol|T);
   implementationType: INewable<T>;
   factory: IFactoryCreator<any>;
   provider: IProviderCreator<any>;

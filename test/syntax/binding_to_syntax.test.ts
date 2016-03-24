@@ -54,7 +54,7 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingType.Factory);
         expect(binding.factory).not.to.eql(null);
 
-        bindingToSyntax.toAutoFactory<INinja>();
+        bindingToSyntax.toAutoFactory<INinja>(ninjaIdentifier);
 
         expect(binding.type).eql(BindingType.Factory);
         expect(binding.factory).not.to.eql(null);

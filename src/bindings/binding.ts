@@ -18,7 +18,7 @@ class Binding<T> implements IBinding<T> {
     public activated: boolean;
 
     // A runtime identifier because at runtime we don't have interfaces
-    public runtimeIdentifier: string;
+    public runtimeIdentifier: (string|Symbol|T);
 
     // The constructor of a class which must implement T
     public implementationType: INewable<T>;
@@ -41,10 +41,10 @@ class Binding<T> implements IBinding<T> {
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: IRequest) => boolean;
 
-    // On activation handler
+    // On activation handler (invoked just before an instance is added to cache and injected)
     public onActivation: (context: IContext, injectable: T) => T;
 
-    constructor(runtimeIdentifier: string) {
+    constructor(runtimeIdentifier: (string|Symbol|T)) {
         this.activated = false;
         this.runtimeIdentifier = runtimeIdentifier;
         this.scope = BindingScope.Transient;

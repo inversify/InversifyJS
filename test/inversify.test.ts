@@ -248,7 +248,7 @@ describe("InversifyJS", () => {
         }
 
         const kernel = new Kernel();
-        kernel.bind(TYPES.IHero).toValue(new Hero());
+        kernel.bind<IHero>(TYPES.IHero).toValue(new Hero());
         let hero = kernel.get<IHero>(TYPES.IHero);
 
         expect(hero.name).eql(heroName);
@@ -417,7 +417,7 @@ describe("InversifyJS", () => {
         kernel.bind<INinja>("INinja").to(NinjaWithAutoFactory);
         kernel.bind<IShuriken>("IShuriken").to(Shuriken);
         kernel.bind<IKatana>("IKatana").to(Katana);
-        kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>();
+        kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toAutoFactory<IKatana>("IKatana");
 
         let ninja = kernel.get<INinja>("INinja");
 

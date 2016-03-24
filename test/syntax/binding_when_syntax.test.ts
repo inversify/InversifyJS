@@ -6,7 +6,6 @@ import Request from "../../src/planning/request";
 import Target from "../../src/planning/target";
 import Metadata from "../../src/planning/metadata";
 import BindingWhenSyntax from "../../src/syntax/binding_when_syntax";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { typeConstraint } from "../../src/syntax/constraint_helpers";
 
 describe("BindingWhenSyntax", () => {

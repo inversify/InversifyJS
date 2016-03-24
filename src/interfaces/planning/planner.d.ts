@@ -5,5 +5,5 @@
 interface IPlanner {
     createContext(kernel: IKernel): IContext;
     createPlan(parentContext: IContext, binding: IBinding<any>): IPlan;
-    getBindings<T>(kernel: IKernel, service: string): IBinding<T>[];
+    getBindings<T>(kernel: IKernel, service: (string|Symbol|T)): IBinding<T>[];
 }

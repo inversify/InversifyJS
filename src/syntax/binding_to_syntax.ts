@@ -37,12 +37,11 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toAutoFactory<T2>(): IBindingWhenOnSyntax<T> {
+    public toAutoFactory<T2>(service: (string|Symbol|T2)): IBindingWhenOnSyntax<T> {
         this._binding.type = BindingType.Factory;
-        let id = this._binding.runtimeIdentifier.split("IFactory<").join("").split(">").join("");
         this._binding.factory = (context) => {
             return () => {
-                return context.kernel.get<T2>(id);
+                return context.kernel.get<T2>(service);
             };
         };
         return new BindingWhenOnSyntax<T>(this._binding);

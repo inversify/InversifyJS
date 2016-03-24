@@ -590,7 +590,7 @@ describe("Resolver", () => {
       kernel.bind<IKatanaBlade>(katanaBladeId).to(KatanaBlade);
       kernel.bind<IKatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      kernel.bind<IFactory<IKatana>>(katanaFactoryId).toAutoFactory<IKatana>();
+      kernel.bind<IFactory<IKatana>>(katanaFactoryId).toAutoFactory<IKatana>(katanaId);
 
       let _kernel: any = kernel;
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
