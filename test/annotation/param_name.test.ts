@@ -2,12 +2,13 @@
 
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import paramNames from "../../src/annotation/paramnames";
+import paramName from "../../src/annotation/param_name";
+import injectable from "../../src/annotation/injectable";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as Stubs from "../utils/stubs";
 
-describe("@paramNames", () => {
+describe("@paramName", () => {
 
     it("Should not generate metadata when not applied", () => {
 
@@ -23,26 +24,29 @@ describe("@paramNames", () => {
             }
         }
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, Warrior);
+        let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
         expect(metadata).to.be.undefined;
     });
 
     it("Should generate metadata if declared parameter names", () => {
 
-        @paramNames("katana", "shuriken")
+        @injectable()
         class Warrior {
 
             public katana: Stubs.IKatana;
             public shuriken: Stubs.IShuriken;
 
-            constructor(katana: Stubs.IKatana, shuriken: Stubs.IShuriken) {
+            constructor(
+                @paramName("katana") katana: Stubs.IKatana,
+                @paramName("shuriken") shuriken: Stubs.IShuriken
+            ) {
 
                 this.katana = katana;
                 this.shuriken = shuriken;
             }
         }
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, Warrior);
+        let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
         expect(metadata).to.be.instanceof(Array);
 
         expect(metadata[0]).to.be.eql("katana");
@@ -65,8 +69,8 @@ describe("@paramNames", () => {
         }
 
         let useDecoratorMoreThanOnce = function() {
-            decorate(paramNames("katana", "shuriken"), Warrior);
-            decorate(paramNames("katana", "shuriken"), Warrior);
+            decorate(paramName("katana"), Warrior);
+            decorate(paramName("shuriken"), Warrior);
         };
 
         expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_PARAM_NAMES_DECORATOR);
@@ -84,9 +88,9 @@ describe("@paramNames", () => {
             return VanillaJSWarrior;
         })();
 
-        decorate(paramNames("katana", "shuriken"), VanillaJSWarrior);
+        decorate(paramName("katana"), VanillaJSWarrior);
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, VanillaJSWarrior);
+        let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, VanillaJSWarrior);
         expect(metadata).to.be.instanceof(Array);
 
         expect(metadata[0]).to.be.eql("katana");

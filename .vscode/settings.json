@@ -4,6 +4,11 @@
 		"**/.DS_Store": true,
 		"src/**/*.js": true,
 		"test/**/*.js": true,
+        "**/es": true,
+        "**/lib": true,
+        "**/coverage": true,
+        "**/dist": true,
+        "**/docs": true,
 		"type_definitions/**/*.js": true
 	}
 }

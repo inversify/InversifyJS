@@ -94,7 +94,7 @@ describe("Request", () => {
       expect(katanaRequest.parentRequest.service).eql(identifiers.INinja);
       expect(katanaRequest.childRequests.length).eql(0);
       expect(katanaRequest.target.name.value()).eql("katana");
-      expect(katanaRequest.target.service.value()).eql(identifiers.IKatana);
+      expect(katanaRequest.target.service).eql(identifiers.IKatana);
   });
 
 });

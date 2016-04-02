@@ -1,6 +1,6 @@
 ///<reference path="../../src/interfaces/interfaces.d.ts" />
 
-describe("@inject", () => {
+describe("@multiInject", () => {
 
     it("TODO");
 

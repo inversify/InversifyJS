@@ -9,9 +9,11 @@ import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
 import injectable from "../../src/annotation/injectable";
-import paramNames from "../../src/annotation/paramnames";
+import paramName from "../../src/annotation/param_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import tagged from "../../src/annotation/tagged";
+import inject from "../../src/annotation/inject";
+import multiInject from "../../src/annotation/multi_inject";
 
 describe("Planner", () => {
 
@@ -46,12 +48,14 @@ describe("Planner", () => {
 
       interface IKatana {}
 
-      @injectable("IKatanaHandler", "IKatanaBlade")
-      @paramNames("handler", "blade")
+      @injectable()
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
-          public constructor(handler: IKatanaHandler, blade: IKatanaBlade) {
+          public constructor(
+              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+          ) {
               this.handler = handler;
               this.blade = blade;
           }
@@ -62,12 +66,14 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @injectable("IKatana", "IShuriken")
-      @paramNames("katana", "shuriken")
+      @injectable()
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
-          public constructor(katana: IKatana, shuriken: IShuriken) {
+          public constructor(
+              @inject("IKatana") @paramName("katana") katana: IKatana,
+              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+          ) {
               this.katana = katana;
               this.shuriken = shuriken;
           }
@@ -134,8 +140,8 @@ describe("Planner", () => {
 
       expect(actualKatanaRequest.bindings.length).eql(1);
 
-      expect(actualKatanaRequest.target.service.value())
-        .eql(katanaRequest.target.service.value());
+      expect(actualKatanaRequest.target.service)
+        .eql(katanaRequest.target.service);
 
       expect(actualKatanaRequest.childRequests.length)
         .eql(katanaRequest.childRequests.length);
@@ -150,8 +156,8 @@ describe("Planner", () => {
 
       expect(actualKatanaHandlerRequest.bindings.length).eql(1);
 
-      expect(actualKatanaHandlerRequest.target.service.value())
-        .eql(katanaHandlerRequest.target.service.value());
+      expect(actualKatanaHandlerRequest.target.service)
+        .eql(katanaHandlerRequest.target.service);
 
       // IKatanaBalde
 
@@ -163,8 +169,8 @@ describe("Planner", () => {
 
       expect(actualKatanaBladeRequest.bindings.length).eql(1);
 
-      expect(actualKatanaBladeRequest.target.service.value())
-        .eql(katanaBladeRequest.target.service.value());
+      expect(actualKatanaBladeRequest.target.service)
+        .eql(katanaBladeRequest.target.service);
 
       // IShuriken
 
@@ -176,8 +182,8 @@ describe("Planner", () => {
 
       expect(actualShurikenRequest.bindings.length).eql(1);
 
-      expect(actualShurikenRequest.target.service.value())
-        .eql(shurikenRequest.target.service.value());
+      expect(actualShurikenRequest.target.service)
+        .eql(shurikenRequest.target.service);
 
   });
 
@@ -188,29 +194,36 @@ describe("Planner", () => {
       interface IC {}
       interface ID {}
 
-      @injectable("IA")
+      @injectable()
       class D implements IC {
           public a: IA;
-          public constructor(a: IA) { // circular dependency
+          public constructor(
+              @inject("IA") a: IA
+          ) { // circular dependency
               this.a = a;
           }
       }
 
-      @injectable("ID")
+      @injectable()
       class C implements IC {
           public d: ID;
-          public constructor(d: ID) {
+          public constructor(
+              @inject("ID") d: ID
+          ) {
               this.d = d;
           }
       }
 
       class B implements IB {}
 
-      @injectable("IB", "IC")
+      @injectable()
       class A implements IA {
           public b: IB;
           public c: IC;
-          public constructor(b: IB, c: IC) {
+          public constructor(
+              @inject("IB") b: IB,
+              @inject("IC") c: IC
+          ) {
               this.b = b;
               this.c = c;
           }
@@ -245,12 +258,14 @@ describe("Planner", () => {
 
       interface IKatana {}
 
-      @injectable("IKatanaHandler", "IKatanaBlade")
-      @paramNames("handler", "blade")
+      @injectable()
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
-          public constructor(handler: IKatanaHandler, blade: IKatanaBlade) {
+          public constructor(
+              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+          ) {
               this.handler = handler;
               this.blade = blade;
           }
@@ -261,12 +276,14 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @injectable("IFactory<IKatana>", "IShuriken")
-      @paramNames("katanaFactory", "shuriken")
+      @injectable()
       class Ninja implements INinja {
           public katanaFactory: IFactory<IKatana>;
           public shuriken: IShuriken;
-          public constructor(katanaFactory: IFactory<IKatana>, shuriken: IShuriken) {
+          public constructor(
+              @inject("IFactory<IKatana>") @paramName("katanaFactory") katanaFactory: IFactory<IKatana>,
+              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+          ) {
               this.katanaFactory = katanaFactory;
               this.shuriken = shuriken;
           }
@@ -315,12 +332,13 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @injectable("IWeapon[]")
-      @paramNames("weapons")
+      @injectable()
       class Ninja implements INinja {
           public katana: IWeapon;
           public shuriken: IWeapon;
-          public constructor(weapons: IWeapon[]) {
+          public constructor(
+              @multiInject("IWeapon") @paramName("weapons") weapons: IWeapon[]
+          ) {
               this.katana = weapons[0];
               this.shuriken = weapons[1];
           }
@@ -348,14 +366,14 @@ describe("Planner", () => {
       expect(actualPlan.rootRequest.childRequests[0].service).eql("IWeapon[]");
       expect(actualPlan.rootRequest.childRequests[1]).eql(undefined);
       expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("weapons");
-      expect(actualPlan.rootRequest.childRequests[0].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].target.service).eql("IWeapon[]");
 
       // child request should have to child requests with targets weapons/IWeapon[] but bindings Katana and Shuriken
       expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(2);
 
       expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.name.value()).eql("weapons");
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.service).eql("IWeapon[]");
       expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql("IWeapon");
       expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].runtimeIdentifier).eql("IWeapon");
       let shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
@@ -363,7 +381,7 @@ describe("Planner", () => {
 
       expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.name.value()).eql("weapons");
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.service.value()).eql("IWeapon[]");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.service).eql("IWeapon[]");
       expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql("IWeapon");
       expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].runtimeIdentifier).eql("IWeapon");
       let katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
@@ -371,7 +389,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should throw when an not matching bindings are found", () => {
+  it("Should throw when no matching bindings are found", () => {
 
       interface IKatana {}
       class Katana implements IKatana { }
@@ -381,12 +399,14 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @injectable("IKatana", "IShuriken")
-      @paramNames("katana", "shuriken")
+      @injectable()
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
-          public constructor(katana: IKatana, shuriken: IShuriken) {
+          public constructor(
+              @inject("IKatana") @paramName("katana") katana: IKatana,
+              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+          ) {
               this.katana = katana;
               this.shuriken = shuriken;
           }
@@ -420,12 +440,14 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @injectable("IKatana", "IShuriken")
-      @paramNames("katana", "shuriken")
+      @injectable()
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;
-          public constructor(katana: IKatana, shuriken: IShuriken) {
+          public constructor(
+              @inject("IKatana") katana: IKatana,
+              @inject("IShuriken") shuriken: IShuriken
+          ) {
               this.katana = katana;
               this.shuriken = shuriken;
           }
@@ -459,14 +481,12 @@ describe("Planner", () => {
 
       interface INinja {}
 
-      @injectable("IWeapon", "IWeapon")
-      @paramNames("katana", "shuriken")
       class Ninja implements INinja {
           public katana: IWeapon;
           public shuriken: IWeapon;
           public constructor(
-              @tagged("canThrow", false) katana: IWeapon,
-              @tagged("canThrow", true) shuriken: IWeapon
+              @inject("IWeapon") @paramName("katana") @tagged("canThrow", false) katana: IWeapon,
+              @inject("IWeapon") @paramName("shuriken") @tagged("canThrow", true) shuriken: IWeapon
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -495,11 +515,11 @@ describe("Planner", () => {
       // root request should have 2 child requests
       expect(actualPlan.rootRequest.childRequests[0].service).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("katana");
-      expect(actualPlan.rootRequest.childRequests[0].target.service.value()).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].target.service).eql(weaponId);
 
       expect(actualPlan.rootRequest.childRequests[1].service).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[1].target.name.value()).eql("shuriken");
-      expect(actualPlan.rootRequest.childRequests[1].target.service.value()).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[1].target.service).eql(weaponId);
 
       expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 

@@ -1,7 +1,7 @@
 ///<reference path="../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, injectable, tagged, named, paramNames } from "../src/inversify";
+import { Kernel, injectable, inject, multiInject, tagged, named, paramName } from "../src/inversify";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
 
@@ -34,13 +34,16 @@ describe("InversifyJS", () => {
           }
       }
 
-      @injectable("IKatana", "IShuriken")
+      @injectable()
       class Ninja implements INinja {
 
           private _katana: IKatana;
           private _shuriken: IShuriken;
 
-          public constructor(katana: IKatana, shuriken: IShuriken) {
+          public constructor(
+              @inject("IKatana") katana: IKatana,
+              @inject("IShuriken") shuriken: IShuriken
+          ) {
               this._katana = katana;
               this._shuriken = shuriken;
           }
@@ -76,7 +79,7 @@ describe("InversifyJS", () => {
           }
       }
 
-      @injectable(Katana, Shuriken)
+      @injectable()
       class Ninja  {
 
           private _katana: Katana;
@@ -124,13 +127,16 @@ describe("InversifyJS", () => {
           Shuriken: Symbol("Shuriken")
       };
 
-      @injectable(TYPES.Katana, TYPES.Shuriken)
+      @injectable()
       class Ninja  {
 
           private _katana: Katana;
           private _shuriken: Shuriken;
 
-          public constructor(katana: Katana, shuriken: Shuriken) {
+          public constructor(
+              @inject(TYPES.Katana) katana: Katana,
+              @inject(TYPES.Shuriken) shuriken: Shuriken
+          ) {
               this._katana = katana;
               this._shuriken = shuriken;
           }
@@ -154,97 +160,97 @@ describe("InversifyJS", () => {
 
     it("Should support middleware", () => {
 
-    interface INinja {}
-    class Ninja implements INinja {}
+        interface INinja {}
+        class Ninja implements INinja {}
 
-    let log: string[] = [];
+        let log: string[] = [];
 
-    function middleware1(next: (context: IContext) => any) {
-        return (context: IContext) => {
-            log.push(`Middleware1: ${context.plan.rootRequest.service}`);
-            return next(context);
+        function middleware1(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
         };
-    };
 
-    function middleware2(next: (context: IContext) => any) {
-        return (context: IContext) => {
-            log.push(`Middleware2: ${context.plan.rootRequest.service}`);
-            return next(context);
+        function middleware2(next: (context: IContext) => any) {
+            return (context: IContext) => {
+                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                return next(context);
+            };
         };
-    };
 
-    let kernel = new Kernel();
-    kernel.applyMiddleware(middleware1, middleware2);
-    kernel.bind<INinja>("INinja").to(Ninja);
+        let kernel = new Kernel();
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<INinja>("INinja").to(Ninja);
 
-    let ninja = kernel.get<INinja>("INinja");
+        let ninja = kernel.get<INinja>("INinja");
 
-    expect(ninja instanceof Ninja).eql(true);
-    expect(log.length).eql(2);
-    expect(log[0]).eql(`Middleware1: INinja`);
-    expect(log[1]).eql(`Middleware2: INinja`);
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`Middleware1: INinja`);
+        expect(log[1]).eql(`Middleware2: INinja`);
 
     });
 
     it("Should support Kernel modules", () => {
 
-    interface INinja {
-        fight(): string;
-        sneak(): string;
-    }
-
-    interface IKatana {
-        hit(): string;
-    }
-
-    interface IShuriken {
-        throw(): string;
-    }
-
-    class Katana implements IKatana {
-        public hit() {
-            return "cut!";
-        }
-    }
-
-    class Shuriken implements IShuriken {
-        public throw() {
-            return "hit!";
-        }
-    }
-
-    @injectable("IKatana", "IShuriken")
-    class Ninja implements INinja {
-
-        private _katana: IKatana;
-        private _shuriken: IShuriken;
-
-        public constructor(katana: IKatana, shuriken: IShuriken) {
-            this._katana = katana;
-            this._shuriken = shuriken;
+        interface INinja {
+            fight(): string;
+            sneak(): string;
         }
 
-        public fight() { return this._katana.hit(); };
-        public sneak() { return this._shuriken.throw(); };
+        interface IKatana {
+            hit(): string;
+        }
 
-    }
+        interface IShuriken {
+            throw(): string;
+        }
 
-    let warriors: IKernelModule = (kernel: IKernel) => {
-        kernel.bind<INinja>("INinja").to(Ninja);
-    };
+        class Katana implements IKatana {
+            public hit() {
+                return "cut!";
+            }
+        }
 
-    let weapons: IKernelModule = (kernel: IKernel) => {
-        kernel.bind<IKatana>("IKatana").to(Katana);
-        kernel.bind<IShuriken>("IShuriken").to(Shuriken);
-    };
+        class Shuriken implements IShuriken {
+            public throw() {
+                return "hit!";
+            }
+        }
 
-    let kernel = new Kernel();
-    kernel.load(warriors, weapons);
+        @injectable()
+        class Ninja implements INinja {
 
-    let ninja = kernel.get<INinja>("INinja");
+            private _katana: IKatana;
+            private _shuriken: IShuriken;
 
-    expect(ninja.fight()).eql("cut!");
-    expect(ninja.sneak()).eql("hit!");
+            public constructor(@inject("IKatana") katana: IKatana, @inject("IShuriken") shuriken: IShuriken) {
+                this._katana = katana;
+                this._shuriken = shuriken;
+            }
+
+            public fight() { return this._katana.hit(); };
+            public sneak() { return this._shuriken.throw(); };
+
+        }
+
+        let warriors: IKernelModule = (kernel: IKernel) => {
+            kernel.bind<INinja>("INinja").to(Ninja);
+        };
+
+        let weapons: IKernelModule = (kernel: IKernel) => {
+            kernel.bind<IKatana>("IKatana").to(Katana);
+            kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+        };
+
+        let kernel = new Kernel();
+        kernel.load(warriors, weapons);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja.fight()).eql("cut!");
+        expect(ninja.sneak()).eql("hit!");
 
     });
 
@@ -285,13 +291,16 @@ describe("InversifyJS", () => {
             }
         }
 
-        @injectable("IKatana", "IShuriken")
+        @injectable()
         class Ninja implements INinja {
 
             private _katana: IKatana;
             private _shuriken: IShuriken;
 
-            public constructor(katana: IKatana, shuriken: IShuriken) {
+            public constructor(
+                @inject("IKatana") katana: IKatana,
+                @inject("IShuriken") shuriken: IShuriken
+           ) {
                 this._katana = katana;
                 this._shuriken = shuriken;
             }
@@ -372,13 +381,16 @@ describe("InversifyJS", () => {
           }
       }
 
-      @injectable("IKatana", "IShuriken")
+      @injectable()
       class Ninja implements INinja {
 
           private _katana: IKatana;
           private _shuriken: IShuriken;
 
-          public constructor(katana: INewable<IKatana>, shuriken: IShuriken) {
+          public constructor(
+              @inject("INewable<IKatana>") katana: INewable<IKatana>,
+              @inject("IShuriken") shuriken: IShuriken
+          ) {
               this._katana = new Katana();
               this._shuriken = shuriken;
           }
@@ -390,7 +402,7 @@ describe("InversifyJS", () => {
 
       let kernel = new Kernel();
       kernel.bind<INinja>("INinja").to(Ninja);
-      kernel.bind<IKatana>("IKatana").to(Katana);
+      kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katana);
       kernel.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
 
       let ninja = kernel.get<INinja>("INinja");
@@ -427,13 +439,16 @@ describe("InversifyJS", () => {
             }
         }
 
-        @injectable("IFactory<IKatana>", "IShuriken")
+        @injectable()
         class NinjaWithUserDefinedFactory implements INinja {
 
             private _katana: IKatana;
             private _shuriken: IShuriken;
 
-            public constructor(katanaFactory: IFactory<IKatana>, shuriken: IShuriken) {
+            public constructor(
+                @inject("IFactory<IKatana>") katanaFactory: IFactory<IKatana>,
+                @inject("IShuriken") shuriken: IShuriken
+            ) {
                 this._katana = katanaFactory();
                 this._shuriken = shuriken;
             }
@@ -487,13 +502,16 @@ describe("InversifyJS", () => {
             }
         }
 
-        @injectable("IFactory<IKatana>", "IShuriken")
+        @injectable()
         class NinjaWithAutoFactory implements INinja {
 
             private _katana: IKatana;
             private _shuriken: IShuriken;
 
-            public constructor(katanaAutoFactory: IFactory<IKatana>, shuriken: IShuriken) {
+            public constructor(
+                @inject("IFactory<IKatana>") katanaAutoFactory: IFactory<IKatana>, 
+                @inject("IShuriken") shuriken: IShuriken
+            ) {
                 this._katana = katanaAutoFactory();
                 this._shuriken = shuriken;
             }
@@ -533,13 +551,15 @@ describe("InversifyJS", () => {
             }
         }
 
-        @injectable("IProvider<IKatana>")
+        @injectable()
         class NinjaWithProvider implements INinja {
 
             public katana: IKatana;
             public katanaProvider: IProvider<IKatana>;
 
-            public constructor(katanaProvider: IProvider<IKatana>) {
+            public constructor(
+                @inject("IProvider<IKatana>") katanaProvider: IProvider<IKatana>
+            ) {
                 this.katanaProvider = katanaProvider;
                 this.katana = null;
             }
@@ -586,10 +606,10 @@ describe("InversifyJS", () => {
             katana: IKatana;
         }
 
-        @injectable("IKatana")
+        @injectable()
         class Ninja implements INinja {
             public katana: IKatana;
-            public constructor(katana: IKatana) {
+            public constructor(@inject("IKatana") katana: IKatana) {
                 this.katana = katana;
             }
         }
@@ -639,11 +659,11 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @injectable("IWeapon[]")
+        @injectable()
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
-            public constructor(weapons: IWeapon[]) {
+            public constructor(@multiInject("IWeapon") weapons: IWeapon[]) {
                 this.katana = weapons[0];
                 this.shuriken = weapons[1];
             }
@@ -653,6 +673,92 @@ describe("InversifyJS", () => {
         kernel.bind<INinja>("INinja").to(Ninja);
         kernel.bind<IWeapon>("IWeapon").to(Katana);
         kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+
+        let ninja = kernel.get<INinja>("INinja");
+        expect(ninja.katana.name).eql("Katana");
+        expect(ninja.shuriken.name).eql("Shuriken");
+
+    });
+
+    it("Should support the injection of multiple values when using classes as keys", () => {
+
+        class Weapon {
+            public name: string;
+        }
+
+        class Katana extends Weapon {
+            constructor() {
+                super();
+                this.name = "Katana";
+            }
+        }
+
+        class Shuriken extends Weapon {
+            constructor() {
+                super();
+                this.name = "Shuriken";
+            }
+        }
+
+        @injectable()
+        class Ninja {
+            public katana: Weapon;
+            public shuriken: Weapon;
+            public constructor(@multiInject(Weapon) weapons: Weapon[]) {
+                this.katana = weapons[0];
+                this.shuriken = weapons[1];
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(Ninja).to(Ninja);
+        kernel.bind<Weapon>(Weapon).to(Katana);
+        kernel.bind<Weapon>(Weapon).to(Shuriken);
+
+        let ninja = kernel.get<Ninja>(Ninja);
+        expect(ninja.katana.name).eql("Katana");
+        expect(ninja.shuriken.name).eql("Shuriken");
+
+    });
+
+    it("Should support the injection of multiple values when using Symbols as keys", () => {
+
+        let TYPES = {
+            INinja: Symbol("INinja"),
+            IWeapon: Symbol("IWeapon")
+        };
+
+        interface IWeapon {
+            name: string;
+        }
+
+        class Katana implements IWeapon {
+            public name = "Katana";
+        }
+
+        class Shuriken implements IWeapon {
+            public name = "Shuriken";
+        }
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        @injectable()
+        class Ninja implements INinja {
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+            public constructor(@multiInject(TYPES.IWeapon) weapons: IWeapon[]) {
+                this.katana = weapons[0];
+                this.shuriken = weapons[1];
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>(TYPES.INinja).to(Ninja);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Katana);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Shuriken);
 
         let ninja = kernel.get<INinja>("INinja");
         expect(ninja.katana.name).eql("Katana");
@@ -671,13 +777,13 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @injectable("IWeapon", "IWeapon")
+        @injectable()
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                @tagged("canThrow", false) katana: IWeapon,
-                @tagged("canThrow", true) shuriken: IWeapon
+                @inject("IWeapon") @tagged("canThrow", false) katana: IWeapon,
+                @inject("IWeapon") @tagged("canThrow", true) shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
@@ -709,13 +815,13 @@ describe("InversifyJS", () => {
         let throwable = tagged("canThrow", true);
         let notThrowable = tagged("canThrow", false);
 
-        @injectable("IWeapon", "IWeapon")
+        @injectable()
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                @notThrowable katana: IWeapon,
-                @throwable shuriken: IWeapon
+                @inject("IWeapon") @notThrowable katana: IWeapon,
+                @inject("IWeapon") @throwable shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
@@ -743,13 +849,13 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @injectable("IWeapon", "IWeapon")
+        @injectable()
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                @named("strong")katana: IWeapon,
-                @named("weak") shuriken: IWeapon
+                @inject("IWeapon") @named("strong") katana: IWeapon,
+                @inject("IWeapon") @named("weak") shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
@@ -767,7 +873,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support contextual bindings and paramNames annotations", () => {
+    it("Should support contextual bindings and paramName annotation", () => {
 
         interface IWeapon {}
         class Katana implements IWeapon { }
@@ -778,14 +884,13 @@ describe("InversifyJS", () => {
             shuriken: IWeapon;
         }
 
-        @injectable("IWeapon", "IWeapon")
-        @paramNames("katana", "shuriken")
+        @injectable()
         class Ninja implements INinja {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                katana: IWeapon,
-                shuriken: IWeapon
+                @paramName("IWeapon") katana: IWeapon,
+                @paramName("IWeapon") shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
@@ -816,11 +921,14 @@ describe("InversifyJS", () => {
         interface IC {}
         interface ID {}
 
-        @injectable("IB", "IC")
+        @injectable()
         class A implements IA {
             public b: IB;
             public c: IC;
-            public constructor(b: IB, c: IC) {
+            public constructor(
+                @inject("IB")  b: IB,
+                @inject("IC")  c: IC
+            ) {
                 this.b = b;
                 this.c = c;
             }
@@ -828,18 +936,18 @@ describe("InversifyJS", () => {
 
         class B implements IB {}
 
-        @injectable("ID")
+        @injectable()
         class C implements IC {
             public d: ID;
-            public constructor(d: ID) {
+            public constructor(@inject("ID") d: ID) {
                 this.d = d;
             }
         }
 
-        @injectable("IA")
+        @injectable()
         class D implements ID {
             public a: IA;
-            public constructor(a: IA) {
+            public constructor(@inject("IA") a: IA) {
                 this.a = a;
             }
         }

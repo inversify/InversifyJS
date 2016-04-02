@@ -139,7 +139,7 @@ declare namespace inversify {
         isArray(): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
-        matchesName(name: string): boolean;
+        matchesNamedTag(name: string): boolean;
         matchesTag(name: IMetadata): boolean;
     }
 
