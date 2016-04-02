@@ -5,6 +5,7 @@ import Request from "../../src/planning/request";
 import Context from "../../src/planning/context";
 import Kernel from "../../src/kernel/kernel";
 import Target from "../../src/planning/target";
+import injectable from "../../src/annotation/injectable";
 
 describe("Request", () => {
 
@@ -46,12 +47,18 @@ describe("Request", () => {
   it("Should be able to add a child request", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {}
+
+      @injectable()
       class Katana implements IKatana {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
@@ -61,9 +68,13 @@ describe("Request", () => {
       }
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {
           public katana: IKatana;
           public shuriken: IShuriken;

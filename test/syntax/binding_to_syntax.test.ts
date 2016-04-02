@@ -4,6 +4,7 @@ import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import BindingType from "../../src/bindings/binding_type";
 import BindingToSyntax from "../../src/syntax/binding_to_syntax";
+import injectable from "../../src/annotation/injectable";
 
 describe("BindingToSyntax", () => {
 
@@ -25,6 +26,8 @@ describe("BindingToSyntax", () => {
     it("Should be able to configure the type of a binding", () => {
 
         interface INinja {}
+
+        @injectable()
         class Ninja implements INinja {}
         let ninjaIdentifier = "INinja";
 

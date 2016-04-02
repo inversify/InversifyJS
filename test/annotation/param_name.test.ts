@@ -12,6 +12,7 @@ describe("@paramName", () => {
 
     it("Should not generate metadata when not applied", () => {
 
+        @injectable()
         class Warrior {
 
             public katana: Stubs.IKatana;
@@ -56,6 +57,7 @@ describe("@paramName", () => {
 
     it("Should throw when applayed mutiple times", () => {
 
+        @injectable()
         class Warrior {
 
             public katana: Stubs.IKatana;

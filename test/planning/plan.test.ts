@@ -5,11 +5,13 @@ import Plan from "../../src/planning/plan";
 import Request from "../../src/planning/request";
 import Context from "../../src/planning/context";
 import Kernel from "../../src/kernel/kernel";
+import injectable from "../../src/annotation/injectable";
 
 describe("Plan", () => {
 
   it("Should set its own properties correctly", () => {
 
+      @injectable()
       class Something {}
 
       let kernel = new Kernel();

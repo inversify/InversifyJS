@@ -43,7 +43,8 @@ describe("Target", () => {
   });
 
   it("Should be able to identify multi-injections", () => {
-    let target1 = new Target("katana", "IKatana[]");
+    let target1 = new Target("katana", "IKatana");
+    target1.metadata.push(new Metadata(METADATA_KEY.MULTI_INJECT_TAG, "IKatana"));
     expect(target1.isArray()).to.be.eql(true);
     let target2 = new Target("katana", "IKatana");
     expect(target2.isArray()).to.be.eql(false);

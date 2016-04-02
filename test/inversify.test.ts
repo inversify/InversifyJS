@@ -22,12 +22,14 @@ describe("InversifyJS", () => {
           throw(): string;
       }
 
+      @injectable()
       class Katana implements IKatana {
           public hit() {
               return "cut!";
           }
       }
 
+      @injectable()
       class Shuriken implements IShuriken {
           public throw() {
               return "hit!";
@@ -67,12 +69,14 @@ describe("InversifyJS", () => {
 
   it("Should be able to use classes as runtime identifiers", () => {
 
+      @injectable()
       class Katana {
           public hit() {
               return "cut!";
           }
       }
 
+      @injectable()
       class Shuriken  {
           public throw() {
               return "hit!";
@@ -109,12 +113,14 @@ describe("InversifyJS", () => {
 
   it("Should be able to use Symbols as runtime identifiers", () => {
 
+      @injectable()
       class Katana {
           public hit() {
               return "cut!";
           }
       }
 
+      @injectable()
       class Shuriken  {
           public throw() {
               return "hit!";
@@ -161,6 +167,8 @@ describe("InversifyJS", () => {
     it("Should support middleware", () => {
 
         interface INinja {}
+
+        @injectable()
         class Ninja implements INinja {}
 
         let log: string[] = [];
@@ -207,12 +215,14 @@ describe("InversifyJS", () => {
             throw(): string;
         }
 
+        @injectable()
         class Katana implements IKatana {
             public hit() {
                 return "cut!";
             }
         }
 
+        @injectable()
         class Shuriken implements IShuriken {
             public throw() {
                 return "hit!";
@@ -269,6 +279,7 @@ describe("InversifyJS", () => {
             throw(): string;
         }
 
+        @injectable()
         class Katana implements IKatana {
             private _usageCount: number;
             public constructor() {
@@ -280,6 +291,7 @@ describe("InversifyJS", () => {
             }
         }
 
+        @injectable()
         class Shuriken implements IShuriken {
             private _shurikenCount: number;
             public constructor() {
@@ -339,6 +351,7 @@ describe("InversifyJS", () => {
 
         let heroName = "superman";
 
+        @injectable()
         class Hero implements IHero {
             public name: string;
             public constructor() {
@@ -369,12 +382,14 @@ describe("InversifyJS", () => {
           throw(): string;
       }
 
+      @injectable()
       class Katana implements IKatana {
           public hit() {
               return "cut!";
           }
       }
 
+      @injectable()
       class Shuriken implements IShuriken {
           public throw() {
               return "hit!";
@@ -427,12 +442,14 @@ describe("InversifyJS", () => {
             throw(): string;
         }
 
+        @injectable()
         class Katana implements IKatana {
             public hit() {
                 return "cut!";
             }
         }
 
+        @injectable()
         class Shuriken implements IShuriken {
             public throw() {
                 return "hit!";
@@ -490,12 +507,14 @@ describe("InversifyJS", () => {
             throw(): string;
         }
 
+        @injectable()
         class Katana implements IKatana {
             public hit() {
                 return "cut!";
             }
         }
 
+        @injectable()
         class Shuriken implements IShuriken {
             public throw() {
                 return "hit!";
@@ -509,7 +528,7 @@ describe("InversifyJS", () => {
             private _shuriken: IShuriken;
 
             public constructor(
-                @inject("IFactory<IKatana>") katanaAutoFactory: IFactory<IKatana>, 
+                @inject("IFactory<IKatana>") katanaAutoFactory: IFactory<IKatana>,
                 @inject("IShuriken") shuriken: IShuriken
             ) {
                 this._katana = katanaAutoFactory();
@@ -545,6 +564,7 @@ describe("InversifyJS", () => {
             hit(): string;
         }
 
+        @injectable()
         class Katana implements IKatana {
             public hit() {
                 return "cut!";
@@ -596,6 +616,7 @@ describe("InversifyJS", () => {
             use: () => void;
         }
 
+        @injectable()
         class Katana implements IKatana {
             public use() {
                 return "Used Katana!";
@@ -646,10 +667,12 @@ describe("InversifyJS", () => {
             name: string;
         }
 
+        @injectable()
         class Katana implements IWeapon {
             public name = "Katana";
         }
 
+        @injectable()
         class Shuriken implements IWeapon {
             public name = "Shuriken";
         }
@@ -682,10 +705,12 @@ describe("InversifyJS", () => {
 
     it("Should support the injection of multiple values when using classes as keys", () => {
 
+        @injectable()
         class Weapon {
             public name: string;
         }
 
+        @injectable()
         class Katana extends Weapon {
             constructor() {
                 super();
@@ -693,6 +718,7 @@ describe("InversifyJS", () => {
             }
         }
 
+        @injectable()
         class Shuriken extends Weapon {
             constructor() {
                 super();
@@ -732,10 +758,12 @@ describe("InversifyJS", () => {
             name: string;
         }
 
+        @injectable()
         class Katana implements IWeapon {
             public name = "Katana";
         }
 
+        @injectable()
         class Shuriken implements IWeapon {
             public name = "Shuriken";
         }
@@ -769,7 +797,11 @@ describe("InversifyJS", () => {
     it("Should support tagged bindings", () => {
 
         interface IWeapon {}
+
+        @injectable()
         class Katana implements IWeapon { }
+
+        @injectable()
         class Shuriken implements IWeapon {}
 
         interface INinja {
@@ -804,7 +836,11 @@ describe("InversifyJS", () => {
     it("Should support custom tag decorators", () => {
 
         interface IWeapon {}
+
+        @injectable()
         class Katana implements IWeapon { }
+
+        @injectable()
         class Shuriken implements IWeapon {}
 
         interface INinja {
@@ -840,8 +876,13 @@ describe("InversifyJS", () => {
     });
 
     it("Should support named bindings", () => {
+
         interface IWeapon {}
+
+        @injectable()
         class Katana implements IWeapon { }
+
+        @injectable()
         class Shuriken implements IWeapon {}
 
         interface INinja {
@@ -876,7 +917,11 @@ describe("InversifyJS", () => {
     it("Should support contextual bindings and paramName annotation", () => {
 
         interface IWeapon {}
+
+        @injectable()
         class Katana implements IWeapon { }
+
+        @injectable()
         class Shuriken implements IWeapon {}
 
         interface INinja {
@@ -934,6 +979,7 @@ describe("InversifyJS", () => {
             }
         }
 
+        @injectable()
         class B implements IB {}
 
         @injectable()

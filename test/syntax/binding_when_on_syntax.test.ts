@@ -4,6 +4,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import Binding from "../../src/bindings/binding";
 import BindingWhenOnSyntax from "../../src/syntax/binding_when_on_syntax";
+import injectable from "../../src/annotation/injectable";
 
 describe("BindingWhenOnSyntax", () => {
 
@@ -35,9 +36,13 @@ describe("BindingWhenOnSyntax", () => {
     it("Should provide access to BindingWhenSyntax methods", () => {
 
         interface IArmy {}
+
+        @injectable()
         class Army implements IArmy {}
 
         interface IZombieArmy {}
+
+        @injectable()
         class ZombieArmy implements IZombieArmy {}
 
         interface INinja {}

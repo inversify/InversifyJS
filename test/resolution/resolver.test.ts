@@ -33,9 +33,13 @@ describe("Resolver", () => {
   it("Should be able to resolve BindingType.Instance bindings", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -57,6 +61,8 @@ describe("Resolver", () => {
       }
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {
@@ -131,9 +137,13 @@ describe("Resolver", () => {
   it("Should store singleton type bindings in cache", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -155,6 +165,8 @@ describe("Resolver", () => {
       }
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {
@@ -239,9 +251,13 @@ describe("Resolver", () => {
   it("Should throw when an invalid BindingType is detected", () => {
 
       interface IKatana {}
+
+      @injectable()
       class Katana implements IKatana {}
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {
@@ -293,9 +309,13 @@ describe("Resolver", () => {
   it("Should be able to resolve BindingType.Value bindings", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -377,9 +397,13 @@ describe("Resolver", () => {
   it("Should be able to resolve BindingType.Constructor bindings", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -458,9 +482,13 @@ describe("Resolver", () => {
   it("Should be able to resolve BindingType.Factory bindings", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -486,6 +514,8 @@ describe("Resolver", () => {
       }
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {
@@ -554,9 +584,13 @@ describe("Resolver", () => {
   it("Should be able to resolve bindings with auto factory", () => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -582,6 +616,8 @@ describe("Resolver", () => {
       }
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {
@@ -594,7 +630,7 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatanaFactory") @paramName("makeKatana") makeKatana: IKatanaFactory, 
+              @inject("IKatanaFactory") @paramName("makeKatana") makeKatana: IKatanaFactory,
               @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
           ) {
               this.katana = makeKatana(); // IMPORTANT!
@@ -646,9 +682,13 @@ describe("Resolver", () => {
   it("Should be able to resolve BindingType.Provider bindings", (done) => {
 
       interface IKatanaBlade {}
+
+      @injectable()
       class KatanaBlade implements IKatanaBlade {}
 
       interface IKatanaHandler {}
+
+      @injectable()
       class KatanaHandler implements IKatanaHandler {}
 
       interface IKatana {
@@ -674,6 +714,8 @@ describe("Resolver", () => {
       }
 
       interface IShuriken {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
 
       interface INinja {
@@ -752,7 +794,11 @@ describe("Resolver", () => {
   it("Should be able to resolve plans with constraints on tagged targets", () => {
 
       interface IWeapon {}
+
+      @injectable()
       class Katana implements IWeapon { }
+
+      @injectable()
       class Shuriken implements IWeapon {}
 
       interface INinja {
@@ -800,7 +846,11 @@ describe("Resolver", () => {
   it("Should be able to resolve plans with constraints on named targets", () => {
 
       interface IWeapon {}
-      class Katana implements IWeapon { }
+
+      @injectable()
+      class Katana implements IWeapon {}
+
+      @injectable()
       class Shuriken implements IWeapon {}
 
       interface INinja {
@@ -848,7 +898,11 @@ describe("Resolver", () => {
   it("Should be able to resolve plans with custom contextual constraints", () => {
 
       interface IWeapon {}
-      class Katana implements IWeapon { }
+
+      @injectable()
+      class Katana implements IWeapon {}
+
+      @injectable()
       class Shuriken implements IWeapon {}
 
       interface INinja {
@@ -904,9 +958,12 @@ describe("Resolver", () => {
           name: string;
       }
 
+      @injectable()
       class Katana implements IWeapon {
           public name = "Katana";
       }
+
+      @injectable()
       class Shuriken implements IWeapon {
           public name = "Shuriken";
       }
@@ -958,6 +1015,7 @@ describe("Resolver", () => {
             use: () => void;
         }
 
+        @injectable()
         class Katana implements IKatana {
             public use() {
                 return "Used Katana!";

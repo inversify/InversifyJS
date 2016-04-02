@@ -28,6 +28,7 @@ describe("@injectable", () => {
 
     it("Should throw when applayed mutiple times", () => {
 
+        @injectable()
         class Test {}
 
         let useDecoratorMoreThanOnce = function() {

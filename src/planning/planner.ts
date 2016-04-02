@@ -22,14 +22,12 @@ class Planner implements IPlanner {
             null,
             binding);
 
-        rootRequest.bindings.push(binding);
         let plan = new Plan(context, rootRequest);
 
         // Plan and Context are duable linked
         context.addPlan(plan);
 
         let dependencies = this._getDependencies(binding.implementationType);
-
         dependencies.forEach((target) => { this._createSubRequest(rootRequest, target); });
         return plan;
     }
@@ -125,7 +123,9 @@ class Planner implements IPlanner {
         });
     }
 
-    private _throwWhenCircularDependenciesFound(request: IRequest, previousServices: (string|Symbol|INewable<any>)[] = []) {
+    private _throwWhenCircularDependenciesFound(
+        request: IRequest, previousServices: (string|Symbol|INewable<any>)[] = []
+    ) {
 
         previousServices.push(request.service);
 
@@ -150,7 +150,14 @@ class Planner implements IPlanner {
         if (func === null) { return []; }
 
         // TypeScript compiler generated annotations
-        let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func) || [];
+        let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
+
+        // All types resolved bust be annotated with @injectable
+        if (targetsTypes === undefined) {
+            let constructorName = (<any>func).name;
+            let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} in ${constructorName}.`;
+            throw new Error(msg);
+        }
 
         // User generated annotations
         let targetsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
@@ -177,7 +184,7 @@ class Planner implements IPlanner {
             // user needs to generate metadata manually for those
             if (targetType === Object || targetType === Function) {
                 let constructorName = (<any>func).name;
-                let msg = `${ERROR_MSGS.MISSING_ANNOTATION} argument ${index} in ${constructorName}.`;
+                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in ${constructorName}.`;
                 throw new Error(msg);
             }
 
