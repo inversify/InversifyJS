@@ -7,6 +7,7 @@ import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
 import named from "../../src/annotation/named";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 interface IWeapon {}
 class Katana implements IWeapon {}
@@ -46,7 +47,8 @@ class InvalidDecoratorUsageWarrior {
 
     constructor(
       primary: IWeapon,
-      secondary: IWeapon) {
+      secondary: IWeapon
+    ) {
 
           this._primaryWeapon = primary;
           this._secondaryWeapon = secondary;
@@ -92,7 +94,7 @@ describe("@named", () => {
       __decorate([ __param(0, named("a")), __param(0, named("b")) ], InvalidDecoratorUsageWarrior);
     };
 
-    let msg = "Metadadata key named was used more than once in a parameter.";
+    let msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.NAMED_TAG}`;
     expect(useDecoratorMoreThanOnce).to.throw(msg);
   });
 
@@ -104,7 +106,7 @@ describe("@named", () => {
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
-    let msg = "The @tagged and @named decorator must be applied to the parameters of a constructor.";
+    let msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
     expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
   });
 
