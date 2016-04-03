@@ -779,7 +779,7 @@ interface IQueryableString {
 }
 ```
 We have included some helpers to facilitate the creation of custom constraints:
-```
+```ts
 import { Kernel, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
 
 let whenParentNamedCanThrowConstraint = (request: IRequest) => {
@@ -796,7 +796,7 @@ let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
 
 ```
 The InversifyJS fluent syntax for bindings includes some already implemented common contextual constraints:
-```
+```ts
 interface IBindingWhenSyntax<T> {
     when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
     whenTargetNamed(name: string): IBindingOnSyntax<T>;
@@ -819,7 +819,7 @@ interface IBindingWhenSyntax<T> {
 InversifyJS is able to identify circular dependencies and will throw an exception to help you to
 identify the location of the problem if a circular dependency is detected:
 
-```
+```ts
 Error: Circular dependency found between services: IKatana and INinja
 ```
 
