@@ -80,7 +80,8 @@ Let's continue by declaring some classes (concretions). The classes are implemen
 
 When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the string literals `"IKatana"` and `"IShuriken"` as runtime identifiers.
 
-Please not that InversifyJS also support the usage of Classes and Symbols (continue reading to learn more about this).
+> **Note**: InversifyJS also support the usage of Classes and Symbols (continue reading to learn more about this).
+
 ```ts
 import { injectable, inject } from "inversify";
 
