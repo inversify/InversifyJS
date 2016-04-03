@@ -5,7 +5,6 @@ import { decorate } from "../../src/annotation/decorator_utils";
 import paramName from "../../src/annotation/param_name";
 import injectable from "../../src/annotation/injectable";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as Stubs from "../utils/stubs";
 
 describe("@paramName", () => {
@@ -48,34 +47,15 @@ describe("@paramName", () => {
         }
 
         let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
-        expect(metadata).to.be.instanceof(Array);
+        expect(metadata["0"]).to.be.instanceof(Array);
+        expect(metadata["1"]).to.be.instanceof(Array);
+        expect(metadata["2"]).to.eql(undefined);
 
-        expect(metadata[0]).to.be.eql("katana");
-        expect(metadata[1]).to.be.eql("shuriken");
-        expect(metadata[2]).to.be.undefined;
-    });
+        expect(metadata["0"][0].key).to.be.eql("name");
+        expect(metadata["0"][0].value).to.be.eql("katana");
+        expect(metadata["1"][0].key).to.be.eql("name");
+        expect(metadata["1"][0].value).to.be.eql("shuriken");
 
-    it("Should throw when applayed mutiple times", () => {
-
-        @injectable()
-        class Warrior {
-
-            public katana: Stubs.IKatana;
-            public shuriken: Stubs.IShuriken;
-
-            constructor(katana: Stubs.IKatana, shuriken: Stubs.IShuriken) {
-
-                this.katana = katana;
-                this.shuriken = shuriken;
-            }
-        }
-
-        let useDecoratorMoreThanOnce = function() {
-            decorate(paramName("katana"), Warrior);
-            decorate(paramName("shuriken"), Warrior);
-        };
-
-        expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_PARAM_NAMES_DECORATOR);
     });
 
     it("Should be usable in VanillaJS applications", () => {
@@ -90,14 +70,19 @@ describe("@paramName", () => {
             return VanillaJSWarrior;
         })();
 
-        decorate(paramName("katana"), VanillaJSWarrior);
+        decorate(paramName("primary"), VanillaJSWarrior, 0);
+        decorate(paramName("secondary"), VanillaJSWarrior, 1);
 
         let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, VanillaJSWarrior);
-        expect(metadata).to.be.instanceof(Array);
+        expect(metadata["0"]).to.be.instanceof(Array);
+        expect(metadata["1"]).to.be.instanceof(Array);
+        expect(metadata["2"]).to.eql(undefined);
 
-        expect(metadata[0]).to.be.eql("katana");
-        expect(metadata[1]).to.be.eql("shuriken");
-        expect(metadata[2]).to.be.undefined;
+        expect(metadata["0"][0].key).to.be.eql("name");
+        expect(metadata["0"][0].value).to.be.eql("primary");
+        expect(metadata["1"][0].key).to.be.eql("name");
+        expect(metadata["1"][0].value).to.be.eql("secondary");
+
     });
 
 });

@@ -113,28 +113,41 @@ describe("InversifyJS", () => {
 
   it("Should be able to use Symbols as runtime identifiers", () => {
 
+      interface INinja {
+          fight(): string;
+          sneak(): string;
+      }
+
+      interface IKatana {
+          hit(): string;
+      }
+
+      interface IShuriken {
+          throw(): string;
+      }
+
       @injectable()
-      class Katana {
+      class Katana implements IKatana {
           public hit() {
               return "cut!";
           }
       }
 
       @injectable()
-      class Shuriken  {
+      class Shuriken implements IShuriken {
           public throw() {
               return "hit!";
           }
       }
 
       let TYPES = {
-          Katana: Symbol("Katana"),
-          Ninja: Symbol("Ninja"),
-          Shuriken: Symbol("Shuriken")
+          Katana: Symbol("IKatana"),
+          Ninja: Symbol("INinja"),
+          Shuriken: Symbol("IShuriken")
       };
 
       @injectable()
-      class Ninja  {
+      class Ninja implements INinja {
 
           private _katana: Katana;
           private _shuriken: Shuriken;
@@ -153,9 +166,9 @@ describe("InversifyJS", () => {
       }
 
       let kernel = new Kernel();
-      kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
-      kernel.bind<Katana>(TYPES.Katana).to(Katana);
-      kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+      kernel.bind<INinja>(TYPES.Ninja).to(Ninja);
+      kernel.bind<IKatana>(TYPES.Katana).to(Katana);
+      kernel.bind<IShuriken>(TYPES.Shuriken).to(Shuriken);
 
       let ninja = kernel.get<Ninja>(TYPES.Ninja);
 
@@ -788,7 +801,7 @@ describe("InversifyJS", () => {
         kernel.bind<IWeapon>(TYPES.IWeapon).to(Katana);
         kernel.bind<IWeapon>(TYPES.IWeapon).to(Shuriken);
 
-        let ninja = kernel.get<INinja>("INinja");
+        let ninja = kernel.get<INinja>(TYPES.INinja);
         expect(ninja.katana.name).eql("Katana");
         expect(ninja.shuriken.name).eql("Shuriken");
 
@@ -934,8 +947,8 @@ describe("InversifyJS", () => {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                @paramName("IWeapon") katana: IWeapon,
-                @paramName("IWeapon") shuriken: IWeapon
+                @inject("IWeapon") @paramName("katana") katana: IWeapon,
+                @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
