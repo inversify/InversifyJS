@@ -192,8 +192,8 @@ class Ninja {
 inversify.decorate(injectable(), Katana);
 inversify.decorate(injectable(), Shuriken);
 inversify.decorate(injectable(), Ninja);
-inversify.decorate(inject(TYPES.Katana), VanillaJSWarrior, 0);
-inversify.decorate(inject(TYPES.Shuriken), VanillaJSWarrior, 1);
+inversify.decorate(inject(TYPES.Katana), Ninja, 0);
+inversify.decorate(inject(TYPES.Shuriken), Ninja, 1);
 
 // Declare bindings
 var kernel = new inversify.Kernel();
