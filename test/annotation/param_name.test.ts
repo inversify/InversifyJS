@@ -9,25 +9,6 @@ import * as Stubs from "../utils/stubs";
 
 describe("@paramName", () => {
 
-    it("Should not generate metadata when not applied", () => {
-
-        @injectable()
-        class Warrior {
-
-            public katana: Stubs.IKatana;
-            public shuriken: Stubs.IShuriken;
-
-            constructor(katana: Stubs.IKatana, shuriken: Stubs.IShuriken) {
-
-                this.katana = katana;
-                this.shuriken = shuriken;
-            }
-        }
-
-        let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
-        expect(metadata).to.be.undefined;
-    });
-
     it("Should generate metadata if declared parameter names", () => {
 
         @injectable()

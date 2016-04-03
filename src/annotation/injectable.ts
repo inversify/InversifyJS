@@ -10,7 +10,7 @@ function injectable() {
       throw new Error(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
     }
 
-    let types = Reflect.getMetadata(METADATA_KEY.DESIGN_PARAM_TYPES, target);
+    let types = Reflect.getMetadata(METADATA_KEY.DESIGN_PARAM_TYPES, target) || [];
     Reflect.defineMetadata(METADATA_KEY.PARAM_TYPES, types, target);
 
     return target;

@@ -4,25 +4,33 @@ import { expect } from "chai";
 import { injectable, decorate } from "../../src/inversify";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
-import * as Stubs from "../utils/stubs";
 
 describe("@injectable", () => {
 
-    let WarriotWithoutInjections = Stubs.WarriotWithoutInjections;
-    let Warrior = Stubs.Warrior;
-
-    it("Should not generate metadata when not applied", () => {
-        let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, WarriotWithoutInjections);
-        expect(metadata).to.be.undefined;
-    });
-
     it("Should generate metadata if declared injections", () => {
+
+        class Katana {}
+
+        interface IWeapon {}
+
+        @injectable()
+        class Warrior {
+
+            private _primaryWeapon: Katana;
+            private _secondaryWeapon: IWeapon;
+
+            public constructor(primaryWeapon: Katana, secondaryWeapon: IWeapon) {
+                this._primaryWeapon = primaryWeapon;
+                this._secondaryWeapon = secondaryWeapon;
+            }
+
+        }
 
         let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
         expect(metadata).to.be.instanceof(Array);
 
-        expect(metadata[0]).to.be.eql("IKatana");
-        expect(metadata[1]).to.be.eql("IShuriken");
+        expect(metadata[0]).to.be.eql(Katana);
+        expect(metadata[1]).to.be.eql(Object);
         expect(metadata[2]).to.be.undefined;
     });
 
@@ -55,9 +63,8 @@ describe("@injectable", () => {
 
         let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
         expect(metadata).to.be.instanceof(Array);
-        expect(metadata[0]).to.be.eql("IKatana");
-        expect(metadata[1]).to.be.eql("IShuriken");
-        expect(metadata[2]).to.be.undefined;
+        expect(metadata.length).to.eql(0);
+
     });
 
 });

@@ -73,12 +73,6 @@ class InvalidDecoratorUsageWarrior {
 
 describe("@Tagged", () => {
 
-  it("Should not generate metadata for untagged parameters", () => {
-    let metadataKey = METADATA_KEY.TAGGED;
-    let paramsMetadata = Reflect.getMetadata(metadataKey, UnTaggedWarrior);
-    expect(paramsMetadata).to.be.undefined;
-  });
-
   it("Should generate metadata for tagged parameters", () => {
 
     let metadataKey = METADATA_KEY.TAGGED;

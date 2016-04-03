@@ -13,20 +13,6 @@ interface IWeapon {}
 class Katana implements IWeapon {}
 class Shuriken implements IWeapon {}
 
-class UnNamedWarrior {
-
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
-
-    constructor(
-      primary: IWeapon,
-      secondary: IWeapon) {
-
-          this._primaryWeapon = primary;
-          this._secondaryWeapon = secondary;
-    }
-}
-
 class NamedWarrior {
 
     private _primaryWeapon: IWeapon;
@@ -58,12 +44,6 @@ class InvalidDecoratorUsageWarrior {
 }
 
 describe("@named", () => {
-
-  it("Should not generate metadata for unnamed parameters", () => {
-    let metadataKey = METADATA_KEY.TAGGED;
-    let paramsMetadata = Reflect.getMetadata(metadataKey, UnNamedWarrior);
-    expect(paramsMetadata).to.be.undefined;
-  });
 
   it("Should generate metadata for named parameters", () => {
     let metadataKey = METADATA_KEY.TAGGED;
