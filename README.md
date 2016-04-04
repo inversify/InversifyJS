@@ -52,6 +52,17 @@ The InversifyJS type definitions are included in the npm package:
 ```
 > **Note**: InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. If your environment don't support one of these you will need to import a shim or polypill. Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/wiki/Environmemt-support-and-polyfills) page in the wiki to learn more.
 
+InversifyJS requires the following TypeScript compilation options in your `tsconfig.json` file:
+
+```
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
 ### The Basics (TypeScript)
 Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
 
