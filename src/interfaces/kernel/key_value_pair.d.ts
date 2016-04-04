@@ -1,4 +1,4 @@
 interface IKeyValuePair<T> {
-    key: string;
+    key: (string|Symbol|any);
     value: Array<T>;
 }

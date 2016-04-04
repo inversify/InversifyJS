@@ -1,6 +1,6 @@
 interface ILookup<T> {
-  add(key: string, value: T): void;
-  get(key: string): Array<T>;
-  remove(key: string): void;
-  hasKey(key: string): boolean;
+  add(key: (string|Symbol|any), value: T): void;
+  get(key: (string|Symbol|any)): Array<T>;
+  remove(key: (string|Symbol|any)): void;
+  hasKey(key: (string|Symbol|any)): boolean;
 }

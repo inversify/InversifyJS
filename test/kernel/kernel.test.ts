@@ -4,6 +4,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import Kernel from "../../src/kernel/kernel";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import injectable from "../../src/annotation/injectable";
 
 describe("Kernel", () => {
 
@@ -36,6 +37,8 @@ describe("Kernel", () => {
     it("Should invoke middleware", () => {
 
         interface INinja {}
+
+        @injectable()
         class Ninja implements INinja {}
 
         let log: string[] = [];
@@ -73,8 +76,13 @@ describe("Kernel", () => {
       interface IKatana {}
       interface IShuriken {}
 
+      @injectable()
       class Katana implements IKatana {}
+
+      @injectable()
       class Shuriken implements IShuriken {}
+
+      @injectable()
       class Ninja implements INinja {}
 
       let warriors = (kernel: IKernel) => {
@@ -99,6 +107,8 @@ describe("Kernel", () => {
   it("Should be able to store bindings", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
       let ninjaId = "INinja";
 
@@ -114,6 +124,8 @@ describe("Kernel", () => {
   it("Should unbind a binding when requested", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
       let ninjaId = "INinja";
 
@@ -133,6 +145,8 @@ describe("Kernel", () => {
   it("Should throw when cannot unbind", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
 
       let runtimeIdentifier = "INinja";
@@ -145,8 +159,12 @@ describe("Kernel", () => {
   it("Should unbind a binding when requested", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
       interface ISamurai {}
+
+      @injectable()
       class Samurai implements ISamurai {}
 
       let ninjaId = "INinja";
@@ -172,8 +190,13 @@ describe("Kernel", () => {
   it("Should be able unbound all dependencies", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
+
       interface ISamurai {}
+
+      @injectable()
       class Samurai implements ISamurai {}
 
       let ninjaId = "INinja";
@@ -199,6 +222,8 @@ describe("Kernel", () => {
   it("Should NOT be able to get unregistered services", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
       let ninjaId = "INinja";
 
@@ -214,6 +239,7 @@ describe("Kernel", () => {
           name: string;
       }
 
+      @injectable()
       class Ninja implements INinja {
 
           public name: string;
@@ -259,7 +285,11 @@ describe("Kernel", () => {
   it("Should NOT be able to get ambiguous match", () => {
 
       interface IWarrior {}
+
+      @injectable()
       class Ninja implements IWarrior {}
+
+      @injectable()
       class Samurai implements IWarrior {}
 
       let warriorId = "IWarrior";
@@ -283,6 +313,8 @@ describe("Kernel", () => {
   it("Should NOT be able to getAll of an unregistered services", () => {
 
       interface INinja {}
+
+      @injectable()
       class Ninja implements INinja {}
       let ninjaId = "INinja";
 
@@ -299,6 +331,7 @@ describe("Kernel", () => {
           name: string;
       }
 
+      @injectable()
       class Ninja implements INinja {
 
           public name: string;
@@ -348,6 +381,7 @@ describe("Kernel", () => {
           name: string;
       }
 
+      @injectable()
       class Ninja implements IWarrior {
 
           public name: string;
@@ -357,6 +391,7 @@ describe("Kernel", () => {
           }
       }
 
+      @injectable()
       class Samurai implements IWarrior {
 
           public name: string;

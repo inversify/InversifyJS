@@ -23,9 +23,18 @@ describe("Lookup", () => {
     expect(() => { lookup.add("TEST_KEY", null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
-  it("Should be able to link multiple values to a key", () => {
+  it("Should be able to link multiple values to a string key", () => {
     let lookup = new Lookup<any>();
     let key = "TEST_KEY";
+    lookup.add(key, 1);
+    lookup.add(key, 2);
+    let result = lookup.get(key);
+    expect(result.length).to.eql(2);
+  });
+
+  it("Should be able to link multiple values a symbol key", () => {
+    let lookup = new Lookup<any>();
+    let key = Symbol("TEST_KEY");
     lookup.add(key, 1);
     lookup.add(key, 2);
     let result = lookup.get(key);

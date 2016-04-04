@@ -1,4 +1,4 @@
-import { injectable, named, tagged } from "../../src/inversify";
+import { inject, injectable, named, tagged } from "../../src/inversify";
 
 export interface FooInterface {
   name: string;
@@ -36,11 +36,14 @@ export class Bar implements BarInterface {
   }
 }
 
-@injectable("FooInterface", "BarInterface")
+@injectable()
 export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
-  constructor(foo: FooInterface, bar: BarInterface) {
+  constructor(
+      @inject("FooInterface") foo: FooInterface,
+      @inject("BarInterface") bar: BarInterface
+  ) {
     this.foo = foo;
     this.bar = bar;
   }
@@ -63,14 +66,15 @@ export class WarriotWithoutInjections {}
 @injectable()
 export class DecoratedWarriotWithoutInjections {}
 
-@injectable("IKatana", "IShuriken")
+@injectable()
 export class Warrior {
     private _primaryWeapon: IKatana;
     private _secondaryWeapon: IShuriken;
 
     constructor(
-      primary: IKatana,
-      secondary: IShuriken) {
+      @inject("IKatana") primary: IKatana,
+      @inject("IShuriken") secondary: IShuriken
+    ) {
         // ...
     }
 }
@@ -99,28 +103,30 @@ export class MissingInjectionWarrior {
     }
 }
 
-@injectable("IKatana", "IShuriken")
+@injectable()
 export class NamedWarrior {
 
     private _primaryWeapon: IWeapon;
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @named("strong") primary: IWeapon,
-      @named("weak") secondary: IWeapon) {
+      @inject("IKatana") @named("strong") primary: IWeapon,
+      @inject("IShuriken") @named("weak") secondary: IWeapon
+    ) {
         // ...
     }
 }
 
-@injectable("IKatana", "IShuriken")
+@injectable()
 export class TaggedWarrior {
 
     private _primaryWeapon: IWeapon;
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @tagged("power", 5) primary: IWeapon,
-      @tagged("power", 1) secondary: IWeapon) {
+      @inject("IKatana") @tagged("power", 5) primary: IWeapon,
+      @inject("IShuriken") @tagged("power", 1) secondary: IWeapon
+    ) {
         // ...
     }
 }

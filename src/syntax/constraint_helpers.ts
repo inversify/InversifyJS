@@ -1,4 +1,5 @@
-import Metadata from "../planning/metadata";
+///<reference path="../interfaces/interfaces.d.ts" />
+
 import * as METADATA_KEY from "../constants/metadata_keys";
 
 let traverseAncerstors = (request: IRequest, constraint: (request: IRequest) => boolean): boolean => {
@@ -12,9 +13,8 @@ let traverseAncerstors = (request: IRequest, constraint: (request: IRequest) => 
 
 // This helpers use currying to help you to generate constraints
 
-let taggedConstraint = (tag: string) => (value: any) => (request: IRequest) => {
-    let metadata = new Metadata(tag, value);
-    return request.target.matchesTag(metadata);
+let taggedConstraint = (key: string) => (value: any) => (request: IRequest) => {
+    return request.target.matchesTag(key)(value);
 };
 
 let namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
@@ -30,9 +30,7 @@ let typeConstraint = (type: (Function|string)) => (request: IRequest) => {
         return runtimeIdentifier === type;
     } else {
         let constructor = request.bindings[0].implementationType;
-        let actualInjectedIntoSymbol = Reflect.getMetadata(METADATA_KEY.TYPE_ID, type);
-        let expectedIntoSymbol = Reflect.getMetadata(METADATA_KEY.TYPE_ID, constructor);
-        return actualInjectedIntoSymbol === expectedIntoSymbol;
+        return type === constructor;
     }
 };
 

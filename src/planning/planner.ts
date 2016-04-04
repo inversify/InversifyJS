@@ -22,25 +22,23 @@ class Planner implements IPlanner {
             null,
             binding);
 
-        rootRequest.bindings.push(binding);
         let plan = new Plan(context, rootRequest);
 
         // Plan and Context are duable linked
         context.addPlan(plan);
 
         let dependencies = this._getDependencies(binding.implementationType);
-
         dependencies.forEach((target) => { this._createSubRequest(rootRequest, target); });
         return plan;
     }
 
-    public getBindings<T>(kernel: IKernel, service: string): IBinding<T>[] {
+    public getBindings<T>(kernel: IKernel, service: (string|Symbol|INewable<T>)): IBinding<T>[] {
         let bindings: IBinding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
-        let _service = service.split("[]").join("");
-        if (_bindingDictionary.hasKey(_service)) {
-            bindings = _bindingDictionary.get(_service);
+        // let _service = service.split("[]").join(""); // TODO replace with @multiinject
+        if (_bindingDictionary.hasKey(service)) {
+            bindings = _bindingDictionary.get(service);
         }
         return bindings;
     }
@@ -49,7 +47,7 @@ class Planner implements IPlanner {
 
         try {
 
-            let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service.value());
+            let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service);
             let activeBindings: IBinding<any>[] = [];
 
             if (bindings.length > 1 && target.isArray() === false) {
@@ -76,12 +74,12 @@ class Planner implements IPlanner {
             if (activeBindings.length === 0) {
 
                 // no matching bindings found
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${target.service.value()}`);
+                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${target.getServiceAsString()}`);
 
             } else if (activeBindings.length > 1 && target.isArray() === false) {
 
                 // more than one matching binding found but target is not an array
-                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.service.value()}`);
+                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.getServiceAsString()}`);
 
             } else {
 
@@ -103,7 +101,7 @@ class Planner implements IPlanner {
     private _createChildRequest(parentRequest: IRequest, target: ITarget, bindings: IBinding<any>[]) {
 
         // Use the only active binding to create a child request
-        let childRequest = parentRequest.addChildRequest(target.service.value(), bindings, target);
+        let childRequest = parentRequest.addChildRequest(target.service, bindings, target);
         let subChildRequest = childRequest;
 
         bindings.forEach((binding) => {
@@ -125,7 +123,9 @@ class Planner implements IPlanner {
         });
     }
 
-    private _throwWhenCircularDependenciesFound(request: IRequest, previousServices: string[] = []) {
+    private _throwWhenCircularDependenciesFound(
+        request: IRequest, previousServices: (string|Symbol|INewable<any>)[] = []
+    ) {
 
         previousServices.push(request.service);
 
@@ -149,15 +149,50 @@ class Planner implements IPlanner {
 
         if (func === null) { return []; }
 
-        let injections = Reflect.getMetadata(METADATA_KEY.INJECTABLE, func) || [];
-        let paramNames = Reflect.getMetadata(METADATA_KEY.PARAM_NAMES, func) || [];
-        let tags = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
+        // TypeScript compiler generated annotations
+        let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
 
-        let targets = injections.map((injection: string, index: number) => {
-            let targetName = paramNames[index];
-            let target = new Target(targetName, injection);
-            target.metadata = tags[index.toString()] || [];
+        // All types resolved bust be annotated with @injectable
+        if (targetsTypes === undefined) {
+            let constructorName = (<any>func).name;
+            let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${constructorName}.`;
+            throw new Error(msg);
+        }
+
+        // User generated annotations
+        let targetsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
+
+        let targets = targetsTypes.map((targetType: any, index: number) => {
+
+            // Create map from array of metadata for faster access to metadata
+            let targetMetadata = targetsMetadata[index.toString()] || [];
+            let targetMetadataMap: any = {};
+            targetMetadata.forEach((m: IMetadata) => {
+                targetMetadataMap[m.key.toString()] = m.value;
+            });
+
+            // user generated metadata
+            let inject: any = targetMetadataMap[METADATA_KEY.INJECT_TAG];
+            let multiInject: any = targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG];
+            let targetName: any = targetMetadataMap[METADATA_KEY.NAME_TAG];
+
+            // Take type to be injected from user-generated metadata 
+            // if not available use compiler-generated metadata
+            targetType = (inject || multiInject) ? (inject || multiInject) : targetType;
+
+            // Types Object and Function are too ambiguous to be resolved
+            // user needs to generate metadata manually for those
+            if (targetType === Object || targetType === Function) {
+                let constructorName = (<any>func).name;
+                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in class ${constructorName}.`;
+                throw new Error(msg);
+            }
+
+            // Create target
+            let target = new Target(targetName, targetType);
+            target.metadata = targetMetadata; // TODO use targetMetadataMap instead (is faster)
             return target;
+
         });
 
         return targets;

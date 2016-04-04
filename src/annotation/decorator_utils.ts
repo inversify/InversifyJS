@@ -1,24 +1,26 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
+import * as METADATA_KEY from "../constants/metadata_keys";
+import * as ERROR_MSGS from "../constants/error_msgs";
+
 interface IReflectResult {
     [key: string]: IMetadata[];
 }
 
 function tagParameter(target: any, targetKey: string, index: number, metadata: IMetadata) {
-    let metadataKey = "inversify:tagged";
+
     let paramsMetadata: IReflectResult = null;
 
     // this decorator can be used in a constructor not a method
     if (targetKey !== undefined) {
-        let msg = "The @tagged and @named decorator must be applied to the parameters of a constructor.";
-        throw new Error(msg);
+        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
 
     // read metadata if avalible
-    if (Reflect.hasOwnMetadata(metadataKey, target) !== true) {
+    if (Reflect.hasOwnMetadata(METADATA_KEY.TAGGED, target) !== true) {
         paramsMetadata = {};
     } else {
-        paramsMetadata = Reflect.getMetadata(metadataKey, target);
+        paramsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, target);
     }
 
     // get metadata for the decorated parameter by its index
@@ -29,7 +31,7 @@ function tagParameter(target: any, targetKey: string, index: number, metadata: I
         for (let i = 0; i < paramMetadata.length; i++) {
             let m: IMetadata = paramMetadata[i];
             if (m.key === metadata.key) {
-                throw new Error(`Metadadata key ${m.key} was used more than once in a parameter.`);
+                throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${m.key}`);
             }
         }
     }
@@ -37,7 +39,7 @@ function tagParameter(target: any, targetKey: string, index: number, metadata: I
     // set metadata
     paramMetadata.push(metadata);
     paramsMetadata[index.toString()] = paramMetadata;
-    Reflect.defineMetadata(metadataKey, paramsMetadata, target);
+    Reflect.defineMetadata(METADATA_KEY.TAGGED, paramsMetadata, target);
     return target;
 }
 

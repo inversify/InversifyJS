@@ -7,6 +7,7 @@ import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
 import Tagged from "../../src/annotation/tagged";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 
 interface IWeapon {}
 class Katana implements IWeapon {}
@@ -71,12 +72,6 @@ class InvalidDecoratorUsageWarrior {
 }
 
 describe("@Tagged", () => {
-
-  it("Should not generate metadata for untagged parameters", () => {
-    let metadataKey = METADATA_KEY.TAGGED;
-    let paramsMetadata = Reflect.getMetadata(metadataKey, UnTaggedWarrior);
-    expect(paramsMetadata).to.be.undefined;
-  });
 
   it("Should generate metadata for tagged parameters", () => {
 
@@ -150,7 +145,7 @@ describe("@Tagged", () => {
       __decorate([ __param(0, Tagged(metadataKey, 1)), __param(0, Tagged(metadataKey, 2)) ], InvalidDecoratorUsageWarrior);
     };
 
-    let msg = `Metadadata key ${metadataKey} was used more than once in a parameter.`;
+    let msg = `${ERRORS_MSGS.DUPLICATED_METADATA} ${metadataKey}`;
     expect(useDecoratorMoreThanOnce).to.throw(msg);
 
   });
@@ -163,7 +158,7 @@ describe("@Tagged", () => {
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
-    let msg = "The @tagged and @named decorator must be applied to the parameters of a constructor.";
+    let msg = ERRORS_MSGS.INVALID_DECORATOR_OPERATION;
     expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
 
   });

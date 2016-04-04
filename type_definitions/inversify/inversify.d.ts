@@ -1,4 +1,4 @@
-// Type definitions for inversify 2.0.0-alpha.7
+// Type definitions for inversify 2.0.0-alpha.8
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -6,22 +6,33 @@
 /// <reference path="../bluebird/bluebird.d.ts" />
 /// <reference path="../harmony-proxy/harmony-proxy.d.ts" />
 
+interface Symbol {
+    toString(): string;
+    valueOf(): Object;
+}
+
+interface SymbolConstructor {
+    (description?: string|number): Symbol;
+}
+
+declare var Symbol: SymbolConstructor;
+
 declare namespace inversify {
 
     export interface IKernelConstructor {
         new(): IKernel;
     }
 
-    interface IMiddleware extends Function {
+    export interface IMiddleware extends Function {
         (next: (context: IContext) => any): (context: IContext) => any;
     }
 
     export interface IKernel {
-        bind<T>(runtimeIdentifier: string): IBindingToSyntax<T>;
-        unbind(runtimeIdentifier: string): void;
+        bind<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T>;
+        unbind(runtimeIdentifier: (string|Symbol|any)): void;
         unbindAll(): void;
-        get<T>(runtimeIdentifier: string): T;
-        getAll<T>(runtimeIdentifier: string): T[];
+        get<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T;
+        getAll<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T[];
         load(...modules: IKernelModule[]): void;
         applyMiddleware(...middleware: IMiddleware[]): void;
     }
@@ -60,7 +71,7 @@ declare namespace inversify {
         toValue(value: T): IBindingWhenOnSyntax<T>;
         toConstructor<T2>(constructor: INewable<T2>): IBindingWhenOnSyntax<T>;
         toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenOnSyntax<T>;
-        toAutoFactory<T2>(): IBindingWhenOnSyntax<T>;
+        toAutoFactory<T2>(service: (string|Symbol|T2)): IBindingWhenOnSyntax<T>;
         toProvider<T2>(provider: IProviderCreator<T2>): IBindingWhenOnSyntax<T>;
     }
 
@@ -99,39 +110,42 @@ declare namespace inversify {
     }
 
     export interface IRequest {
-        service: string;
+        service: (string|Symbol|INewable<any>);
         parentContext: IContext;
         parentRequest: IRequest;
         childRequests: IRequest[];
         target: ITarget;
         bindings: IBinding<any>[];
         addChildRequest(
-            service: string,
+            service: (string|Symbol|INewable<any>),
             bindings: (IBinding<any>|IBinding<any>[]),
             target: ITarget): IRequest;
     }
 
     export interface IBinding<T> {
-        runtimeIdentifier: string;
+        activated: boolean;
+        runtimeIdentifier: (string|Symbol|INewable<T>);
         implementationType: INewable<T>;
         factory: IFactoryCreator<any>;
         provider: IProviderCreator<any>;
         constraint: (request: IRequest) => boolean;
-        proxyMaker: (injectable: T) => T;
+        onActivation: (context: IContext, injectable: T) => T;
         cache: T;
         scope: number; // BindingScope
         type: number; // BindingType
     }
 
     export interface ITarget {
-        service: IQueryableString;
+        service: (string|Symbol|INewable<any>);
         name: IQueryableString;
         metadata: Array<IMetadata>;
+        hasTag(key: string): boolean;
         isArray(): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
-        matchesName(name: string): boolean;
-        matchesTag(name: IMetadata): boolean;
+        getServiceAsString(): string;
+        matchesNamedTag(name: string): boolean;
+        matchesTag(key: string): (value: any) => boolean;
     }
 
     export interface IQueryableString {
@@ -149,10 +163,12 @@ declare namespace inversify {
 
     export var Kernel: IKernelConstructor;
     export var decorate: (decorator: (ClassDecorator|ParameterDecorator), target: any, parameterIndex?: number) => void;
-    export function injectable(...typeIdentifiers: string[]): (typeConstructor: any) => void;
+    export function injectable(): (typeConstructor: any) => void;
     export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index: number) => any;
     export function named(name: string): (target: any, targetKey: string, index: number) => any;
-    export function paramNames(...names: string[]): (target: any) => any;
+    export function paramName(name: string): (target: any, targetKey: string, index: number) => any;
+    export function inject(typeIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index: number) => any;
+    export function multiInject(typeIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index: number) => any;
 
     // constraint helpers
     export var traverseAncerstors: (request: IRequest, constraint: (request: IRequest) => boolean) => boolean;

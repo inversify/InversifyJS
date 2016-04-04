@@ -2,9 +2,8 @@
 
 import {
     Kernel,
-    injectable, tagged, named, paramNames,
-    IKernel, INewable, IContext,
-    IKernelModule, IFactory, IProvider, IRequest,
+    injectable, tagged, named, paramName, inject, multiInject,
+    IKernel, INewable, IContext, IKernelModule, IFactory, IProvider, IRequest,
     traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint
 } from "inversify";
 
@@ -25,25 +24,30 @@ module external_module_test {
         throw(): string;
     }
 
+    @injectable()
     class Katana implements IKatana {
         public hit() {
             return "cut!";
         }
     }
 
+    @injectable()
     class Shuriken implements IShuriken {
         public throw() {
             return "hit!";
         }
     }
 
-    @injectable("IKatana", "IShuriken")
+    @injectable()
     class Ninja implements INinja {
 
         private _katana: IKatana;
         private _shuriken: IShuriken;
 
-        public constructor(katana: IKatana, shuriken: IShuriken) {
+        public constructor(
+            @inject("IKatana") katana: IKatana,
+            @inject("IShuriken") shuriken: IShuriken
+        ) {
             this._katana = katana;
             this._shuriken = shuriken;
         }
@@ -114,7 +118,7 @@ module external_module_test {
         };
     });
 
-    kernel.bind<IFactory<IKatana>>("IKatana").toAutoFactory<IKatana>();
+    kernel.bind<IFactory<IKatana>>("IKatana").toAutoFactory<IKatana>("IKatana");
 
     kernel.bind<IProvider<IKatana>>("IKatana").toProvider<IKatana>((context) => {
         return () => {
@@ -143,13 +147,13 @@ module external_module_test {
         shuriken: IWeapon;
     }
 
-    @injectable("IWeapon", "IWeapon")
+    @injectable()
     class Samurai implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @tagged("canThrow", false) katana: IWeapon,
-            @tagged("canThrow", true) shuriken: IWeapon
+            @inject("IWeapon") @tagged("canThrow", false) katana: IWeapon,
+            @inject("IWeapon") @tagged("canThrow", true) shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;
@@ -163,26 +167,26 @@ module external_module_test {
     let throwable = tagged("canThrow", true);
     let notThrowable = tagged("canThrow", false);
 
-    @injectable("IWeapon", "IWeapon")
+    @injectable()
     class Samurai2 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @throwable katana: IWeapon,
-            @notThrowable shuriken: IWeapon
+            @inject("IWeapon") @throwable katana: IWeapon,
+            @inject("IWeapon") @notThrowable shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;
         }
     }
 
-    @injectable("IWeapon", "IWeapon")
+    @injectable()
     class Samurai3 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @named("strong") katana: IWeapon,
-            @named("weak") shuriken: IWeapon
+            @inject("IWeapon") @named("strong") katana: IWeapon,
+            @inject("IWeapon") @named("weak") shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;
@@ -193,14 +197,13 @@ module external_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
 
-    @injectable("IWeapon", "IWeapon")
-    @paramNames("katana", "shuriken")
+    @injectable()
     class Samurai4 implements ISamurai {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            katana: IWeapon,
-            shuriken: IWeapon
+            @inject("IWeapon") @paramName("katana") katana: IWeapon,
+            @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;
@@ -251,5 +254,81 @@ module external_module_test {
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorNamed("strong");
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorTagged("canThrow", true);
     kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenNoAncestorMatches(whenParentNamedCanThrowConstraint);
+
+    // multi-injection
+    @injectable()
+    class Samurai5 implements ISamurai {
+        public katana: IWeapon;
+        public shuriken: IWeapon;
+        public constructor(
+            @multiInject("IWeapon") wpns: IWeapon[]
+        ) {
+            this.katana = wpns[0];
+            this.shuriken = wpns[1];
+        }
+    }
+
+    // symbols
+    let SYMBOLS = {
+        IKatana: Symbol("IKatana"),
+        INinja: Symbol("INinja"),
+        IShuriken: Symbol("IShuriken"),
+    };
+
+    @injectable()
+    class Ninja1 implements INinja {
+
+        private _katana: IKatana;
+        private _shuriken: IShuriken;
+
+        public constructor(
+            @inject(SYMBOLS.IKatana) katana: IKatana,
+            @inject(SYMBOLS.IShuriken) shuriken: IShuriken
+        ) {
+            this._katana = katana;
+            this._shuriken = shuriken;
+        }
+
+        public fight() { return this._katana.hit(); };
+        public sneak() { return this._shuriken.throw(); };
+
+    }
+
+    let kernel3 = new Kernel();
+    kernel3.bind<INinja>(SYMBOLS.INinja).to(Ninja);
+    kernel3.bind<IKatana>(SYMBOLS.IKatana).to(Katana);
+    kernel3.bind<IShuriken>(SYMBOLS.IShuriken).to(Shuriken).inSingletonScope();
+
+    let ninja4 = kernel3.get<INinja>("INinja");
+    console.log(ninja4);
+
+    // classes
+
+    @injectable()
+    class Ninja2 implements INinja {
+
+        private _katana: Katana;
+        private _shuriken: Shuriken;
+
+        public constructor(
+            katana: Katana,
+            shuriken: Shuriken
+        ) {
+            this._katana = katana;
+            this._shuriken = shuriken;
+        }
+
+        public fight() { return this._katana.hit(); };
+        public sneak() { return this._shuriken.throw(); };
+
+    }
+
+    let kernel4 = new Kernel();
+    kernel4.bind<Ninja>(Ninja).to(Ninja);
+    kernel4.bind<Katana>(Katana).to(Katana);
+    kernel4.bind<Shuriken>(Shuriken).to(Shuriken).inSingletonScope();
+
+    let ninja5 = kernel4.get<INinja>("INinja");
+    console.log(ninja5);
 
 }

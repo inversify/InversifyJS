@@ -6,14 +6,14 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 
 class Target implements ITarget {
 
-  public service: QueryableString;
+  public service: (string|Symbol|INewable<any>);
   public name: QueryableString;
   public metadata: Array<IMetadata>;
 
-  constructor(name: string, service: string, namedOrTagged?: (string|IMetadata)) {
+  constructor(name: string, service: (string|Symbol|INewable<any>), namedOrTagged?: (string|IMetadata)) {
 
-    this.name = new QueryableString(name);
-    this.service = new QueryableString(service);
+    this.service = service;
+    this.name = new QueryableString(name || "");
     this.metadata = new Array<IMetadata>();
     let metadataItem: IMetadata = null;
 
@@ -31,49 +31,64 @@ class Target implements ITarget {
     }
   }
 
+  public hasTag(key: string): boolean {
+    for (let i = 0; i < this.metadata.length; i++) {
+      let m = this.metadata[i];
+      if (m.key === key) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public isArray(): boolean {
-      return (this.service.value().indexOf("[]") !== -1);
+      return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
   }
 
   public isNamed(): boolean {
-    for (let i = 0; i < this.metadata.length; i++) {
-      let m = this.metadata[i];
-      if (m.key === METADATA_KEY.NAMED_TAG) {
-        return true;
-      }
-    }
-    return false;
+      return this.hasTag(METADATA_KEY.NAMED_TAG);
   }
 
   public isTagged(): boolean {
-    for (let i = 0; i < this.metadata.length; i++) {
-      let m = this.metadata[i];
-      if (m.key !== METADATA_KEY.NAMED_TAG) {
+    if (this.metadata.length > 1) {
         return true;
-      }
+    } else if (this.metadata.length === 1) {
+        // NAMED_TAG is not considered a tagged binding
+        return !this.hasTag(METADATA_KEY.NAMED_TAG);
+    } else {
+        return false;
     }
-    return false;
   }
 
-  public matchesName(name: string): boolean {
-    for (let i = 0; i < this.metadata.length; i++) {
-      let m = this.metadata[i];
-      if (m.key === METADATA_KEY.NAMED_TAG && m.value === name) {
-        return true;
-      }
-    }
-    return false;
+  public matchesNamedTag(name: string): boolean {
+    return this.matchesTag(METADATA_KEY.NAMED_TAG)(name);
   }
 
-  public matchesTag(metadata: IMetadata): boolean {
-    for (let i = 0; i < this.metadata.length; i++) {
-      let m = this.metadata[i];
-      if (m.key === metadata.key && m.value === metadata.value) {
-        return true;
-      }
-    }
-    return false;
+  public matchesTag(key: string) {
+    return (value: any) => {
+        for (let i = 0; i < this.metadata.length; i++) {
+            let m = this.metadata[i];
+            if (m.key === key && m.value === value) {
+                return true;
+            }
+        }
+        return false;
+    };
   }
+
+  public getServiceAsString(): string {
+      let type = typeof this.service;
+      if (type === "function") {
+          let _service: any = this.service;
+          return _service.name;
+      } else if (type === "symbol") {
+          return this.service.toString();
+      } else { // string
+          let _service: any = this.service;
+          return _service;
+      }
+  }
+
 }
 
 export default Target;

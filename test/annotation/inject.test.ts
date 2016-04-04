@@ -1,62 +1,152 @@
+declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
+
 ///<reference path="../../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { injectable, decorate } from "../../src/inversify";
+import { decorate } from "../../src/annotation/decorator_utils";
+import inject from "../../src/annotation/inject";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import * as ERRORS_MSGS from "../../src/constants/error_msgs";
-import * as Stubs from "../utils/stubs";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+
+interface IKatana {}
+interface IShuriken {}
+class Katana implements IKatana {}
+class Shuriken implements IShuriken {}
+
+class WarriorWithoutDecorator {
+
+    private _primaryWeapon: IKatana;
+    private _secondaryWeapon: IShuriken;
+
+    constructor(
+      primary: IKatana,
+      secondary: IShuriken
+    ) {
+
+          this._primaryWeapon = primary;
+          this._secondaryWeapon = secondary;
+    }
+}
+
+class DecoratedWarrior {
+
+    private _primaryWeapon: IKatana;
+    private _secondaryWeapon: IShuriken;
+
+    constructor(
+      @inject("IKatana") primary: IKatana,
+      @inject("IShuriken") secondary: IShuriken
+    ) {
+
+        this._primaryWeapon = primary;
+        this._secondaryWeapon = secondary;
+    }
+}
+
+class InvalidDecoratorUsageWarrior {
+
+    private _primaryWeapon: IKatana;
+    private _secondaryWeapon: IShuriken;
+
+    constructor(
+      primary: IKatana,
+      secondary: IShuriken
+    ) {
+
+          this._primaryWeapon = primary;
+          this._secondaryWeapon = secondary;
+    }
+
+    public test(a: string) { /*...*/ }
+}
 
 describe("@inject", () => {
 
-    let WarriotWithoutInjections = Stubs.WarriotWithoutInjections;
-    let Warrior = Stubs.Warrior;
+  it("Should generate metadata for named parameters", () => {
+    let metadataKey = METADATA_KEY.TAGGED;
+    let paramsMetadata = Reflect.getMetadata(metadataKey, DecoratedWarrior);
+    expect(paramsMetadata).to.be.an("object");
 
-    it("Should not generate metadata when not applied", () => {
-        let metadata = Reflect.getMetadata(METADATA_KEY.INJECTABLE, WarriotWithoutInjections);
-        expect(metadata).to.be.undefined;
-    });
+    // assert metadata for first argument
+    expect(paramsMetadata["0"]).to.be.instanceof(Array);
+    let m1: IMetadata = paramsMetadata["0"][0];
+    expect(m1.key).to.be.eql(METADATA_KEY.INJECT_TAG);
+    expect(m1.value).to.be.eql("IKatana");
+    expect(paramsMetadata["0"][1]).to.be.undefined;
 
-    it("Should generate metadata if declared injections", () => {
+    // assert metadata for second argument
+    expect(paramsMetadata["1"]).to.be.instanceof(Array);
+    let m2: IMetadata = paramsMetadata["1"][0];
+    expect(m2.key).to.be.eql(METADATA_KEY.INJECT_TAG);
+    expect(m2.value).to.be.eql("IShuriken");
+    expect(paramsMetadata["1"][1]).to.be.undefined;
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.INJECTABLE, Warrior);
-        expect(metadata).to.be.instanceof(Array);
+    // no more metadata should be available
+    expect(paramsMetadata["2"]).to.be.undefined;
 
-        expect(metadata[0]).to.be.eql("IKatana");
-        expect(metadata[1]).to.be.eql("IShuriken");
-        expect(metadata[2]).to.be.undefined;
-    });
+  });
 
-    it("Should throw when applayed mutiple times", () => {
+  it("Should throw when applayed mutiple times", () => {
 
-        class Test {}
+    let useDecoratorMoreThanOnce = function() {
+      __decorate([ __param(0, inject("IKatana")), __param(0, inject("IShurien")) ], InvalidDecoratorUsageWarrior);
+    };
 
-        let useDecoratorMoreThanOnce = function() {
-            decorate(injectable("IKatana", "IShuriken"), Test);
-            decorate(injectable("IKatana", "IShuriken"), Test);
-        };
+    let msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.INJECT_TAG}`;
+    expect(useDecoratorMoreThanOnce).to.throw(msg);
 
-        expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
-    });
+  });
 
-    it("Should be usable in VanillaJS applications", () => {
+  it("Should throw when not applayed to a constructor", () => {
 
-        interface IKatana {}
-        interface IShuriken {}
+    let useDecoratorOnMethodThatIsNotAContructor = function() {
+      __decorate([ __param(0, inject("IKatana")) ],
+      InvalidDecoratorUsageWarrior.prototype,
+      "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
+    };
 
-        let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary: IKatana, secondary: IShuriken) {
-                // ...
-            }
-            return VanillaJSWarrior;
-        })();
+    let msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
+    expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
 
-        decorate(injectable("IKatana", "IShuriken"), VanillaJSWarrior);
+  });
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.INJECTABLE, VanillaJSWarrior);
-        expect(metadata).to.be.instanceof(Array);
-        expect(metadata[0]).to.be.eql("IKatana");
-        expect(metadata[1]).to.be.eql("IShuriken");
-        expect(metadata[2]).to.be.undefined;
-    });
+  it("Should be usable in VanillaJS applications", () => {
+
+    interface IKatana {}
+    interface IShurien {}
+
+    let VanillaJSWarrior = (function () {
+        function Warrior(primary: IKatana, secondary: IShurien) {
+            // ...
+        }
+        return Warrior;
+    })();
+
+    decorate(inject("IKatana"), VanillaJSWarrior, 0);
+    decorate(inject("IShurien"), VanillaJSWarrior, 1);
+
+    let metadataKey = METADATA_KEY.TAGGED;
+    let paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior);
+    expect(paramsMetadata).to.be.an("object");
+
+    // assert metadata for first argument
+    expect(paramsMetadata["0"]).to.be.instanceof(Array);
+    let m1: IMetadata = paramsMetadata["0"][0];
+    expect(m1.key).to.be.eql(METADATA_KEY.INJECT_TAG);
+    expect(m1.value).to.be.eql("IKatana");
+    expect(paramsMetadata["0"][1]).to.be.undefined;
+
+    // assert metadata for second argument
+    expect(paramsMetadata["1"]).to.be.instanceof(Array);
+    let m2: IMetadata = paramsMetadata["1"][0];
+    expect(m2.key).to.be.eql(METADATA_KEY.INJECT_TAG);
+    expect(m2.value).to.be.eql("IShurien");
+    expect(paramsMetadata["1"][1]).to.be.undefined;
+
+    // no more metadata should be available
+    expect(paramsMetadata["2"]).to.be.undefined;
+
+  });
 
 });
