@@ -1,9 +1,12 @@
 ///<reference path="../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, injectable, inject, multiInject, tagged, named, paramName } from "../src/inversify";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
+import {
+    Kernel, injectable, inject, multiInject,
+    tagged, named, paramName, decorate
+} from "../src/inversify";
 
 describe("InversifyJS", () => {
 
@@ -66,53 +69,57 @@ describe("InversifyJS", () => {
       expect(ninja.sneak()).eql("hit!");
 
   });
-  
+
   it("Should be able to resolve and inject dependencies in VanillaJS", () => {
 
-      var TYPES = {
-          Ninja: "Ninja",
+      let TYPES = {
           Katana: "Katana",
+          Ninja: "Ninja",
           Shuriken: "Shuriken"
       };
 
       class Katana {
-          hit() {
+          public hit() {
               return "cut!";
           }
       }
 
       class Shuriken {
-          throw() {
+          public throw() {
               return "hit!";
           }
       }
 
       class Ninja {
-          constructor(katana, shuriken) {
+
+          public _katana: Katana;
+          public _shuriken: Shuriken;
+
+          public constructor(katana: Katana, shuriken: Shuriken) {
               this._katana = katana;
               this._shuriken = shuriken;
           }
-          fight() { return this._katana.hit(); };
-          sneak() { return this._shuriken.throw(); };
+          public fight() { return this._katana.hit(); };
+          public sneak() { return this._shuriken.throw(); };
       }
 
-      inversify.decorate(inversify.injectable(), Katana);
-      inversify.decorate(inversify.injectable(), Shuriken);
-      inversify.decorate(inversify.injectable(), Ninja);
-      inversify.decorate(inversify.inject(TYPES.Katana), Ninja, 0);
-      inversify.decorate(inversify.inject(TYPES.Shuriken), Ninja, 1);
+      decorate(injectable(), Katana);
+      decorate(injectable(), Shuriken);
+      decorate(injectable(), Ninja);
+      decorate(inject(TYPES.Katana), Ninja, 0);
+      decorate(inject(TYPES.Shuriken), Ninja, 1);
 
-      var kernel = new inversify.Kernel();
-      kernel.bind(TYPES.Ninja).to(Ninja);
-      kernel.bind(TYPES.Katana).to(Katana);
-      kernel.bind(TYPES.Shuriken).to(Shuriken);
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+      kernel.bind<Katana>(TYPES.Katana).to(Katana);
+      kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
 
-      var ninja = kernel.get(TYPES.Ninja);
+      let ninja = kernel.get<Ninja>(TYPES.Ninja);
 
       expect(ninja.fight()).eql("cut!");
       expect(ninja.sneak()).eql("hit!");
 
-  }); 
+  });
 
   it("Should be able to use classes as runtime identifiers", () => {
 
