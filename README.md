@@ -189,11 +189,11 @@ class Ninja {
 }
 
 // Declare as injectable and its dependencies
-inversify.decorate(injectable(), Katana);
-inversify.decorate(injectable(), Shuriken);
-inversify.decorate(injectable(), Ninja);
-inversify.decorate(inject(TYPES.Katana), Ninja, 0);
-inversify.decorate(inject(TYPES.Shuriken), Ninja, 1);
+inversify.decorate(inversify.injectable(), Katana);
+inversify.decorate(inversify.injectable(), Shuriken);
+inversify.decorate(inversify.injectable(), Ninja);
+inversify.decorate(inversify.inject(TYPES.Katana), Ninja, 0);
+inversify.decorate(inversify.inject(TYPES.Shuriken), Ninja, 1);
 
 // Declare bindings
 var kernel = new inversify.Kernel();
