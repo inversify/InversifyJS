@@ -36,7 +36,6 @@ class Planner implements IPlanner {
         let bindings: IBinding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
-        // let _service = service.split("[]").join(""); // TODO replace with @multiinject
         if (_bindingDictionary.hasKey(service)) {
             bindings = _bindingDictionary.get(service);
         }
@@ -145,7 +144,7 @@ class Planner implements IPlanner {
         });
     }
 
-    private _getDependencies(func: Function): Target[] {
+    private _getDependencies(func: Function): ITarget[] {
 
         if (func === null) { return []; }
 
@@ -162,10 +161,13 @@ class Planner implements IPlanner {
         // User generated annotations
         let targetsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
-        let targets = targetsTypes.map((targetType: any, index: number) => {
+        let targets: ITarget[] = [];
 
+        for (let i = 0; i < func.length; i++) {
+
+            let targetType = targetsTypes[i];
             // Create map from array of metadata for faster access to metadata
-            let targetMetadata = targetsMetadata[index.toString()] || [];
+            let targetMetadata = targetsMetadata[i.toString()] || [];
             let targetMetadataMap: any = {};
             targetMetadata.forEach((m: IMetadata) => {
                 targetMetadataMap[m.key.toString()] = m.value;
@@ -182,18 +184,18 @@ class Planner implements IPlanner {
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
-            if (targetType === Object || targetType === Function) {
+            if (targetType === Object || targetType === Function || targetType === undefined) {
                 let constructorName = (<any>func).name;
-                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in class ${constructorName}.`;
+                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
 
             // Create target
             let target = new Target(targetName, targetType);
-            target.metadata = targetMetadata; // TODO use targetMetadataMap instead (is faster)
-            return target;
+            target.metadata = targetMetadata;
+            targets.push(target);
 
-        });
+        }
 
         return targets;
     }

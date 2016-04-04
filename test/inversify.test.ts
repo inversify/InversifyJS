@@ -1,9 +1,12 @@
 ///<reference path="../src/interfaces/interfaces.d.ts" />
 
 import { expect } from "chai";
-import { Kernel, injectable, inject, multiInject, tagged, named, paramName } from "../src/inversify";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
+import {
+    Kernel, injectable, inject, multiInject,
+    tagged, named, paramName, decorate
+} from "../src/inversify";
 
 describe("InversifyJS", () => {
 
@@ -61,6 +64,57 @@ describe("InversifyJS", () => {
       kernel.bind<IShuriken>("IShuriken").to(Shuriken);
 
       let ninja = kernel.get<INinja>("INinja");
+
+      expect(ninja.fight()).eql("cut!");
+      expect(ninja.sneak()).eql("hit!");
+
+  });
+
+  it("Should be able to resolve and inject dependencies in VanillaJS", () => {
+
+      let TYPES = {
+          Katana: "Katana",
+          Ninja: "Ninja",
+          Shuriken: "Shuriken"
+      };
+
+      class Katana {
+          public hit() {
+              return "cut!";
+          }
+      }
+
+      class Shuriken {
+          public throw() {
+              return "hit!";
+          }
+      }
+
+      class Ninja {
+
+          public _katana: Katana;
+          public _shuriken: Shuriken;
+
+          public constructor(katana: Katana, shuriken: Shuriken) {
+              this._katana = katana;
+              this._shuriken = shuriken;
+          }
+          public fight() { return this._katana.hit(); };
+          public sneak() { return this._shuriken.throw(); };
+      }
+
+      decorate(injectable(), Katana);
+      decorate(injectable(), Shuriken);
+      decorate(injectable(), Ninja);
+      decorate(inject(TYPES.Katana), Ninja, 0);
+      decorate(inject(TYPES.Shuriken), Ninja, 1);
+
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+      kernel.bind<Katana>(TYPES.Katana).to(Katana);
+      kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+
+      let ninja = kernel.get<Ninja>(TYPES.Ninja);
 
       expect(ninja.fight()).eql("cut!");
       expect(ninja.sneak()).eql("hit!");
