@@ -320,7 +320,7 @@ describe("BindingWhenSyntax", () => {
         }
 
         class Iron implements IMaterial {
-            public name = "Wood";
+            public name = "Iron";
         }
 
         interface IWeapon {

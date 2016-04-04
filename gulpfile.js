@@ -221,14 +221,14 @@ gulp.task("document", function () {
         ])
 		.pipe(typedoc({ 
 			// TypeScript options (see typescript docs) 
-            target: "es5",
+            target: "es6",
             module: "commonjs",
             moduleResolution: "node",
             isolatedModules: false,
             jsx: "react",
             experimentalDecorators: true,
             emitDecoratorMetadata: true,
-            noImplicitAny: false,
+            noImplicitAny: true,
             noLib: false,
             preserveConstEnums: true,
             suppressImplicitAnyIndexErrors: true,

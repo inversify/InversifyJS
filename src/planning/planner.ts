@@ -14,13 +14,14 @@ class Planner implements IPlanner {
         return new Context(kernel);
     }
 
-    public createPlan(context: IContext, binding: IBinding<any>): IPlan {
+    public createPlan(context: IContext, binding: IBinding<any>, target: ITarget): IPlan {
 
         let rootRequest = new Request(
             binding.runtimeIdentifier,
             context,
             null,
-            binding);
+            binding,
+            target);
 
         let plan = new Plan(context, rootRequest);
 
@@ -28,7 +29,7 @@ class Planner implements IPlanner {
         context.addPlan(plan);
 
         let dependencies = this._getDependencies(binding.implementationType);
-        dependencies.forEach((target) => { this._createSubRequest(rootRequest, target); });
+        dependencies.forEach((dependency) => { this._createSubRequest(rootRequest, dependency); });
         return plan;
     }
 
@@ -42,33 +43,39 @@ class Planner implements IPlanner {
         return bindings;
     }
 
+    public getActiveBindings(parentRequest: IRequest, target: ITarget): IBinding<any>[] {
+
+        let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service);
+        let activeBindings: IBinding<any>[] = [];
+
+        if (bindings.length > 1 && target.isArray() === false) {
+
+            // apply constraints if available to reduce the number of active bindings
+            activeBindings = bindings.filter((binding) => {
+
+                let request =  new Request(
+                    binding.runtimeIdentifier,
+                    parentRequest.parentContext,
+                    parentRequest,
+                    binding,
+                    target
+                );
+
+                return binding.constraint(request);
+
+            });
+
+        } else {
+            activeBindings = bindings;
+        }
+
+        return activeBindings;
+    }
+
     private _createSubRequest(parentRequest: IRequest, target: ITarget) {
 
         try {
-
-            let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service);
-            let activeBindings: IBinding<any>[] = [];
-
-            if (bindings.length > 1 && target.isArray() === false) {
-
-                // apply constraints if available to reduce the number of active bindings
-                activeBindings = bindings.filter((binding) => {
-
-                    let request =  new Request(
-                        binding.runtimeIdentifier,
-                        parentRequest.parentContext,
-                        parentRequest,
-                        binding,
-                        target
-                    );
-
-                    return binding.constraint(request);
-
-                });
-
-            } else {
-                activeBindings = bindings;
-            }
+            let activeBindings = this.getActiveBindings(parentRequest, target);
 
             if (activeBindings.length === 0) {
 

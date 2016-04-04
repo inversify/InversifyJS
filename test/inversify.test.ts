@@ -1080,19 +1080,120 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support contextual bindings with a type constraint the request target");
-    it("Should support contextual bindings with a named constraint the request target");
-    it("Should support contextual bindings with a taget constraint the request target");
-    it("Should support contextual bindings with a type constraint the request parent");
-    it("Should support contextual bindings with a type named the target of the request parent");
-    it("Should support contextual bindings with a type tagged the target of the request parent");
-    it("Should support contextual bindings with a type constraint to some of its ancestors");
-    it("Should support contextual bindings with a type constraint to none of its ancestors");
-    it("Should support contextual bindings with a named constraint to some of its ancestors");
-    it("Should support contextual bindings with a named constraint to none of its ancestors");
-    it("Should support contextual bindings with a tagged constraint to some of its ancestors");
-    it("Should support contextual bindings with a tagged constraint to none of its ancestors");
-    it("Should support contextual bindings with a custom constraint to some of its ancestors");
-    it("Should support contextual bindings with a custom constraint to none of its ancestors");
+    it("Should be able to resolve a ambiguous binding by providing a named tag", () => {
+
+        interface IWeapon {
+            name: string;
+        }
+
+        @injectable()
+        class Katana implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "katana";
+            }
+        }
+
+        @injectable()
+        class Shuriken implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "shuriken";
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("japonese");
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("chinese");
+
+        let katana = kernel.getNamed<IWeapon>("IWeapon", "japonese");
+        let shuriken = kernel.getNamed<IWeapon>("IWeapon", "chinese");
+
+        expect(katana.name).eql("katana");
+        expect(shuriken.name).eql("shuriken");
+
+    });
+
+    it("Should be able to resolve a ambiguous binding by providing a custom tag", () => {
+
+        interface IWeapon {
+            name: string;
+        }
+
+        @injectable()
+        class Katana implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "katana";
+            }
+        }
+
+        @injectable()
+        class Shuriken implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "shuriken";
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetTagged("faction", "samurai");
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetTagged("faction", "ninja");
+
+        let katana = kernel.getTagged<IWeapon>("IWeapon", "faction", "samurai");
+        let shuriken = kernel.getTagged<IWeapon>("IWeapon", "faction", "ninja");
+
+        expect(katana.name).eql("katana");
+        expect(shuriken.name).eql("shuriken");
+
+    });
+
+    describe("Contextual bindings contraints", () => {
+
+        interface IWeapon {}
+
+        @injectable()
+        class Katana implements IWeapon { }
+
+        @injectable()
+        class Shuriken implements IWeapon {}
+
+        interface INinja {
+            katana: IWeapon;
+            shuriken: IWeapon;
+        }
+
+        @injectable()
+        class Ninja implements INinja {
+
+            public katana: IWeapon;
+            public shuriken: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @paramName("katana") katana: IWeapon,
+                @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        it("Should support contextual bindings with a type constraint the request target");
+
+        it("Should support contextual bindings with a named constraint the request target");
+        it("Should support contextual bindings with a taget constraint the request target");
+        it("Should support contextual bindings with a type constraint the request parent");
+        it("Should support contextual bindings with a type named the target of the request parent");
+        it("Should support contextual bindings with a type tagged the target of the request parent");
+        it("Should support contextual bindings with a type constraint to some of its ancestors");
+        it("Should support contextual bindings with a type constraint to none of its ancestors");
+        it("Should support contextual bindings with a named constraint to some of its ancestors");
+        it("Should support contextual bindings with a named constraint to none of its ancestors");
+        it("Should support contextual bindings with a tagged constraint to some of its ancestors");
+        it("Should support contextual bindings with a tagged constraint to none of its ancestors");
+        it("Should support contextual bindings with a custom constraint to some of its ancestors");
+        it("Should support contextual bindings with a custom constraint to none of its ancestors");
+
+    });
 
 });

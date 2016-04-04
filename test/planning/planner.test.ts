@@ -120,7 +120,7 @@ describe("Planner", () => {
       // Actual
       let _kernel: any = kernel;
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
-      let actualPlan = planner.createPlan(context, ninjaBinding);
+      let actualPlan = planner.createPlan(context, ninjaBinding, null);
       let actualNinjaRequest = actualPlan.rootRequest;
       let actualKatanaRequest = actualNinjaRequest.childRequests[0];
       let actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
@@ -325,7 +325,7 @@ describe("Planner", () => {
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let planner = new Planner();
       let context = planner.createContext(kernel);
-      let actualPlan = planner.createPlan(context, ninjaBinding);
+      let actualPlan = planner.createPlan(context, ninjaBinding, null);
 
       expect(actualPlan.rootRequest.service).eql(ninjaId);
       expect(actualPlan.rootRequest.childRequests[0].service).eql(katanaFactoryId);
@@ -372,7 +372,7 @@ describe("Planner", () => {
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let planner = new Planner();
       let context = planner.createContext(kernel);
-      let actualPlan = planner.createPlan(context, ninjaBinding);
+      let actualPlan = planner.createPlan(context, ninjaBinding, null);
 
       // root request has no target
       expect(actualPlan.rootRequest.service).eql(ninjaId);
@@ -445,7 +445,7 @@ describe("Planner", () => {
       let planner = new Planner();
       let context = planner.createContext(kernel);
 
-      let throwFunction = () => { planner.createPlan(context, ninjaBinding); };
+      let throwFunction = () => { planner.createPlan(context, ninjaBinding, null); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} IKatana`);
 
   });
@@ -493,7 +493,7 @@ describe("Planner", () => {
       let planner = new Planner();
       let context = planner.createContext(kernel);
 
-      let throwFunction = () => { planner.createPlan(context, ninjaBinding); };
+      let throwFunction = () => { planner.createPlan(context, ninjaBinding, null); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} IKatana`);
 
   });
@@ -536,7 +536,7 @@ describe("Planner", () => {
       let planner = new Planner();
       let context = planner.createContext(kernel);
 
-      let actualPlan = planner.createPlan(context, ninjaBinding);
+      let actualPlan = planner.createPlan(context, ninjaBinding, null);
 
       // root request has no target
       expect(actualPlan.rootRequest.service).eql(ninjaId);
@@ -569,7 +569,7 @@ describe("Planner", () => {
       let context = planner.createContext(kernel);
 
       let throwFunction = () => {
-          planner.createPlan(context, ninjaBinding);
+          planner.createPlan(context, ninjaBinding, null);
       };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
@@ -607,7 +607,7 @@ describe("Planner", () => {
       let context = planner.createContext(kernel);
 
       let throwFunction = () => {
-          planner.createPlan(context, ninjaBinding);
+          planner.createPlan(context, ninjaBinding, null);
       };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
@@ -646,7 +646,7 @@ describe("Planner", () => {
       let context = planner.createContext(kernel);
 
       let throwFunction = () => {
-          planner.createPlan(context, ninjaBinding);
+          planner.createPlan(context, ninjaBinding, null);
       };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
