@@ -66,6 +66,53 @@ describe("InversifyJS", () => {
       expect(ninja.sneak()).eql("hit!");
 
   });
+  
+  it("Should be able to resolve and inject dependencies in VanillaJS", () => {
+
+      var TYPES = {
+          Ninja: "Ninja",
+          Katana: "Katana",
+          Shuriken: "Shuriken"
+      };
+
+      class Katana {
+          hit() {
+              return "cut!";
+          }
+      }
+
+      class Shuriken {
+          throw() {
+              return "hit!";
+          }
+      }
+
+      class Ninja {
+          constructor(katana, shuriken) {
+              this._katana = katana;
+              this._shuriken = shuriken;
+          }
+          fight() { return this._katana.hit(); };
+          sneak() { return this._shuriken.throw(); };
+      }
+
+      inversify.decorate(inversify.injectable(), Katana);
+      inversify.decorate(inversify.injectable(), Shuriken);
+      inversify.decorate(inversify.injectable(), Ninja);
+      inversify.decorate(inversify.inject(TYPES.Katana), Ninja, 0);
+      inversify.decorate(inversify.inject(TYPES.Shuriken), Ninja, 1);
+
+      var kernel = new inversify.Kernel();
+      kernel.bind(TYPES.Ninja).to(Ninja);
+      kernel.bind(TYPES.Katana).to(Katana);
+      kernel.bind(TYPES.Shuriken).to(Shuriken);
+
+      var ninja = kernel.get(TYPES.Ninja);
+
+      expect(ninja.fight()).eql("cut!");
+      expect(ninja.sneak()).eql("hit!");
+
+  }); 
 
   it("Should be able to use classes as runtime identifiers", () => {
 
