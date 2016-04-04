@@ -21,7 +21,11 @@ import Lookup from "./lookup";
 import Planner from "../planning/planner";
 import Resolver from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import * as METADATA_KEY from "../constants/metadata_keys";
 import BindingToSyntax from "../syntax/binding_to_syntax";
+import Metadata from "../planning/metadata";
+import Target from "../planning/target";
+import Request from "../planning/request";
 
 class Kernel implements IKernel {
 
@@ -73,24 +77,17 @@ class Kernel implements IKernel {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T {
+        return this._get<T>(runtimeIdentifier, null);
+    }
 
-        let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
+    public getNamed<T>(runtimeIdentifier: (string|Symbol|INewable<T>), named: string): T {
+        return this.getTagged<T>(runtimeIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
 
-        switch (bindings.length) {
-
-            // CASE 1: There are no bindings
-            case BindingCount.NoBindingsAvailable:
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
-
-            // CASE 2: There is 1 binding 
-            case BindingCount.OnlyOneBindingAvailable:
-                return this._planAndResolve<T>(bindings[0]);
-
-            // CASE 3: There are multiple bindings throw as don't have enough information (metadata)    
-            case BindingCount.MultipleBindingsAvailable:
-            default:
-                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${runtimeIdentifier}`);
-        }
+    public getTagged<T>(runtimeIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T {
+        let metadata = new Metadata(key, value);
+        let target = new Target(null, runtimeIdentifier, metadata);
+        return this._get<T>(runtimeIdentifier, target);
     }
 
     // Resolves a dependency by its runtime identifier
@@ -110,19 +107,56 @@ class Kernel implements IKernel {
             case BindingCount.MultipleBindingsAvailable:
             default:
                 return bindings.map((binding) => {
-                    return this._planAndResolve<T>(binding);
+                    return this._planAndResolve<T>(binding, null);
                 });
         }
     }
 
+    private _get<T>(runtimeIdentifier: (string|Symbol|INewable<T>), target: ITarget): T {
+
+        let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
+
+        // Filter bindings using the target and the binding constraints
+        if (target !== null) {
+
+            let request = new Request(
+                runtimeIdentifier,
+                this._planner.createContext(this),
+                null,
+                bindings,
+                target
+            );
+
+            bindings = this._planner.getActiveBindings(request, target);
+        }
+
+        if (bindings.length === BindingCount.NoBindingsAvailable) {
+
+            // CASE 1: There are no bindings
+            throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
+
+        } else if (bindings.length === BindingCount.OnlyOneBindingAvailable) {
+
+            // CASE 2: There is 1 binding
+            return this._planAndResolve<T>(bindings[0], target);
+
+        } else {
+
+            // CASE 3: There are multiple bindings
+            throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${runtimeIdentifier}`);
+
+        }
+
+    }
+
     // Generates an executes a resolution plan
-    private _planAndResolve<T>(binding: IBinding<T>): T {
+    private _planAndResolve<T>(binding: IBinding<T>, target: ITarget): T {
 
         // STEP 1: generate resolution context
         let context = this._planner.createContext(this);
 
         // STEP 2: generate a resolutioin plan & link it to the context
-        this._planner.createPlan(context, binding);
+        this._planner.createPlan(context, binding, target);
 
         // STEP 3, 4 & 5: use middleware (optional), execute resolution plan & activation
         return (this._middleware !== null) ? this._middleware(context) : this._resolver.resolve<T>(context);

@@ -831,7 +831,7 @@ describe("Resolver", () => {
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let planner = new Planner();
       let context = planner.createContext(kernel);
-      let plan = planner.createPlan(context, ninjaBinding);
+      let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -883,7 +883,7 @@ describe("Resolver", () => {
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let planner = new Planner();
       let context = planner.createContext(kernel);
-      let plan = planner.createPlan(context, ninjaBinding);
+      let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -941,7 +941,7 @@ describe("Resolver", () => {
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let planner = new Planner();
       let context = planner.createContext(kernel);
-      let plan = planner.createPlan(context, ninjaBinding);
+      let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -997,7 +997,7 @@ describe("Resolver", () => {
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
       let planner = new Planner();
       let context = planner.createContext(kernel);
-      let plan = planner.createPlan(context, ninjaBinding);
+      let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -1064,7 +1064,7 @@ describe("Resolver", () => {
         let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
         let planner = new Planner();
         let context = planner.createContext(kernel);
-        let plan = planner.createPlan(context, ninjaBinding);
+        let plan = planner.createPlan(context, ninjaBinding, null);
         context.addPlan(plan);
 
         let resolver = new Resolver();
