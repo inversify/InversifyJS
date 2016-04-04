@@ -10,7 +10,7 @@ class Target implements ITarget {
   public name: QueryableString;
   public metadata: Array<IMetadata>;
 
-  constructor(name: string, service: string, namedOrTagged?: (string|IMetadata)) {
+  constructor(name: string, service: (string|Symbol|INewable<any>), namedOrTagged?: (string|IMetadata)) {
 
     this.service = service;
     this.name = new QueryableString(name || "");
@@ -53,6 +53,7 @@ class Target implements ITarget {
     if (this.metadata.length > 1) {
         return true;
     } else if (this.metadata.length === 1) {
+        // NAMED_TAG is not considered a tagged binding
         return !this.hasTag(METADATA_KEY.NAMED_TAG);
     } else {
         return false;
@@ -81,7 +82,7 @@ class Target implements ITarget {
           let _service: any = this.service;
           return _service.name;
       } else if (type === "symbol") {
-          this.service.toString();
+          return this.service.toString();
       } else { // string
           let _service: any = this.service;
           return _service;

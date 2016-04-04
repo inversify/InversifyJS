@@ -155,7 +155,7 @@ class Planner implements IPlanner {
         // All types resolved bust be annotated with @injectable
         if (targetsTypes === undefined) {
             let constructorName = (<any>func).name;
-            let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} in ${constructorName}.`;
+            let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${constructorName}.`;
             throw new Error(msg);
         }
 
@@ -184,7 +184,7 @@ class Planner implements IPlanner {
             // user needs to generate metadata manually for those
             if (targetType === Object || targetType === Function) {
                 let constructorName = (<any>func).name;
-                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in ${constructorName}.`;
+                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in class ${constructorName}.`;
                 throw new Error(msg);
             }
 

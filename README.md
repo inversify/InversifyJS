@@ -716,8 +716,10 @@ class Ninja implements INinja {
     }
 }
 ```
+
 We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetNamed` constraint is
 added to avoid `AMBIGUOUS_MATCH` errors:
+
 ```ts
 kernel.bind<INinja>("INinja").to(Ninja);
 kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
@@ -729,6 +731,7 @@ The `@paramName` decorator is used to access the names of the constructor argume
 contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...`
 becomes `constructor(a, b) { ...` after compression but thanks to `@paramName` we can still
 refer to the design-time names `katana` and `shuriken` at runtime.
+
 ```ts
 interface IWeapon {}
 
@@ -756,7 +759,9 @@ class Ninja implements INinja {
     }
 }
 ```
+
 We are binding `Katana` and `Shuriken` to `IWeapon` but a custom `when` constraint is added to avoid `AMBIGUOUS_MATCH` errors:
+
 ```ts
 kernel.bind<INinja>(ninjaId).to(Ninja);
 
@@ -768,7 +773,9 @@ kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
     return request.target.name.equals("shuriken");
 });
 ```
+
 The target fields implement the `IQueryableString` interface to help you to create your custom constraints:
+
 ```ts
 interface IQueryableString {
 	 startsWith(searchString: string): boolean;
@@ -779,6 +786,7 @@ interface IQueryableString {
 }
 ```
 We have included some helpers to facilitate the creation of custom constraints:
+
 ```ts
 import { Kernel, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
 
@@ -793,9 +801,10 @@ let whenAnyAncestorIsConstraint = (request: IRequest) => {
 let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
     return traverseAncerstors(request, taggedConstraint("canThrow")(true));
 };
-
 ```
+
 The InversifyJS fluent syntax for bindings includes some already implemented common contextual constraints:
+
 ```ts
 interface IBindingWhenSyntax<T> {
     when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;

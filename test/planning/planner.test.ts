@@ -555,4 +555,101 @@ describe("Planner", () => {
 
   });
 
+  it("Should be throw when a class has a missing @injectable annotation", () => {
+
+      interface IWeapon {}
+      class Katana implements IWeapon {}
+
+      let kernel = new Kernel();
+      kernel.bind<IWeapon>("IWeapon").to(Katana);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get("IWeapon")[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => {
+          planner.createPlan(context, ninjaBinding);
+      };
+
+      expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
+
+  });
+
+  it("Should be throw when an interface has a missing @injectable annotation", () => {
+
+      interface IKatana {}
+
+      @injectable()
+      class Katana implements IKatana { }
+
+      interface INinja {}
+
+      @injectable()
+      class Ninja implements INinja {
+
+          public katana: IKatana;
+
+          public constructor(
+              katana: IKatana
+          ) {
+              this.katana = katana;
+          }
+      }
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>("INinja").to(Ninja);
+      kernel.bind<IKatana>("IKatana").to(Katana);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get("INinja")[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => {
+          planner.createPlan(context, ninjaBinding);
+      };
+
+      expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
+
+  });
+
+  it("Should be throw when a function has a missing @injectable annotation", () => {
+
+      interface IKatana {}
+
+      @injectable()
+      class Katana implements IKatana { }
+
+      interface INinja {}
+
+      @injectable()
+      class Ninja implements INinja {
+
+          public katana: IKatana;
+
+          public constructor(
+              katanaFactory: () => IKatana
+          ) {
+              this.katana = katanaFactory();
+          }
+      }
+
+      let kernel = new Kernel();
+      kernel.bind<INinja>("INinja").to(Ninja);
+      kernel.bind<IKatana>("IKatana").to(Katana);
+      kernel.bind<IKatana>("IFactory<IKatana>").to(Katana);
+
+      let _kernel: any = kernel;
+      let ninjaBinding = _kernel._bindingDictionary.get("INinja")[0];
+      let planner = new Planner();
+      let context = planner.createContext(kernel);
+
+      let throwFunction = () => {
+          planner.createPlan(context, ninjaBinding);
+      };
+
+      expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
+  });
+
 });
