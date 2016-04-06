@@ -1,3 +1,5 @@
+# Why InversifyJS?
+
 There are many good reasons to use InversifyJS but we would like to highlight three of them:
 
 ### 1. Real decoupling:
