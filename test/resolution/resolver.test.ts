@@ -106,9 +106,9 @@ describe("Resolver", () => {
       let planner = new Planner();
       let context = planner.createContext(kernel);
 
-      /* 
+      /*
       *  Plan (request tree):
-      *  
+      *
       *  Ninja (target "null", no metadata)
       *   -- Katana (target "katama", no metadata)
       *       -- KatanaHandler (target "blade", no metadata)
@@ -210,9 +210,9 @@ describe("Resolver", () => {
       let planner = new Planner();
       let context = planner.createContext(kernel);
 
-      /* 
+      /*
       *  Plan (request tree):
-      *  
+      *
       *  Ninja (target "null", no metadata)
       *   -- Katana (target "katama", no metadata)
       *       -- KatanaHandler (target "blade", no metadata)
@@ -370,9 +370,9 @@ describe("Resolver", () => {
       let planner = new Planner();
       let context = planner.createContext(kernel);
 
-      /* 
+      /*
       *  Plan (request tree):
-      *  
+      *
       *  Ninja (target "null", no metadata)
       *   -- Katana (target "katama", no metadata)
       *   -- Shuriken (target "shuriken", no metadata)
@@ -1007,6 +1007,24 @@ describe("Resolver", () => {
       expect(ninja.katana instanceof Katana).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
 
+      // if only one value is bound to weaponId
+      let kernel2 = new Kernel();
+      kernel2.bind<INinja>(ninjaId).to(Ninja);
+      kernel2.bind<IWeapon>(weaponId).to(Katana);
+
+      let _kernel2: any = kernel2;
+      let ninjaBinding2 = _kernel2._bindingDictionary.get(ninjaId)[0];
+      let planner2 = new Planner();
+      let context2 = planner2.createContext(kernel2);
+      let plan2 = planner2.createPlan(context2, ninjaBinding2, null);
+      context2.addPlan(plan2);
+
+      let resolver2 = new Resolver();
+      let ninja2 = resolver2.resolve<INinja>(context2);
+
+      expect(ninja2 instanceof Ninja).eql(true);
+      expect(ninja2.katana instanceof Katana).eql(true);
+
   });
 
   it("Should be able to resolve plans with activation handlers", () => {
@@ -1042,7 +1060,7 @@ describe("Resolver", () => {
         let kernel = new Kernel();
         kernel.bind<INinja>(ninjaId).to(Ninja);
 
-        // This is a global for unit testing but remember 
+        // This is a global for unit testing but remember
         // that it is not a good idea to use globals
         let timeTracker: string[] = [];
 

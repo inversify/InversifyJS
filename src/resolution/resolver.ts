@@ -55,8 +55,14 @@ class Resolver implements IResolver {
 
                     if (childRequests.length > 0) {
                         let injections = childRequests.map((childRequest) => {
-                            return this._resolve(childRequest);
+                            const res = this._resolve(childRequest);
+
+                            // if the target has a multi_inject tag and has one binding, return the resolved dep in an array
+                            return (childRequest.target && childRequest.target.isArray() && childRequest.bindings.length === 1) ?
+                                [res] :
+                                res;
                         });
+
                         result = this._createInstance(constr, injections);
                     } else {
                         result = new constr();
