@@ -768,6 +768,14 @@ describe("InversifyJS", () => {
         expect(ninja.katana.name).eql("Katana");
         expect(ninja.shuriken.name).eql("Shuriken");
 
+        // if only one value is bound to IWeapon
+        let kernel2 = new Kernel();
+        kernel2.bind<INinja>("INinja").to(Ninja);
+        kernel2.bind<IWeapon>("IWeapon").to(Katana);
+
+        let ninja2 = kernel2.get<INinja>("INinja");
+        expect(ninja2.katana.name).eql("Katana");
+
     });
 
     it("Should support the injection of multiple values when using classes as keys", () => {
@@ -811,6 +819,14 @@ describe("InversifyJS", () => {
         let ninja = kernel.get<Ninja>(Ninja);
         expect(ninja.katana.name).eql("Katana");
         expect(ninja.shuriken.name).eql("Shuriken");
+
+        // if only one value is bound to IWeapon
+        let kernel2 = new Kernel();
+        kernel2.bind<Ninja>(Ninja).to(Ninja);
+        kernel2.bind<Weapon>(Weapon).to(Katana);
+
+        let ninja2 = kernel2.get<Ninja>(Ninja);
+        expect(ninja2.katana.name).eql("Katana");
 
     });
 
@@ -858,6 +874,14 @@ describe("InversifyJS", () => {
         let ninja = kernel.get<INinja>(TYPES.INinja);
         expect(ninja.katana.name).eql("Katana");
         expect(ninja.shuriken.name).eql("Shuriken");
+
+        // if only one value is bound to IWeapon
+        let kernel2 = new Kernel();
+        kernel2.bind<INinja>(TYPES.INinja).to(Ninja);
+        kernel2.bind<IWeapon>(TYPES.IWeapon).to(Katana);
+
+        let ninja2 = kernel2.get<INinja>(TYPES.INinja);
+        expect(ninja2.katana.name).eql("Katana");
 
     });
 
