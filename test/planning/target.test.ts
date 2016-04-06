@@ -50,6 +50,14 @@ describe("Target", () => {
         expect(target2.isArray()).to.be.eql(false);
     });
 
+    it("Should be able to match mutli-inject for a specified service metadata", () => {
+        let target1 = new Target("katana", "IKatana");
+        target1.metadata.push(new Metadata(METADATA_KEY.MULTI_INJECT_TAG, "IKatana"));
+        target1.metadata.push(new Metadata(METADATA_KEY.INJECT_TAG, "IShuriken"));
+        expect(target1.matchesArray("IKatana")).to.be.eql(true);
+        expect(target1.matchesArray("IShuriken")).to.be.eql(false);
+    });
+
     it("Should be able to match named metadata", () => {
         let target1 = new Target("katana", "IKatana", "primary");
         expect(target1.matchesNamedTag("primary")).to.be.eql(true);

@@ -45,6 +45,10 @@ class Target implements ITarget {
       return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
   }
 
+  public matchesArray(name: string|Symbol|any): boolean {
+    return this.matchesTag(METADATA_KEY.MULTI_INJECT_TAG)(name);
+  }
+
   public isNamed(): boolean {
       return this.hasTag(METADATA_KEY.NAMED_TAG);
   }
