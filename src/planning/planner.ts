@@ -212,7 +212,7 @@ class Planner implements IPlanner {
     
     private _parentClassHasPedencencies(func: Function): boolean {
         let baseConstructor = Reflect.getPrototypeOf(func.prototype).constructor;
-        if (Reflect.getPrototypeOf(func.prototype).constructor !== Object) {
+        if (baseConstructor !== Object) {
             if(baseConstructor.length > 0) {
                 return true;
             }
