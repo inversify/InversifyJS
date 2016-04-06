@@ -143,6 +143,7 @@ declare namespace inversify {
         metadata: Array<IMetadata>;
         hasTag(key: string): boolean;
         isArray(): boolean;
+        matchesArray(name: string|Symbol|any): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
         getServiceAsString(): string;

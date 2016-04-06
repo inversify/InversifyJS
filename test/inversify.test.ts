@@ -728,161 +728,692 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support the injection of multiple values", () => {
+    describe("Injection of multiple values with string as keys", () => {
+        it("Should support the injection of multiple values", () => {
 
-        interface IWeapon {
-            name: string;
-        }
-
-        @injectable()
-        class Katana implements IWeapon {
-            public name = "Katana";
-        }
-
-        @injectable()
-        class Shuriken implements IWeapon {
-            public name = "Shuriken";
-        }
-
-        interface INinja {
-            katana: IWeapon;
-            shuriken: IWeapon;
-        }
-
-        @injectable()
-        class Ninja implements INinja {
-            public katana: IWeapon;
-            public shuriken: IWeapon;
-            public constructor(@multiInject("IWeapon") weapons: IWeapon[]) {
-                this.katana = weapons[0];
-                this.shuriken = weapons[1];
+            interface IWeapon {
+                name: string;
             }
-        }
 
-        let kernel = new Kernel();
-        kernel.bind<INinja>("INinja").to(Ninja);
-        kernel.bind<IWeapon>("IWeapon").to(Katana);
-        kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+            @injectable()
+            class Katana implements IWeapon {
+                public name = "Katana";
+            }
 
-        let ninja = kernel.get<INinja>("INinja");
-        expect(ninja.katana.name).eql("Katana");
-        expect(ninja.shuriken.name).eql("Shuriken");
+            @injectable()
+            class Shuriken implements IWeapon {
+                public name = "Shuriken";
+            }
 
-        // if only one value is bound to IWeapon
-        let kernel2 = new Kernel();
-        kernel2.bind<INinja>("INinja").to(Ninja);
-        kernel2.bind<IWeapon>("IWeapon").to(Katana);
+            interface INinja {
+                katana: IWeapon;
+                shuriken: IWeapon;
+            }
 
-        let ninja2 = kernel2.get<INinja>("INinja");
-        expect(ninja2.katana.name).eql("Katana");
+            @injectable()
+            class Ninja implements INinja {
+                public katana: IWeapon;
+                public shuriken: IWeapon;
+                public constructor(@multiInject("IWeapon") weapons: IWeapon[]) {
+                    this.katana = weapons[0];
+                    this.shuriken = weapons[1];
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<INinja>("INinja").to(Ninja);
+            kernel.bind<IWeapon>("IWeapon").to(Katana);
+            kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+
+            let ninja = kernel.get<INinja>("INinja");
+            expect(ninja.katana.name).eql("Katana");
+            expect(ninja.shuriken.name).eql("Shuriken");
+
+            // if only one value is bound to IWeapon
+            let kernel2 = new Kernel();
+            kernel2.bind<INinja>("INinja").to(Ninja);
+            kernel2.bind<IWeapon>("IWeapon").to(Katana);
+
+            let ninja2 = kernel2.get<INinja>("INinja");
+            expect(ninja2.katana.name).eql("Katana");
+
+        });
+
+        it("Should support the injection of multiple values with nested inject", () => {
+
+            interface INinja {
+                fight(): string;
+                sneak(): string;
+            }
+
+            interface IKatana {
+                hit(): string;
+            }
+
+            interface IShuriken {
+                throw(): string;
+            }
+
+            @injectable()
+            class Katana implements IKatana {
+                public hit() {
+                    return "cut!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements IShuriken {
+                public throw() {
+                    return "hit!";
+                }
+            }
+
+            @injectable()
+            class Ninja implements INinja {
+
+                private _katana: IKatana;
+                private _shuriken: IShuriken;
+
+                public constructor(
+                    @inject("IKatana") katana: IKatana,
+                    @inject("IShuriken") shuriken: IShuriken
+                ) {
+                    this._katana = katana;
+                    this._shuriken = shuriken;
+                }
+
+                public fight() { return this._katana.hit(); };
+                public sneak() { return this._shuriken.throw(); };
+
+            }
+
+            interface INinjaSchool {
+                ninjaMaster: INinja;
+                student: INinja;
+            }
+
+            @injectable()
+            class NinjaSchool implements INinjaSchool {
+                public ninjaMaster: INinja;
+                public student: INinja;
+
+                constructor(
+                    @multiInject("INinja") ninja: INinja[]
+                ) {
+                    this.ninjaMaster = ninja[0];
+                    this.student = ninja[1];
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<IKatana>("IKatana").to(Katana);
+            kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+            kernel.bind<INinja>("INinja").to(Ninja);
+            kernel.bind<INinja>("INinja").to(Ninja);
+            kernel.bind<INinjaSchool>("INinjaSchool").to(NinjaSchool);
+
+            let ninjaSchool = kernel.get<INinjaSchool>("INinjaSchool");
+            expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
+            expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
+
+            expect(ninjaSchool.student.fight()).eql("cut!");
+            expect(ninjaSchool.student.sneak()).eql("hit!");
+
+        });
+
+        it("Should support the injection of multiple values with nested multiInject", () => {
+
+            interface INinja {
+                fight(): string;
+                sneak(): string;
+            }
+
+            interface IKatana {
+                hit(): string;
+            }
+
+            interface IShuriken {
+                throw(): string;
+            }
+
+            @injectable()
+            class Katana implements IKatana {
+                public hit() {
+                    return "cut!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements IShuriken {
+                public throw() {
+                    return "hit!";
+                }
+            }
+
+            @injectable()
+            class Ninja implements INinja {
+
+                private _katana: IKatana;
+                private _shuriken: IShuriken;
+
+                public constructor(
+                    @inject("IKatana") katana: IKatana,
+                    @inject("IShuriken") shuriken: IShuriken
+                ) {
+                    this._katana = katana;
+                    this._shuriken = shuriken;
+                }
+
+                public fight() { return this._katana.hit(); };
+                public sneak() { return this._shuriken.throw(); };
+
+            }
+
+            interface INinjaSchool {
+                ninjaMaster: INinja;
+                student: INinja;
+            }
+
+            @injectable()
+            class NinjaSchool implements INinjaSchool {
+                public ninjaMaster: INinja;
+                public student: INinja;
+
+                constructor(
+                    @multiInject("INinja") ninjas: INinja[]
+                ) {
+                    this.ninjaMaster = ninjas[0];
+                    this.student = ninjas[1];
+                }
+            }
+
+            interface INinjaOrganisation {
+                schools: INinjaSchool[];
+            }
+
+            @injectable()
+            class NinjaOrganisation implements INinjaOrganisation {
+                public schools: INinjaSchool[];
+
+                constructor(
+                    @multiInject("INinjaSchool") schools: INinjaSchool[]
+                ) {
+                    this.schools = schools;
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<IKatana>("IKatana").to(Katana);
+            kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+            kernel.bind<INinja>("INinja").to(Ninja);
+            kernel.bind<INinja>("INinja").to(Ninja);
+            kernel.bind<INinjaSchool>("INinjaSchool").to(NinjaSchool);
+            kernel.bind<INinjaSchool>("INinjaSchool").to(NinjaSchool);
+            kernel.bind<INinjaOrganisation>("INinjaOrganisation").to(NinjaOrganisation);
+
+            let ninjaOrganisation = kernel.get<INinjaOrganisation>("INinjaOrganisation");
+
+            for (let i = 0; i < 2; i++) {
+                expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
+                expect(ninjaOrganisation.schools[i].ninjaMaster.sneak()).eql("hit!");
+                expect(ninjaOrganisation.schools[i].student.fight()).eql("cut!");
+                expect(ninjaOrganisation.schools[i].student.sneak()).eql("hit!");
+            }
+
+        });
+    });
+
+    describe("Injection of multiple values with class as keys", () => {
+        it("Should support the injection of multiple values when using classes as keys", () => {
+
+            @injectable()
+            class Weapon {
+                public name: string;
+            }
+
+            @injectable()
+            class Katana extends Weapon {
+                constructor() {
+                    super();
+                    this.name = "Katana";
+                }
+            }
+
+            @injectable()
+            class Shuriken extends Weapon {
+                constructor() {
+                    super();
+                    this.name = "Shuriken";
+                }
+            }
+
+            @injectable()
+            class Ninja {
+                public katana: Weapon;
+                public shuriken: Weapon;
+                public constructor(@multiInject(Weapon) weapons: Weapon[]) {
+                    this.katana = weapons[0];
+                    this.shuriken = weapons[1];
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<Weapon>(Weapon).to(Katana);
+            kernel.bind<Weapon>(Weapon).to(Shuriken);
+
+            let ninja = kernel.get<Ninja>(Ninja);
+            expect(ninja.katana.name).eql("Katana");
+            expect(ninja.shuriken.name).eql("Shuriken");
+
+            // if only one value is bound to IWeapon
+            let kernel2 = new Kernel();
+            kernel2.bind<Ninja>(Ninja).to(Ninja);
+            kernel2.bind<Weapon>(Weapon).to(Katana);
+
+            let ninja2 = kernel2.get<Ninja>(Ninja);
+            expect(ninja2.katana.name).eql("Katana");
+
+        });
+
+        it("Should support the injection of multiple values with nested inject", () => {
+
+            @injectable()
+            class Katana {
+                public hit() {
+                    return "cut!";
+                }
+            }
+
+            @injectable()
+            class Shuriken {
+                public throw() {
+                    return "hit!";
+                }
+            }
+
+            @injectable()
+            class Ninja {
+
+                private _katana: Katana;
+                private _shuriken: Shuriken;
+
+                public constructor(
+                    katana: Katana,
+                    shuriken: Shuriken
+                ) {
+                    this._katana = katana;
+                    this._shuriken = shuriken;
+                }
+
+                public fight() { return this._katana.hit(); };
+                public sneak() { return this._shuriken.throw(); };
+
+            }
+
+            @injectable()
+            class NinjaSchool {
+                public ninjaMaster: Ninja;
+                public student: Ninja;
+
+                constructor(
+                    @multiInject(Ninja) ninja: Ninja[]
+                ) {
+                    this.ninjaMaster = ninja[0];
+                    this.student = ninja[1];
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<Katana>(Katana).to(Katana);
+            kernel.bind<Shuriken>(Shuriken).to(Shuriken);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
+
+            let ninjaSchool = kernel.get<NinjaSchool>(NinjaSchool);
+            expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
+            expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
+
+            expect(ninjaSchool.student.fight()).eql("cut!");
+            expect(ninjaSchool.student.sneak()).eql("hit!");
+
+        });
+
+        it("Should support the injection of multiple values with nested multiInject", () => {
+
+            @injectable()
+            class Katana {
+                public hit() {
+                    return "cut!";
+                }
+            }
+
+            @injectable()
+            class Shuriken {
+                public throw() {
+                    return "hit!";
+                }
+            }
+
+            @injectable()
+            class Ninja {
+
+                private _katana: Katana;
+                private _shuriken: Shuriken;
+
+                public constructor(
+                    katana: Katana,
+                    shuriken: Shuriken
+                ) {
+                    this._katana = katana;
+                    this._shuriken = shuriken;
+                }
+
+                public fight() { return this._katana.hit(); };
+                public sneak() { return this._shuriken.throw(); };
+
+            }
+
+            @injectable()
+            class NinjaSchool {
+                public ninjaMaster: Ninja;
+                public student: Ninja;
+
+                constructor(
+                    @multiInject(Ninja) ninjas: Ninja[]
+                ) {
+                    this.ninjaMaster = ninjas[0];
+                    this.student = ninjas[1];
+                }
+            }
+
+            @injectable()
+            class NinjaOrganisation {
+                public schools: NinjaSchool[];
+
+                constructor(
+                    @multiInject(NinjaSchool) schools: NinjaSchool[]
+                ) {
+                    this.schools = schools;
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<Katana>(Katana).to(Katana);
+            kernel.bind<Shuriken>(Shuriken).to(Shuriken);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
+            kernel.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
+            kernel.bind<NinjaOrganisation>(NinjaOrganisation).to(NinjaOrganisation);
+
+            let ninjaOrganisation = kernel.get<NinjaOrganisation>(NinjaOrganisation);
+
+            for (let i = 0; i < 2; i++) {
+                expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
+                expect(ninjaOrganisation.schools[i].ninjaMaster.sneak()).eql("hit!");
+                expect(ninjaOrganisation.schools[i].student.fight()).eql("cut!");
+                expect(ninjaOrganisation.schools[i].student.sneak()).eql("hit!");
+            }
+
+        });
 
     });
 
-    it("Should support the injection of multiple values when using classes as keys", () => {
+    describe("Injection of multiple values with Symbol as keys", () => {
+        it("Should support the injection of multiple values when using Symbols as keys", () => {
 
-        @injectable()
-        class Weapon {
-            public name: string;
-        }
+            let TYPES = {
+                INinja: Symbol("INinja"),
+                IWeapon: Symbol("IWeapon")
+            };
 
-        @injectable()
-        class Katana extends Weapon {
-            constructor() {
-                super();
-                this.name = "Katana";
+            interface IWeapon {
+                name: string;
             }
-        }
 
-        @injectable()
-        class Shuriken extends Weapon {
-            constructor() {
-                super();
-                this.name = "Shuriken";
+            @injectable()
+            class Katana implements IWeapon {
+                public name = "Katana";
             }
-        }
 
-        @injectable()
-        class Ninja {
-            public katana: Weapon;
-            public shuriken: Weapon;
-            public constructor(@multiInject(Weapon) weapons: Weapon[]) {
-                this.katana = weapons[0];
-                this.shuriken = weapons[1];
+            @injectable()
+            class Shuriken implements IWeapon {
+                public name = "Shuriken";
             }
-        }
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(Ninja).to(Ninja);
-        kernel.bind<Weapon>(Weapon).to(Katana);
-        kernel.bind<Weapon>(Weapon).to(Shuriken);
-
-        let ninja = kernel.get<Ninja>(Ninja);
-        expect(ninja.katana.name).eql("Katana");
-        expect(ninja.shuriken.name).eql("Shuriken");
-
-        // if only one value is bound to IWeapon
-        let kernel2 = new Kernel();
-        kernel2.bind<Ninja>(Ninja).to(Ninja);
-        kernel2.bind<Weapon>(Weapon).to(Katana);
-
-        let ninja2 = kernel2.get<Ninja>(Ninja);
-        expect(ninja2.katana.name).eql("Katana");
-
-    });
-
-    it("Should support the injection of multiple values when using Symbols as keys", () => {
-
-        let TYPES = {
-            INinja: Symbol("INinja"),
-            IWeapon: Symbol("IWeapon")
-        };
-
-        interface IWeapon {
-            name: string;
-        }
-
-        @injectable()
-        class Katana implements IWeapon {
-            public name = "Katana";
-        }
-
-        @injectable()
-        class Shuriken implements IWeapon {
-            public name = "Shuriken";
-        }
-
-        interface INinja {
-            katana: IWeapon;
-            shuriken: IWeapon;
-        }
-
-        @injectable()
-        class Ninja implements INinja {
-            public katana: IWeapon;
-            public shuriken: IWeapon;
-            public constructor(@multiInject(TYPES.IWeapon) weapons: IWeapon[]) {
-                this.katana = weapons[0];
-                this.shuriken = weapons[1];
+            interface INinja {
+                katana: IWeapon;
+                shuriken: IWeapon;
             }
-        }
 
-        let kernel = new Kernel();
-        kernel.bind<INinja>(TYPES.INinja).to(Ninja);
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Katana);
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Shuriken);
+            @injectable()
+            class Ninja implements INinja {
+                public katana: IWeapon;
+                public shuriken: IWeapon;
+                public constructor(@multiInject(TYPES.IWeapon) weapons: IWeapon[]) {
+                    this.katana = weapons[0];
+                    this.shuriken = weapons[1];
+                }
+            }
 
-        let ninja = kernel.get<INinja>(TYPES.INinja);
-        expect(ninja.katana.name).eql("Katana");
-        expect(ninja.shuriken.name).eql("Shuriken");
+            let kernel = new Kernel();
+            kernel.bind<INinja>(TYPES.INinja).to(Ninja);
+            kernel.bind<IWeapon>(TYPES.IWeapon).to(Katana);
+            kernel.bind<IWeapon>(TYPES.IWeapon).to(Shuriken);
 
-        // if only one value is bound to IWeapon
-        let kernel2 = new Kernel();
-        kernel2.bind<INinja>(TYPES.INinja).to(Ninja);
-        kernel2.bind<IWeapon>(TYPES.IWeapon).to(Katana);
+            let ninja = kernel.get<INinja>(TYPES.INinja);
+            expect(ninja.katana.name).eql("Katana");
+            expect(ninja.shuriken.name).eql("Shuriken");
 
-        let ninja2 = kernel2.get<INinja>(TYPES.INinja);
-        expect(ninja2.katana.name).eql("Katana");
+            // if only one value is bound to IWeapon
+            let kernel2 = new Kernel();
+            kernel2.bind<INinja>(TYPES.INinja).to(Ninja);
+            kernel2.bind<IWeapon>(TYPES.IWeapon).to(Katana);
 
+            let ninja2 = kernel2.get<INinja>(TYPES.INinja);
+            expect(ninja2.katana.name).eql("Katana");
+
+        });
+
+        it("Should support the injection of multiple values with nested inject", () => {
+
+            let TYPES = {
+                IKatana: Symbol("IKatana"),
+                INinja: Symbol("INinja"),
+                INinjaSchool: Symbol("INinjaSchool"),
+                IShuriken: Symbol("IShuriken"),
+            };
+
+            interface INinja {
+                fight(): string;
+                sneak(): string;
+            }
+
+            interface IKatana {
+                hit(): string;
+            }
+
+            interface IShuriken {
+                throw(): string;
+            }
+
+            @injectable()
+            class Katana implements IKatana {
+                public hit() {
+                    return "cut!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements IShuriken {
+                public throw() {
+                    return "hit!";
+                }
+            }
+
+            @injectable()
+            class Ninja implements INinja {
+
+                private _katana: IKatana;
+                private _shuriken: IShuriken;
+
+                public constructor(
+                    @inject(TYPES.IKatana) katana: IKatana,
+                    @inject(TYPES.IShuriken) shuriken: IShuriken
+                ) {
+                    this._katana = katana;
+                    this._shuriken = shuriken;
+                }
+
+                public fight() { return this._katana.hit(); };
+                public sneak() { return this._shuriken.throw(); };
+
+            }
+
+            interface INinjaSchool {
+                ninjaMaster: INinja;
+                student: INinja;
+            }
+
+            @injectable()
+            class NinjaSchool implements INinjaSchool {
+                public ninjaMaster: INinja;
+                public student: INinja;
+
+                constructor(
+                    @multiInject(TYPES.INinja) ninja: INinja[]
+                ) {
+                    this.ninjaMaster = ninja[0];
+                    this.student = ninja[1];
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<IKatana>(TYPES.IKatana).to(Katana);
+            kernel.bind<IShuriken>(TYPES.IShuriken).to(Shuriken);
+            kernel.bind<INinja>(TYPES.INinja).to(Ninja);
+            kernel.bind<INinja>(TYPES.INinja).to(Ninja);
+            kernel.bind<INinjaSchool>(TYPES.INinjaSchool).to(NinjaSchool);
+
+            let ninjaSchool = kernel.get<INinjaSchool>(TYPES.INinjaSchool);
+            expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
+            expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
+
+            expect(ninjaSchool.student.fight()).eql("cut!");
+            expect(ninjaSchool.student.sneak()).eql("hit!");
+
+        });
+
+        it("Should support the injection of multiple values with nested multiInject", () => {
+
+            let TYPES = {
+                IKatana: Symbol("IKatana"),
+                INinja: Symbol("INinja"),
+                INinjaOrganisation: Symbol("INinjaOrganisation"),
+                INinjaSchool: Symbol("INinjaSchool"),
+                IShuriken: Symbol("IShuriken"),
+            };
+
+            interface INinja {
+                fight(): string;
+                sneak(): string;
+            }
+
+            interface IKatana {
+                hit(): string;
+            }
+
+            interface IShuriken {
+                throw(): string;
+            }
+
+            @injectable()
+            class Katana implements IKatana {
+                public hit() {
+                    return "cut!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements IShuriken {
+                public throw() {
+                    return "hit!";
+                }
+            }
+
+            @injectable()
+            class Ninja implements INinja {
+
+                private _katana: IKatana;
+                private _shuriken: IShuriken;
+
+                public constructor(
+                    @inject(TYPES.IKatana) katana: IKatana,
+                    @inject(TYPES.IShuriken) shuriken: IShuriken
+                ) {
+                    this._katana = katana;
+                    this._shuriken = shuriken;
+                }
+
+                public fight() { return this._katana.hit(); };
+                public sneak() { return this._shuriken.throw(); };
+
+            }
+
+            interface INinjaSchool {
+                ninjaMaster: INinja;
+                student: INinja;
+            }
+
+            @injectable()
+            class NinjaSchool implements INinjaSchool {
+                public ninjaMaster: INinja;
+                public student: INinja;
+
+                constructor(
+                    @multiInject(TYPES.INinja) ninjas: INinja[]
+                ) {
+                    this.ninjaMaster = ninjas[0];
+                    this.student = ninjas[1];
+                }
+            }
+
+            interface INinjaOrganisation {
+                schools: INinjaSchool[];
+            }
+
+            @injectable()
+            class NinjaOrganisation implements INinjaOrganisation {
+                public schools: INinjaSchool[];
+
+                constructor(
+                    @multiInject(TYPES.INinjaSchool) schools: INinjaSchool[]
+                ) {
+                    this.schools = schools;
+                }
+            }
+
+            let kernel = new Kernel();
+            kernel.bind<IKatana>(TYPES.IKatana).to(Katana);
+            kernel.bind<IShuriken>(TYPES.IShuriken).to(Shuriken);
+            kernel.bind<INinja>(TYPES.INinja).to(Ninja);
+            kernel.bind<INinja>(TYPES.INinja).to(Ninja);
+            kernel.bind<INinjaSchool>(TYPES.INinjaSchool).to(NinjaSchool);
+            kernel.bind<INinjaSchool>(TYPES.INinjaSchool).to(NinjaSchool);
+            kernel.bind<INinjaOrganisation>(TYPES.INinjaOrganisation).to(NinjaOrganisation);
+
+            let ninjaOrganisation = kernel.get<INinjaOrganisation>(TYPES.INinjaOrganisation);
+
+            for (let i = 0; i < 2; i++) {
+                expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
+                expect(ninjaOrganisation.schools[i].ninjaMaster.sneak()).eql("hit!");
+                expect(ninjaOrganisation.schools[i].student.fight()).eql("cut!");
+                expect(ninjaOrganisation.schools[i].student.sneak()).eql("hit!");
+            }
+
+        });
     });
 
     it("Should support tagged bindings", () => {

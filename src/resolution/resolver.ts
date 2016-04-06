@@ -16,7 +16,10 @@ class Resolver implements IResolver {
         let bindings = request.bindings;
         let childRequests = request.childRequests;
 
-        if (request.target && request.target.isArray() && bindings.length > 1) {
+        if (
+            request.target && request.target.isArray() &&
+            (!request.parentRequest.target || !request.parentRequest.target.matchesArray(request.target.service))
+        ) {
 
             // Create an array instead of creating an instance
             return childRequests.map((childRequest) => { return this._resolve(childRequest); });
@@ -55,12 +58,7 @@ class Resolver implements IResolver {
 
                     if (childRequests.length > 0) {
                         let injections = childRequests.map((childRequest) => {
-                            const res = this._resolve(childRequest);
-
-                            // if the target has a multi_inject tag and has one binding, return the resolved dep in an array
-                            return (childRequest.target && childRequest.target.isArray() && childRequest.bindings.length === 1) ?
-                                [res] :
-                                res;
+                            return this._resolve(childRequest);
                         });
 
                         result = this._createInstance(constr, injections);
