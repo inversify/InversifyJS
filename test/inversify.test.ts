@@ -1197,6 +1197,7 @@ describe("InversifyJS", () => {
             public isMaster: boolean;
             public constructor(@inject(SYMBOLS.IWeapon) weapon: IWeapon) {
                 super(weapon);
+                this.isMaster = true;
             }
         }
 
@@ -1206,8 +1207,8 @@ describe("InversifyJS", () => {
         kernel.bind<IWarrior>(SYMBOLS.ISamuraiMaster).to(SamuraiMaster);
         kernel.bind<IWarrior>(SYMBOLS.ISamuraiMaster2).to(SamuraiMaster2);
 
-        kernel.get<IWarrior>(SYMBOLS.ISamuraiMaster);
-        // TODO assert error thrown
+        let errorFunction = () => { kernel.get<IWarrior>(SYMBOLS.ISamuraiMaster); };
+        expect(errorFunction).to.throw(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} SamuraiMaster.`);
 
         let samuraiMaster2 = kernel.get<IWarrior>(SYMBOLS.ISamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
