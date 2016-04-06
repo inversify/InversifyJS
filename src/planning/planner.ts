@@ -154,13 +154,13 @@ class Planner implements IPlanner {
     private _getDependencies(func: Function): ITarget[] {
 
         if (func === null) { return []; }
+        let constructorName = (<any>func).name;
 
         // TypeScript compiler generated annotations
         let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
 
         // All types resolved bust be annotated with @injectable
         if (targetsTypes === undefined) {
-            let constructorName = (<any>func).name;
             let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${constructorName}.`;
             throw new Error(msg);
         }
@@ -192,7 +192,6 @@ class Planner implements IPlanner {
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
             if (targetType === Object || targetType === Function || targetType === undefined) {
-                let constructorName = (<any>func).name;
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
@@ -203,6 +202,12 @@ class Planner implements IPlanner {
             targets.push(target);
 
         }
+
+        // TODO RECURSIVE CHECK
+        // Reflect.getPrototypeOf(SamuraiMaster.prototype).constructor !== Object
+        // if (false) {
+            // throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
+        // }
 
         return targets;
     }

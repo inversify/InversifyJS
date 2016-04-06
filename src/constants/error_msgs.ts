@@ -12,5 +12,6 @@ export const MISSING_INJECT_ANNOTATION = "Missing required @inject or @multiInje
 export const CIRCULAR_DEPENDENCY = "Circular dependency found between services:";
 export const NOT_IMPLEMENTED = "Sorry, this feature is not fully implemented yet.";
 export const INVALID_BINDING_TYPE = "Invalid binding type:";
+export const MISSING_EXPLICIT_CONSTRUCTOR = "Derived class must explicitly declare its constructor:";
 export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and @named decorators " +
     "must be applied to the parameters of a constructor.";
