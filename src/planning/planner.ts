@@ -203,13 +203,26 @@ class Planner implements IPlanner {
 
         }
 
-        // TODO RECURSIVE CHECK
-        // Reflect.getPrototypeOf(SamuraiMaster.prototype).constructor !== Object
-        // if (false) {
-            // throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
-        // }
+        if (_parentClassHasPedencencies(func) && targets.length === 0) {
+            throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
+        }
 
         return targets;
+    }
+    
+    private _parentClassHasPedencencies(func: Function): boolean {
+        let baseConstructor = Reflect.getPrototypeOf(func.prototype).constructor;
+        if (Reflect.getPrototypeOf(func.prototype).constructor !== Object) {
+            if(baseConstructor.length > 0) {
+                return true;
+            }
+            else {
+                return this._parentClassHasPedencencies(baseConstructor);
+            }
+        }
+        else {
+            return false;
+        }
     }
 }
 
