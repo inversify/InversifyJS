@@ -154,13 +154,13 @@ class Planner implements IPlanner {
     private _getDependencies(func: Function): ITarget[] {
 
         if (func === null) { return []; }
+        let constructorName = (<any>func).name;
 
         // TypeScript compiler generated annotations
         let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
 
         // All types resolved bust be annotated with @injectable
         if (targetsTypes === undefined) {
-            let constructorName = (<any>func).name;
             let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${constructorName}.`;
             throw new Error(msg);
         }
@@ -192,7 +192,6 @@ class Planner implements IPlanner {
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
             if (targetType === Object || targetType === Function || targetType === undefined) {
-                let constructorName = (<any>func).name;
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
@@ -204,7 +203,27 @@ class Planner implements IPlanner {
 
         }
 
+        // Throw if a derived class does not implement its constructor explicitly
+        // We do this to prevent errors when a base class (parent) has dependencies 
+        // and one of the derived classes (children) has no dependencies
+        if (targets.length === 0 && this._baseClassHasDepencencies(func)) {
+            throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
+        }
+
         return targets;
+    }
+
+    private _baseClassHasDepencencies(func: Function): boolean {
+        let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
+        if (baseConstructor !== Object) {
+            if (baseConstructor.length > 0) {
+                return true;
+            } else {
+                return this._baseClassHasDepencencies(baseConstructor);
+            }
+        } else {
+            return false;
+        }
     }
 }
 

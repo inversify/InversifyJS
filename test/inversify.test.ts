@@ -1172,6 +1172,74 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should be able to inject into a supper constructor", () => {
+
+        const SYMBOLS = {
+            ISamurai: Symbol("ISamurai"),
+            ISamuraiMaster: Symbol("ISamuraiMaster"),
+            ISamuraiMaster2: Symbol("ISamuraiMaster2"),
+            IWeapon: Symbol("IWeapon")
+        };
+
+        interface IWeapon {
+            name: string;
+        }
+
+        interface IWarrior {
+            weapon: IWeapon;
+        }
+
+        @injectable()
+        class Katana implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "katana";
+            }
+        }
+
+        // Important: notice no anotations required in derived class
+        // However, it is recommended to annotate it as well
+        class Samurai implements IWarrior {
+
+            public weapon: IWeapon;
+
+            public constructor(weapon: IWeapon) {
+                this.weapon = weapon;
+            }
+        }
+
+        // Important: derived classes constructor must be manually implemented and annotated
+        // Therefore the following will fail
+        @injectable()
+        class SamuraiMaster extends Samurai implements IWarrior {
+            public isMaster: boolean;
+        }
+
+        // However, he following will work
+        @injectable()
+        class SamuraiMaster2 extends Samurai implements IWarrior {
+            public isMaster: boolean;
+            public constructor(@inject(SYMBOLS.IWeapon) weapon: IWeapon) {
+                super(weapon);
+                this.isMaster = true;
+            }
+        }
+
+        const kernel = new Kernel();
+        kernel.bind<IWeapon>(SYMBOLS.IWeapon).to(Katana);
+        kernel.bind<IWarrior>(SYMBOLS.ISamurai).to(Samurai);
+        kernel.bind<IWarrior>(SYMBOLS.ISamuraiMaster).to(SamuraiMaster);
+        kernel.bind<IWarrior>(SYMBOLS.ISamuraiMaster2).to(SamuraiMaster2);
+
+        let errorFunction = () => { kernel.get<IWarrior>(SYMBOLS.ISamuraiMaster); };
+        expect(errorFunction).to.throw(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} SamuraiMaster.`);
+
+        let samuraiMaster2 = kernel.get<IWarrior>(SYMBOLS.ISamuraiMaster2);
+        expect(samuraiMaster2.weapon.name).eql("katana");
+        expect(typeof (<any>samuraiMaster2).isMaster).eql("boolean");
+
+    });
+
     describe("Contextual bindings contraints", () => {
 
         interface IWeapon {}

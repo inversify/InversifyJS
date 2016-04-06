@@ -745,7 +745,7 @@ let kernel = new Kernel();
 kernel.bind<IWeapon>("IWeapon").to(Katana);
 kernel.bind<IWeapon>("IWeapon").to(Shuriken);
 
-let weapons = kernel.getAll<IWeapon>("IWeapon");
+let weapons = kernel.getAll<IWeapon[]>("IWeapon");
 ```
 
 Named bindings:
