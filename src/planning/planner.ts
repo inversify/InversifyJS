@@ -206,21 +206,21 @@ class Planner implements IPlanner {
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies 
         // and one of the derived classes (children) has no dependencies
-        if (targets.length === 0 && _parentClassHasPedencencies(func)) {
+        if (targets.length === 0 && _parentClassHasDepencencies(func)) {
             throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
         }
 
         return targets;
     }
     
-    private _parentClassHasPedencencies(func: Function): boolean {
+    private _parentClassHasDepencencies(func: Function): boolean {
         let baseConstructor = Reflect.getPrototypeOf(func.prototype).constructor;
         if (baseConstructor !== Object) {
             if(baseConstructor.length > 0) {
                 return true;
             }
             else {
-                return this._parentClassHasPedencencies(baseConstructor);
+                return this._parentClassHasDepencencies(baseConstructor);
             }
         }
         else {
