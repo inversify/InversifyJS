@@ -5,6 +5,7 @@ bundled
 build
 coverage
 docs
+wiki
 gulpfile.js
 bower.json
 karma.conf.js
