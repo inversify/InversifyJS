@@ -127,8 +127,8 @@ describe("Planner", () => {
       let actualKatanaBladeRequest = actualKatanaRequest.childRequests[1];
       let actualShurikenRequest = actualNinjaRequest.childRequests[1];
 
-      expect(actualNinjaRequest.service)
-        .eql(ninjaRequest.service);
+      expect(actualNinjaRequest.serviceIdentifier)
+        .eql(ninjaRequest.serviceIdentifier);
 
       expect(actualNinjaRequest.target)
         .eql(ninjaRequest.target);
@@ -138,58 +138,58 @@ describe("Planner", () => {
 
       // IKatana
 
-      expect(actualKatanaRequest.service)
-        .eql(katanaRequest.service);
+      expect(actualKatanaRequest.serviceIdentifier)
+        .eql(katanaRequest.serviceIdentifier);
 
       expect((<any>actualKatanaRequest.bindings[0].implementationType).name)
         .eql((<any>Katana).name);
 
       expect(actualKatanaRequest.bindings.length).eql(1);
 
-      expect(actualKatanaRequest.target.service)
-        .eql(katanaRequest.target.service);
+      expect(actualKatanaRequest.target.serviceIdentifier)
+        .eql(katanaRequest.target.serviceIdentifier);
 
       expect(actualKatanaRequest.childRequests.length)
         .eql(katanaRequest.childRequests.length);
 
       // IKatanaHandler
 
-      expect(actualKatanaHandlerRequest.service)
-        .eql(katanaHandlerRequest.service);
+      expect(actualKatanaHandlerRequest.serviceIdentifier)
+        .eql(katanaHandlerRequest.serviceIdentifier);
 
       expect((<any>actualKatanaHandlerRequest.bindings[0].implementationType).name)
         .eql((<any>KatanaHandler).name);
 
       expect(actualKatanaHandlerRequest.bindings.length).eql(1);
 
-      expect(actualKatanaHandlerRequest.target.service)
-        .eql(katanaHandlerRequest.target.service);
+      expect(actualKatanaHandlerRequest.target.serviceIdentifier)
+        .eql(katanaHandlerRequest.target.serviceIdentifier);
 
       // IKatanaBalde
 
-      expect(actualKatanaBladeRequest.service)
-        .eql(katanaBladeRequest.service);
+      expect(actualKatanaBladeRequest.serviceIdentifier)
+        .eql(katanaBladeRequest.serviceIdentifier);
 
       expect((<any>actualKatanaBladeRequest.bindings[0].implementationType).name)
         .eql((<any>KatanaBlade).name);
 
       expect(actualKatanaBladeRequest.bindings.length).eql(1);
 
-      expect(actualKatanaBladeRequest.target.service)
-        .eql(katanaBladeRequest.target.service);
+      expect(actualKatanaBladeRequest.target.serviceIdentifier)
+        .eql(katanaBladeRequest.target.serviceIdentifier);
 
       // IShuriken
 
-      expect(actualShurikenRequest.service)
-        .eql(shurikenRequest.service);
+      expect(actualShurikenRequest.serviceIdentifier)
+        .eql(shurikenRequest.serviceIdentifier);
 
       expect((<any>actualShurikenRequest.bindings[0].implementationType).name)
         .eql((<any>Shuriken).name);
 
       expect(actualShurikenRequest.bindings.length).eql(1);
 
-      expect(actualShurikenRequest.target.service)
-        .eql(shurikenRequest.target.service);
+      expect(actualShurikenRequest.target.serviceIdentifier)
+        .eql(shurikenRequest.target.serviceIdentifier);
 
   });
 
@@ -327,10 +327,10 @@ describe("Planner", () => {
       let context = planner.createContext(kernel);
       let actualPlan = planner.createPlan(context, ninjaBinding, null);
 
-      expect(actualPlan.rootRequest.service).eql(ninjaId);
-      expect(actualPlan.rootRequest.childRequests[0].service).eql(katanaFactoryId);
+      expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
+      expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(katanaFactoryId);
       expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(0); // IMPORTANT!
-      expect(actualPlan.rootRequest.childRequests[1].service).eql(shurikenId);
+      expect(actualPlan.rootRequest.childRequests[1].serviceIdentifier).eql(shurikenId);
       expect(actualPlan.rootRequest.childRequests[1].childRequests.length).eql(0);
       expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
@@ -375,34 +375,34 @@ describe("Planner", () => {
       let actualPlan = planner.createPlan(context, ninjaBinding, null);
 
       // root request has no target
-      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
       expect(actualPlan.rootRequest.target).eql(null);
 
       // root request should only have one child request with target weapons/IWeapon[]
-      expect(actualPlan.rootRequest.childRequests[0].service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql("IWeapon");
       expect(actualPlan.rootRequest.childRequests[1]).eql(undefined);
       expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("weapons");
-      expect(actualPlan.rootRequest.childRequests[0].target.service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].target.serviceIdentifier).eql("IWeapon");
       expect(actualPlan.rootRequest.childRequests[0].target.isArray()).eql(true);
 
       // child request should have two child requests with targets weapons/IWeapon[] but bindings Katana and Shuriken
       expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(2);
 
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].serviceIdentifier).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.name.value()).eql("weapons");
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.serviceIdentifier).eql("IWeapon");
       expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.isArray()).eql(true);
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].service).eql("IWeapon");
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].runtimeIdentifier).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].serviceIdentifier).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].serviceIdentifier).eql("IWeapon");
       let shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
       expect(shurikenImplementationType.name).eql("Shuriken");
 
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.name.value()).eql("weapons");
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.service).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.serviceIdentifier).eql("IWeapon");
       expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.isArray()).eql(true);
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].service).eql("IWeapon");
-      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].runtimeIdentifier).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql("IWeapon");
+      expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].serviceIdentifier).eql("IWeapon");
       let katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
       expect(katanaImplementationType.name).eql("Katana");
 
@@ -539,17 +539,17 @@ describe("Planner", () => {
       let actualPlan = planner.createPlan(context, ninjaBinding, null);
 
       // root request has no target
-      expect(actualPlan.rootRequest.service).eql(ninjaId);
+      expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
       expect(actualPlan.rootRequest.target).eql(null);
 
       // root request should have 2 child requests
-      expect(actualPlan.rootRequest.childRequests[0].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("katana");
-      expect(actualPlan.rootRequest.childRequests[0].target.service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[0].target.serviceIdentifier).eql(weaponId);
 
-      expect(actualPlan.rootRequest.childRequests[1].service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[1].serviceIdentifier).eql(weaponId);
       expect(actualPlan.rootRequest.childRequests[1].target.name.value()).eql("shuriken");
-      expect(actualPlan.rootRequest.childRequests[1].target.service).eql(weaponId);
+      expect(actualPlan.rootRequest.childRequests[1].target.serviceIdentifier).eql(weaponId);
 
       expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
@@ -614,42 +614,42 @@ describe("Planner", () => {
 
   });
 
-  it("Should be throw when a function has a missing @injectable annotation", () => {
+    it("Should be throw when a function has a missing @injectable annotation", () => {
 
-      interface IKatana {}
+        interface IKatana {}
 
-      @injectable()
-      class Katana implements IKatana { }
+        @injectable()
+        class Katana implements IKatana { }
 
-      interface INinja {}
+        interface INinja {}
 
-      @injectable()
-      class Ninja implements INinja {
+        @injectable()
+        class Ninja implements INinja {
 
-          public katana: IKatana;
+            public katana: IKatana;
 
-          public constructor(
-              katanaFactory: () => IKatana
-          ) {
-              this.katana = katanaFactory();
-          }
-      }
+            public constructor(
+                katanaFactory: () => IKatana
+            ) {
+                this.katana = katanaFactory();
+            }
+        }
 
-      let kernel = new Kernel();
-      kernel.bind<INinja>("INinja").to(Ninja);
-      kernel.bind<IKatana>("IKatana").to(Katana);
-      kernel.bind<IKatana>("IFactory<IKatana>").to(Katana);
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.bind<IKatana>("IKatana").to(Katana);
+        kernel.bind<IKatana>("IFactory<IKatana>").to(Katana);
 
-      let _kernel: any = kernel;
-      let ninjaBinding = _kernel._bindingDictionary.get("INinja")[0];
-      let planner = new Planner();
-      let context = planner.createContext(kernel);
+        let _kernel: any = kernel;
+        let ninjaBinding = _kernel._bindingDictionary.get("INinja")[0];
+        let planner = new Planner();
+        let context = planner.createContext(kernel);
 
-      let throwFunction = () => {
-          planner.createPlan(context, ninjaBinding, null);
-      };
+        let throwFunction = () => {
+            planner.createPlan(context, ninjaBinding, null);
+        };
 
-      expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
-  });
+        expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
+    });
 
 });

@@ -242,14 +242,16 @@ describe("InversifyJS", () => {
 
         function middleware1(next: (context: IContext) => any) {
             return (context: IContext) => {
-                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                let serviceIdentifier = context.kernel.getServiceIdentifierAsString(context.plan.rootRequest.serviceIdentifier);
+                log.push(`Middleware1: ${serviceIdentifier}`);
                 return next(context);
             };
         };
 
         function middleware2(next: (context: IContext) => any) {
             return (context: IContext) => {
-                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                let serviceIdentifier = context.kernel.getServiceIdentifierAsString(context.plan.rootRequest.serviceIdentifier);
+                log.push(`Middleware2: ${serviceIdentifier}`);
                 return next(context);
             };
         };
@@ -1893,7 +1895,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @named("non-letal") weapon: IWeapon
+                @inject("IWeapon") @named("non-lethal") weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -1905,7 +1907,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @named("letal") weapon: IWeapon
+                @inject("IWeapon") @named("lethal") weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -1915,8 +1917,8 @@ describe("InversifyJS", () => {
         kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
         kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
         kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenParentNamed("letal");
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenParentNamed("non-letal");
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenParentNamed("lethal");
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenParentNamed("non-lethal");
 
         let master = kernel.getTagged<INinja>(TYPES.INinja, "master", true);
         let student = kernel.getTagged<INinja>(TYPES.INinja, "master", false);
@@ -1976,7 +1978,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @tagged("letal", false) weapon: IWeapon
+                @inject("IWeapon") @tagged("lethal", false) weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -1988,7 +1990,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @tagged("letal", true) weapon: IWeapon
+                @inject("IWeapon") @tagged("lethal", true) weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -1998,8 +2000,8 @@ describe("InversifyJS", () => {
         kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
         kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
         kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenParentTagged("letal", true);
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenParentTagged("letal", false);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenParentTagged("lethal", true);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenParentTagged("lethal", false);
 
         let master = kernel.getTagged<INinja>(TYPES.INinja, "master", true);
         let student = kernel.getTagged<INinja>(TYPES.INinja, "master", false);
@@ -2177,28 +2179,28 @@ describe("InversifyJS", () => {
 
         // whenAnyAncestorNamed
         let kernel = new Kernel();
-        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetNamed("non-letal");
-        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetNamed("letal");
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetNamed("non-lethal");
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetNamed("lethal");
         kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenAnyAncestorNamed("letal");
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenAnyAncestorNamed("non-letal");
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenAnyAncestorNamed("lethal");
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenAnyAncestorNamed("non-lethal");
 
-        let master = kernel.getNamed<INinja>(TYPES.INinja, "letal");
-        let student = kernel.getNamed<INinja>(TYPES.INinja, "non-letal");
+        let master = kernel.getNamed<INinja>(TYPES.INinja, "lethal");
+        let student = kernel.getNamed<INinja>(TYPES.INinja, "non-lethal");
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorNamed
         let kernel2 = new Kernel();
-        kernel2.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetNamed("non-letal");
-        kernel2.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetNamed("letal");
+        kernel2.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetNamed("non-lethal");
+        kernel2.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetNamed("lethal");
         kernel2.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenNoAncestorNamed("non-letal");
-        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenNoAncestorNamed("letal");
+        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenNoAncestorNamed("non-lethal");
+        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenNoAncestorNamed("lethal");
 
-        let master2 = kernel.getNamed<INinja>(TYPES.INinja, "letal");
-        let student2 = kernel.getNamed<INinja>(TYPES.INinja, "non-letal");
+        let master2 = kernel.getNamed<INinja>(TYPES.INinja, "lethal");
+        let student2 = kernel.getNamed<INinja>(TYPES.INinja, "non-lethal");
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2275,28 +2277,28 @@ describe("InversifyJS", () => {
 
         // whenAnyAncestorTagged
         let kernel = new Kernel();
-        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("letal", false);
-        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("letal", true);
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("lethal", false);
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("lethal", true);
         kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenAnyAncestorTagged("letal", true);
-        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenAnyAncestorTagged("letal", false);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenAnyAncestorTagged("lethal", true);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenAnyAncestorTagged("lethal", false);
 
-        let master = kernel.getTagged<INinja>(TYPES.INinja, "letal", true);
-        let student = kernel.getTagged<INinja>(TYPES.INinja, "letal", false);
+        let master = kernel.getTagged<INinja>(TYPES.INinja, "lethal", true);
+        let student = kernel.getTagged<INinja>(TYPES.INinja, "lethal", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorTagged
         let kernel2 = new Kernel();
-        kernel2.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("letal", false);
-        kernel2.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("letal", true);
+        kernel2.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("lethal", false);
+        kernel2.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("lethal", true);
         kernel2.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenNoAncestorTagged("letal", false);
-        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenNoAncestorTagged("letal", true);
+        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenNoAncestorTagged("lethal", false);
+        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenNoAncestorTagged("lethal", true);
 
-        let master2 = kernel.getTagged<INinja>(TYPES.INinja, "letal", true);
-        let student2 = kernel.getTagged<INinja>(TYPES.INinja, "letal", false);
+        let master2 = kernel.getTagged<INinja>(TYPES.INinja, "lethal", true);
+        let student2 = kernel.getTagged<INinja>(TYPES.INinja, "lethal", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");

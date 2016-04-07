@@ -582,7 +582,7 @@ let ninja = kernel.get<INinja>("INinja");
      parentContext: [Circular],
      rootRequest: 
       Request {
-        service: 'INinja',
+        serviceIdentifier: 'INinja',
         parentContext: [Circular],
         parentRequest: null,
         target: null,

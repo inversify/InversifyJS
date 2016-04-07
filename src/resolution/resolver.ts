@@ -18,7 +18,7 @@ class Resolver implements IResolver {
 
         if (
             request.target && request.target.isArray() &&
-            (!request.parentRequest.target || !request.parentRequest.target.matchesArray(request.target.service))
+            (!request.parentRequest.target || !request.parentRequest.target.matchesArray(request.target.serviceIdentifier))
         ) {
 
             // Create an array instead of creating an instance
@@ -72,7 +72,8 @@ class Resolver implements IResolver {
                 default:
                     // The user probably created a binding but didn't finish it
                     // e.g. kernel.bind<T>("ISomething"); missing BindingToSyntax
-                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${request.service}`);
+                    let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
             }
 
             // use activation handler if available

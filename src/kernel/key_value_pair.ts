@@ -2,11 +2,11 @@
 
 class KeyValuePair<T> implements IKeyValuePair<T> {
 
-    public key: string;
+    public serviceIdentifier: (string|Symbol|any);
     public value: Array<T>;
 
-    public constructor(key: string, value: T) {
-        this.key = key;
+    public constructor(serviceIdentifier: (string|Symbol|any), value: T) {
+        this.serviceIdentifier = serviceIdentifier;
         this.value = new Array<T>();
         this.value.push(value);
     }

@@ -45,14 +45,16 @@ describe("Kernel", () => {
 
         function middleware1(next: (context: IContext) => any) {
             return (context: IContext) => {
-                log.push(`Middleware1: ${context.plan.rootRequest.service}`);
+                let serviceIdentifier = context.kernel.getServiceIdentifierAsString(context.plan.rootRequest.serviceIdentifier);
+                log.push(`Middleware1: ${serviceIdentifier}`);
                 return next(context);
             };
         };
 
         function middleware2(next: (context: IContext) => any) {
             return (context: IContext) => {
-                log.push(`Middleware2: ${context.plan.rootRequest.service}`);
+                let serviceIdentifier = context.kernel.getServiceIdentifierAsString(context.plan.rootRequest.serviceIdentifier);
+                log.push(`Middleware2: ${serviceIdentifier}`);
                 return next(context);
             };
         };
@@ -70,7 +72,7 @@ describe("Kernel", () => {
 
     });
 
-  it("Shoule be able to use modules as configuration", () => {
+  it("Should be able to use modules as configuration", () => {
 
       interface INinja {}
       interface IKatana {}
@@ -98,9 +100,9 @@ describe("Kernel", () => {
       kernel.load(warriors, weapons);
 
       let _kernel: any = kernel;
-      expect(_kernel._bindingDictionary._dictionary[0].key).eql("INinja");
-      expect(_kernel._bindingDictionary._dictionary[1].key).eql("IKatana");
-      expect(_kernel._bindingDictionary._dictionary[2].key).eql("IShuriken");
+      expect(_kernel._bindingDictionary._dictionary[0].serviceIdentifier).eql("INinja");
+      expect(_kernel._bindingDictionary._dictionary[1].serviceIdentifier).eql("IKatana");
+      expect(_kernel._bindingDictionary._dictionary[2].serviceIdentifier).eql("IShuriken");
 
   });
 
@@ -116,8 +118,8 @@ describe("Kernel", () => {
       kernel.bind<INinja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
-      let runtimeIdentifier = _kernel._bindingDictionary._dictionary[0].key;
-      expect(runtimeIdentifier).eql(ninjaId);
+      let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
+      expect(serviceIdentifier).eql(ninjaId);
 
   });
 
@@ -133,8 +135,8 @@ describe("Kernel", () => {
       kernel.bind<INinja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
-      let runtimeIdentifier = _kernel._bindingDictionary._dictionary[0].key;
-      expect(runtimeIdentifier).eql(ninjaId);
+      let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
+      expect(serviceIdentifier).eql(ninjaId);
 
       kernel.unbind(ninjaId);
       let length = _kernel._bindingDictionary._dictionary.length;
@@ -149,10 +151,10 @@ describe("Kernel", () => {
       @injectable()
       class Ninja implements INinja {}
 
-      let runtimeIdentifier = "INinja";
+      let serviceIdentifier = "INinja";
       let kernel = new Kernel();
       let throwFunction = () => { kernel.unbind("INinja"); };
-      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${runtimeIdentifier}`);
+      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${serviceIdentifier}`);
 
   });
 
@@ -178,8 +180,8 @@ describe("Kernel", () => {
       let dictionary = _kernel._bindingDictionary._dictionary;
 
       expect(dictionary.length).eql(2);
-      expect(dictionary[0].key).eql(ninjaId);
-      expect(dictionary[1].key).eql(samuraiId);
+      expect(dictionary[0].serviceIdentifier).eql(ninjaId);
+      expect(dictionary[1].serviceIdentifier).eql(samuraiId);
 
       kernel.unbind(ninjaId);
       dictionary = _kernel._bindingDictionary._dictionary;
@@ -210,8 +212,8 @@ describe("Kernel", () => {
       let dictionary = _kernel._bindingDictionary._dictionary;
 
       expect(dictionary.length).eql(2);
-      expect(dictionary[0].key).eql(ninjaId);
-      expect(dictionary[1].key).eql(samuraiId);
+      expect(dictionary[0].serviceIdentifier).eql(ninjaId);
+      expect(dictionary[1].serviceIdentifier).eql(samuraiId);
 
       kernel.unbindAll();
       dictionary = _kernel._bindingDictionary._dictionary;
@@ -260,7 +262,7 @@ describe("Kernel", () => {
 
       // pre conditions
       expect(dictionary.length).eql(1);
-      expect(dictionary[0].key).eql(ninjaId);
+      expect(dictionary[0].serviceIdentifier).eql(ninjaId);
       expect(dictionary[0].value.length).eql(1);
 
       // mock planner and resolver
@@ -302,7 +304,7 @@ describe("Kernel", () => {
       let dictionary = _kernel._bindingDictionary._dictionary;
 
       expect(dictionary.length).eql(1);
-      expect(dictionary[0].key).eql(warriorId);
+      expect(dictionary[0].serviceIdentifier).eql(warriorId);
       expect(dictionary[0].value.length).eql(2);
 
       let throwFunction = () => { kernel.get<IWarrior>(warriorId); };
@@ -352,7 +354,7 @@ describe("Kernel", () => {
 
       // pre conditions
       expect(dictionary.length).eql(1);
-      expect(dictionary[0].key).eql(ninjaId);
+      expect(dictionary[0].serviceIdentifier).eql(ninjaId);
       expect(dictionary[0].value.length).eql(1);
 
       // mock planner and resolver
@@ -414,7 +416,7 @@ describe("Kernel", () => {
 
       // pre conditions
       expect(dictionary.length).eql(1);
-      expect(dictionary[0].key).eql(warriorId);
+      expect(dictionary[0].serviceIdentifier).eql(warriorId);
       expect(dictionary[0].value.length).eql(2);
 
       // mock planner and resolver
@@ -440,5 +442,26 @@ describe("Kernel", () => {
       expect(plannerCreatePlanStub.callCount).eql(2);
 
   });
+
+    it("Should be able to get a string literal identifier as a string", () => {
+        let IKatana = "IKatana";
+        let kernel = new Kernel();
+        let KatanaStr = kernel.getServiceIdentifierAsString(IKatana);
+        expect(KatanaStr).to.eql("IKatana");
+    });
+
+    it("Should be able to get a symbol identifier as a string", () => {
+        let IKatanaSymbol = Symbol("IKatana");
+        let kernel = new Kernel();
+        let KatanaStr = kernel.getServiceIdentifierAsString(IKatanaSymbol);
+        expect(KatanaStr).to.eql("Symbol(IKatana)");
+    });
+
+    it("Should be able to get a class identifier as a string", () => {
+        class Katana {}
+        let kernel = new Kernel();
+        let KatanaStr = kernel.getServiceIdentifierAsString(Katana);
+        expect(KatanaStr).to.eql("Katana");
+    });
 
 });

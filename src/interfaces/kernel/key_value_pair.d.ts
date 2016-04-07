@@ -1,4 +1,4 @@
 interface IKeyValuePair<T> {
-    key: (string|Symbol|any);
+    serviceIdentifier: (string|Symbol|any);
     value: Array<T>;
 }

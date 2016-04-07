@@ -28,7 +28,7 @@ describe("Plan", () => {
       let plan = new Plan(context, request);
 
       expect(plan.parentContext).eql(context);
-      expect(plan.rootRequest.service).eql(request.service);
+      expect(plan.rootRequest.serviceIdentifier).eql(request.serviceIdentifier);
       expect(plan.rootRequest.parentContext).eql(request.parentContext);
       expect(plan.rootRequest.parentRequest).eql(request.parentRequest);
       expect(plan.rootRequest.childRequests).eql(request.childRequests);
