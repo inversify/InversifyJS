@@ -1843,25 +1843,275 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support a whenParentNamed contextual bindings constraint");
+    it("Should support a whenParentNamed contextual bindings constraint", () => {
 
-    it("Should support a whenParentTagged contextual bindings constraint");
+        let TYPES = {
+            IMaterial: "IMaterial",
+            INinja: "INinja",
+            IWeapon: "IWeapon"
+        };
 
-    it("Should support a whenAnyAncestorIs contextual bindings constraint");
+        interface IMaterial {
+            name: string;
+        }
 
-    it("Should support a whenNoAncestorIs contextual bindings constraint");
+        @injectable()
+        class Wood implements IMaterial {
+            public name: string;
+            public constructor() {
+                this.name = "wood";
+            }
+        }
 
-    it("Should support a whenAnyAncestorNamed contextual bindings constraint");
+        @injectable()
+        class Iron implements IMaterial {
+            public name: string;
+            public constructor() {
+                this.name = "iron";
+            }
+        }
 
-    it("Should support a whenAnyAncestorTagged contextual bindings constraint");
+        interface IWeapon {
+            material: IMaterial;
+        }
 
-    it("Should support a whenNoAncestorNamed contextual bindings constraint");
+        @injectable()
+        class Sword implements IWeapon {
+            public material: IMaterial;
+            public constructor(@inject("IMaterial") material: IMaterial) {
+                this.material = material;
+            }
+        }
 
-    it("Should support a whenNoAncestorTagged contextual bindings constraint");
+        interface INinja {
+            weapon: IWeapon;
+        }
 
-    it("Should support a whenAnyAncestorMatches contextual bindings constraint");
+        @injectable()
+        class NinjaStudent implements INinja {
 
-    it("Should support a whenNoAncestorMatches contextual bindings constraint");
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @named("non-letal") weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        @injectable()
+        class NinjaMaster implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @named("letal") weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenParentNamed("letal");
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenParentNamed("non-letal");
+
+        let master = kernel.getTagged<INinja>(TYPES.INinja, "master", true);
+        let student = kernel.getTagged<INinja>(TYPES.INinja, "master", false);
+
+        expect(master.weapon.material.name).eql("iron");
+        expect(student.weapon.material.name).eql("wood");
+
+    });
+
+    it("Should support a whenParentTagged contextual bindings constraint", () => {
+
+        let TYPES = {
+            IMaterial: "IMaterial",
+            INinja: "INinja",
+            IWeapon: "IWeapon"
+        };
+
+        interface IMaterial {
+            name: string;
+        }
+
+        @injectable()
+        class Wood implements IMaterial {
+            public name: string;
+            public constructor() {
+                this.name = "wood";
+            }
+        }
+
+        @injectable()
+        class Iron implements IMaterial {
+            public name: string;
+            public constructor() {
+                this.name = "iron";
+            }
+        }
+
+        interface IWeapon {
+            material: IMaterial;
+        }
+
+        @injectable()
+        class Sword implements IWeapon {
+            public material: IMaterial;
+            public constructor(@inject("IMaterial") material: IMaterial) {
+                this.material = material;
+            }
+        }
+
+        interface INinja {
+            weapon: IWeapon;
+        }
+
+        @injectable()
+        class NinjaStudent implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @tagged("letal", false) weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        @injectable()
+        class NinjaMaster implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @tagged("letal", true) weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenParentTagged("letal", true);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenParentTagged("letal", false);
+
+        let master = kernel.getTagged<INinja>(TYPES.INinja, "master", true);
+        let student = kernel.getTagged<INinja>(TYPES.INinja, "master", false);
+
+        expect(master.weapon.material.name).eql("iron");
+        expect(student.weapon.material.name).eql("wood");
+
+    });
+
+    it("Should support a whenAnyAncestorIs and whenNoAncestorIs contextual bindings constraint", () => {
+
+        let TYPES = {
+            IMaterial: "IMaterial",
+            INinja: "INinja",
+            IWeapon: "IWeapon"
+        };
+
+        interface IMaterial {
+            name: string;
+        }
+
+        @injectable()
+        class Wood implements IMaterial {
+            public name: string;
+            public constructor() {
+                this.name = "wood";
+            }
+        }
+
+        @injectable()
+        class Iron implements IMaterial {
+            public name: string;
+            public constructor() {
+                this.name = "iron";
+            }
+        }
+
+        interface IWeapon {
+            material: IMaterial;
+        }
+
+        @injectable()
+        class Sword implements IWeapon {
+            public material: IMaterial;
+            public constructor(@inject("IMaterial") material: IMaterial) {
+                this.material = material;
+            }
+        }
+
+        interface INinja {
+            weapon: IWeapon;
+        }
+
+        @injectable()
+        class NinjaStudent implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        @injectable()
+        class NinjaMaster implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        // whenAnyAncestorIs
+        let kernel = new Kernel();
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenAnyAncestorIs(NinjaMaster);
+        kernel.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenAnyAncestorIs(NinjaStudent);
+
+        let master = kernel.getTagged<INinja>(TYPES.INinja, "master", true);
+        let student = kernel.getTagged<INinja>(TYPES.INinja, "master", false);
+
+        expect(master.weapon.material.name).eql("iron");
+        expect(student.weapon.material.name).eql("wood");
+
+        // whenAnyAncestorIs
+        let kernel2 = new Kernel();
+        kernel2.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel2.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel2.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Iron).whenNoAncestorIs(NinjaStudent);
+        kernel2.bind<IMaterial>(TYPES.IMaterial).to(Wood).whenNoAncestorIs(NinjaMaster);
+
+        let master2 = kernel2.getTagged<INinja>(TYPES.INinja, "master", true);
+        let student2 = kernel2.getTagged<INinja>(TYPES.INinja, "master", false);
+
+        expect(master2.weapon.material.name).eql("iron");
+        expect(student2.weapon.material.name).eql("wood");
+
+    });
+
+    it("Should support a whenAnyAncestorNamed and whenNoAncestorNamed contextual bindings constraint");
+
+    it("Should support a whenAnyAncestorTagged and whenNoAncestorTaggedcontextual bindings constraint");
+
+    it("Should support a whenAnyAncestorMatches and whenNoAncestorMatches contextual bindings constraint");
 
     it("Should support a complex custom contextual bindings constraint helpers");
 
