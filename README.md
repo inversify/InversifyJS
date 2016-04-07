@@ -223,7 +223,7 @@ return ninja;
 Let's take a look to the InversifyJS features!
 
 #### Support for classes
-InversifyJS allows your classes to have a direct dependency on other classes. When doing so you will need to use the `@injectavle` decorator but you will not be required to use the `@inject` decorator.
+InversifyJS allows your classes to have a direct dependency on other classes. When doing so you will need to use the `@injectable` decorator but you will not be required to use the `@inject` decorator.
 ```ts
 import { Kernel, injectable, inject } from "inversify";
 
