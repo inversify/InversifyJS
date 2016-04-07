@@ -41,7 +41,7 @@ InversifyJS has been developed with 3 main goals:
 
 You can get the latest release and the type definitions using npm:
 ```sh
-npm install inversify@2.0.0-alpha.8 --save
+npm install inversify@2.0.0--beta.1 --save
 ```
 > **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
@@ -50,7 +50,9 @@ The InversifyJS type definitions are included in the npm package:
 ```ts
 /// <reference path="node_modules/inversify/type_definitions/inversify/inversify.d.ts" />
 ```
-> **Note**: InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. If your environment don't support one of these you will need to import a shim or polyfill. Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/wiki/Environment-support-and-polyfills) page in the wiki to learn more.
+> **Note**: InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. 
+If your environment don't support one of these you will need to import a shim or polyfill. Check out the 
+[Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
 
 InversifyJS requires the following TypeScript compilation options in your `tsconfig.json` file:
 
@@ -217,7 +219,7 @@ var ninja = kernel.get(TYPES.Ninja);
 return ninja;
 ```
 
-### Features (v2.0.0-alpha.8)
+### Features
 Let's take a look to the InversifyJS features!
 
 #### Support for classes
@@ -876,7 +878,7 @@ identify the location of the problem if a circular dependency is detected:
 Error: Circular dependency found between services: IKatana and INinja
 ```
 
-Plese refer to the [wiki](https://github.com/inversify/InversifyJS/wiki) for additional details.
+Plese refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) for additional details.
 
 ### Examples
 Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
@@ -889,7 +891,7 @@ If you are experience any kind of issues we will be happy to help. You can repor
 
 If you want to share your thoughts with the development team or join us you will be able to do so using the
 [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
-[development wiki](https://github.com/inversify/InversifyJS/wiki) and browse the
+[wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) and browse the
 [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
 ### License
