@@ -18,25 +18,25 @@ class Lookup<T> implements ILookup<T> {
     }
 
 	// adds a new KeyValuePair to _dictionary
-    public add(key: (string|Symbol|any), value: T): void {
+    public add(serviceIdentifier: (string|Symbol|any), value: T): void {
 
-        if (key === null || key === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); };
+        if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); };
         if (value === null || value === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); };
 
-        let index = this.getIndexByKey(key);
+        let index = this.getIndexByKey(serviceIdentifier);
         if (index !== -1) {
             this._dictionary[index].value.push(value);
         } else {
-            this._dictionary.push(new KeyValuePair(key, value));
+            this._dictionary.push(new KeyValuePair(serviceIdentifier, value));
         }
     }
 
-    // gets the value of a KeyValuePair by its key
-    public get(key: (string|Symbol|any)): Array<T> {
+    // gets the value of a KeyValuePair by its serviceIdentifier
+    public get(serviceIdentifier: (string|Symbol|any)): Array<T> {
 
-        if (key === null || key === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
+        if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
-        let index = this.getIndexByKey(key);
+        let index = this.getIndexByKey(serviceIdentifier);
         if (index !== -1) {
             return this._dictionary[index].value;
         } else {
@@ -44,12 +44,12 @@ class Lookup<T> implements ILookup<T> {
         }
     }
 
-	// removes a KeyValuePair from _dictionary by its key
-    public remove(key: (string|Symbol|any)): void {
+	// removes a KeyValuePair from _dictionary by its serviceIdentifier
+    public remove(serviceIdentifier: (string|Symbol|any)): void {
 
-        if (key === null || key === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
+        if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
-        let index = this.getIndexByKey(key);
+        let index = this.getIndexByKey(serviceIdentifier);
         if (index !== -1) {
             this._dictionary.splice(index, 1);
         } else {
@@ -57,12 +57,12 @@ class Lookup<T> implements ILookup<T> {
         }
     }
 
-    // returns true if _dictionary contains key
-    public hasKey(key: (string|Symbol|any)): boolean {
+    // returns true if _dictionary contains serviceIdentifier
+    public hasKey(serviceIdentifier: (string|Symbol|any)): boolean {
 
-        if (key === null || key === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
+        if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
-        let index = this.getIndexByKey(key);
+        let index = this.getIndexByKey(serviceIdentifier);
         if (index !== -1) {
             return true;
         } else {
@@ -70,12 +70,12 @@ class Lookup<T> implements ILookup<T> {
         }
     }
 
-	// finds the location of a KeyValuePair pair in _dictionary by its key
-    private getIndexByKey(key: (string|Symbol|any)): number {
+	// finds the location of a KeyValuePair pair in _dictionary by its serviceIdentifier
+    private getIndexByKey(serviceIdentifier: (string|Symbol|any)): number {
         let index = -1;
         for (let i = 0; i < this._dictionary.length; i++) {
             let keyValuePair = this._dictionary[i];
-            if (keyValuePair.key === key) {
+            if (keyValuePair.serviceIdentifier === serviceIdentifier) {
                 index = i;
             }
         }

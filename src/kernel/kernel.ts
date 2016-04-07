@@ -53,18 +53,18 @@ class Kernel implements IKernel {
     }
 
     // Regiters a type binding
-    public bind<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T> {
-        let binding = new Binding<T>(runtimeIdentifier);
-        this._bindingDictionary.add(runtimeIdentifier, binding);
+    public bind<T>(serviceIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T> {
+        let binding = new Binding<T>(serviceIdentifier);
+        this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }
 
     // Removes a type binding from the registry by its key
-    public unbind(runtimeIdentifier: (string|Symbol|any)): void {
+    public unbind(serviceIdentifier: (string|Symbol|any)): void {
         try {
-            this._bindingDictionary.remove(runtimeIdentifier);
+            this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
-            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${runtimeIdentifier}`);
+            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${serviceIdentifier}`);
         }
     }
 
@@ -76,31 +76,31 @@ class Kernel implements IKernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
-    public get<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T {
-        return this._get<T>(runtimeIdentifier, null);
+    public get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T {
+        return this._get<T>(serviceIdentifier, null);
     }
 
-    public getNamed<T>(runtimeIdentifier: (string|Symbol|INewable<T>), named: string): T {
-        return this.getTagged<T>(runtimeIdentifier, METADATA_KEY.NAMED_TAG, named);
+    public getNamed<T>(serviceIdentifier: (string|Symbol|INewable<T>), named: string): T {
+        return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    public getTagged<T>(runtimeIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T {
+    public getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T {
         let metadata = new Metadata(key, value);
-        let target = new Target(null, runtimeIdentifier, metadata);
-        return this._get<T>(runtimeIdentifier, target);
+        let target = new Target(null, serviceIdentifier, metadata);
+        return this._get<T>(serviceIdentifier, target);
     }
 
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
-    public getAll<T>(runtimeIdentifier: (string|Symbol|INewable<T>)): T[] {
+    public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
 
-        let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
+        let bindings = this._planner.getBindings<T>(this, serviceIdentifier);
 
         switch (bindings.length) {
 
             // CASE 1: There are no bindings
             case BindingCount.NoBindingsAvailable:
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
+                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
 
             // CASE 2: There is AT LEAST 1 binding    
             case BindingCount.OnlyOneBindingAvailable:
@@ -112,15 +112,28 @@ class Kernel implements IKernel {
         }
     }
 
-    private _get<T>(runtimeIdentifier: (string|Symbol|INewable<T>), target: ITarget): T {
+    public getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string {
+        let type = typeof serviceIdentifier;
+        if (type === "function") {
+            let _serviceIdentifier: any = serviceIdentifier;
+            return _serviceIdentifier.name;
+        } else if (type === "symbol") {
+            return serviceIdentifier.toString();
+        } else { // string
+            let _serviceIdentifier: any = serviceIdentifier;
+            return _serviceIdentifier;
+        }
+    }
 
-        let bindings = this._planner.getBindings<T>(this, runtimeIdentifier);
+    private _get<T>(serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T {
+
+        let bindings = this._planner.getBindings<T>(this, serviceIdentifier);
 
         // Filter bindings using the target and the binding constraints
         if (target !== null) {
 
             let request = new Request(
-                runtimeIdentifier,
+                serviceIdentifier,
                 this._planner.createContext(this),
                 null,
                 bindings,
@@ -133,7 +146,7 @@ class Kernel implements IKernel {
         if (bindings.length === BindingCount.NoBindingsAvailable) {
 
             // CASE 1: There are no bindings
-            throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${runtimeIdentifier}`);
+            throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
 
         } else if (bindings.length === BindingCount.OnlyOneBindingAvailable) {
 
@@ -143,7 +156,7 @@ class Kernel implements IKernel {
         } else {
 
             // CASE 3: There are multiple bindings
-            throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${runtimeIdentifier}`);
+            throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
 
         }
 

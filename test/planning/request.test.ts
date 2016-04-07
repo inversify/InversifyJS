@@ -38,7 +38,7 @@ describe("Request", () => {
           null
       );
 
-      expect(request1.service).eql(identifiers.INinja);
+      expect(request1.serviceIdentifier).eql(identifiers.INinja);
       expect(Array.isArray(request1.bindings)).eql(true);
       expect(Array.isArray(request2.bindings)).eql(true);
 
@@ -101,11 +101,11 @@ describe("Request", () => {
 
       let katanaRequest = ninjaRequest.childRequests[0];
 
-      expect(katanaRequest.service).eql(identifiers.IKatana);
-      expect(katanaRequest.parentRequest.service).eql(identifiers.INinja);
+      expect(katanaRequest.serviceIdentifier).eql(identifiers.IKatana);
+      expect(katanaRequest.parentRequest.serviceIdentifier).eql(identifiers.INinja);
       expect(katanaRequest.childRequests.length).eql(0);
       expect(katanaRequest.target.name.value()).eql("katana");
-      expect(katanaRequest.target.service).eql(identifiers.IKatana);
+      expect(katanaRequest.target.serviceIdentifier).eql(identifiers.IKatana);
   });
 
 });

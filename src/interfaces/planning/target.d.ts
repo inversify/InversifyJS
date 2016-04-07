@@ -2,7 +2,7 @@
 /// <reference path="./metadata.d.ts" />
 
 interface ITarget {
-    service: (string|Symbol|INewable<any>);
+    serviceIdentifier: (string|Symbol|INewable<any>);
     name: IQueryableString;
     metadata: Array<IMetadata>;
     hasTag(key: string): boolean;
@@ -10,7 +10,6 @@ interface ITarget {
     matchesArray(name: string|Symbol|any): boolean;
     isNamed(): boolean;
     isTagged(): boolean;
-    getServiceAsString(): string;
     matchesNamedTag(name: string): boolean;
     matchesTag(key: string): (value: any) => boolean;
 }

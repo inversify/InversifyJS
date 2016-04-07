@@ -6,13 +6,13 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 
 class Target implements ITarget {
 
-  public service: (string|Symbol|INewable<any>);
+  public serviceIdentifier: (string|Symbol|INewable<any>);
   public name: QueryableString;
   public metadata: Array<IMetadata>;
 
-  constructor(name: string, service: (string|Symbol|INewable<any>), namedOrTagged?: (string|IMetadata)) {
+  constructor(name: string, serviceIdentifier: (string|Symbol|INewable<any>), namedOrTagged?: (string|IMetadata)) {
 
-    this.service = service;
+    this.serviceIdentifier = serviceIdentifier;
     this.name = new QueryableString(name || "");
     this.metadata = new Array<IMetadata>();
     let metadataItem: IMetadata = null;
@@ -78,19 +78,6 @@ class Target implements ITarget {
         }
         return false;
     };
-  }
-
-  public getServiceAsString(): string {
-      let type = typeof this.service;
-      if (type === "function") {
-          let _service: any = this.service;
-          return _service.name;
-      } else if (type === "symbol") {
-          return this.service.toString();
-      } else { // string
-          let _service: any = this.service;
-          return _service;
-      }
   }
 
 }

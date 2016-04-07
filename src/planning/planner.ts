@@ -17,7 +17,7 @@ class Planner implements IPlanner {
     public createPlan(context: IContext, binding: IBinding<any>, target: ITarget): IPlan {
 
         let rootRequest = new Request(
-            binding.runtimeIdentifier,
+            binding.serviceIdentifier,
             context,
             null,
             binding,
@@ -33,19 +33,19 @@ class Planner implements IPlanner {
         return plan;
     }
 
-    public getBindings<T>(kernel: IKernel, service: (string|Symbol|INewable<T>)): IBinding<T>[] {
+    public getBindings<T>(kernel: IKernel, serviceIdentifier: (string|Symbol|INewable<T>)): IBinding<T>[] {
         let bindings: IBinding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
-        if (_bindingDictionary.hasKey(service)) {
-            bindings = _bindingDictionary.get(service);
+        if (_bindingDictionary.hasKey(serviceIdentifier)) {
+            bindings = _bindingDictionary.get(serviceIdentifier);
         }
         return bindings;
     }
 
     public getActiveBindings(parentRequest: IRequest, target: ITarget): IBinding<any>[] {
 
-        let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.service);
+        let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.serviceIdentifier);
         let activeBindings: IBinding<any>[] = [];
 
         if (bindings.length > 1 && target.isArray() === false) {
@@ -54,7 +54,7 @@ class Planner implements IPlanner {
             activeBindings = bindings.filter((binding) => {
 
                 let request =  new Request(
-                    binding.runtimeIdentifier,
+                    binding.serviceIdentifier,
                     parentRequest.parentContext,
                     parentRequest,
                     binding,
@@ -80,12 +80,14 @@ class Planner implements IPlanner {
             if (activeBindings.length === 0) {
 
                 // no matching bindings found
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${target.getServiceAsString()}`);
+                let serviceIdentifier = parentRequest.parentContext.kernel.getServiceIdentifierAsString(target.serviceIdentifier);
+                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
 
             } else if (activeBindings.length > 1 && target.isArray() === false) {
 
                 // more than one matching binding found but target is not an array
-                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${target.getServiceAsString()}`);
+                let serviceIdentifier = parentRequest.parentContext.kernel.getServiceIdentifierAsString(target.serviceIdentifier);
+                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
 
             } else {
 
@@ -107,13 +109,13 @@ class Planner implements IPlanner {
     private _createChildRequest(parentRequest: IRequest, target: ITarget, bindings: IBinding<any>[]) {
 
         // Use the only active binding to create a child request
-        let childRequest = parentRequest.addChildRequest(target.service, bindings, target);
+        let childRequest = parentRequest.addChildRequest(target.serviceIdentifier, bindings, target);
         let subChildRequest = childRequest;
 
         bindings.forEach((binding) => {
 
             if (target.isArray()) {
-                subChildRequest = childRequest.addChildRequest(binding.runtimeIdentifier, binding, target);
+                subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
             }
 
             // Only try to plan sub-dependencies when binding type is BindingType.Instance
@@ -130,22 +132,23 @@ class Planner implements IPlanner {
     }
 
     private _throwWhenCircularDependenciesFound(
-        request: IRequest, previousServices: (string|Symbol|INewable<any>)[] = []
+        request: IRequest, previousServiceIdentifiers: (string|Symbol|INewable<any>)[] = []
     ) {
 
-        previousServices.push(request.service);
+        previousServiceIdentifiers.push(request.serviceIdentifier);
 
         request.childRequests.forEach((childRequest) => {
 
-            let service = childRequest.service;
-            if (previousServices.indexOf(service) === -1) {
+            let serviceIdentifier = childRequest.serviceIdentifier;
+            if (previousServiceIdentifiers.indexOf(serviceIdentifier) === -1) {
                 if (childRequest.childRequests.length > 0) {
-                    this._throwWhenCircularDependenciesFound(childRequest, previousServices);
+                    this._throwWhenCircularDependenciesFound(childRequest, previousServiceIdentifiers);
                 } else {
-                    previousServices.push(service);
+                    previousServiceIdentifiers.push(serviceIdentifier);
                 }
             } else {
-                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${service} and ${request.service}`);
+                let tailServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${serviceIdentifier} and ${tailServiceIdentifier}`);
             }
 
         });

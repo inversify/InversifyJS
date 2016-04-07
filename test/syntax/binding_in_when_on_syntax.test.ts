@@ -29,7 +29,7 @@ describe("BindingInWhenOnSyntax", () => {
         // cast to any to be able to access private props
         let _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
 
-        expect(_bindingInWhenOnSyntax._binding.runtimeIdentifier).eql(ninjaIdentifier);
+        expect(_bindingInWhenOnSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
 
     });
 

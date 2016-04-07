@@ -9,7 +9,7 @@ describe("Target", () => {
 
     it("Should be able to create instances of untagged tagets", () => {
         let target = new Target("katana", "IKatana");
-        expect(target.service).to.be.eql("IKatana");
+        expect(target.serviceIdentifier).to.be.eql("IKatana");
         expect(target.name.value()).to.be.eql("katana");
         expect(Array.isArray(target.metadata)).to.be.eql(true);
         expect(target.metadata.length).to.be.eql(0);
@@ -17,7 +17,7 @@ describe("Target", () => {
 
     it("Should be able to create instances of named tagets", () => {
         let target = new Target("katana", "IKatana", "primary");
-        expect(target.service).to.be.eql("IKatana");
+        expect(target.serviceIdentifier).to.be.eql("IKatana");
         expect(target.name.value()).to.be.eql("katana");
         expect(Array.isArray(target.metadata)).to.be.eql(true);
         expect(target.metadata.length).to.be.eql(1);
@@ -27,7 +27,7 @@ describe("Target", () => {
 
     it("Should be able to create instances of tagged tagets", () => {
         let target = new Target("katana", "IKatana", new Metadata("power", 5));
-        expect(target.service).to.be.eql("IKatana");
+        expect(target.serviceIdentifier).to.be.eql("IKatana");
         expect(target.name.value()).to.be.eql("katana");
         expect(Array.isArray(target.metadata)).to.be.eql(true);
         expect(target.metadata.length).to.be.eql(1);
@@ -85,27 +85,6 @@ describe("Target", () => {
         let target1 = new Target("katana", "IKatana", new Metadata("power", 5));
         expect(target1.matchesTag("power")(5)).to.be.eql(true);
         expect(target1.matchesTag("power")(2)).to.be.eql(false);
-    });
-
-    it("Should be able to get a string literal identifier as a string", () => {
-        let IKatana = "IKatana";
-        let target = new Target("katana", IKatana);
-        let KatanaStr = target.getServiceAsString();
-        expect(KatanaStr).to.eql("IKatana");
-    });
-
-    it("Should be able to get a symbol identifier as a string", () => {
-        let IKatanaSymbol = Symbol("IKatana");
-        let target = new Target("katana", IKatanaSymbol);
-        let KatanaStr = target.getServiceAsString();
-        expect(KatanaStr).to.eql("Symbol(IKatana)");
-    });
-
-    it("Should be able to get a class identifier as a string", () => {
-        class Katana {}
-        let target = new Target("katana", Katana);
-        let KatanaStr = target.getServiceAsString();
-        expect(KatanaStr).to.eql("Katana");
     });
 
 });

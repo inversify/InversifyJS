@@ -33,7 +33,7 @@ describe("Context", () => {
       let plan = new Plan(context, ninjaRequest);
       context.addPlan(plan);
 
-      expect(context.plan.rootRequest.service).eql("INinja");
+      expect(context.plan.rootRequest.serviceIdentifier).eql("INinja");
   });
 
 });

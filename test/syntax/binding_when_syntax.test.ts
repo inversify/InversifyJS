@@ -21,7 +21,7 @@ describe("BindingWhenSyntax", () => {
         // cast to any to be able to access private props
         let _bindingWhenSyntax: any = bindingWhenSyntax;
 
-        expect(_bindingWhenSyntax._binding.runtimeIdentifier).eql(ninjaIdentifier);
+        expect(_bindingWhenSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
 
     });
 

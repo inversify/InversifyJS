@@ -26,8 +26,8 @@ let typeConstraint = (type: (Function|string)) => (request: IRequest) => {
     let binding = request.bindings[0];
 
     if (typeof type === "string") {
-        let runtimeIdentifier = binding.runtimeIdentifier;
-        return runtimeIdentifier === type;
+        let serviceIdentifier = binding.serviceIdentifier;
+        return serviceIdentifier === type;
     } else {
         let constructor = request.bindings[0].implementationType;
         return type === constructor;

@@ -2,7 +2,7 @@
 
 class Request implements IRequest {
 
-        public service: (string|Symbol|INewable<any>);
+        public serviceIdentifier: (string|Symbol|INewable<any>);
         public parentContext: IContext;
         public parentRequest: IRequest;
         public bindings: IBinding<any>[];
@@ -10,13 +10,13 @@ class Request implements IRequest {
         public target: ITarget;
 
         public constructor(
-            service: (string|Symbol|INewable<any>),
+            serviceIdentifier: (string|Symbol|INewable<any>),
             parentContext: IContext,
             parentRequest: IRequest,
             bindings: (IBinding<any>|IBinding<any>[]),
             target: ITarget = null) {
 
-                this.service = service;
+                this.serviceIdentifier = serviceIdentifier;
                 this.parentContext = parentContext;
                 this.parentRequest = parentRequest;
                 this.target = target;
@@ -25,12 +25,12 @@ class Request implements IRequest {
         }
 
         public addChildRequest(
-            service: string,
+            serviceIdentifier: string,
             bindings: (IBinding<any>|IBinding<any>[]),
             target: ITarget): IRequest {
 
                 let child = new Request(
-                    service,
+                    serviceIdentifier,
                     this.parentContext,
                     this,
                     bindings,
