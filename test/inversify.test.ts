@@ -1771,52 +1771,98 @@ describe("InversifyJS", () => {
 
     });
 
-    describe("Contextual bindings contraints", () => {
+    it("Should support a whenInjectedInto contextual bindings constraint", () => {
 
-        interface IWeapon {}
+        let TYPES = {
+            INinja: "INinja",
+            IWeapon: "IWeapon"
+        };
 
-        @injectable()
-        class Katana implements IWeapon { }
-
-        @injectable()
-        class Shuriken implements IWeapon {}
-
-        interface INinja {
-            katana: IWeapon;
-            shuriken: IWeapon;
+        interface IWeapon {
+            name: string;
         }
 
         @injectable()
-        class Ninja implements INinja {
-
-            public katana: IWeapon;
-            public shuriken: IWeapon;
-
-            public constructor(
-                @inject("IWeapon") @paramName("katana") katana: IWeapon,
-                @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
-            ) {
-                this.katana = katana;
-                this.shuriken = shuriken;
+        class Katana implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "katana";
             }
         }
 
-        it("Should support contextual bindings with a type constraint the request target");
+        @injectable()
+        class Bokken implements IWeapon {
+            public name: string;
+            public constructor() {
+                this.name = "bokken";
+            }
+        }
 
-        it("Should support contextual bindings with a named constraint the request target");
-        it("Should support contextual bindings with a taget constraint the request target");
-        it("Should support contextual bindings with a type constraint the request parent");
-        it("Should support contextual bindings with a type named the target of the request parent");
-        it("Should support contextual bindings with a type tagged the target of the request parent");
-        it("Should support contextual bindings with a type constraint to some of its ancestors");
-        it("Should support contextual bindings with a type constraint to none of its ancestors");
-        it("Should support contextual bindings with a named constraint to some of its ancestors");
-        it("Should support contextual bindings with a named constraint to none of its ancestors");
-        it("Should support contextual bindings with a tagged constraint to some of its ancestors");
-        it("Should support contextual bindings with a tagged constraint to none of its ancestors");
-        it("Should support contextual bindings with a custom constraint to some of its ancestors");
-        it("Should support contextual bindings with a custom constraint to none of its ancestors");
+        interface INinja {
+            weapon: IWeapon;
+        }
+
+        @injectable()
+        class NinjaStudent implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @paramName("weapon") weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        @injectable()
+        class NinjaMaster implements INinja {
+
+            public weapon: IWeapon;
+
+            public constructor(
+                @inject("IWeapon") @paramName("weapon") weapon: IWeapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<INinja>(TYPES.INinja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Katana).whenInjectedInto(NinjaMaster);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Bokken).whenInjectedInto(NinjaStudent);
+
+        let master = kernel.getTagged<INinja>(TYPES.INinja, "master", true);
+        let student = kernel.getTagged<INinja>(TYPES.INinja, "master", false);
+
+        expect(master instanceof NinjaMaster).eql(true);
+        expect(student instanceof NinjaStudent).eql(true);
+
+        expect(master.weapon.name).eql("katana");
+        expect(student.weapon.name).eql("bokken");
 
     });
+
+    it("Should support a whenParentNamed contextual bindings constraint");
+
+    it("Should support a whenParentTagged contextual bindings constraint");
+
+    it("Should support a whenAnyAncestorIs contextual bindings constraint");
+
+    it("Should support a whenNoAncestorIs contextual bindings constraint");
+
+    it("Should support a whenAnyAncestorNamed contextual bindings constraint");
+
+    it("Should support a whenAnyAncestorTagged contextual bindings constraint");
+
+    it("Should support a whenNoAncestorNamed contextual bindings constraint");
+
+    it("Should support a whenNoAncestorTagged contextual bindings constraint");
+
+    it("Should support a whenAnyAncestorMatches contextual bindings constraint");
+
+    it("Should support a whenNoAncestorMatches contextual bindings constraint");
+
+    it("Should support a complex custom contextual bindings constraint helpers");
 
 });

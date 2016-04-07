@@ -1,4 +1,4 @@
-// Type definitions for inversify 2.0.0-alpha.8
+// Type definitions for inversify 2.0.0-beta.1
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped

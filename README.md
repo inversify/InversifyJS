@@ -41,7 +41,7 @@ InversifyJS has been developed with 3 main goals:
 
 You can get the latest release and the type definitions using npm:
 ```sh
-npm install inversify@2.0.0-alpha.8 --save
+npm install inversify@2.0.0--beta.1 --save
 ```
 > **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
@@ -217,7 +217,7 @@ var ninja = kernel.get(TYPES.Ninja);
 return ninja;
 ```
 
-### Features (v2.0.0-alpha.8)
+### Features
 Let's take a look to the InversifyJS features!
 
 #### Support for classes
