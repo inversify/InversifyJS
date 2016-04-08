@@ -41,7 +41,7 @@ InversifyJS has been developed with 3 main goals:
 
 You can get the latest release and the type definitions using npm:
 ```sh
-npm install inversify@2.0.0--beta.1 --save
+npm install inversify@2.0.0-beta.1 --save
 ```
 > **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
@@ -223,7 +223,7 @@ return ninja;
 Let's take a look to the InversifyJS features!
 
 #### Support for classes
-InversifyJS allows your classes to have a direct dependency on other classes. When doing so you will need to use the `@injectavle` decorator but you will not be required to use the `@inject` decorator.
+InversifyJS allows your classes to have a direct dependency on other classes. When doing so you will need to use the `@injectable` decorator but you will not be required to use the `@inject` decorator.
 ```ts
 import { Kernel, injectable, inject } from "inversify";
 
