@@ -451,8 +451,8 @@ class Ninja implements INinja {
         this.shuriken = shuriken;
     }
 
-    public fight() { return this._katana.hit(); };
-    public sneak() { return this._shuriken.throw(); };
+    public fight() { return this.katana.hit(); };
+    public sneak() { return this.shuriken.throw(); };
 
 }
 ```
