@@ -1705,7 +1705,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should be able to inject into a supper constructor", () => {
+    it("Should be able to inject into a super constructor", () => {
 
         const SYMBOLS = {
             ISamurai: Symbol("ISamurai"),
@@ -1732,6 +1732,7 @@ describe("InversifyJS", () => {
 
         // Important: notice no anotations required in base class
         // However, it is recommended to annotate it as well
+        @injectable()
         class Samurai implements IWarrior {
 
             public weapon: IWeapon;
@@ -1770,6 +1771,41 @@ describe("InversifyJS", () => {
         let samuraiMaster2 = kernel.get<IWarrior>(SYMBOLS.ISamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
         expect(typeof (<any>samuraiMaster2).isMaster).eql("boolean");
+
+    });
+
+    it("Should be able to inject a regular derived class", () => {
+
+        const SYMBOLS = {
+            ISamuraiMaster: Symbol("ISamuraiMaster"),
+        };
+
+        interface ISamurai {
+            rank: string;
+        }
+
+        class Samurai implements ISamurai {
+
+            public rank: string;
+
+            public constructor(rank: string) {
+                this.rank = rank;
+            }
+        }
+
+        @injectable()
+        class SamuraiMaster extends Samurai implements ISamurai {
+            constructor() {
+                super("Master");
+            }
+        }
+
+
+        const kernel = new Kernel();
+        kernel.bind<ISamurai>(SYMBOLS.ISamuraiMaster).to(SamuraiMaster);
+
+        let samurai = kernel.get<ISamurai>(SYMBOLS.ISamuraiMaster);
+        expect(samurai.rank).eql("Master");
 
     });
 

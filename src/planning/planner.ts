@@ -91,8 +91,8 @@ class Planner implements IPlanner {
 
             } else {
 
-                // one ore more than one matching bindings found 
-                // when more than 1 matching bindings found target is an array 
+                // one ore more than one matching bindings found
+                // when more than 1 matching bindings found target is an array
                 this._createChildRequest(parentRequest, target, activeBindings);
 
             }
@@ -188,7 +188,7 @@ class Planner implements IPlanner {
             let multiInject: any = targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG];
             let targetName: any = targetMetadataMap[METADATA_KEY.NAME_TAG];
 
-            // Take type to be injected from user-generated metadata 
+            // Take type to be injected from user-generated metadata
             // if not available use compiler-generated metadata
             targetType = (inject || multiInject) ? (inject || multiInject) : targetType;
 
@@ -207,7 +207,7 @@ class Planner implements IPlanner {
         }
 
         // Throw if a derived class does not implement its constructor explicitly
-        // We do this to prevent errors when a base class (parent) has dependencies 
+        // We do this to prevent errors when a base class (parent) has dependencies
         // and one of the derived classes (children) has no dependencies
         if (targets.length === 0 && this._baseClassHasDepencencies(func)) {
             throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
@@ -218,8 +218,11 @@ class Planner implements IPlanner {
 
     private _baseClassHasDepencencies(func: Function): boolean {
         let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
+
         if (baseConstructor !== Object) {
-            if (baseConstructor.length > 0) {
+            let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, baseConstructor);
+
+            if (baseConstructor.length > 0 && targetsTypes) {
                 return true;
             } else {
                 return this._baseClassHasDepencencies(baseConstructor);
