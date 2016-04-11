@@ -14,8 +14,8 @@ var gulp        = require("gulp"),
     buffer      = require("vinyl-buffer"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
-    sourcemaps  = require('gulp-sourcemaps'),
-    coveralls   = require("gulp-coveralls"),
+    sourcemaps  = require("gulp-sourcemaps"),
+    codecov     = require("gulp-codecov"),
     uglify      = require("gulp-uglify"),
     typedoc     = require("gulp-typedoc"),
     rename      = require("gulp-rename"),
@@ -178,7 +178,7 @@ gulp.task("istanbul:hook", function() {
 gulp.task("cover", function() {
   if (!process.env.CI) return;
   return gulp.src("coverage/**/lcov.info")
-      .pipe(coveralls());
+      .pipe(codecov());
 });
 
 gulp.task("test", function(cb) {
