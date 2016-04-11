@@ -1730,7 +1730,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        // Important: notice no anotations required in derived class
+        // Important: notice no anotations required in base class
         // However, it is recommended to annotate it as well
         class Samurai implements IWarrior {
 
