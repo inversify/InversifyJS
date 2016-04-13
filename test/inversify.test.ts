@@ -561,6 +561,70 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should support the injection of user defined factories with args", () => {
+
+        interface INinja {
+            fight(): string;
+            sneak(): string;
+        }
+
+        interface IWeapon {
+            use(): string;
+        }
+
+        @injectable()
+        class Katana implements IWeapon {
+            public use() {
+                return "katana!";
+            }
+        }
+
+        @injectable()
+        class Shuriken implements IWeapon {
+            public use() {
+                return "shuriken!";
+            }
+        }
+
+        @injectable()
+        class NinjaWithUserDefinedFactory implements INinja {
+
+            private _katana: IWeapon;
+            private _shuriken: IWeapon;
+
+            public constructor(
+                @inject("IFactory<IWeapon>") weaponFactory: IFactory<IWeapon>
+            ) {
+                this._katana = weaponFactory(false);
+                this._shuriken = weaponFactory(true);
+            }
+
+            public fight() { return this._katana.use(); };
+            public sneak() { return this._shuriken.use(); };
+
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>("INinja").to(NinjaWithUserDefinedFactory);
+        kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetTagged("throwable", true);
+        kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetTagged("throwable", false);
+        kernel.bind<IFactory<IWeapon>>("IFactory<IWeapon>").toFactory<IWeapon>((context) => {
+            return (throwable: boolean) => {
+                if (throwable) {
+                    return context.kernel.getTagged<IWeapon>("IWeapon", "throwable", true);
+                } else {
+                    return context.kernel.getTagged<IWeapon>("IWeapon", "throwable", false);
+                }
+            };
+        });
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja.fight()).eql("katana!");
+        expect(ninja.sneak()).eql("shuriken!");
+
+    });
+
     it("Should support the injection of auto factories", () => {
 
         interface INinja {
