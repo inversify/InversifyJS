@@ -114,4 +114,5 @@ This can also be represented as:
 ```ts
 Ninja --> IKatana <-- Katana
 ```
-Have you notice how now we the arrow is now inverted?
+
+Have you notice how one of the arrows is now inverted?
