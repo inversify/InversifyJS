@@ -403,6 +403,18 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
     };
 });
 ```
+You can also define a Factory with args:
+```ts
+kernel.bind<IFactory<IWeapon>>("IFactory<IWeapon>").toFactory<IWeapon>((context) => {
+    return (throwable: boolean) => {
+        if (throwable) {
+            return context.kernel.getTagged<IWeapon>("IWeapon", "throwable", true);
+        } else {
+            return context.kernel.getTagged<IWeapon>("IWeapon", "throwable", false);
+        }
+    };
+});
+```
 
 #### Auto factory
 Binds an abstraction to a auto-generated Factory.

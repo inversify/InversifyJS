@@ -1,5 +1,5 @@
 /// <reference path="../interfaces.d.ts" />
 
 interface IFactory<T> extends Function {
-    (): T;
+    (...args: any[]): T;
 }
