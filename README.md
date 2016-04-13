@@ -3,6 +3,7 @@
 [![Build Status](https://secure.travis-ci.org/inversify/InversifyJS.svg?branch=master)](https://travis-ci.org/inversify/InversifyJS)
 [![codecov.io](https://codecov.io/github/inversify/InversifyJS/coverage.svg?branch=master)](https://codecov.io/github/inversify/InversifyJS?branch=master)
 [![npm version](https://badge.fury.io/js/inversify.svg)](http://badge.fury.io/js/inversify)
+[![Package Quality](http://npm.packagequality.com/shield/inversify.svg)](http://packagequality.com/#?package=inversify)
 [![Dependencies](https://david-dm.org/inversify/InversifyJS.svg)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/dev-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=devDependencies)
 [![img](https://david-dm.org/inversify/InversifyJS/peer-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=peerDependenciess)
