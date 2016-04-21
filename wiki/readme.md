@@ -9,6 +9,7 @@ Welcome to the InversifyJS wiki!
 - [Object-oriented design](https://github.com/inversify/InversifyJS/blob/master/wiki/oo_design.md)
 - [Good practices](https://github.com/inversify/InversifyJS/blob/master/wiki/good_practices.md)
 - [How to upgrade from 1.x to 2.x](https://github.com/inversify/InversifyJS/blob/master/wiki/upgrade.md)
+- [Recipes](https://github.com/inversify/InversifyJS/blob/master/wiki/recipes.md)
 - [Middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md)
 - [Architecture overview](https://github.com/inversify/InversifyJS/blob/master/wiki/architecture.md)
 - [Glossary](https://github.com/inversify/InversifyJS/blob/master/wiki/glossary.md)
