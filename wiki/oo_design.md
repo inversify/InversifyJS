@@ -33,7 +33,7 @@ The problem with the code snippet above is that the `DerivedModel` is thighly co
 In this case we used the `extends` keyword. This is particularly bad because there is no way to break the 
 coupling caused by the class inheritance.
 
-The following exmaple do something similar but it favors 'object composition' over 'class inheritance':
+The following example do something similar but it favors 'object composition' over 'class inheritance':
 
 ```ts
 @injectable()
