@@ -44,7 +44,7 @@
     "gulp-mocha": "^2.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-tslint": "^4.3.1",
+    "gulp-tslint": "^5.0.0",
     "gulp-typedoc": "^1.2.1",
     "gulp-typescript": "^2.12.1",
     "gulp-uglify": "^1.5.1",
