@@ -3,10 +3,11 @@
 enum BindingType {
   Invalid = 0,
   Instance = 1,
-  Value = 2,
-  Constructor = 3,
-  Factory = 4,
-  Provider = 5
+  ConstantValue = 2,
+  DynamicValue = 3,
+  Constructor = 4,
+  Factory = 5,
+  Provider = 6
 }
 
 export default BindingType;
