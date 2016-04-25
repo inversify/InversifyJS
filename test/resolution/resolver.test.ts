@@ -402,7 +402,7 @@ describe("Resolver", () => {
 
     @injectable()
     class UseDate implements IUseDate {
-        public currentDate: Date
+        public currentDate: Date;
         public constructor(@inject("Date") currentDate: Date) {
             this.currentDate = currentDate;
         }
@@ -420,7 +420,7 @@ describe("Resolver", () => {
     expect(subject1.currentDate === subject2.currentDate).eql(false);
 
     kernel.unbind("Date");
-    kernel.bind<Date>("Date").toValue(() => { new Date(); });
+    kernel.bind<Date>("Date").toConstantValue(new Date());
 
     let subject3 = kernel.get<IUseDate>("IUseDate");
     let subject4 = kernel.get<IUseDate>("IUseDate");
