@@ -108,7 +108,8 @@ module external_module_test {
 
     // binding types
     kernel.bind<IKatana>("IKatana").to(Katana);
-    kernel.bind<IKatana>("IKatana").toValue(new Katana());
+    kernel.bind<IKatana>("IKatana").toConstantValue(new Katana());
+    kernel.bind<IKatana>("IKatana").toDynamicValue(() => { new Katana(); });
 
     kernel.bind<INewable<IKatana>>("IKatana").toConstructor<IKatana>(Katana);
 
