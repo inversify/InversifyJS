@@ -394,7 +394,7 @@ describe("Resolver", () => {
 
   });
 
-  it("Should be able to resolve BindingType.ConstantValue bindings", () => {
+  it("Should be able to resolve BindingType.DynamicValue bindings", () => {
 
     interface IUseDate {
         doSomething();
