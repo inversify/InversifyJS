@@ -413,7 +413,7 @@ describe("Resolver", () => {
 
     let kernel = new Kernel();
     kernel.bind<IUseDate>("IUseDate").to(UseDate);
-    kernel.bind<Date>("Date").toDynamicValue(() => { new Date(); });
+    kernel.bind<Date>("Date").toDynamicValue(() => { return new Date(); });
 
     let subject1 = kernel.get<IUseDate>("IUseDate");
     let subject2 = kernel.get<IUseDate>("IUseDate");
