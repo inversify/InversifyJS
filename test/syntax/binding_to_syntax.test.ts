@@ -43,7 +43,7 @@ describe("BindingToSyntax", () => {
         bindingToSyntax.toConstantValue(new Ninja());
         expect(binding.type).eql(BindingType.ConstantValue);
         expect(binding.cache instanceof Ninja).eql(true);
-        
+
         bindingToSyntax.toDynamicValue(() => { return new Ninja(); });
         expect(binding.type).eql(BindingType.DynamicValue);
         expect(typeof binding.cache.eql("function");
