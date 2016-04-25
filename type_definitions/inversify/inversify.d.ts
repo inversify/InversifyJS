@@ -135,6 +135,7 @@ declare namespace inversify {
         constraint: (request: IRequest) => boolean;
         onActivation: (context: IContext, injectable: T) => T;
         cache: T;
+        dynamicValue: () => T;
         scope: number; // BindingScope
         type: number; // BindingType
     }

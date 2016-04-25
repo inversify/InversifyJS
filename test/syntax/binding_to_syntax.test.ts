@@ -46,8 +46,8 @@ describe("BindingToSyntax", () => {
 
         bindingToSyntax.toDynamicValue(() => { return new Ninja(); });
         expect(binding.type).eql(BindingType.DynamicValue);
-        expect(typeof binding.cache.eql("function");
-        expect(binding.cache() instanceof Ninja).eql(true);
+        expect(typeof binding.dynamicValue).eql("function");
+        expect(binding.dynamicValue() instanceof Ninja).eql(true);
 
         bindingToSyntax.toConstructor<INinja>(Ninja);
         expect(binding.type).eql(BindingType.Constructor);

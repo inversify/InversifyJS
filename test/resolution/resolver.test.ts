@@ -397,7 +397,7 @@ describe("Resolver", () => {
   it("Should be able to resolve BindingType.DynamicValue bindings", () => {
 
     interface IUseDate {
-        doSomething();
+        doSomething(): Date;
     }
 
     @injectable()
@@ -417,14 +417,14 @@ describe("Resolver", () => {
 
     let subject1 = kernel.get<IUseDate>("IUseDate");
     let subject2 = kernel.get<IUseDate>("IUseDate");
-    expect(subject1.currentDate === subject2.currentDate).eql(false);
+    expect(subject1.doSomething() === subject2.doSomething()).eql(false);
 
     kernel.unbind("Date");
     kernel.bind<Date>("Date").toConstantValue(new Date());
 
     let subject3 = kernel.get<IUseDate>("IUseDate");
     let subject4 = kernel.get<IUseDate>("IUseDate");
-    expect(subject3.currentDate === subject4.currentDate).eql(true);
+    expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
   });
 

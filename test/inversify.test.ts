@@ -429,10 +429,44 @@ describe("InversifyJS", () => {
         }
 
         const kernel = new Kernel();
-        kernel.bind<IHero>(TYPES.IHero).toValue(new Hero());
+        kernel.bind<IHero>(TYPES.IHero).toConstantValue(new Hero());
         let hero = kernel.get<IHero>(TYPES.IHero);
 
         expect(hero.name).eql(heroName);
+
+    });
+
+    it("Should support the injection of dynamic values", () => {
+
+        interface IUseDate {
+            doSomething(): Date;
+        }
+
+        @injectable()
+        class UseDate implements IUseDate {
+            public currentDate: Date;
+            public constructor(@inject("Date") currentDate: Date) {
+                this.currentDate = currentDate;
+            }
+            public doSomething() {
+                return this.currentDate;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<IUseDate>("IUseDate").to(UseDate);
+        kernel.bind<Date>("Date").toDynamicValue(() => { return new Date(); });
+
+        let subject1 = kernel.get<IUseDate>("IUseDate");
+        let subject2 = kernel.get<IUseDate>("IUseDate");
+        expect(subject1.doSomething() === subject2.doSomething()).eql(false);
+
+        kernel.unbind("Date");
+        kernel.bind<Date>("Date").toConstantValue(new Date());
+
+        let subject3 = kernel.get<IUseDate>("IUseDate");
+        let subject4 = kernel.get<IUseDate>("IUseDate");
+        expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
     });
 

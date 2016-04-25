@@ -21,13 +21,15 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
     public toConstantValue(value: T): IBindingWhenOnSyntax<T> {
         this._binding.type = BindingType.ConstantValue;
         this._binding.cache = value;
+        this._binding.dynamicValue = null;
         this._binding.implementationType = null;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
     public toDynamicValue(func: () => T): IBindingWhenOnSyntax<T> {
         this._binding.type = BindingType.DynamicValue;
-        this._binding.cache = func;
+        this._binding.cache = null;
+        this._binding.dynamicValue = func;
         this._binding.implementationType = null;
         return new BindingWhenOnSyntax<T>(this._binding);
     }

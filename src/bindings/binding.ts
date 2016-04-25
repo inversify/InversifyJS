@@ -23,8 +23,11 @@ class Binding<T> implements IBinding<T> {
     // The constructor of a class which must implement T
     public implementationType: INewable<T>;
 
-    // Cache used to allow singleton scope and BindingType.Value bindings
+    // Cache used to allow singleton scope and BindingType.ConstantValue bindings
     public cache: T;
+
+    // Cache used to allow BindingType.DynamicValue bindings
+    public dynamicValue: () => T;
 
     // The scope mode to be used
     public scope: BindingScope;
