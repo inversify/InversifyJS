@@ -306,7 +306,7 @@ describe("Resolver", () => {
 
   });
 
-  it("Should be able to resolve BindingType.Value bindings", () => {
+  it("Should be able to resolve BindingType.ConstantValue bindings", () => {
 
       interface IKatanaBlade {}
 
@@ -360,7 +360,7 @@ describe("Resolver", () => {
       let kernel = new Kernel();
       kernel.bind<INinja>(ninjaId).to(Ninja);
       kernel.bind<IShuriken>(shurikenId).to(Shuriken);
-      kernel.bind<IKatana>(katanaId).toValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
+      kernel.bind<IKatana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
       let _kernel: any = kernel;
       let ninjaBinding = _kernel._bindingDictionary.get(ninjaId)[0];
@@ -391,6 +391,40 @@ describe("Resolver", () => {
       expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
       expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+  });
+
+  it("Should be able to resolve BindingType.DynamicValue bindings", () => {
+
+    interface IUseDate {
+        doSomething(): Date;
+    }
+
+    @injectable()
+    class UseDate implements IUseDate {
+        public currentDate: Date;
+        public constructor(@inject("Date") currentDate: Date) {
+            this.currentDate = currentDate;
+        }
+        public doSomething() {
+            return this.currentDate;
+        }
+    }
+
+    let kernel = new Kernel();
+    kernel.bind<IUseDate>("IUseDate").to(UseDate);
+    kernel.bind<Date>("Date").toDynamicValue(() => { return new Date(); });
+
+    let subject1 = kernel.get<IUseDate>("IUseDate");
+    let subject2 = kernel.get<IUseDate>("IUseDate");
+    expect(subject1.doSomething() === subject2.doSomething()).eql(false);
+
+    kernel.unbind("Date");
+    kernel.bind<Date>("Date").toConstantValue(new Date());
+
+    let subject3 = kernel.get<IUseDate>("IUseDate");
+    let subject4 = kernel.get<IUseDate>("IUseDate");
+    expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
   });
 

@@ -36,8 +36,12 @@ class Resolver implements IResolver {
 
             switch (binding.type) {
 
-                case BindingType.Value:
+                case BindingType.ConstantValue:
                     result = binding.cache;
+                    break;
+
+                case BindingType.DynamicValue:
+                    result = binding.dynamicValue();
                     break;
 
                 case BindingType.Constructor:

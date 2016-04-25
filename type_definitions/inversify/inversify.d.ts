@@ -71,7 +71,8 @@ declare namespace inversify {
 
     interface IBindingToSyntax<T> {
         to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T>;
-        toValue(value: T): IBindingWhenOnSyntax<T>;
+        toConstantValue(value: T): IBindingWhenOnSyntax<T>;
+        toDynamicValue(func: () => T): IBindingWhenOnSyntax<T>;
         toConstructor<T2>(constructor: INewable<T2>): IBindingWhenOnSyntax<T>;
         toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenOnSyntax<T>;
         toAutoFactory<T2>(serviceIdentifier: (string|Symbol|T2)): IBindingWhenOnSyntax<T>;
@@ -134,6 +135,7 @@ declare namespace inversify {
         constraint: (request: IRequest) => boolean;
         onActivation: (context: IContext, injectable: T) => T;
         cache: T;
+        dynamicValue: () => T;
         scope: number; // BindingScope
         type: number; // BindingType
     }

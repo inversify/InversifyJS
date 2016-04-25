@@ -40,9 +40,14 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingType.Instance);
         expect(binding.implementationType).not.to.eql(null);
 
-        bindingToSyntax.toValue(new Ninja());
-        expect(binding.type).eql(BindingType.Value);
+        bindingToSyntax.toConstantValue(new Ninja());
+        expect(binding.type).eql(BindingType.ConstantValue);
         expect(binding.cache instanceof Ninja).eql(true);
+
+        bindingToSyntax.toDynamicValue(() => { return new Ninja(); });
+        expect(binding.type).eql(BindingType.DynamicValue);
+        expect(typeof binding.dynamicValue).eql("function");
+        expect(binding.dynamicValue() instanceof Ninja).eql(true);
 
         bindingToSyntax.toConstructor<INinja>(Ninja);
         expect(binding.type).eql(BindingType.Constructor);
