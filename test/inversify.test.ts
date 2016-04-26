@@ -705,9 +705,9 @@ describe("InversifyJS", () => {
 
         @injectable()
         class DieselCarFactory implements ICarFactory {
-            private _dieselFactory: (...args: any[]) => IEngine ;
+            private _dieselFactory: (displacement: number) => IEngine ;
             constructor(
-                @inject("IFactory<IEngine>") factory: (...args: any[]) => (...args: any[]) => IEngine
+                @inject("IFactory<IEngine>") factory: (category: string) => (displacement: number) => IEngine
             ) {
                 this._dieselFactory = factory("diesel");
             }
