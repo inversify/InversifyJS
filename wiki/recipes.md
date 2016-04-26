@@ -4,14 +4,23 @@ This page contains some code snippets that showcase concrete advanced use cases 
 ## Injecting dependencies into a function
 
 You need to start by declaring your bindings just like in any other case:
+```ts
+let TYPES: {
+    something: "something",
+    somethingElse: "somethingElse"
+};
+
+export default TYPES;
+```
 
 ```ts
 let inversify = require("inversify@2.0.0-beta.1");
+import TYPES from "./constants/types";
 
 // declare your kernel
 let kernel = new inversify.Kernel();
-kernel.bind("something").toValue(1);
-kernel.bind("somethingElse").toValue(2);
+kernel.bind(TYPES.something).toValue(1);
+kernel.bind(TYPES.somethingElse).toValue(2);
 
 export default kernel;
 ```
@@ -35,13 +44,14 @@ Declare your function and bind its dependencies to its arguments using the `bind
 
 ```ts
 import bindDependencies from "./utils/bindDependencies";
+import TYPES from "./constants/types";
 
 function testFunc(something, somethingElse) {
   console.log(`Injected! ${something}`);
   console.log(`Injected! ${somethingElse}`);
 }
 
-testFunc = bindDependencies(testFunc, ["something", "somethingElse"]);
+testFunc = bindDependencies(testFunc, [TYPES.something, TYPES.somethingElse]);
 
 export default testFunc;
 ```
@@ -50,6 +60,7 @@ Use your function :smile:
 
 ```ts
 import testFunc from "./x/test_func";
+
 testFunc();
 
 // > Injected! 1
