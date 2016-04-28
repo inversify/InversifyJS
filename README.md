@@ -411,7 +411,9 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
     };
 });
 ```
+
 You can also define a Factory with args:
+
 ```ts
 kernel.bind<IFactory<IWeapon>>("IFactory<IWeapon>").toFactory<IWeapon>((context) => {
     return (throwable: boolean) => {
@@ -423,6 +425,7 @@ kernel.bind<IFactory<IWeapon>>("IFactory<IWeapon>").toFactory<IWeapon>((context)
     };
 });
 ```
+
 Sometimes you might need to pass arguments to a factory in different moments during the execution:
 ```ts
 kernel.bind<IEngine>("IEngine").to(PetrolEngine).whenTargetNamed("petrol");
