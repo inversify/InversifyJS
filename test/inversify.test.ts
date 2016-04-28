@@ -566,7 +566,7 @@ describe("InversifyJS", () => {
             private _shuriken: IShuriken;
 
             public constructor(
-                @inject("IFactory<IKatana>") katanaFactory: IFactory<IKatana>,
+                @inject("IFactory<IKatana>") katanaFactory: () => IKatana,
                 @inject("IShuriken") shuriken: IShuriken
             ) {
                 this._katana = katanaFactory();
@@ -627,7 +627,7 @@ describe("InversifyJS", () => {
             private _shuriken: IWeapon;
 
             public constructor(
-                @inject("IFactory<IWeapon>") weaponFactory: IFactory<IWeapon>
+                @inject("IFactory<IWeapon>") weaponFactory: (throwable: boolean) => IWeapon
             ) {
                 this._katana = weaponFactory(false);
                 this._shuriken = weaponFactory(true);
@@ -656,6 +656,87 @@ describe("InversifyJS", () => {
 
         expect(ninja.fight()).eql("katana!");
         expect(ninja.sneak()).eql("shuriken!");
+
+    });
+
+    it("Should support the injection of user defined factories with partial application", () => {
+
+        interface IInjectorPump {}
+
+        @injectable()
+        class InjectorPump implements IInjectorPump {}
+
+        interface ISparkPlugs {}
+
+        @injectable()
+        class SparkPlugs implements ISparkPlugs {}
+
+        class IEngine {
+            public displacement: number;
+        }
+
+        @injectable()
+        class DieselEngine implements IEngine {
+            public displacement: number;
+            private _injectorPump: IInjectorPump;
+            constructor(
+                @inject("IInjectorPump") injectorPump: IInjectorPump
+            ) {
+                this._injectorPump = injectorPump;
+                this.displacement = null;
+            }
+        }
+
+        @injectable()
+        class PetrolEngine implements IEngine {
+            public displacement: number;
+            private _sparkPlugs: ISparkPlugs;
+            constructor(
+                @inject("ISparkPlugs") sparkPlugs: ISparkPlugs
+            ) {
+                this._sparkPlugs = sparkPlugs;
+                this.displacement = null;
+            }
+        }
+
+        interface ICarFactory {
+            createEngine(displacement: number): IEngine;
+        }
+
+        @injectable()
+        class DieselCarFactory implements ICarFactory {
+            private _dieselFactory: (displacement: number) => IEngine ;
+            constructor(
+                @inject("IFactory<IEngine>") factory: (category: string) => (displacement: number) => IEngine
+            ) {
+                this._dieselFactory = factory("diesel");
+            }
+            public createEngine(displacement: number): IEngine {
+                return this._dieselFactory(displacement);
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<ISparkPlugs>("ISparkPlugs").to(SparkPlugs);
+        kernel.bind<IInjectorPump>("IInjectorPump").to(InjectorPump);
+        kernel.bind<IEngine>("IEngine").to(PetrolEngine).whenTargetNamed("petrol");
+        kernel.bind<IEngine>("IEngine").to(DieselEngine).whenTargetNamed("diesel");
+
+        kernel.bind<IFactory<IEngine>>("IFactory<IEngine>").toFactory<IEngine>((context) => {
+            return (named: string) => (displacement: number) => {
+                let engine = context.kernel.getNamed<IEngine>("IEngine", named);
+                engine.displacement = displacement;
+                return engine;
+            };
+        });
+
+        kernel.bind<ICarFactory>("IDieselCarFactory").to(DieselCarFactory);
+
+        let dieselCarFactory = kernel.get<ICarFactory>("IDieselCarFactory");
+        let engine = dieselCarFactory.createEngine(300);
+
+        expect(engine.displacement).eql(300);
+        expect(engine instanceof DieselEngine).eql(true);
 
     });
 
@@ -695,7 +776,7 @@ describe("InversifyJS", () => {
             private _shuriken: IShuriken;
 
             public constructor(
-                @inject("IFactory<IKatana>") katanaAutoFactory: IFactory<IKatana>,
+                @inject("IFactory<IKatana>") katanaAutoFactory: () => IKatana,
                 @inject("IShuriken") shuriken: IShuriken
             ) {
                 this._katana = katanaAutoFactory();

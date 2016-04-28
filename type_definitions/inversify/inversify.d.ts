@@ -83,7 +83,7 @@ declare namespace inversify {
     interface IBindingWhenOnSyntax<T> extends IBindingWhenSyntax<T>, IBindingOnSyntax<T> {}
 
     export interface IFactory<T> extends Function {
-        (...args: any[]): T;
+        (...args: any[]): (((...args: any[]) => T)|T);
     }
 
     interface IFactoryCreator<T> extends Function {
