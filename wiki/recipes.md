@@ -14,7 +14,7 @@ export default TYPES;
 ```
 
 ```ts
-let inversify = require("inversify@2.0.0-beta.1");
+let inversify = require("inversify");
 import TYPES from "./constants/types";
 
 // declare your kernel
