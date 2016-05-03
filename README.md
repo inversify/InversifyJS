@@ -943,6 +943,10 @@ If you want to share your thoughts with the development team or join us you will
 [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) and browse the
 [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
+### Acknowledgements
+
+Thanks a lot to all the [contributors](https://github.com/inversify/InversifyJS/graphs/contributors), all the developers out there using InversifyJS and all those that help us to spread the word by sharing content about InversifyJS online. Without your feedback and support this project would not be possible.
+
 ### License
 
 License under the MIT License (MIT)
