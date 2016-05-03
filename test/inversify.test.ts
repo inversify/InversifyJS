@@ -5,7 +5,8 @@ import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
 import {
     Kernel, injectable, inject, multiInject,
-    tagged, named, paramName, decorate, typeConstraint
+    tagged, named, paramName, decorate, typeConstraint,
+    makePropertyInjectDecorator
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -2619,6 +2620,50 @@ describe("InversifyJS", () => {
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
+
+    });
+
+    it("Should support property setter injection ", () => {
+
+        let kernel = new Kernel();
+        let inject = makePropertyInjectDecorator(kernel);
+
+        interface ISomeService {
+            count: number;
+            increment(): void;
+        }
+
+        @injectable()
+        class SomeService implements ISomeService {
+            public count: number;
+            public constructor() {
+                this.count = 0;
+            }
+            public increment() {
+                this.count = this.count + 1;
+            }
+        }
+
+        class SomeWebComponent {
+            @inject("ISomeService")
+            private _service: ISomeService;
+            public doSomething() {
+                let count =  this._service.count;
+                this._service.increment();
+                return count;
+            }
+        }
+
+        kernel.bind<ISomeService>("ISomeService").to(SomeService);
+
+        let someComponent = new SomeWebComponent();
+        expect(someComponent.doSomething()).eql(0);
+        expect(someComponent.doSomething()).eql(1);
+
+        let someComponent2 = new SomeWebComponent();
+        expect(someComponent.doSomething()).eql(2);
+        expect(someComponent2.doSomething()).eql(0);
+        expect(someComponent2.doSomething()).eql(1);
 
     });
 
