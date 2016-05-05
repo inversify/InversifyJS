@@ -8,29 +8,48 @@ function proxyGetter(
     proto: any,
     key: string,
     target: ITarget,
-    resolve: (kernel: IKernel, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => any,
-    value?: any
+    resolve: (kernel: IKernel, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => any
 ) {
+
+    let globalInjectionMap: WeakMap<any, any> = kernel._injectedProperties;
 
     let getter = function () {
 
-        // First time we access the property it is undefined
-        // We create a hidden property __${key}__ to store the value
-        // and override the getter the second time we access it
-        // the value is defined.
-        let val: any = value || this[`__${key}__`];
+        let instanceInjections: Map<string, any> = globalInjectionMap.get(this);
 
-        if (val === undefined) {
-            val = resolve(kernel, serviceIdentifier, target);
-            proxyGetter(kernel, serviceIdentifier, this, key, target, resolve, val);
+        if (instanceInjections == null) {
+            instanceInjections = new Map();
+            globalInjectionMap.set(this, instanceInjections);
         }
 
-        return val;
+        if (!instanceInjections.has(key)) {
+            let val = resolve(kernel, serviceIdentifier, target);
+            instanceInjections.set(key, val);
+        }
+
+        return instanceInjections.get(key);
+
+    };
+
+    let  setter = function(newVal: any) {
+
+        let instanceInjections: Map<string, any> = globalInjectionMap.get(this);
+
+        if (instanceInjections == null) {
+            instanceInjections = new Map();
+            globalInjectionMap.set(this, instanceInjections);
+        }
+
+        instanceInjections.set(key, newVal);
+
     };
 
     if (delete proto[key]) {
         Object.defineProperty(proto, key, {
-            get: getter
+            configurable: true,
+            enumerable: true,
+            get: getter,
+            set: setter
         });
     }
 }

@@ -6,6 +6,8 @@
 /// <reference path="./kernel/kernel_module.d.ts" />
 /// <reference path="./kernel/key_value_pair.d.ts" />
 /// <reference path="./kernel/lookup.d.ts" />
+/// <reference path="./kernel/weakmap.d.ts" />
+/// <reference path="./kernel/map.d.ts" />
 
 // ANNOTATION
 /// <reference path="./annotations/symbol.d.ts" />

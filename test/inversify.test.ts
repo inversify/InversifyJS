@@ -6,7 +6,7 @@ import * as Proxy from "harmony-proxy";
 import {
     Kernel, injectable, inject, multiInject,
     tagged, named, paramName, decorate, typeConstraint,
-    makePropertyInjectDecorator
+    makePropertyInjectDecorator, makePropertyMultiInjectDecorator
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -2664,6 +2664,69 @@ describe("InversifyJS", () => {
         expect(someComponent.doSomething()).eql(2);
         expect(someComponent2.doSomething()).eql(0);
         expect(someComponent2.doSomething()).eql(1);
+
+    });
+
+    it("Should support property setter multi-injection ", () => {
+
+        let kernel = new Kernel();
+        let multiInject = makePropertyMultiInjectDecorator(kernel);
+
+        let TYPES = { IWeapon: "IWeapon" };
+
+        interface IWeapon {
+            durability: number;
+            use(): void;
+        }
+
+        @injectable()
+        class Sword implements IWeapon {
+            public durability: number;
+            public constructor() {
+                this.durability = 100;
+            }
+            public use() {
+                this.durability = this.durability - 10;
+            }
+        }
+
+        @injectable()
+        class WarHammer implements IWeapon {
+            public durability: number;
+            public constructor() {
+                this.durability = 100;
+            }
+            public use() {
+                this.durability = this.durability - 10;
+            }
+        }
+
+        class Warrior {
+            @multiInject(TYPES.IWeapon)
+            public weapons: IWeapon[];
+        }
+
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(WarHammer);
+
+        let warrior1 = new Warrior();
+
+        expect(warrior1.weapons[0]).to.be.instanceof(Sword);
+        expect(warrior1.weapons[1]).to.be.instanceof(WarHammer);
+        expect(warrior1.weapons[0].durability).eql(100);
+        expect(warrior1.weapons[1].durability).eql(100);
+
+        warrior1.weapons[0].use();
+        warrior1.weapons[1].use();
+
+        expect(warrior1.weapons[0].durability).eql(90);
+        expect(warrior1.weapons[1].durability).eql(90);
+
+        let warrior2 = new Warrior();
+        expect(warrior1.weapons[0].durability).eql(90);
+        expect(warrior1.weapons[1].durability).eql(90);
+        expect(warrior2.weapons[0].durability).eql(100);
+        expect(warrior2.weapons[1].durability).eql(100);
 
     });
 
