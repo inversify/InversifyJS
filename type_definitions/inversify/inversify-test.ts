@@ -2,7 +2,7 @@
 
 import {
     Kernel,
-    injectable, tagged, named, paramName, inject, multiInject,
+    injectable, tagged, named, targetName, inject, multiInject,
     IKernel, INewable, IContext, IKernelModule, IFactory, IProvider, IRequest,
     traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint
 } from "inversify";
@@ -203,8 +203,8 @@ module external_module_test {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @inject("IWeapon") @paramName("katana") katana: IWeapon,
-            @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+            @inject("IWeapon") @targetName("katana") katana: IWeapon,
+            @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;

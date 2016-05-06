@@ -5,7 +5,7 @@ import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
 import {
     Kernel, injectable, inject, multiInject,
-    tagged, named, paramName, decorate, typeConstraint,
+    tagged, named, targetName, decorate, typeConstraint,
     makePropertyInjectDecorator, makePropertyMultiInjectDecorator
 } from "../src/inversify";
 
@@ -1718,7 +1718,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support contextual bindings and paramName annotation", () => {
+    it("Should support contextual bindings and targetName annotation", () => {
 
         interface IWeapon {}
 
@@ -1738,8 +1738,8 @@ describe("InversifyJS", () => {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                @inject("IWeapon") @paramName("katana") katana: IWeapon,
-                @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+                @inject("IWeapon") @targetName("katana") katana: IWeapon,
+                @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
@@ -2026,7 +2026,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @paramName("weapon") weapon: IWeapon
+                @inject("IWeapon") @targetName("weapon") weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -2038,7 +2038,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @paramName("weapon") weapon: IWeapon
+                @inject("IWeapon") @targetName("weapon") weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }

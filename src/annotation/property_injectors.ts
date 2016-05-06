@@ -1,14 +1,11 @@
 ///<reference path="../interfaces/interfaces.d.ts" />
 
-import Target from "../planning/target";
-
-function proxyGetter(
+function _proxyGetter(
     kernel: any,
     serviceIdentifier: (string|Symbol|INewable<any>),
     proto: any,
     key: string,
-    target: ITarget,
-    resolve: (kernel: IKernel, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => any
+    resolve: (kernel: IKernel, serviceIdentifier: (string|Symbol|INewable<any>)) => any
 ) {
 
     let globalInjectionMap: WeakMap<any, any> = kernel._injectedProperties;
@@ -23,7 +20,7 @@ function proxyGetter(
         }
 
         if (!instanceInjections.has(key)) {
-            let val = resolve(kernel, serviceIdentifier, target);
+            let val = resolve(kernel, serviceIdentifier);
             instanceInjections.set(key, val);
         }
 
@@ -44,36 +41,54 @@ function proxyGetter(
 
     };
 
-    if (delete proto[key]) {
-        Object.defineProperty(proto, key, {
-            configurable: true,
-            enumerable: true,
-            get: getter,
-            set: setter
-        });
-    }
-}
+    delete proto[key];
 
-function getPropertyTarget(proto: any, key: string, serviceIdentifier: (string|Symbol|INewable<any>)): ITarget {
+    Object.defineProperty(proto, key, {
+        configurable: true,
+        enumerable: true,
+        get: getter,
+        set: setter
+    });
 
-    let targetName: string = null;                // TODO read metadata
-    let namedOrTagged: (string|IMetadata) = null; // TODO read metadata
-
-    return new Target(targetName, serviceIdentifier, namedOrTagged);
 }
 
 function makePropertyInjectDecorator(kernel: IKernel) {
     return function(serviceIdentifier: (string|Symbol|INewable<any>)) {
         return function(proto: any, key: string): void {
 
-            let target: ITarget = getPropertyTarget(proto, key, serviceIdentifier);
+            let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>)) => {
+                return krln.get(srvId);
+            };
+            _proxyGetter(kernel, serviceIdentifier, proto, key, resolve);
 
-            let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>), trgt: ITarget) => {
-                return (<any>krln)._get(srvId, trgt);
+        };
+    };
+}
+
+function makePropertyInjectNamedDecorator(kernel: IKernel) {
+    return function(serviceIdentifier: (string|Symbol|INewable<any>), named: string) {
+        return function(proto: any, key: string): void {
+
+            let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>)) => {
+                return krln.getNamed(srvId, named);
             };
 
-            // First time we proxyGetter property is undefined
-            proxyGetter(kernel, serviceIdentifier, proto, key, target, resolve);
+            _proxyGetter(kernel, serviceIdentifier, proto, key, resolve);
+
+        };
+    };
+}
+
+function makePropertyInjectTaggedDecorator(kernel: IKernel) {
+    return function(serviceIdentifier: (string|Symbol|INewable<any>), key: string, value: any) {
+        return function(proto: any, propertyName: string): void {
+
+            let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>)) => {
+                return krln.getTagged(srvId, key, value);
+            };
+
+            _proxyGetter(kernel, serviceIdentifier, proto, propertyName, resolve);
+
         };
     };
 }
@@ -82,16 +97,19 @@ function makePropertyMultiInjectDecorator(kernel: IKernel) {
     return function(serviceIdentifier: (string|Symbol|INewable<any>)) {
         return function(proto: any, key: string): void {
 
-            let target: ITarget = getPropertyTarget(proto, key, serviceIdentifier);
-
-            let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>), trgt: ITarget) => {
+            let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>)) => {
                 return krln.getAll(srvId);
             };
 
-            // First time we proxyGetter property is undefined
-            proxyGetter(kernel, serviceIdentifier, proto, key, target, resolve);
+            _proxyGetter(kernel, serviceIdentifier, proto, key, resolve);
+
         };
     };
 }
 
-export { makePropertyInjectDecorator, makePropertyMultiInjectDecorator };
+export {
+    makePropertyInjectDecorator,
+    makePropertyMultiInjectDecorator,
+    makePropertyInjectTaggedDecorator,
+    makePropertyInjectNamedDecorator
+};

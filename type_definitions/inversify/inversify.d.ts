@@ -171,7 +171,7 @@ declare namespace inversify {
     export function injectable(): (typeConstructor: any) => void;
     export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index: number) => any;
     export function named(name: string): (target: any, targetKey: string, index: number) => any;
-    export function paramName(name: string): (target: any, targetKey: string, index: number) => any;
+    export function targetName(name: string): (target: any, targetKey: string, index: number) => any;
     export function inject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index: number) => any;
     export function multiInject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index: number) => any;
 

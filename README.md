@@ -821,10 +821,10 @@ let katana = kernel.getTagged<IWeapon>("IWeapon", "faction", "samurai");
 let shuriken = kernel.getTagged<IWeapon>("IWeapon", "faction", "ninja");
 ```
 
-#### Contextual bindings & @paramNames
-The `@paramName` decorator is used to access the names of the constructor arguments from a
+#### Contextual bindings & @targetName
+The `@targetName` decorator is used to access the names of the constructor arguments from a
 contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...`
-becomes `constructor(a, b) { ...` after compression but thanks to `@paramName` we can still
+becomes `constructor(a, b) { ...` after compression but thanks to `@targetName` we can still
 refer to the design-time names `katana` and `shuriken` at runtime.
 
 ```ts
@@ -846,8 +846,8 @@ class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
     public constructor(
-        @inject("IWeapon") @paramName("katana") katana: IWeapon,
-        @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+        @inject("IWeapon") @targetName("katana") katana: IWeapon,
+        @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
     ) {
         this.katana = katana;
         this.shuriken = shuriken;

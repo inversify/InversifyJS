@@ -196,8 +196,8 @@ module global_module_test {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @inversify.inject("IWeapon") @inversify.paramName("katana") katana: IWeapon,
-            @inversify.inject("IWeapon") @inversify.paramName("shuriken") shuriken: IWeapon
+            @inversify.inject("IWeapon") @inversify.targetName("katana") katana: IWeapon,
+            @inversify.inject("IWeapon") @inversify.targetName("shuriken") shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;

@@ -12,7 +12,7 @@ import named from "./annotation/named";
 import inject from "./annotation/inject";
 import { makePropertyInjectDecorator, makePropertyMultiInjectDecorator } from "./annotation/property_injectors";
 import multiInject from "./annotation/multi_inject";
-import paramName from "./annotation/param_name";
+import targetName from "./annotation/param_name";
 import { decorate } from "./annotation/decorator_utils";
 import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 
@@ -24,7 +24,7 @@ export { named };
 export { inject };
 export { makePropertyInjectDecorator, makePropertyMultiInjectDecorator };
 export { multiInject };
-export { paramName };
+export { targetName };
 export { traverseAncerstors };
 export { taggedConstraint };
 export { namedConstraint };

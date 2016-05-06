@@ -13,7 +13,7 @@ import inject from "../../src/annotation/inject";
 import multiInject from "../../src/annotation/multi_inject";
 import tagged from "../../src/annotation/tagged";
 import named from "../../src/annotation/named";
-import paramName from "../../src/annotation/param_name";
+import targetName from "../../src/annotation/param_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import BindingType from "../../src/bindings/binding_type";
 import * as Proxy from "harmony-proxy";
@@ -52,8 +52,8 @@ describe("Resolver", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(
-              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
-              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+              @inject("IKatanaHandler") @targetName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @targetName("blade") blade: IKatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -75,8 +75,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatana") @paramName("katana") katana: IKatana,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatana") @targetName("katana") katana: IKatana,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -156,8 +156,8 @@ describe("Resolver", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(
-              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
-              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+              @inject("IKatanaHandler") @targetName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @targetName("blade") blade: IKatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -179,8 +179,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatana") @paramName("katana") katana: IKatana,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatana") @targetName("katana") katana: IKatana,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -270,8 +270,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatana") @paramName("katana") katana: IKatana,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatana") @targetName("katana") katana: IKatana,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -345,8 +345,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatana") @paramName("katana") katana: IKatana,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatana") @targetName("katana") katana: IKatana,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -450,8 +450,8 @@ describe("Resolver", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(
-              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
-              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+              @inject("IKatanaHandler") @targetName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @targetName("blade") blade: IKatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -471,8 +471,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatana") @paramName("katana") katana: IKatana,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatana") @targetName("katana") katana: IKatana,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = new Katana(new KatanaHandler(), new KatanaBlade());  // IMPORTANT!
               this.shuriken = shuriken;
@@ -539,8 +539,8 @@ describe("Resolver", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(
-              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
-              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+              @inject("IKatanaHandler") @targetName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @targetName("blade") blade: IKatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -562,8 +562,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatanaFactory") @paramName("makeKatana") makeKatana: IKatanaFactory,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatanaFactory") @targetName("makeKatana") makeKatana: IKatanaFactory,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = makeKatana(); // IMPORTANT!
               this.shuriken = shuriken;
@@ -641,8 +641,8 @@ describe("Resolver", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(
-              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
-              @inject("IKatanaBlade") @paramName("blade") blade: IKatanaBlade
+              @inject("IKatanaHandler") @targetName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @targetName("blade") blade: IKatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -664,8 +664,8 @@ describe("Resolver", () => {
           public katana: IKatana;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IKatanaFactory") @paramName("makeKatana") makeKatana: IKatanaFactory,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IKatanaFactory") @targetName("makeKatana") makeKatana: IKatanaFactory,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = makeKatana(); // IMPORTANT!
               this.shuriken = shuriken;
@@ -739,8 +739,8 @@ describe("Resolver", () => {
           public handler: IKatanaHandler;
           public blade: IKatanaBlade;
           public constructor(
-              @inject("IKatanaHandler") @paramName("handler") handler: IKatanaHandler,
-              @inject("IKatanaBlade") @paramName("handler") blade: IKatanaBlade
+              @inject("IKatanaHandler") @targetName("handler") handler: IKatanaHandler,
+              @inject("IKatanaBlade") @targetName("handler") blade: IKatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -764,8 +764,8 @@ describe("Resolver", () => {
           public katanaProvider: IProvider<IKatana>;
           public shuriken: IShuriken;
           public constructor(
-              @inject("IProvider<IKatana>") @paramName("katanaProvider") katanaProvider: IProvider<IKatana>,
-              @inject("IShuriken") @paramName("shuriken") shuriken: IShuriken
+              @inject("IProvider<IKatana>") @targetName("katanaProvider") katanaProvider: IProvider<IKatana>,
+              @inject("IShuriken") @targetName("shuriken") shuriken: IShuriken
           ) {
               this.katana = null;
               this.katanaProvider = katanaProvider;
@@ -845,8 +845,8 @@ describe("Resolver", () => {
           public katana: IWeapon;
           public shuriken: IWeapon;
           public constructor(
-              @inject("IWeapon") @paramName("katana") @tagged("canThrow", false) katana: IWeapon,
-              @inject("IWeapon") @paramName("shuriken") @tagged("canThrow", true) shuriken: IWeapon
+              @inject("IWeapon") @targetName("katana") @tagged("canThrow", false) katana: IWeapon,
+              @inject("IWeapon") @targetName("shuriken") @tagged("canThrow", true) shuriken: IWeapon
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -897,8 +897,8 @@ describe("Resolver", () => {
           public katana: IWeapon;
           public shuriken: IWeapon;
           public constructor(
-              @inject("IWeapon") @paramName("katana") @named("strong")katana: IWeapon,
-              @inject("IWeapon") @paramName("shuriken") @named("weak") shuriken: IWeapon
+              @inject("IWeapon") @targetName("katana") @named("strong")katana: IWeapon,
+              @inject("IWeapon") @targetName("shuriken") @named("weak") shuriken: IWeapon
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -949,8 +949,8 @@ describe("Resolver", () => {
           public katana: IWeapon;
           public shuriken: IWeapon;
           public constructor(
-              @inject("IWeapon") @paramName("katana") katana: IWeapon,
-              @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+              @inject("IWeapon") @targetName("katana") katana: IWeapon,
+              @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
@@ -1012,7 +1012,7 @@ describe("Resolver", () => {
           public katana: IWeapon;
           public shuriken: IWeapon;
           public constructor(
-              @multiInject("IWeapon") @paramName("weapons") weapons: IWeapon[]
+              @multiInject("IWeapon") @targetName("weapons") weapons: IWeapon[]
           ) {
               this.katana = weapons[0];
               this.shuriken = weapons[1];

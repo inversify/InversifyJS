@@ -7,29 +7,43 @@ interface IReflectResult {
     [key: string]: IMetadata[];
 }
 
-function tagParameter(target: any, targetKey: string, index: number, metadata: IMetadata) {
+function tagParameter(annotationTarget: any, propertyName: string, parameterIndex: number, metadata: IMetadata) {
+    let metadataKey = METADATA_KEY.TAGGED;
+    return _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
+}
 
-    let paramsMetadata: IReflectResult = null;
+function tagProperty(annotationTarget: any, propertyName: string, metadata: IMetadata) {
+    let metadataKey = METADATA_KEY.TAGGED_PROP;
+    return _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
+}
+
+function _tagParameterOrProperty(
+    metadataKey: string, annotationTarget: any, propertyName: string, metadata: IMetadata, parameterIndex?: number
+) {
+
+    let paramsOrPropertiesMetadata: IReflectResult = null;
+    let isParameterDecorator = (typeof parameterIndex === "number");
+    let key: string = (isParameterDecorator) ? parameterIndex.toString() : propertyName;
 
     // this decorator can be used in a constructor not a method
-    if (targetKey !== undefined) {
+    if (isParameterDecorator && propertyName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
 
     // read metadata if avalible
-    if (Reflect.hasOwnMetadata(METADATA_KEY.TAGGED, target) !== true) {
-        paramsMetadata = {};
+    if (Reflect.hasOwnMetadata(metadataKey, annotationTarget) !== true) {
+        paramsOrPropertiesMetadata = {};
     } else {
-        paramsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, target);
+        paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
     }
 
     // get metadata for the decorated parameter by its index
-    let paramMetadata: IMetadata[] = paramsMetadata[index.toString()];
-    if (Array.isArray(paramMetadata) !== true) {
-        paramMetadata = [];
+    let paramOrPropertyMetadata: IMetadata[] = paramsOrPropertiesMetadata[key];
+    if (Array.isArray(paramOrPropertyMetadata) !== true) {
+        paramOrPropertyMetadata = [];
     } else {
-        for (let i = 0; i < paramMetadata.length; i++) {
-            let m: IMetadata = paramMetadata[i];
+        for (let i = 0; i < paramOrPropertyMetadata.length; i++) {
+            let m: IMetadata = paramOrPropertyMetadata[i];
             if (m.key === metadata.key) {
                 throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${m.key}`);
             }
@@ -37,10 +51,11 @@ function tagParameter(target: any, targetKey: string, index: number, metadata: I
     }
 
     // set metadata
-    paramMetadata.push(metadata);
-    paramsMetadata[index.toString()] = paramMetadata;
-    Reflect.defineMetadata(METADATA_KEY.TAGGED, paramsMetadata, target);
-    return target;
+    paramOrPropertyMetadata.push(metadata);
+    paramsOrPropertiesMetadata[key] = paramOrPropertyMetadata;
+    Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
+    return annotationTarget;
+
 }
 
 function _decorate(decorators: ClassDecorator[], target: any): void {
@@ -53,7 +68,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator): ClassDecorat
 
 // Allows VanillaJS developers to use decorators:
 // decorate(injectable("IFoo", "IBar"), FooBar);
-// decorate(paramNames("foo", "bar"), FooBar);
+// decorate(targetName("foo", "bar"), FooBar);
 // decorate(named("foo"), FooBar, 0);
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
@@ -68,4 +83,4 @@ function decorate(
     }
 }
 
-export { decorate, tagParameter };
+export { decorate, tagParameter, tagProperty };
