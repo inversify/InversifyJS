@@ -4,7 +4,11 @@ import {
     Kernel,
     injectable, tagged, named, targetName, inject, multiInject,
     IKernel, INewable, IContext, IKernelModule, IFactory, IProvider, IRequest,
-    traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint
+    traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint,
+    makePropertyMultiInjectDecorator,
+    makePropertyInjectTaggedDecorator,
+    makePropertyInjectNamedDecorator,
+    makePropertyInjectDecorator,
 } from "inversify";
 
 import * as Proxy from "harmony-proxy";
@@ -332,4 +336,101 @@ module external_module_test {
     let ninja5 = kernel4.get<INinja>("INinja");
     console.log(ninja5);
 
+}
+
+module property_injection {
+
+    let kernel = new Kernel();
+
+    let TYPES = { IWeapon: "IWeapon" };
+
+    interface IWeapon {
+        durability: number;
+        use(): void;
+    }
+
+    @injectable()
+    class Sword implements IWeapon {
+        public durability: number;
+        public constructor() {
+            this.durability = 100;
+        }
+        public use() {
+            this.durability = this.durability - 10;
+        }
+    }
+
+    @injectable()
+    class WarHammer implements IWeapon {
+        public durability: number;
+        public constructor() {
+            this.durability = 100;
+        }
+        public use() {
+            this.durability = this.durability - 10;
+        }
+    }
+
+    let propertyMultiInject = makePropertyMultiInjectDecorator(kernel);
+
+    class Warrior1 {
+        @propertyMultiInject(TYPES.IWeapon)
+        public weapons: IWeapon[];
+    }
+
+    let propertyInject = makePropertyInjectDecorator(kernel);
+
+    interface ISomeService {
+        count: number;
+        increment(): void;
+    }
+
+    @injectable()
+    class SomeService implements ISomeService {
+        public count: number;
+        public constructor() {
+            this.count = 0;
+        }
+        public increment() {
+            this.count = this.count + 1;
+        }
+    }
+
+    class SomeWebComponent {
+        @propertyInject("ISomeService")
+        private _service: ISomeService;
+        public doSomething() {
+            let count =  this._service.count;
+            this._service.increment();
+            return count;
+        }
+    }
+
+    let propertyInjectNammed = makePropertyInjectNamedDecorator(kernel);
+
+    class Warrior2 {
+
+        @propertyInjectNammed(TYPES.IWeapon, "not-throwwable")
+        @named("not-throwwable")
+        public primaryWeapon: IWeapon;
+
+        @propertyInjectNammed(TYPES.IWeapon, "throwwable")
+        @named("throwwable")
+        public secondaryWeapon: IWeapon;
+
+    }
+
+    let propertyInjectTagged = makePropertyInjectTaggedDecorator(kernel);
+
+    class Warrior3 {
+
+        @propertyInjectTagged(TYPES.IWeapon, "throwwable", false)
+        @tagged("throwwable", false)
+        public primaryWeapon: IWeapon;
+
+        @propertyInjectTagged(TYPES.IWeapon, "throwwable", true)
+        @tagged("throwwable", true)
+        public secondaryWeapon: IWeapon;
+
+    }
 }

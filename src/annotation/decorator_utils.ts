@@ -25,8 +25,8 @@ function _tagParameterOrProperty(
     let isParameterDecorator = (typeof parameterIndex === "number");
     let key: string = (isParameterDecorator) ? parameterIndex.toString() : propertyName;
 
-    // this decorator can be used in a constructor not a method
-    if (isParameterDecorator && propertyName !== undefined) {
+    // If the decorator is used as a parameter decorator property name must be provided
+    if (isParameterDecorator === true && propertyName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
 

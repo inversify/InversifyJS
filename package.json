@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "A lightweight IoC container written in TypeScript.",
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
@@ -55,8 +55,8 @@
     "reflect-metadata": "^0.1.3",
     "run-sequence": "^1.1.5",
     "sinon": "^1.17.3",
-    "tsify": "^0.15.2",
-    "tslint": "^3.2.2",
+    "tsify": "^0.15.3",
+    "tslint": "^3.9.0",
     "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

@@ -2,7 +2,7 @@
 
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import targetName from "../../src/annotation/param_name";
+import targetName from "../../src/annotation/target_name";
 import injectable from "../../src/annotation/injectable";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as Stubs from "../utils/stubs";
@@ -36,25 +36,6 @@ describe("@targetName", () => {
         expect(metadata["0"][0].value).to.be.eql("katana");
         expect(metadata["1"][0].key).to.be.eql(METADATA_KEY.NAME_TAG);
         expect(metadata["1"][0].value).to.be.eql("shuriken");
-
-    });
-
-    it("Should generate metadata if declared property names", () => {
-
-        interface IWeapon {}
-
-        class Warrior {
-            @targetName("weapon")
-            public weapon: IWeapon;
-        }
-
-        let metadataKey = METADATA_KEY.TAGGED_PROP;
-        let metadata: any = Reflect.getMetadata(metadataKey, Warrior);
-
-        let m1 = metadata.weapon[0];
-        expect(m1.key).to.be.eql(METADATA_KEY.NAME_TAG);
-        expect(m1.value).to.be.eql("weapon");
-        expect(metadata.weapon[1]).to.be.undefined;
 
     });
 

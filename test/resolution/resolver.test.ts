@@ -13,7 +13,7 @@ import inject from "../../src/annotation/inject";
 import multiInject from "../../src/annotation/multi_inject";
 import tagged from "../../src/annotation/tagged";
 import named from "../../src/annotation/named";
-import targetName from "../../src/annotation/param_name";
+import targetName from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import BindingType from "../../src/bindings/binding_type";
 import * as Proxy from "harmony-proxy";

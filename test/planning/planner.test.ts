@@ -9,7 +9,7 @@ import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
 import injectable from "../../src/annotation/injectable";
-import targetName from "../../src/annotation/param_name";
+import targetName from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import tagged from "../../src/annotation/tagged";
 import inject from "../../src/annotation/inject";

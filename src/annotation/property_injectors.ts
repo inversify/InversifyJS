@@ -59,6 +59,7 @@ function makePropertyInjectDecorator(kernel: IKernel) {
             let resolve = (krln: IKernel, srvId: (string|Symbol|INewable<any>)) => {
                 return krln.get(srvId);
             };
+
             _proxyGetter(kernel, serviceIdentifier, proto, key, resolve);
 
         };

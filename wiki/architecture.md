@@ -35,7 +35,7 @@ The project's folder architecture groups the components that are related with on
 │   │   ├── decorator_utils.ts
 │   │   ├── inject.ts
 │   │   ├── named.ts
-│   │   ├── param_names.ts
+│   │   ├── target_name.ts
 │   │   └── tagged.ts
 │   ├── interfaces
 │   │   └── ...
