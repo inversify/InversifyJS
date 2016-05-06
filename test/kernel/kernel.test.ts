@@ -22,7 +22,6 @@ describe("Kernel", () => {
 
         function logger(next: (context: IContext) => any) {
             return (context: IContext) => {
-                console.log(context);
                 return next(context);
             };
         };

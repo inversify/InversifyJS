@@ -1,4 +1,4 @@
-// Type definitions for inversify 2.0.0-beta.2
+// Type definitions for inversify 2.0.0-beta.3
 // Project: https://github.com/inversify/InversifyJS
 // Definitions by: inversify <https://github.com/inversify>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -169,11 +169,23 @@ declare namespace inversify {
     export var Kernel: IKernelConstructor;
     export var decorate: (decorator: (ClassDecorator|ParameterDecorator), target: any, parameterIndex?: number) => void;
     export function injectable(): (typeConstructor: any) => void;
-    export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index: number) => any;
-    export function named(name: string): (target: any, targetKey: string, index: number) => any;
-    export function paramName(name: string): (target: any, targetKey: string, index: number) => any;
-    export function inject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index: number) => any;
-    export function multiInject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index: number) => any;
+    export function tagged(metadataKey: string, metadataValue: any): (target: any, targetKey: string, index?: number) => any;
+    export function named(name: string): (target: any, targetKey: string, index?: number) => any;
+    export function targetName(name: string): (target: any, targetKey: string, index: number) => any;
+    export function inject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index?: number) => any;
+    export function multiInject(serviceIdentifier: (string|Symbol|any)): (target: any, targetKey: string, index?: number) => any;
+
+    export function makePropertyInjectDecorator(kernel: IKernel):
+        (serviceIdentifier: (string|Symbol|INewable<any>)) => (proto: any, key: string) => void;
+
+    export function makePropertyInjectNamedDecorator(kernel: IKernel):
+        (serviceIdentifier: (string|Symbol|INewable<any>), named: string) => (proto: any, key: string) => void;
+
+    export function makePropertyInjectTaggedDecorator(kernel: IKernel):
+        (serviceIdentifier: (string|Symbol|INewable<any>), key: string, value: any) => (proto: any, propertyName: string) => void;
+
+    export function makePropertyMultiInjectDecorator(kernel: IKernel):
+        (serviceIdentifier: (string|Symbol|INewable<any>)) => (proto: any, key: string) => void;
 
     // constraint helpers
     export var traverseAncerstors: (request: IRequest, constraint: (request: IRequest) => boolean) => boolean;

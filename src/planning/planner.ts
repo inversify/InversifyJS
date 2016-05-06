@@ -176,6 +176,7 @@ class Planner implements IPlanner {
         for (let i = 0; i < func.length; i++) {
 
             let targetType = targetsTypes[i];
+
             // Create map from array of metadata for faster access to metadata
             let targetMetadata = targetsMetadata[i.toString()] || [];
             let targetMetadataMap: any = {};

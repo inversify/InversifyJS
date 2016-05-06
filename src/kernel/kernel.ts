@@ -33,6 +33,7 @@ class Kernel implements IKernel {
     private _resolver: IResolver;
     private _middleware: (context: IContext) => any;
     private _bindingDictionary: ILookup<IBinding<any>>;
+    private _injectedProperties: WeakMap<any, any>;
 
     // Initialize private properties
     public constructor() {
@@ -40,6 +41,7 @@ class Kernel implements IKernel {
         this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();
         this._middleware = null;
+        this._injectedProperties = new WeakMap();
     }
 
     public load(...modules: IKernelModule[]): void {

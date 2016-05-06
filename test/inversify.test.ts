@@ -5,7 +5,8 @@ import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Proxy from "harmony-proxy";
 import {
     Kernel, injectable, inject, multiInject,
-    tagged, named, paramName, decorate, typeConstraint
+    tagged, named, targetName, decorate, typeConstraint,
+    makePropertyInjectDecorator, makePropertyMultiInjectDecorator
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -1717,7 +1718,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support contextual bindings and paramName annotation", () => {
+    it("Should support contextual bindings and targetName annotation", () => {
 
         interface IWeapon {}
 
@@ -1737,8 +1738,8 @@ describe("InversifyJS", () => {
             public katana: IWeapon;
             public shuriken: IWeapon;
             public constructor(
-                @inject("IWeapon") @paramName("katana") katana: IWeapon,
-                @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+                @inject("IWeapon") @targetName("katana") katana: IWeapon,
+                @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
             ) {
                 this.katana = katana;
                 this.shuriken = shuriken;
@@ -2025,7 +2026,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @paramName("weapon") weapon: IWeapon
+                @inject("IWeapon") @targetName("weapon") weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -2037,7 +2038,7 @@ describe("InversifyJS", () => {
             public weapon: IWeapon;
 
             public constructor(
-                @inject("IWeapon") @paramName("weapon") weapon: IWeapon
+                @inject("IWeapon") @targetName("weapon") weapon: IWeapon
             ) {
                 this.weapon = weapon;
             }
@@ -2619,6 +2620,113 @@ describe("InversifyJS", () => {
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
+
+    });
+
+    it("Should support property setter injection ", () => {
+
+        let kernel = new Kernel();
+        let inject = makePropertyInjectDecorator(kernel);
+
+        interface ISomeService {
+            count: number;
+            increment(): void;
+        }
+
+        @injectable()
+        class SomeService implements ISomeService {
+            public count: number;
+            public constructor() {
+                this.count = 0;
+            }
+            public increment() {
+                this.count = this.count + 1;
+            }
+        }
+
+        class SomeWebComponent {
+            @inject("ISomeService")
+            private _service: ISomeService;
+            public doSomething() {
+                let count =  this._service.count;
+                this._service.increment();
+                return count;
+            }
+        }
+
+        kernel.bind<ISomeService>("ISomeService").to(SomeService);
+
+        let someComponent = new SomeWebComponent();
+        expect(someComponent.doSomething()).eql(0);
+        expect(someComponent.doSomething()).eql(1);
+
+        let someComponent2 = new SomeWebComponent();
+        expect(someComponent.doSomething()).eql(2);
+        expect(someComponent2.doSomething()).eql(0);
+        expect(someComponent2.doSomething()).eql(1);
+
+    });
+
+    it("Should support property setter multi-injection ", () => {
+
+        let kernel = new Kernel();
+        let multiInject = makePropertyMultiInjectDecorator(kernel);
+
+        let TYPES = { IWeapon: "IWeapon" };
+
+        interface IWeapon {
+            durability: number;
+            use(): void;
+        }
+
+        @injectable()
+        class Sword implements IWeapon {
+            public durability: number;
+            public constructor() {
+                this.durability = 100;
+            }
+            public use() {
+                this.durability = this.durability - 10;
+            }
+        }
+
+        @injectable()
+        class WarHammer implements IWeapon {
+            public durability: number;
+            public constructor() {
+                this.durability = 100;
+            }
+            public use() {
+                this.durability = this.durability - 10;
+            }
+        }
+
+        class Warrior {
+            @multiInject(TYPES.IWeapon)
+            public weapons: IWeapon[];
+        }
+
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(WarHammer);
+
+        let warrior1 = new Warrior();
+
+        expect(warrior1.weapons[0]).to.be.instanceof(Sword);
+        expect(warrior1.weapons[1]).to.be.instanceof(WarHammer);
+        expect(warrior1.weapons[0].durability).eql(100);
+        expect(warrior1.weapons[1].durability).eql(100);
+
+        warrior1.weapons[0].use();
+        warrior1.weapons[1].use();
+
+        expect(warrior1.weapons[0].durability).eql(90);
+        expect(warrior1.weapons[1].durability).eql(90);
+
+        let warrior2 = new Warrior();
+        expect(warrior1.weapons[0].durability).eql(90);
+        expect(warrior1.weapons[1].durability).eql(90);
+        expect(warrior2.weapons[0].durability).eql(100);
+        expect(warrior2.weapons[1].durability).eql(100);
 
     });
 

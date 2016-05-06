@@ -5,7 +5,7 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import Tagged from "../../src/annotation/tagged";
+import tagged from "../../src/annotation/tagged";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 
@@ -33,8 +33,8 @@ class TaggedWarrior {
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @Tagged("power", 1) primary: IWeapon,
-      @Tagged("power", 2) secondary: IWeapon) {
+      @tagged("power", 1) primary: IWeapon,
+      @tagged("power", 2) secondary: IWeapon) {
 
           this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -47,8 +47,8 @@ class DoubleTaggedWarrior {
     private _secondaryWeapon: IWeapon;
 
     constructor(
-      @Tagged("power", 1) @Tagged("distance", 1) primary: IWeapon,
-      @Tagged("power", 2) @Tagged("distance", 5) secondary: IWeapon) {
+      @tagged("power", 1) @tagged("distance", 1) primary: IWeapon,
+      @tagged("power", 2) @tagged("distance", 5) secondary: IWeapon) {
 
           this._primaryWeapon = primary;
           this._secondaryWeapon = secondary;
@@ -101,6 +101,22 @@ describe("@Tagged", () => {
     expect(paramsMetadata["2"]).to.be.undefined;
   });
 
+  it("Should generate metadata for tagged properties", () => {
+
+    class Warrior {
+      @tagged("throwwable", false)
+      public weapon: IWeapon;
+    }
+
+    let metadataKey = METADATA_KEY.TAGGED_PROP;
+    let metadata: any = Reflect.getMetadata(metadataKey, Warrior);
+    let m1 = metadata.weapon[0];
+    expect(m1.key).to.be.eql("throwwable");
+    expect(m1.value).to.be.eql(false);
+    expect(metadata.weapon[1]).to.be.undefined;
+
+  });
+
   it("Should generate metadata for parameters tagged mutiple times", () => {
     let metadataKey = METADATA_KEY.TAGGED;
     let paramsMetadata = Reflect.getMetadata(metadataKey, DoubleTaggedWarrior);
@@ -142,7 +158,7 @@ describe("@Tagged", () => {
     let metadataKey = "a";
 
     let useDecoratorMoreThanOnce = function() {
-      __decorate([ __param(0, Tagged(metadataKey, 1)), __param(0, Tagged(metadataKey, 2)) ], InvalidDecoratorUsageWarrior);
+      __decorate([ __param(0, tagged(metadataKey, 1)), __param(0, tagged(metadataKey, 2)) ], InvalidDecoratorUsageWarrior);
     };
 
     let msg = `${ERRORS_MSGS.DUPLICATED_METADATA} ${metadataKey}`;
@@ -153,7 +169,7 @@ describe("@Tagged", () => {
   it("Should throw when not applied to a constructor", () => {
 
     let useDecoratorOnMethodThatIsNotAContructor = function() {
-      __decorate([ __param(0, Tagged("a", 1)) ],
+      __decorate([ __param(0, tagged("a", 1)) ],
       InvalidDecoratorUsageWarrior.prototype,
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
@@ -175,8 +191,8 @@ describe("@Tagged", () => {
         return TaggedVanillaJSWarrior;
     })();
 
-    decorate(Tagged("power", 1), VanillaJSWarrior, 0);
-    decorate(Tagged("power", 2), VanillaJSWarrior, 1);
+    decorate(tagged("power", 1), VanillaJSWarrior, 0);
+    decorate(tagged("power", 2), VanillaJSWarrior, 1);
 
     let metadataKey = METADATA_KEY.TAGGED;
     let paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior);

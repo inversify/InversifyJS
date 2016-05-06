@@ -196,8 +196,8 @@ module global_module_test {
         public katana: IWeapon;
         public shuriken: IWeapon;
         public constructor(
-            @inversify.inject("IWeapon") @inversify.paramName("katana") katana: IWeapon,
-            @inversify.inject("IWeapon") @inversify.paramName("shuriken") shuriken: IWeapon
+            @inversify.inject("IWeapon") @inversify.targetName("katana") katana: IWeapon,
+            @inversify.inject("IWeapon") @inversify.targetName("shuriken") shuriken: IWeapon
         ) {
             this.katana = katana;
             this.shuriken = shuriken;
@@ -324,5 +324,102 @@ module global_module_test {
 
     let ninja5 = kernel4.get<INinja>("INinja");
     console.log(ninja5);
+}
+
+module property_injection {
+
+    let kernel = new inversify.Kernel();
+
+    let TYPES = { IWeapon: "IWeapon" };
+
+    interface IWeapon {
+        durability: number;
+        use(): void;
+    }
+
+    @inversify.injectable()
+    class Sword implements IWeapon {
+        public durability: number;
+        public constructor() {
+            this.durability = 100;
+        }
+        public use() {
+            this.durability = this.durability - 10;
+        }
+    }
+
+    @inversify.injectable()
+    class WarHammer implements IWeapon {
+        public durability: number;
+        public constructor() {
+            this.durability = 100;
+        }
+        public use() {
+            this.durability = this.durability - 10;
+        }
+    }
+
+    let propertyMultiInject = inversify.makePropertyMultiInjectDecorator(kernel);
+
+    class Warrior1 {
+        @propertyMultiInject(TYPES.IWeapon)
+        public weapons: IWeapon[];
+    }
+
+    let propertyInject = inversify.makePropertyInjectDecorator(kernel);
+
+    interface ISomeService {
+        count: number;
+        increment(): void;
+    }
+
+    @inversify.injectable()
+    class SomeService implements ISomeService {
+        public count: number;
+        public constructor() {
+            this.count = 0;
+        }
+        public increment() {
+            this.count = this.count + 1;
+        }
+    }
+
+    class SomeWebComponent {
+        @propertyInject("ISomeService")
+        private _service: ISomeService;
+        public doSomething() {
+            let count =  this._service.count;
+            this._service.increment();
+            return count;
+        }
+    }
+
+    let propertyInjectNammed = inversify.makePropertyInjectNamedDecorator(kernel);
+
+    class Warrior2 {
+
+        @propertyInjectNammed(TYPES.IWeapon, "not-throwwable")
+        @inversify.named("not-throwwable")
+        public primaryWeapon: IWeapon;
+
+        @propertyInjectNammed(TYPES.IWeapon, "throwwable")
+        @inversify.named("throwwable")
+        public secondaryWeapon: IWeapon;
+
+    }
+
+    let propertyInjectTagged = inversify.makePropertyInjectTaggedDecorator(kernel);
+
+    class Warrior3 {
+
+        @propertyInjectTagged(TYPES.IWeapon, "throwwable", false)
+        @inversify.tagged("throwwable", false)
+        public primaryWeapon: IWeapon;
+
+        @propertyInjectTagged(TYPES.IWeapon, "throwwable", true)
+        @inversify.tagged("throwwable", true)
+        public secondaryWeapon: IWeapon;
+
+    }
 
 }

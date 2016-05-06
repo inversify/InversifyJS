@@ -46,6 +46,7 @@ class InvalidDecoratorUsageWarrior {
 describe("@named", () => {
 
   it("Should generate metadata for named parameters", () => {
+
     let metadataKey = METADATA_KEY.TAGGED;
     let paramsMetadata = Reflect.getMetadata(metadataKey, NamedWarrior);
     expect(paramsMetadata).to.be.an("object");
@@ -66,6 +67,24 @@ describe("@named", () => {
 
     // no more metadata should be available
     expect(paramsMetadata["2"]).to.be.undefined;
+
+  });
+
+  it("Should generate metadata for named properties", () => {
+
+    class Warrior {
+      @named("throwwable")
+      public weapon: IWeapon;
+    }
+
+    let metadataKey = METADATA_KEY.TAGGED_PROP;
+    let metadata: any = Reflect.getMetadata(metadataKey, Warrior);
+
+    let m1 = metadata.weapon[0];
+    expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
+    expect(m1.value).to.be.eql("throwwable");
+    expect(metadata.weapon[1]).to.be.undefined;
+
   });
 
   it("Should throw when applayed mutiple times", () => {
@@ -76,6 +95,7 @@ describe("@named", () => {
 
     let msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.NAMED_TAG}`;
     expect(useDecoratorMoreThanOnce).to.throw(msg);
+
   });
 
   it("Should throw when not applayed to a constructor", () => {
@@ -88,6 +108,7 @@ describe("@named", () => {
 
     let msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
     expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
+
   });
 
   it("Should be usable in VanillaJS applications", () => {

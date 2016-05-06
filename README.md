@@ -45,7 +45,7 @@ InversifyJS has been developed with 3 main goals:
 
 You can get the latest release and the type definitions using npm:
 ```sh
-npm install inversify@2.0.0-beta.2 --save
+npm install inversify@2.0.0-beta.3 --save
 ```
 > **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
@@ -319,6 +319,7 @@ kernel.bind<INinja>(Symbols.INinja).to(Ninja);
 kernel.bind<IKatana>(Symbols.IKatana).to(Katana);
 kernel.bind<IShuriken>(Symbols.IShuriken).to(Shuriken);
 ```
+
 #### Declaring kernel modules
 
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
@@ -821,10 +822,10 @@ let katana = kernel.getTagged<IWeapon>("IWeapon", "faction", "samurai");
 let shuriken = kernel.getTagged<IWeapon>("IWeapon", "faction", "ninja");
 ```
 
-#### Contextual bindings & @paramNames
-The `@paramName` decorator is used to access the names of the constructor arguments from a
+#### Contextual bindings & @targetName
+The `@targetName` decorator is used to access the names of the constructor arguments from a
 contextual constraint even when the code is compressed. The `constructor(katana, shuriken) { ...`
-becomes `constructor(a, b) { ...` after compression but thanks to `@paramName` we can still
+becomes `constructor(a, b) { ...` after compression but thanks to `@targetName` we can still
 refer to the design-time names `katana` and `shuriken` at runtime.
 
 ```ts
@@ -846,8 +847,8 @@ class Ninja implements INinja {
     public katana: IWeapon;
     public shuriken: IWeapon;
     public constructor(
-        @inject("IWeapon") @paramName("katana") katana: IWeapon,
-        @inject("IWeapon") @paramName("shuriken") shuriken: IWeapon
+        @inject("IWeapon") @targetName("katana") katana: IWeapon,
+        @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
     ) {
         this.katana = katana;
         this.shuriken = shuriken;
@@ -917,6 +918,127 @@ interface IBindingWhenSyntax<T> {
     whenAnyAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
     whenNoAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
 }
+```
+
+#### Property injection
+InversifyJS supports property injection because sometimes constructor injection is not the best kind of injection pattern.
+```ts
+let kernel = new Kernel();
+let inject = makePropertyInjectDecorator(kernel);
+
+interface ISomeService {
+    count: number;
+    increment(): void;
+}
+
+@injectable()
+class SomeService implements ISomeService {
+    public count: number;
+    public constructor() {
+        this.count = 0;
+    }
+    public increment() {
+        this.count = this.count + 1;
+    }
+}
+
+class SomeWebComponent {
+    @inject("ISomeService")
+    private _service: ISomeService;
+    public doSomething() {
+        let count =  this._service.count;
+        this._service.increment();
+        return count;
+    }
+}
+
+kernel.bind<ISomeService>("ISomeService").to(SomeService);
+
+let someComponent = new SomeWebComponent();
+expect(someComponent.doSomething()).eql(0);
+expect(someComponent.doSomething()).eql(1);
+```
+
+Property injection is quite different of constructor injection and has some limitations.
+
+- The `@inject` decorator requires an instance of kernel.
+- Injection takes place the first time the property is accessed via its getter.
+- The `@targetName` decorator is not supported.
+- The only supported contextual constraints are `whenTargetNamed` and `whenTargetTagged`.
+- Property injection supports the `@named` and `@tagged` decorators.
+
+```ts
+class Warrior {
+
+    @injectNamed(TYPES.IWeapon, "not-throwwable")
+    @named("not-throwwable")
+    public primaryWeapon: IWeapon;
+
+    @injectNamed(TYPES.IWeapon, "throwwable")
+    @named("throwwable")
+    public secondaryWeapon: IWeapon;
+
+}
+
+class Warrior {
+
+    @injectTagged(TYPES.IWeapon, "throwwable", false)
+    @tagged("throwwable", false)
+    public primaryWeapon: IWeapon;
+
+    @injectTagged(TYPES.IWeapon, "throwwable", true)
+    @tagged("throwwable", true)
+    public secondaryWeapon: IWeapon;
+
+}
+```
+- Property injection supports multi-injection.
+
+```ts
+let kernel = new Kernel();
+let multiInject = makePropertyMultiInjectDecorator(kernel);
+
+let TYPES = { IWeapon: "IWeapon" };
+
+interface IWeapon {
+    durability: number;
+    use(): void;
+}
+
+@injectable()
+class Sword implements IWeapon {
+    public durability: number;
+    public constructor() {
+        this.durability = 100;
+    }
+    public use() {
+        this.durability = this.durability - 10;
+    }
+}
+
+@injectable()
+class WarHammer implements IWeapon {
+    public durability: number;
+    public constructor() {
+        this.durability = 100;
+    }
+    public use() {
+        this.durability = this.durability - 10;
+    }
+}
+
+class Warrior {
+    @multiInject(TYPES.IWeapon)
+    public weapons: IWeapon[];
+}
+
+kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+kernel.bind<IWeapon>(TYPES.IWeapon).to(WarHammer);
+
+let warrior1 = new Warrior();
+
+expect(warrior1.weapons[0]).to.be.instanceof(Sword);
+expect(warrior1.weapons[1]).to.be.instanceof(WarHammer);
 ```
 
 #### Circular dependencies
