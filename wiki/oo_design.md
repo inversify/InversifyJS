@@ -81,7 +81,7 @@ In this case the Ninja class has a dependency on the Katana class:
 ```ts
 Ninja --> Katana
 ```
-Notice how the arrow that ilustrate the dependency goes from left to rigth.
+Notice how the arrow that ilustrate the dependency goes from left to right.
 
 If we update the ninja class to dependen upon an abstraction of the Katana class (the IKatana interface):
 
