@@ -19,8 +19,8 @@ import TYPES from "./constants/types";
 
 // declare your kernel
 let kernel = new inversify.Kernel();
-kernel.bind(TYPES.something).toValue(1);
-kernel.bind(TYPES.somethingElse).toValue(2);
+kernel.bind(TYPES.something).toConstantValue(1);
+kernel.bind(TYPES.somethingElse).toConstantValue(2);
 
 export default kernel;
 ```
