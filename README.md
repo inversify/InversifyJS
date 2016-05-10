@@ -88,7 +88,7 @@ interface IKatana {
 }
 
 interface IShuriken {
-    throw();
+    throw(): string;
 }
 ```
 
