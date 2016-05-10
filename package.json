@@ -60,6 +60,7 @@
     "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "wallabify": "0.0.14"
+    "wallabify": "0.0.14",
+    "typedoc": ">=0.3.9"
   }
 }
