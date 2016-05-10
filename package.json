@@ -45,7 +45,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^5.0.0",
-    "gulp-typedoc": "^1.2.1",
+    "gulp-typedoc": "^2.0.0",
     "gulp-typescript": "^2.13.0",
     "gulp-uglify": "^1.5.1",
     "harmonize": "^1.4.4",
@@ -60,6 +60,7 @@
     "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "wallabify": "0.0.14"
+    "wallabify": "0.0.14",
+    "typedoc": ">=0.3.9"
   }
 }
