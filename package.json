@@ -45,7 +45,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^5.0.0",
-    "gulp-typedoc": "^1.2.1",
+    "gulp-typedoc": "^2.0.0",
     "gulp-typescript": "^2.13.0",
     "gulp-uglify": "^1.5.1",
     "harmonize": "^1.4.4",
