@@ -106,4 +106,4 @@ describe("something", () => {
 
 });
 ```
-As you can see you can then only override specific bindings in each test case.
+As you can see you can then override specific bindings in each test case.
