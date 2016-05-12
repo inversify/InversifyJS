@@ -55,7 +55,7 @@
     "reflect-metadata": "^0.1.3",
     "run-sequence": "^1.1.5",
     "sinon": "^1.17.3",
-    "tsify": "^0.15.3",
+    "tsify": "^0.15.5",
     "tslint": "^3.9.0",
     "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
