@@ -20,7 +20,7 @@ import * as Proxy from "harmony-proxy";
 
 describe("Resolver", () => {
 
-  let sandbox: Sinon.SinonSandbox;
+  let sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
