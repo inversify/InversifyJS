@@ -433,4 +433,8 @@ module property_injection {
         public secondaryWeapon: IWeapon;
 
     }
+
+    kernel.snapshot();
+    kernel.restore();
+
 }

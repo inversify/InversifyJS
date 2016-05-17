@@ -38,6 +38,8 @@ declare namespace inversify {
         load(...modules: IKernelModule[]): void;
         applyMiddleware(...middleware: IMiddleware[]): void;
         getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string;
+        snapshot(): void;
+        restore(): void;
     }
 
     export interface IKernelModule extends Function {
