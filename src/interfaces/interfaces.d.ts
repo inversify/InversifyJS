@@ -8,6 +8,7 @@
 /// <reference path="./kernel/lookup.d.ts" />
 /// <reference path="./kernel/weakmap.d.ts" />
 /// <reference path="./kernel/map.d.ts" />
+/// <reference path="./kernel/kernel_snapshot.d.ts" />
 
 // ANNOTATION
 /// <reference path="./annotations/symbol.d.ts" />

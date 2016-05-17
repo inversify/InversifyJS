@@ -463,4 +463,44 @@ describe("Kernel", () => {
         expect(KatanaStr).to.eql("Katana");
     });
 
+    it("Should be able to snapshot and restore kernel", () => {
+        interface IWarrior {
+        }
+
+        @injectable()
+        class Ninja implements IWarrior {}
+
+        @injectable()
+        class Samurai implements IWarrior {}
+
+        let kernel = new Kernel();
+        kernel.bind<IWarrior>(Ninja).to(Ninja);
+        kernel.bind<IWarrior>(Samurai).to(Samurai);
+
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
+
+        kernel.snapshot(); // snapshot kernel = v1
+
+        kernel.unbind(Ninja);
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(() => kernel.get(Ninja)).to.throw();
+
+        kernel.snapshot(); // snapshot kernel = v2
+        expect(() => kernel.get(Ninja )).to.throw();
+
+        kernel.bind<IWarrior>(Ninja).to(Ninja);
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
+
+        kernel.restore(); // restore kernel to v2
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(() => kernel.get(Ninja)).to.throw();
+
+        kernel.restore(); // restore kernel to v1
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
+
+        expect(() => kernel.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
+    });
 });
