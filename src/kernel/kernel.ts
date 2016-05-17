@@ -36,7 +36,7 @@ class Kernel implements IKernel {
     private _snapshots: Array<KernelSnapshot>;
 
     // Initialize private properties
-    constructor() {
+    public constructor() {
         this._planner = new Planner();
         this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();
