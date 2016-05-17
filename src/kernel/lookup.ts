@@ -9,12 +9,11 @@ import KeyValuePair from "./key_value_pair";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Lookup<T> implements ILookup<T> {
-
 	// dictionary used store multiple values for each key <key>
     private _dictionary: Array<IKeyValuePair<T>>;
 
     public constructor() {
-        this._dictionary = new Array<IKeyValuePair<T>>();
+        this._dictionary = [];
     }
 
 	// adds a new KeyValuePair to _dictionary
@@ -70,6 +69,20 @@ class Lookup<T> implements ILookup<T> {
         }
     }
 
+    // returns a new Lookup instance; note: this is not a deep clone, only Lookup related data structure (dictionary) is
+    // cloned, content remains the same
+    public clone(): ILookup<T> {
+        let l = new Lookup<T>();
+
+        for (let entry of this._dictionary) {
+            for (let binding of entry.value) {
+                l.add(entry.serviceIdentifier, binding);
+            }
+        }
+
+        return l;
+    }
+
 	// finds the location of a KeyValuePair pair in _dictionary by its serviceIdentifier
     private getIndexByKey(serviceIdentifier: (string|Symbol|any)): number {
         let index = -1;
@@ -81,7 +94,6 @@ class Lookup<T> implements ILookup<T> {
         }
         return index;
     }
-
 }
 
 export default Lookup;

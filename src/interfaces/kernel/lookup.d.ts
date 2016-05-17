@@ -3,4 +3,5 @@ interface ILookup<T> {
   get(serviceIdentifier: (string|Symbol|any)): Array<T>;
   remove(serviceIdentifier: (string|Symbol|any)): void;
   hasKey(serviceIdentifier: (string|Symbol|any)): boolean;
+  clone(): ILookup<T>;
 }

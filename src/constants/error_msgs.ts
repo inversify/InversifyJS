@@ -15,3 +15,4 @@ export const INVALID_BINDING_TYPE = "Invalid binding type:";
 export const MISSING_EXPLICIT_CONSTRUCTOR = "Derived class must explicitly declare its constructor:";
 export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and @named decorators " +
     "must be applied to the parameters of a class constructor or a class property.";
+export const NO_MORE_SNAPSHOTS_AVAILABLE = "No snapshot available to restore.";

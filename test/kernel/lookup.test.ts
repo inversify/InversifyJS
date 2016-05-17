@@ -47,4 +47,16 @@ describe("Lookup", () => {
     expect(() => { lookup.remove("THIS_KEY_IS_NOT_AVAILABLE"); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
   });
 
+  it("Should let me copy a Lookup instance", () => {
+    let lookup = new Lookup<any>();
+    let key1 = Symbol("TEST_KEY");
+    lookup.add(key1, 1);
+    lookup.add(key1, 2);
+
+    let copy = lookup.clone();
+    expect(copy.hasKey(key1)).to.eql(true);
+
+    lookup.remove(key1);
+    expect(copy.hasKey(key1)).to.eql(true);
+  });
 });

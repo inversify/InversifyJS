@@ -26,13 +26,14 @@ import BindingToSyntax from "../syntax/binding_to_syntax";
 import Metadata from "../planning/metadata";
 import Target from "../planning/target";
 import Request from "../planning/request";
+import KernelSnapshot from "./kernel_snapshot";
 
 class Kernel implements IKernel {
-
     private _planner: IPlanner;
     private _resolver: IResolver;
     private _middleware: (context: IContext) => any;
     private _bindingDictionary: ILookup<IBinding<any>>;
+    private _snapshots: Array<KernelSnapshot>;
 
     // Initialize private properties
     public constructor() {
@@ -40,6 +41,7 @@ class Kernel implements IKernel {
         this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();
         this._middleware = null;
+        this._snapshots = [];
     }
 
     public load(...modules: IKernelModule[]): void {
@@ -123,6 +125,19 @@ class Kernel implements IKernel {
             let _serviceIdentifier: any = serviceIdentifier;
             return _serviceIdentifier;
         }
+    }
+
+    public snapshot (): void {
+        this._snapshots.push(KernelSnapshot.of(this._bindingDictionary.clone(), this._middleware));
+    }
+
+    public restore (): void {
+        if (this._snapshots.length === 0) {
+            throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
+        }
+        let snapshot = this._snapshots.pop();
+        this._bindingDictionary = snapshot.bindings;
+        this._middleware = snapshot.middleware;
     }
 
     private _get<T>(serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T {
