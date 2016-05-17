@@ -422,4 +422,7 @@ module property_injection {
 
     }
 
+    kernel.snapshot();
+    kernel.restore();
+
 }
