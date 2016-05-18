@@ -38,7 +38,7 @@ InversifyJS has been developed with 4 main goals:
 
 3. Add as little runtime overhead as possible.
 
-4. Provide an [state of the art development experience](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md).
+4. Provide a [state of the art development experience](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md).
 
 ### Testimonies
 
