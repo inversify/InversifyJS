@@ -22,7 +22,7 @@ A IoC container uses a class constructor to identify and inject its dependencies
 InversifyJS has a friendly API and encourage the usage of the best OOP and IoC practices.
 
 ### Motivation
-JavaScript now supports object oriented (OO) programming and class based inheritance. These features are great but the truth is that they are also
+JavaScript now supports object oriented (OO) programming with class based inheritance. These features are great but the truth is that they are also
 [dangerous](https://medium.com/@dan_abramov/how-to-use-classes-and-sleep-at-night-9af8de78ccb4).
 
 We need a good OO design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)), [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance), etc.) to protect ourselves from these threats. The problem is that OO design is difficult and that is exactly why we created InversifyJS.
