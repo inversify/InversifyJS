@@ -30,7 +30,7 @@ We need a good OO design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-or
 InversifyJS is a tool that helps JavaScript developers to write code with a good OO design.
 
 ### Philosophy
-InversifyJS has been developed with 3 main goals:
+InversifyJS has been developed with 4 main goals:
 
 1. Allow JavaScript developers to write code that adheres to the SOLID principles.
 
