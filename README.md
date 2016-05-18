@@ -17,13 +17,17 @@
 A lightweight IoC container written in TypeScript.
 
 ### About
-InversifyJS is a lightweight (4KB) pico inversion of control (IoC) container for TypeScript and JavaScript apps.
-A pico IoC container uses a class constructor to identify and inject its dependencies.
+InversifyJS is a lightweight (4KB) inversion of control (IoC) container for TypeScript and JavaScript apps.
+A IoC container uses a class constructor to identify and inject its dependencies.
 InversifyJS has a friendly API and encourage the usage of the best OOP and IoC practices.
 
 ### Motivation
-JavaScript applications are becoming larger and larger day after day.
-InversifyJS has been designed to allow JavaScript developers to write code that adheres to the SOLID principles.
+JavaScript now supports object oriented (OO) programming and class based inheritance. These features are great but the truth is that they are also
+[dangerous](https://medium.com/@dan_abramov/how-to-use-classes-and-sleep-at-night-9af8de78ccb4).
+
+We need a good OO design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)), [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance), etc.) to protect ourselves from these threats. The problem is that OO design is difficult and that is exactly why we created InversifyJS.
+
+InversifyJS is a tool that helps JavaScript developers to write code with a good OO design.
 
 ### Philosophy
 InversifyJS has been developed with 3 main goals:
@@ -33,6 +37,8 @@ InversifyJS has been developed with 3 main goals:
 2. Facilitate and encourage the adherence to the best OOP and IoC practices.
 
 3. Add as little runtime overhead as possible.
+
+4. Provide an [state of the art development experience](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md).
 
 ### Testimonies
 
@@ -1102,28 +1108,28 @@ expect(warrior1.weapons[1]).to.be.instanceof(WarHammer);
 ```
 
 #### Circular dependencies
-InversifyJS is able to identify circular dependencies and will throw an exception to help you to
-identify the location of the problem if a circular dependency is detected:
+InversifyJS is able to identify circular dependencies and will throw an exception to help you to identify the location of the problem if a circular dependency is detected:
 
 ```ts
 Error: Circular dependency found between services: IKatana and INinja
 ```
 
-Plese refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) for additional details.
+Please refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) for additional details.
+
+### Ecosystem
+In order to provide a state of the art development experience we are also working on a series of middleware extensions and other development tools. 
+
+Please refer to the [ecosystem page on the wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more about it.
+
 
 ### Examples
 Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
 
 ### Support
-If you are experience any kind of issues we will be happy to help. You can report an issue using the
-[issues page](https://github.com/inversify/InversifyJS/issues) or the
-[chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at
-[Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
+If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
-If you want to share your thoughts with the development team or join us you will be able to do so using the
-[official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
-[wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) and browse the
-[documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
+If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
+[wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) and browse the [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
 ### Acknowledgements
 
@@ -1135,14 +1141,9 @@ License under the MIT License (MIT)
 
 Copyright © 2015 [Remo H. Jansen](http://www.remojansen.com)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without
-limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
 
