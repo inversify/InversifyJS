@@ -1039,6 +1039,7 @@ Property injection is quite different of constructor injection and has some limi
 - The `@targetName` decorator is not supported.
 - The only supported contextual constraints are `whenTargetNamed` and `whenTargetTagged`.
 - Property injection supports the `@named` and `@tagged` decorators.
+- The function `Object.prototype.propertyIsEnumerable()` returns false for properties decorated with `@inject`. This is caused because the declared class property is replaced by a new instance property once the injection takes place. The `propertyIsEnumerable` function returns `false` for properties that return `false` for `hasOwnProperty`.
 
 ```ts
 class Warrior {
