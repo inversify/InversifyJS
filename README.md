@@ -51,15 +51,21 @@ InversifyJS has been developed with 4 main goals:
 
 You can get the latest release and the type definitions using npm:
 ```sh
-npm install inversify@2.0.0-beta.4 --save
+npm install inversify@2.0.0-beta.5 inversify-dts reflect-metadata --save
 ```
-> **Note**: We have decided to [drop support for bower](https://twitter.com/nachocoloma/status/663622545162280960) and tsd.
 
-The InversifyJS type definitions are included in the npm package:
+The InversifyJS type definitions are included in the inversify-dts npm package:
 
 ```ts
-/// <reference path="node_modules/inversify/type_definitions/inversify/inversify.d.ts" />
+/// <reference path="node_modules/inversify-dts/inversify/inversify.d.ts" />
 ```
+
+The reflect-metadata type definitions are included in the npm package:
+
+```ts
+/// <reference path="node_modules/reflect-metadata/reflect-metadata.d.ts" />
+```
+
 > **Note**: InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. 
 If your environment don't support one of these you will need to import a shim or polyfill. Check out the 
 [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
@@ -107,6 +113,7 @@ When a class has a  dependency on an interface we also need to use the `@inject`
 
 ```ts
 import { injectable, inject } from "inversify";
+import "reflect-metadata";
 
 @injectable()
 class Katana implements IKatana {
