@@ -33,8 +33,7 @@ gulp.task("lint", function() {
     
     return gulp.src([
         "src/**/**.ts",
-        "test/**/**.test.ts",
-        "type_definitions/inversify/*.ts"
+        "test/**/**.test.ts"
     ])
     .pipe(tslint())
     .pipe(tslint.report("verbose", config));
@@ -185,28 +184,13 @@ gulp.task("test", function(cb) {
   runSequence("istanbul:hook", "mocha", "cover", cb);
 });
 
-//******************************************************************************
-//* TYPE DEFINITIONS
-//******************************************************************************
-var tsTypeDefinitionsProject = tsc.createProject("tsconfig.json");
-
-gulp.task("build-type-definitions", function() {
-  return gulp.src("type_definitions/**/*.ts")
-             .pipe(tsc(tsTypeDefinitionsProject))
-             .on("error", function (err) {
-                 process.exit(1);
-             })
-             .js.pipe(gulp.dest("type_definitions/"));
-});
-
 gulp.task("build", function(cb) {
   runSequence(
       "lint", 
       "build-bundle-src",                       // for nodejs
       "build-bundle-compress-src",              // for browsers
       ["build-src", "build-es", "build-lib"],   // tests + build es and lib
-      "build-test", 
-      "build-type-definitions", cb);
+      "build-test", cb);
 });
 
 //******************************************************************************
