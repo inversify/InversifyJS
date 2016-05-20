@@ -1,6 +1,6 @@
 /// <reference path="../interfaces.d.ts" />
 
-interface IBinding<T> {
+interface IBinding<T> extends IClonable<IBinding<T>> {
     activated: boolean;
     serviceIdentifier: (string|Symbol|INewable<T>);
     implementationType: INewable<T>;

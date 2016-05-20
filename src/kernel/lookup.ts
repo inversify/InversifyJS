@@ -8,7 +8,8 @@
 import KeyValuePair from "./key_value_pair";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
-class Lookup<T> implements ILookup<T> {
+class Lookup<T extends IClonable<T>> implements ILookup<T> {
+
 	// dictionary used store multiple values for each key <key>
     private _dictionary: Array<IKeyValuePair<T>>;
 
@@ -76,7 +77,7 @@ class Lookup<T> implements ILookup<T> {
 
         for (let entry of this._dictionary) {
             for (let binding of entry.value) {
-                l.add(entry.serviceIdentifier, binding);
+                l.add(entry.serviceIdentifier, binding.clone());
             }
         }
 

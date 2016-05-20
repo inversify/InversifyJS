@@ -59,6 +59,22 @@ class Binding<T> implements IBinding<T> {
         this.provider = null;
         this.onActivation = null;
     }
+
+    public clone(): IBinding<T> {
+        let clone = new Binding(this.serviceIdentifier);
+        clone.activated = false;
+        clone.implementationType = this.implementationType;
+        clone.dynamicValue = this.dynamicValue;
+        clone.scope = this.scope;
+        clone.type = this.type;
+        clone.factory = this.factory;
+        clone.provider = this.provider;
+        clone.constraint = this.constraint;
+        clone.onActivation = this.onActivation;
+        clone.cache = this.cache;
+        return clone;
+    }
+
 }
 
 export default Binding;

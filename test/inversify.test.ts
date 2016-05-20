@@ -2730,4 +2730,154 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should allow to use snapshots and property injections with singletons and constant value bindings", () => {
+
+        let kernel = new Kernel();
+        let inject = makePropertyInjectDecorator(kernel);
+
+        let TYPES = {
+            IWarrior: "IWarrior",
+            IWeapon: "IWeapon"
+        };
+
+        interface IWarrior {
+            weapon: IWeapon;
+        }
+
+        interface IWeapon {
+            durability: number;
+            use(): void;
+        }
+
+        @injectable()
+        class Sword implements IWeapon {
+            public durability: number;
+            public constructor() {
+                this.durability = 100;
+            }
+            public use() {
+                this.durability = this.durability - 10;
+            }
+        }
+
+        @injectable()
+        class WarHammer implements IWeapon {
+            public durability: number;
+            public constructor() {
+                this.durability = 100;
+            }
+            public use() {
+                this.durability = this.durability - 10;
+            }
+        }
+
+        @injectable()
+        class Warrior implements IWarrior {
+            @inject(TYPES.IWeapon)
+            public weapon: IWeapon;
+        }
+
+        kernel.bind<IWarrior>(TYPES.IWarrior).to(Warrior);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+
+        // check property injection works
+        let warrior1 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior1.weapon).to.be.instanceof(Sword);
+        expect(warrior1.weapon.durability).eql(100);
+        warrior1.weapon.use();
+        expect(warrior1.weapon.durability).eql(90);
+
+        // check snapshot works
+        kernel.snapshot();
+        kernel.unbind(TYPES.IWeapon);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(WarHammer);
+
+        expect(warrior1.weapon).to.be.instanceof(Sword);
+        expect(warrior1.weapon.durability).eql(90);
+
+        let warrior2 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior2.weapon).to.be.instanceof(WarHammer);
+        expect(warrior2.weapon.durability).eql(100);
+
+        // check snapshot resore works
+        kernel.restore();
+        let warrior3 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior3.weapon).to.be.instanceof(Sword);
+        expect(warrior3.weapon.durability).eql(100);
+
+        // check property injection works with singletons
+        kernel.unbind(TYPES.IWeapon);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword).inSingletonScope();
+
+        let warrior4 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior4.weapon).to.be.instanceof(Sword);
+        expect(warrior4.weapon.durability).eql(100);
+        warrior4.weapon.use();
+        expect(warrior4.weapon.durability).eql(90);
+
+        let warrior5 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior5.weapon).to.be.instanceof(Sword);
+        expect(warrior5.weapon.durability).eql(90);
+
+        // check property injection works with snapshot and singletons
+        kernel.snapshot();
+        kernel.unbind(TYPES.IWeapon);
+        kernel.bind<IWeapon>(TYPES.IWeapon).to(WarHammer).inSingletonScope();
+
+        expect(warrior4.weapon).to.be.instanceof(Sword);
+        expect(warrior4.weapon.durability).eql(90);
+        expect(warrior5.weapon).to.be.instanceof(Sword);
+        expect(warrior5.weapon.durability).eql(90);
+
+        let warrior6 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior6.weapon).to.be.instanceof(WarHammer);
+        expect(warrior6.weapon.durability).eql(100);
+        warrior6.weapon.use();
+        expect(warrior6.weapon.durability).eql(90);
+
+        let warrior7 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior7.weapon).to.be.instanceof(WarHammer);
+        expect(warrior7.weapon.durability).eql(90);
+
+        // check property injection works with restore and singletons
+        kernel.restore();
+        let warrior8 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior8.weapon).to.be.instanceof(Sword);
+        expect(warrior8.weapon.durability).eql(100);
+        warrior8.weapon.use();
+        expect(warrior8.weapon.durability).eql(90);
+
+        let warrior9 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior9.weapon).to.be.instanceof(Sword);
+        expect(warrior9.weapon.durability).eql(90);
+
+        // check property injection works with snapshot and constant value bindings
+        kernel.snapshot();
+        kernel.unbind(TYPES.IWeapon);
+        kernel.bind<IWeapon>(TYPES.IWeapon).toConstantValue(new WarHammer());
+
+        let warrior10 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior10.weapon).to.be.instanceof(WarHammer);
+        expect(warrior10.weapon.durability).eql(100);
+        warrior10.weapon.use();
+        expect(warrior10.weapon.durability).eql(90);
+
+        let warrior11 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior11.weapon).to.be.instanceof(WarHammer);
+        expect(warrior11.weapon.durability).eql(90);
+
+        // check property injection works with restore and singletons
+        kernel.restore();
+        let warrior12 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior12.weapon).to.be.instanceof(Sword);
+        expect(warrior12.weapon.durability).eql(100);
+        warrior12.weapon.use();
+        expect(warrior12.weapon.durability).eql(90);
+
+        let warrior13 = kernel.get<IWarrior>(TYPES.IWarrior);
+        expect(warrior13.weapon).to.be.instanceof(Sword);
+        expect(warrior13.weapon.durability).eql(90);
+
+    });
+
 });
