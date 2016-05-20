@@ -2866,7 +2866,7 @@ describe("InversifyJS", () => {
         expect(warrior11.weapon).to.be.instanceof(WarHammer);
         expect(warrior11.weapon.durability).eql(90);
 
-        // check property injection works with restore and singletons
+        // check property injection works with restore value bindings
         kernel.restore();
         let warrior12 = kernel.get<IWarrior>(TYPES.IWarrior);
         expect(warrior12.weapon).to.be.instanceof(Sword);
