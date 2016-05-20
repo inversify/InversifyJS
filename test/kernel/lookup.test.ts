@@ -48,15 +48,28 @@ describe("Lookup", () => {
   });
 
   it("Should let me copy a Lookup instance", () => {
-    let lookup = new Lookup<any>();
+
+    let lookup = new Lookup<IClonable<any>>();
     let key1 = Symbol("TEST_KEY");
-    lookup.add(key1, 1);
-    lookup.add(key1, 2);
+
+    class Warrior {
+      public kind: string;
+      public constructor(kind: string) {
+        this.kind = kind;
+      }
+      public clone() {
+        return new Warrior(this.kind);
+      }
+    }
+
+    lookup.add(key1, new Warrior("ninja"));
+    lookup.add(key1, new Warrior("samurai"));
 
     let copy = lookup.clone();
     expect(copy.hasKey(key1)).to.eql(true);
 
     lookup.remove(key1);
     expect(copy.hasKey(key1)).to.eql(true);
+
   });
 });
