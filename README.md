@@ -12,7 +12,7 @@
 [![NPM](https://nodei.co/npm/inversify.png?downloads=true&downloadRank=true)](https://nodei.co/npm/inversify/)
 [![NPM](https://nodei.co/npm-dl/inversify.png?months=9&height=3)](https://nodei.co/npm/inversify/)
 
-<img src="https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/logo.png" width="500"  />
+![](http://i.imgur.com/04sD73R.jpg)
 
 A lightweight IoC container written in TypeScript.
 
