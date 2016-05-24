@@ -558,6 +558,7 @@ describe("Planner", () => {
   it("Should be throw when a class has a missing @injectable annotation", () => {
 
       interface IWeapon {}
+
       class Katana implements IWeapon {}
 
       let kernel = new Kernel();

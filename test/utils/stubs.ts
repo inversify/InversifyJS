@@ -130,3 +130,13 @@ export class TaggedWarrior {
         // ...
     }
 }
+
+@injectable()
+export abstract class BaseSoldier {
+    public weapon: IWeapon;
+    public constructor(
+        @inject("IWeapon") weapon: IWeapon
+    ) {
+        this.weapon = weapon;
+    }
+}
