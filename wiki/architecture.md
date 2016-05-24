@@ -97,7 +97,7 @@ If we have configured some Middleware it will be executed just before the resolu
 
 One example of middleware is the [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) which can be used to display the resolution plan and the time that took to create and resolve it in console:
 
-![](http://i.imgur.com/fMBIPv9.png)
+![](http://i.imgur.com/iFAogro.png)
 
 ### Resolution Phase
 The Plan is passed to an instance of the Resolver class. The Resolver will then proceed to resolve each of the dependencies in the Request tree starting with the leafs and finishing with the root request.
