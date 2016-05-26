@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "gulp",
-    "prepublish": "gulp build && gulp test"
+    "prepublish": "gulp build && gulp test",
+    "postinstall": "typings install"
   },
   "repository": {
     "type": "git",
@@ -57,10 +58,11 @@
     "sinon": "^1.17.3",
     "tsify": "^0.16.0",
     "tslint": "^3.10.2",
+    "typedoc": ">=0.3.9",
     "typescript": "^1.8.10",
+    "typings": "^1.0.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "wallabify": "0.0.14",
-    "typedoc": ">=0.3.9"
+    "wallabify": "0.0.14"
   }
 }
