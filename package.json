@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "gulp",
-    "prepublish": "gulp build && gulp test"
+    "prepublish": "gulp build && gulp test",
+    "postinstall": "typings install"
   },
   "repository": {
     "type": "git",
