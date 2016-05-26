@@ -1,11 +1,11 @@
 language: node_js
 node_js:
-- stable
-- 5.4.1
-- 5.4.0
-- 5.3.0
-- 5.2.0
-- 5.1.1
+- 'stable'
+- '5.4.1'
+- '5.4.0'
+- '5.3.0'
+- '5.2.0'
+- '5.1.1'
 - '0.12'
 before_install:
 - npm install -g typings
