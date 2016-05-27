@@ -2,7 +2,7 @@
 
 InversifyJS requires a modern JavaScript engine with support for the 
 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), 
-[Reflect (with metadata)](https://github.com/jonathandturner/decorators/blob/master/specs/metadata.md) and 
+[Metadata Reflection API](http://rbuckton.github.io/ReflectDecorators/#reflect) and 
 [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects. 
 If your environment don't support one of these you will need to import a shim or polypill.
 
