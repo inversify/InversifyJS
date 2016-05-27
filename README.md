@@ -388,7 +388,7 @@ describe("Ninja", () => {
         };
 
         kernel.unbind("IKatana");
-        kernel.bind<ISomething>("IKatana").toValue(katanaMock);
+        kernel.bind<ISomething>("IKatana").toConstantValue(katanaMock);
         let ninja = kernel.get<INinja>("INinja");
         expect(ninja.fight()).eql("hit with mock");
 
@@ -401,7 +401,7 @@ describe("Ninja", () => {
         };
 
         kernel.unbind("IShuriken");
-        kernel.bind<ISomething>("IShuriken").toValue(shurikenMock);
+        kernel.bind<ISomething>("IShuriken").toConstantValue(shurikenMock);
         let ninja = kernel.get<INinja>("IShuriken");
         expect(ninja.sneak()).eql("hit with mock");
 

@@ -10,7 +10,8 @@
   "scripts": {
     "test": "gulp",
     "prepublish": "publish-please guard",
-    "publish-please": "publish-please"
+    "publish-please": "publish-please",
+    "postinstall": "typings install"
   },
   "repository": {
     "type": "git",
@@ -61,6 +62,7 @@
     "tslint": "^3.10.2",
     "typedoc": ">=0.3.9",
     "typescript": "^1.8.10",
+    "typings": "^1.0.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "wallabify": "0.0.14"
