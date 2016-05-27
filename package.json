@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "gulp",
-    "prepublish": "gulp build && gulp test",
+    "prepublish": "publish-please guard",
+    "publish-please": "publish-please",
     "postinstall": "typings install"
   },
   "repository": {
@@ -53,6 +54,7 @@
     "harmony-proxy": "^1.0.0",
     "istanbul": "^0.4.2",
     "mocha": "^2.5.1",
+    "publish-please": "^2.1.3",
     "reflect-metadata": "^0.1.3",
     "run-sequence": "^1.2.0",
     "sinon": "^1.17.3",

@@ -19,4 +19,5 @@ wallaby.js
 .travis.yml
 .gitignore
 .vscode
+.publishrc
 type_definitions
