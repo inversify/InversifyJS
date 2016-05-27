@@ -1953,41 +1953,6 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should be able to inject a regular derived class", () => {
-
-        const SYMBOLS = {
-            ISamuraiMaster: Symbol("ISamuraiMaster"),
-        };
-
-        interface ISamurai {
-            rank: string;
-        }
-
-        @injectable()
-        class Samurai implements ISamurai {
-
-            public rank: string;
-
-            public constructor(rank: string) {
-                this.rank = rank;
-            }
-        }
-
-        @injectable()
-        class SamuraiMaster extends Samurai implements ISamurai {
-            constructor() {
-                super("Master");
-            }
-        }
-
-        const kernel = new Kernel();
-        kernel.bind<ISamurai>(SYMBOLS.ISamuraiMaster).to(SamuraiMaster);
-
-        let samurai = kernel.get<ISamurai>(SYMBOLS.ISamuraiMaster);
-        expect(samurai.rank).eql("Master");
-
-    });
-
     it("Should support a whenInjectedInto contextual bindings constraint", () => {
 
         let TYPES = {
@@ -2917,6 +2882,81 @@ describe("InversifyJS", () => {
         expect(throw1).to.throw("Derived class must explicitly declare its constructor: Soldier.");
         expect(throw2).to.throw("Derived class must explicitly declare its constructor: Knight.");
         expect(throw3).to.throw("Derived class must explicitly declare its constructor: Archer.");
+
+    });
+
+    it("Should be able to inject a regular derived class", () => {
+
+        const SYMBOLS = {
+            ISamuraiMaster: Symbol("ISamuraiMaster"),
+            RANK: Symbol("RANK")
+        };
+
+        interface ISamurai {
+            rank: string;
+        }
+
+        @injectable()
+        class Samurai implements ISamurai {
+
+            public rank: string;
+
+            public constructor(rank: string) {
+                this.rank = rank;
+            }
+        }
+
+        @injectable()
+        class SamuraiMaster extends Samurai implements ISamurai {
+            constructor(@inject(SYMBOLS.RANK) rank: string) {
+                super(rank);
+            }
+        }
+
+        const kernel = new Kernel();
+        kernel.bind<ISamurai>(SYMBOLS.ISamuraiMaster).to(SamuraiMaster);
+        kernel.bind<string>(SYMBOLS.RANK).toConstantValue("Master");
+
+        let samurai = kernel.get<SamuraiMaster>(SYMBOLS.ISamuraiMaster);
+        expect(samurai.rank).eql("Master");
+
+    });
+
+    it("Should be able to identify missing @injectable in a base class", () => {
+
+        const SYMBOLS = {
+            ISamuraiMaster: Symbol("ISamuraiMaster")
+        };
+
+        interface ISamurai {
+            rank: string;
+        }
+
+        // IMPORTANT: Missing @injectable()
+        class Samurai implements ISamurai {
+
+            public rank: string;
+
+            public constructor(rank: string) {
+                this.rank = rank;
+            }
+        }
+
+        @injectable()
+        class SamuraiMaster extends Samurai implements ISamurai {
+            constructor() {
+                super("master");
+            }
+        }
+
+        const kernel = new Kernel();
+        kernel.bind<ISamurai>(SYMBOLS.ISamuraiMaster).to(SamuraiMaster);
+
+        function throws() {
+            return kernel.get<SamuraiMaster>(SYMBOLS.ISamuraiMaster);
+        }
+
+        expect(throws).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Samurai`);
 
     });
 
