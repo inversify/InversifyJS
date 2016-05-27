@@ -1122,7 +1122,7 @@ InversifyJS is able to identify circular dependencies and will throw an exceptio
 Error: Circular dependency found between services: IKatana and INinja
 ```
 
-### Inheritance
+#### Inheritance
 ```ts
 interface IWarrior {
     weapon: IWeapon;
@@ -1212,7 +1212,6 @@ Please refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/
 In order to provide a state of the art development experience we are also working on a series of middleware extensions and other development tools. 
 
 Please refer to the [ecosystem page on the wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more about it.
-
 
 ### Examples
 Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
