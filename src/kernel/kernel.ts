@@ -125,21 +125,10 @@ class Kernel implements IKernel {
     }
 
     private _get<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
-
         // TODO use middleware
-
-        let bindings = this._getActiveBindings<T>(multiInject, serviceIdentifier, target);
-
-        let contexts = bindings.map((binding) => {
-            return this._plan<T>(binding, target);
-        });
-
-        let results = contexts.map((context) => {
-            return this._resolve<T>(context);
-        });
-
+        let contexts = this._plan<T>(multiInject, serviceIdentifier, target);
+        let results = this._resolve<T>(contexts);
         return results;
-
     }
 
     private _getActiveBindings<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): IBinding<T>[] {
@@ -181,14 +170,28 @@ class Kernel implements IKernel {
 
     }
 
-    private _plan<T>(binding: IBinding<T>, target: ITarget): IContext {
+    private _plan<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): IContext[] {
+
+        let bindings = this._getActiveBindings(multiInject, serviceIdentifier, target);
+
+        let contexts = bindings.map((binding) => {
+            return this._createContext(binding, target);
+        });
+
+        return contexts;
+    }
+
+    private _createContext<T>(binding: IBinding<T>, target: ITarget): IContext {
         let context = this._planner.createContext(this);
         this._planner.createPlan(context, binding, target);
         return context;
     }
 
-    private _resolve<T>(context: IContext): T {
-        return this._resolver.resolve<T>(context);
+    private _resolve<T>(contexts: IContext[]): T[] {
+        let results = contexts.map((context) => {
+            return this._resolver.resolve<T>(context);
+        });
+        return results;
     }
 
 }
