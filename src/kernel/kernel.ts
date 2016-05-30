@@ -126,6 +126,10 @@ class Kernel implements IKernel {
 
     private _get<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
         // TODO use middleware
+        return this._planAndResolve<T>(multiInject, serviceIdentifier, target);
+    }
+
+    private _planAndResolve<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
         let contexts = this._plan<T>(multiInject, serviceIdentifier, target);
         let results = this._resolve<T>(contexts);
         return results;
