@@ -8,37 +8,28 @@ import injectable from "../../src/annotation/injectable";
 describe("Middleware", () => {
 
     let sandbox: sinon.SinonSandbox;
-    let log: string[] = null;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        log = [];
     });
 
     afterEach(() => {
         sandbox.restore();
-        log = null;
     });
-
-    function middleware1(next: (context: IContext) => any) {
-        return (context: IContext) => {
-            let serviceIdentifier = context.kernel.getServiceIdentifierAsString(context.plan.rootRequest.serviceIdentifier);
-            log.push(`Middleware1: ${serviceIdentifier}`);
-            return next(context);
-        };
-    };
-
-    function middleware2(next: (context: IContext) => any) {
-        return (context: IContext) => {
-            let serviceIdentifier = context.kernel.getServiceIdentifierAsString(context.plan.rootRequest.serviceIdentifier);
-            log.push(`Middleware2: ${serviceIdentifier}`);
-            return next(context);
-        };
-    };
 
     it("Should be able to use middleware as Kernel configuration", () => {
 
         let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware1: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
         kernel.applyMiddleware(middleware1);
         let _kernel: any = kernel;
         expect(_kernel._middleware).not.to.eql(null);
@@ -53,6 +44,23 @@ describe("Middleware", () => {
         class Ninja implements INinja {}
 
         let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware1: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
+        function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware2: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
         kernel.applyMiddleware(middleware1, middleware2);
         kernel.bind<INinja>("INinja").to(Ninja);
 
@@ -73,6 +81,23 @@ describe("Middleware", () => {
         class Ninja implements INinja {}
 
         let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware1: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
+        function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware2: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
         kernel.applyMiddleware(middleware1, middleware2);
         kernel.bind<INinja>("INinja").to(Ninja);
 

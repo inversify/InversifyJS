@@ -31,7 +31,7 @@ import KernelSnapshot from "./kernel_snapshot";
 class Kernel implements IKernel {
     private _planner: IPlanner;
     private _resolver: IResolver;
-    private _middleware: (context: IContext) => any;
+    private _middleware: PlanAndResolve<any>;
     private _bindingDictionary: ILookup<IBinding<any>>;
     private _snapshots: Array<KernelSnapshot>;
 
@@ -46,12 +46,6 @@ class Kernel implements IKernel {
 
     public load(...modules: IKernelModule[]): void {
         modules.forEach((module) => { module(this); });
-    }
-
-    public applyMiddleware(...middlewares: IMiddleware[]): void {
-        this._middleware = middlewares.reverse().reduce((prev, curr) => {
-            return curr(prev);
-        }, this._resolver.resolve.bind(this._resolver));
     }
 
     // Regiters a type binding
@@ -118,6 +112,13 @@ class Kernel implements IKernel {
         }
     }
 
+    public applyMiddleware(...middlewares: IMiddleware[]): void {
+        let previous: PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
+        this._middleware = middlewares.reverse().reduce((prev, curr) => {
+            return curr(prev);
+        }, previous);
+    }
+
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
@@ -125,8 +126,11 @@ class Kernel implements IKernel {
     }
 
     private _get<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
-        // TODO use middleware
-        return this._planAndResolve<T>(multiInject, serviceIdentifier, target);
+        if (this._middleware) {
+            return this._middleware(multiInject, serviceIdentifier, target);
+        } else {
+            return this._planAndResolve<T>(multiInject, serviceIdentifier, target);
+        }
     }
 
     private _planAndResolve<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
