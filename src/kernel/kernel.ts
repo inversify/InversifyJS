@@ -114,7 +114,7 @@ class Kernel implements IKernel {
 
     public applyMiddleware(...middlewares: IMiddleware[]): void {
         let previous: PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
-        this._middleware = middlewares.reverse().reduce((prev, curr) => {
+        this._middleware = middlewares.reduce((prev, curr) => {
             return curr(prev);
         }, previous);
     }

@@ -61,15 +61,55 @@ describe("Middleware", () => {
             };
         }
 
+        // two middlewares applied at one single point in time
         kernel.applyMiddleware(middleware1, middleware2);
+
         kernel.bind<INinja>("INinja").to(Ninja);
 
         let ninja = kernel.get<INinja>("INinja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`Middleware1: INinja`);
-        expect(log[1]).eql(`Middleware2: INinja`);
+        expect(log[0]).eql(`Middleware2: INinja`);
+        expect(log[1]).eql(`Middleware1: INinja`);
+
+    });
+
+    it("Should allow applyMiddleware at mutiple points in time", () => {
+
+        interface INinja {}
+
+        @injectable()
+        class Ninja implements INinja {}
+
+        let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware1: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
+        function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                log.push(`Middleware2: ${serviceIdentifier}`);
+                return planAndResolve(multiInject, serviceIdentifier, target);
+            };
+        }
+
+        kernel.applyMiddleware(middleware1); // one point in time 
+        kernel.applyMiddleware(middleware2);  // another point in time 
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`Middleware2: INinja`);
+        expect(log[1]).eql(`Middleware1: INinja`);
 
     });
 
@@ -105,8 +145,8 @@ describe("Middleware", () => {
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`Middleware1: INinja`);
-        expect(log[1]).eql(`Middleware2: INinja`);
+        expect(log[0]).eql(`Middleware2: INinja`);
+        expect(log[1]).eql(`Middleware1: INinja`);
 
     });
 
