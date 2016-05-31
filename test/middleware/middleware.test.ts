@@ -150,4 +150,137 @@ describe("Middleware", () => {
 
     });
 
+    it("Should be able to use middleware to catch errors during pre-planning phase", () => {
+
+        interface INinja {}
+
+        @injectable()
+        class Ninja implements INinja {}
+
+        let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                try {
+                    return planAndResolve(multiInject, serviceIdentifier, target);
+                } catch (e) {
+                    log.push(e.message);
+                    return [];
+                }
+            };
+        }
+
+        kernel.applyMiddleware(middleware);
+        kernel.bind<INinja>("INinja").to(Ninja);
+        kernel.get<any>("SOME_NOT_REGISTERED_ID");
+        expect(log.length).eql(1);
+        expect(log[0]).eql(`No bindings found for serviceIdentifier: SOME_NOT_REGISTERED_ID`);
+
+    });
+
+    it("Should be able to use middleware to catch errors during planning phase", () => {
+
+        interface IWarrior {}
+
+        @injectable()
+        class Ninja implements IWarrior {}
+
+        @injectable()
+        class Samurai implements IWarrior {}
+
+        let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                try {
+                    return planAndResolve(multiInject, serviceIdentifier, target);
+                } catch (e) {
+                    log.push(e.message);
+                    return [];
+                }
+            };
+        }
+
+        kernel.applyMiddleware(middleware);
+        kernel.bind<IWarrior>("IWarrior").to(Ninja);
+        kernel.bind<IWarrior>("IWarrior").to(Samurai);
+
+        kernel.get<any>("IWarrior");
+        expect(log.length).eql(1);
+        expect(log[0]).eql(`Ambiguous match found for serviceIdentifier: IWarrior`);
+
+    });
+
+    it("Should be able to use middleware to catch errors during resolution phase", () => {
+
+        interface IWarrior {}
+
+        @injectable()
+        class Ninja implements IWarrior {}
+
+        @injectable()
+        class Samurai implements IWarrior {}
+
+        let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                try {
+                    return planAndResolve(multiInject, serviceIdentifier, target);
+                } catch (e) {
+                    log.push(e.message);
+                    return [];
+                }
+            };
+        }
+
+        kernel.applyMiddleware(middleware);
+        kernel.bind<IWarrior>("IWarrior"); // Invalid binding missing BindingToSyntax
+
+        kernel.get<any>("IWarrior");
+        expect(log.length).eql(1);
+        expect(log[0]).eql(`Invalid binding type: IWarrior`);
+
+    });
+
+    it("Should help users to identify problems with middleware", () => {
+
+        interface IWarrior {}
+
+        @injectable()
+        class Ninja implements IWarrior {}
+
+        @injectable()
+        class Samurai implements IWarrior {}
+
+        let kernel = new Kernel();
+
+        function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+                try {
+                    return planAndResolve(multiInject, serviceIdentifier, target);
+                } catch (e) {
+                    // missing return!
+                }
+            };
+        }
+
+        kernel.applyMiddleware(middleware);
+        let throws = () => { kernel.get<any>("SOME_NOT_REGISTERED_ID"); };
+        expect(throws).to.throw(`Invalid return type in middleware. Return must be an Array!`);
+
+    });
+
+    it("Should allow users to intercep a resolution context", () => {
+
+        // TODO
+
+    });
+
 });

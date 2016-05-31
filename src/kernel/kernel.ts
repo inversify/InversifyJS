@@ -125,17 +125,25 @@ class Kernel implements IKernel {
         return this._get<T>(true, serviceIdentifier, null);
     }
 
+    // TODO declare interface for { multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget }
+    // TODO additional optional field call back contextInterceptor ?? (context: IContext) => IContext
     private _get<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
+        let result: T[] = null;
         if (this._middleware) {
-            return this._middleware(multiInject, serviceIdentifier, target);
+            result = this._middleware(multiInject, serviceIdentifier, target);
         } else {
-            return this._planAndResolve<T>(multiInject, serviceIdentifier, target);
+            result = this._planAndResolve<T>(multiInject, serviceIdentifier, target);
         }
+        if (Array.isArray(result) === false) {
+            throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
+        }
+        return result;
     }
 
     private _planAndResolve<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
         let contexts = this._plan<T>(multiInject, serviceIdentifier, target);
         let results = this._resolve<T>(contexts);
+        // TODO ? return mesage so context can be accessed from middelware { error: null, results: null, context: null };
         return results;
     }
 
