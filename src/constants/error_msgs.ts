@@ -16,3 +16,4 @@ export const MISSING_EXPLICIT_CONSTRUCTOR = "Derived class must explicitly decla
 export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and @named decorators " +
     "must be applied to the parameters of a class constructor or a class property.";
 export const NO_MORE_SNAPSHOTS_AVAILABLE = "No snapshot available to restore.";
+export const INVALID_MIDDLEWARE_RETURN = "Invalid return type in middleware. Return must be an Array!";

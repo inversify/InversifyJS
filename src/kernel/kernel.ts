@@ -31,7 +31,7 @@ import KernelSnapshot from "./kernel_snapshot";
 class Kernel implements IKernel {
     private _planner: IPlanner;
     private _resolver: IResolver;
-    private _middleware: (context: IContext) => any;
+    private _middleware: PlanAndResolve<any>;
     private _bindingDictionary: ILookup<IBinding<any>>;
     private _snapshots: Array<KernelSnapshot>;
 
@@ -46,12 +46,6 @@ class Kernel implements IKernel {
 
     public load(...modules: IKernelModule[]): void {
         modules.forEach((module) => { module(this); });
-    }
-
-    public applyMiddleware(...middlewares: IMiddleware[]): void {
-        this._middleware = middlewares.reverse().reduce((prev, curr) => {
-            return curr(prev);
-        }, this._resolver.resolve.bind(this._resolver));
     }
 
     // Regiters a type binding
@@ -79,7 +73,12 @@ class Kernel implements IKernel {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T {
-        return this._get<T>(serviceIdentifier, null);
+        return this._get<T>({
+            contextInterceptor: (context: IContext) =>  { return context; },
+            multiInject: false,
+            serviceIdentifier: serviceIdentifier,
+            target: null
+        })[0];
     }
 
     public getNamed<T>(serviceIdentifier: (string|Symbol|INewable<T>), named: string): T {
@@ -89,42 +88,12 @@ class Kernel implements IKernel {
     public getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T {
         let metadata = new Metadata(key, value);
         let target = new Target(null, serviceIdentifier, metadata);
-        return this._get<T>(serviceIdentifier, target);
-    }
-
-    // Resolves a dependency by its runtime identifier
-    // The runtime identifier can be associated with one or multiple bindings
-    public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
-
-        let bindings = this._planner.getBindings<T>(this, serviceIdentifier);
-
-        switch (bindings.length) {
-
-            // CASE 1: There are no bindings
-            case BindingCount.NoBindingsAvailable:
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
-
-            // CASE 2: There is AT LEAST 1 binding    
-            case BindingCount.OnlyOneBindingAvailable:
-            case BindingCount.MultipleBindingsAvailable:
-            default:
-                return bindings.map((binding) => {
-                    return this._planAndResolve<T>(binding, null);
-                });
-        }
-    }
-
-    public getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string {
-        let type = typeof serviceIdentifier;
-        if (type === "function") {
-            let _serviceIdentifier: any = serviceIdentifier;
-            return _serviceIdentifier.name;
-        } else if (type === "symbol") {
-            return serviceIdentifier.toString();
-        } else { // string
-            let _serviceIdentifier: any = serviceIdentifier;
-            return _serviceIdentifier;
-        }
+        return this._get<T>({
+            contextInterceptor: (context: IContext) =>  { return context; },
+            multiInject: false,
+            serviceIdentifier: serviceIdentifier,
+            target: target
+        })[0];
     }
 
     public snapshot (): void {
@@ -140,7 +109,57 @@ class Kernel implements IKernel {
         this._middleware = snapshot.middleware;
     }
 
-    private _get<T>(serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T {
+    public getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string {
+        let type = typeof serviceIdentifier;
+        if (type === "function") {
+            let _serviceIdentifier: any = serviceIdentifier;
+            return _serviceIdentifier.name;
+        } else if (type === "symbol") {
+            return serviceIdentifier.toString();
+        } else { // string
+            let _serviceIdentifier: any = serviceIdentifier;
+            return _serviceIdentifier;
+        }
+    }
+
+    public applyMiddleware(...middlewares: IMiddleware[]): void {
+        let previous: PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
+        this._middleware = middlewares.reduce((prev, curr) => {
+            return curr(prev);
+        }, previous);
+    }
+
+    // Resolves a dependency by its runtime identifier
+    // The runtime identifier can be associated with one or multiple bindings
+    public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
+        return this._get<T>({
+            contextInterceptor: (context: IContext) =>  { return context; },
+            multiInject: true,
+            serviceIdentifier: serviceIdentifier,
+            target: null
+        });
+    }
+
+    private _get<T>(args: PlanAndResolveArgs): T[] {
+        let result: T[] = null;
+        if (this._middleware) {
+            result = this._middleware(args);
+        } else {
+            result = this._planAndResolve<T>(args);
+        }
+        if (Array.isArray(result) === false) {
+            throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
+        }
+        return result;
+    }
+
+    private _planAndResolve<T>(args: PlanAndResolveArgs): T[] {
+        let contexts = this._plan<T>(args.multiInject, args.serviceIdentifier, args.target);
+        let results = this._resolve<T>(contexts, args.contextInterceptor);
+        return results;
+    }
+
+    private _getActiveBindings<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): IBinding<T>[] {
 
         let bindings = this._planner.getBindings<T>(this, serviceIdentifier);
 
@@ -158,36 +177,49 @@ class Kernel implements IKernel {
             bindings = this._planner.getActiveBindings(request, target);
         }
 
-        if (bindings.length === BindingCount.NoBindingsAvailable) {
+        switch (bindings.length) {
 
-            // CASE 1: There are no bindings
-            throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
+            case BindingCount.NoBindingsAvailable:
+                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
 
-        } else if (bindings.length === BindingCount.OnlyOneBindingAvailable) {
+            case BindingCount.OnlyOneBindingAvailable:
+                if (multiInject === false) {
+                    return bindings;
+                }
 
-            // CASE 2: There is 1 binding
-            return this._planAndResolve<T>(bindings[0], target);
-
-        } else {
-
-            // CASE 3: There are multiple bindings
-            throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
-
+            case BindingCount.MultipleBindingsAvailable:
+            default:
+                if (multiInject === false) {
+                    throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
+                } else {
+                    return bindings;
+                }
         }
 
     }
 
-    // Generates an executes a resolution plan
-    private _planAndResolve<T>(binding: IBinding<T>, target: ITarget): T {
+    private _plan<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): IContext[] {
 
-        // STEP 1: generate resolution context
+        let bindings = this._getActiveBindings(multiInject, serviceIdentifier, target);
+
+        let contexts = bindings.map((binding) => {
+            return this._createContext(binding, target);
+        });
+
+        return contexts;
+    }
+
+    private _createContext<T>(binding: IBinding<T>, target: ITarget): IContext {
         let context = this._planner.createContext(this);
-
-        // STEP 2: generate a resolutioin plan & link it to the context
         this._planner.createPlan(context, binding, target);
+        return context;
+    }
 
-        // STEP 3, 4 & 5: use middleware (optional), execute resolution plan & activation
-        return (this._middleware !== null) ? this._middleware(context) : this._resolver.resolve<T>(context);
+    private _resolve<T>(contexts: IContext[], contextInterceptor: (context: IContext) => IContext): T[] {
+        let results = contexts.map((context) => {
+            return this._resolver.resolve<T>(contextInterceptor(context));
+        });
+        return results;
     }
 
 }

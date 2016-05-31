@@ -36,6 +36,3 @@ Then in your package.json file, add a browserify-shim to the modified library:
 
 Make the init task a dependency to run before your main task.
 You can then **require("reflect-metadata")** or **import "reflect-metadata"** in your inversify.config.ts/js file as usual.
-
-## Webpack 
-todo

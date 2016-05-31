@@ -1,3 +1,14 @@
+interface PlanAndResolve<T> {
+    (args: PlanAndResolveArgs): T[];
+}
+
 interface IMiddleware extends Function {
-    (next: (context: IContext) => any): (context: IContext) => any;
+    (next: PlanAndResolve<any>): PlanAndResolve<any>;
+}
+
+interface PlanAndResolveArgs {
+    multiInject: boolean;
+    serviceIdentifier: (string|Symbol|INewable<any>);
+    target: ITarget;
+    contextInterceptor: (contexts: IContext) => IContext;
 }
