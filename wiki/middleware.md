@@ -54,7 +54,7 @@ let ninja = kernel.get<INinja>("INinja");
 > 21
 ```
 
-## Multiple middleware
+## Multiple middleware functions
 When multiple middleware functions are applied:
 ```ts
 kernel.applyMiddleware(middleware1, middleware2);
