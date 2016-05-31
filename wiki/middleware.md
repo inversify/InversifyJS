@@ -18,14 +18,6 @@ to identify problems during the development process.
 
 ## Basic middleware
 ```ts
-function logger(next: (context: IContext) => any) {
-    return (context: IContext) => {
-        let result = next(context);
-        console.log("CONTEXT: ", context);
-        console.log("RESULT: ", result);
-        return result;
-    };
-};
 function logger(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
     return (args: PlanAndResolveArgs) => {
         let start = new Date().getTime();
