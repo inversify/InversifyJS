@@ -10,5 +10,5 @@ interface PlanAndResolveArgs {
     multiInject: boolean;
     serviceIdentifier: (string|Symbol|INewable<any>);
     target: ITarget;
-    contextInterceptor?: (contexts: IContext[]) => IContext[];
+    contextInterceptor: (contexts: IContext) => IContext;
 }

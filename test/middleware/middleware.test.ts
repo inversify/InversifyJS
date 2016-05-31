@@ -279,7 +279,6 @@ describe("Middleware", () => {
 
     it("Should allow users to intercep a resolution context", () => {
 
-        /*
         interface INinja {}
 
         @injectable()
@@ -291,9 +290,10 @@ describe("Middleware", () => {
 
         function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
             return (args: PlanAndResolveArgs) => {
-                args.contextInterceptor = (contexts: IContext[]) => {
+                let nextContextInterceptor = args.contextInterceptor;
+                args.contextInterceptor = (context: IContext) => {
                     log.push(`contextInterceptor1: ${args.serviceIdentifier}`);
-                    return contexts;
+                    return nextContextInterceptor(context);
                 };
                 return planAndResolve(args);
             };
@@ -301,9 +301,10 @@ describe("Middleware", () => {
 
         function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
             return (args: PlanAndResolveArgs) => {
-                args.contextInterceptor = (contexts: IContext[]) => {
+                let nextContextInterceptor = args.contextInterceptor;
+                args.contextInterceptor = (context: IContext) => {
                     log.push(`contextInterceptor2: ${args.serviceIdentifier}`);
-                    return args.contextInterceptor(contexts);
+                    return nextContextInterceptor(context);
                 };
                 return planAndResolve(args);
             };
@@ -316,9 +317,8 @@ describe("Middleware", () => {
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`contextInterceptor2: INinja`);
-        expect(log[1]).eql(`contextInterceptor1: INinja`);
-        */
+        expect(log[0]).eql(`contextInterceptor1: INinja`);
+        expect(log[1]).eql(`contextInterceptor2: INinja`);
 
     });
 

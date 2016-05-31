@@ -74,6 +74,7 @@ class Kernel implements IKernel {
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T {
         return this._get<T>({
+            contextInterceptor: (context: IContext) =>  { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: null
@@ -88,6 +89,7 @@ class Kernel implements IKernel {
         let metadata = new Metadata(key, value);
         let target = new Target(null, serviceIdentifier, metadata);
         return this._get<T>({
+            contextInterceptor: (context: IContext) =>  { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: target
@@ -131,6 +133,7 @@ class Kernel implements IKernel {
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
         return this._get<T>({
+            contextInterceptor: (context: IContext) =>  { return context; },
             multiInject: true,
             serviceIdentifier: serviceIdentifier,
             target: null
@@ -152,8 +155,7 @@ class Kernel implements IKernel {
 
     private _planAndResolve<T>(args: PlanAndResolveArgs): T[] {
         let contexts = this._plan<T>(args.multiInject, args.serviceIdentifier, args.target);
-        contexts = (typeof args.contextInterceptor === "function") ? args.contextInterceptor(contexts) : contexts;
-        let results = this._resolve<T>(contexts);
+        let results = this._resolve<T>(contexts, args.contextInterceptor);
         return results;
     }
 
@@ -213,9 +215,9 @@ class Kernel implements IKernel {
         return context;
     }
 
-    private _resolve<T>(contexts: IContext[]): T[] {
+    private _resolve<T>(contexts: IContext[], contextInterceptor: (context: IContext) => IContext): T[] {
         let results = contexts.map((context) => {
-            return this._resolver.resolve<T>(context);
+            return this._resolver.resolve<T>(contextInterceptor(context));
         });
         return results;
     }
