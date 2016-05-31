@@ -1,7 +1,14 @@
 interface PlanAndResolve<T> {
-    (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[];
+    (args: PlanAndResolveArgs): T[];
 }
 
 interface IMiddleware extends Function {
     (next: PlanAndResolve<any>): PlanAndResolve<any>;
+}
+
+interface PlanAndResolveArgs {
+    multiInject: boolean;
+    serviceIdentifier: (string|Symbol|INewable<any>);
+    target: ITarget;
+    contextInterceptor?: (contexts: IContext[]) => IContext[];
 }

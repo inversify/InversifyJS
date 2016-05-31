@@ -73,7 +73,11 @@ class Kernel implements IKernel {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T {
-        return this._get<T>(false, serviceIdentifier, null)[0];
+        return this._get<T>({
+            multiInject: false,
+            serviceIdentifier: serviceIdentifier,
+            target: null
+        })[0];
     }
 
     public getNamed<T>(serviceIdentifier: (string|Symbol|INewable<T>), named: string): T {
@@ -83,7 +87,11 @@ class Kernel implements IKernel {
     public getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T {
         let metadata = new Metadata(key, value);
         let target = new Target(null, serviceIdentifier, metadata);
-        return this._get<T>(false, serviceIdentifier, target)[0];
+        return this._get<T>({
+            multiInject: false,
+            serviceIdentifier: serviceIdentifier,
+            target: target
+        })[0];
     }
 
     public snapshot (): void {
@@ -122,17 +130,19 @@ class Kernel implements IKernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
-        return this._get<T>(true, serviceIdentifier, null);
+        return this._get<T>({
+            multiInject: true,
+            serviceIdentifier: serviceIdentifier,
+            target: null
+        });
     }
 
-    // TODO declare interface for { multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget }
-    // TODO additional optional field call back contextInterceptor ?? (context: IContext) => IContext
-    private _get<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
+    private _get<T>(args: PlanAndResolveArgs): T[] {
         let result: T[] = null;
         if (this._middleware) {
-            result = this._middleware(multiInject, serviceIdentifier, target);
+            result = this._middleware(args);
         } else {
-            result = this._planAndResolve<T>(multiInject, serviceIdentifier, target);
+            result = this._planAndResolve<T>(args);
         }
         if (Array.isArray(result) === false) {
             throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
@@ -140,10 +150,10 @@ class Kernel implements IKernel {
         return result;
     }
 
-    private _planAndResolve<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): T[] {
-        let contexts = this._plan<T>(multiInject, serviceIdentifier, target);
+    private _planAndResolve<T>(args: PlanAndResolveArgs): T[] {
+        let contexts = this._plan<T>(args.multiInject, args.serviceIdentifier, args.target);
+        contexts = (typeof args.contextInterceptor === "function") ? args.contextInterceptor(contexts) : contexts;
         let results = this._resolve<T>(contexts);
-        // TODO ? return mesage so context can be accessed from middelware { error: null, results: null, context: null };
         return results;
     }
 

@@ -24,9 +24,9 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware1: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
@@ -48,16 +48,16 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware1: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
         function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware2: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware2: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
@@ -87,16 +87,16 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware1: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
         function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware2: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware2: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
@@ -125,16 +125,16 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware1: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
         function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
-                log.push(`Middleware2: ${serviceIdentifier}`);
-                return planAndResolve(multiInject, serviceIdentifier, target);
+            return (args: PlanAndResolveArgs) => {
+                log.push(`Middleware2: ${args.serviceIdentifier}`);
+                return planAndResolve(args);
             };
         }
 
@@ -162,9 +162,9 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+            return (args: PlanAndResolveArgs) => {
                 try {
-                    return planAndResolve(multiInject, serviceIdentifier, target);
+                    return planAndResolve(args);
                 } catch (e) {
                     log.push(e.message);
                     return [];
@@ -195,9 +195,9 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+            return (args: PlanAndResolveArgs) => {
                 try {
-                    return planAndResolve(multiInject, serviceIdentifier, target);
+                    return planAndResolve(args);
                 } catch (e) {
                     log.push(e.message);
                     return [];
@@ -230,9 +230,9 @@ describe("Middleware", () => {
         let log: string[] = [];
 
         function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+            return (args: PlanAndResolveArgs) => {
                 try {
-                    return planAndResolve(multiInject, serviceIdentifier, target);
+                    return planAndResolve(args);
                 } catch (e) {
                     log.push(e.message);
                     return [];
@@ -262,9 +262,9 @@ describe("Middleware", () => {
         let kernel = new Kernel();
 
         function middleware(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-            return (multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<any>), target: ITarget) => {
+            return (args: PlanAndResolveArgs) => {
                 try {
-                    return planAndResolve(multiInject, serviceIdentifier, target);
+                    return planAndResolve(args);
                 } catch (e) {
                     // missing return!
                 }
@@ -279,7 +279,46 @@ describe("Middleware", () => {
 
     it("Should allow users to intercep a resolution context", () => {
 
-        // TODO
+        /*
+        interface INinja {}
+
+        @injectable()
+        class Ninja implements INinja {}
+
+        let kernel = new Kernel();
+
+        let log: string[] = [];
+
+        function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (args: PlanAndResolveArgs) => {
+                args.contextInterceptor = (contexts: IContext[]) => {
+                    log.push(`contextInterceptor1: ${args.serviceIdentifier}`);
+                    return contexts;
+                };
+                return planAndResolve(args);
+            };
+        }
+
+        function middleware2(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
+            return (args: PlanAndResolveArgs) => {
+                args.contextInterceptor = (contexts: IContext[]) => {
+                    log.push(`contextInterceptor2: ${args.serviceIdentifier}`);
+                    return args.contextInterceptor(contexts);
+                };
+                return planAndResolve(args);
+            };
+        }
+
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<INinja>("INinja").to(Ninja);
+
+        let ninja = kernel.get<INinja>("INinja");
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(log.length).eql(2);
+        expect(log[0]).eql(`contextInterceptor2: INinja`);
+        expect(log[1]).eql(`contextInterceptor1: INinja`);
+        */
 
     });
 
