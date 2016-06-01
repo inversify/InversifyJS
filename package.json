@@ -10,8 +10,7 @@
   "scripts": {
     "test": "gulp",
     "prepublish": "publish-please guard",
-    "publish-please": "publish-please",
-    "postinstall": "typings install"
+    "publish-please": "publish-please"
   },
   "repository": {
     "type": "git",
