@@ -69,7 +69,8 @@ The reflect-metadata type definitions are included in the npm package:
 If you are targeting ES5 you will get an error:
 > TypeScript error: node_modules/inversify-dts/inversify/inversify.d.ts(108,13): Error TS2304: Cannot find name 'Promise'.
 
-You can solve this problem by installing the bluebird Type definitions:
+You can solve this problem by installing type definitions for the Promise API. If you are working on node the node type definitions already include the required definitions. If you are working on a browser app you can use the bluebird type definitions and polyfill:
+
 ```
 $ typings install --save --global dt~bluebird
 ```
