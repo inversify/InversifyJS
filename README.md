@@ -1,5 +1,4 @@
 # InversifyJS
-A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
 
 [![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://secure.travis-ci.org/inversify/InversifyJS.svg?branch=master)](https://travis-ci.org/inversify/InversifyJS)
@@ -15,6 +14,8 @@ A powerful and lightweight inversion of control container for JavaScript & Node.
 [![NPM](https://nodei.co/npm-dl/inversify.png?months=9&height=3)](https://nodei.co/npm/inversify/)
 
 ![](https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/cover.jpg)
+
+A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
 
 ### About
 InversifyJS is a lightweight (4KB) inversion of control (IoC) container for TypeScript and JavaScript apps.
