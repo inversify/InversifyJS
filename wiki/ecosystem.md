@@ -7,10 +7,11 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 
 ### Utilitites
 - [inversify-binding-decorators]() - An utility that allows developers to declare InversifyJS bindings using ES2016 decorators.
+- [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 
-### Testing tools
-- [inversify-testing-utils]() - Testing utilities for projects that use InversifyJS.
-- [inversify-logger-middlewares]() - A console logger middleware for InversifyJS.
+### Development tools
+- [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
+- [inversify-devtools](https://github.com/inversify/inversify-devtools) - A web application that powers the browser extensions.
 - [inversify-chrome-devtools](https://github.com/inversify/inversify-chrome-devtools) - A chrome extension that aims to help developers working with InversifyJS.
 
 ### Examples
