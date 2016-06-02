@@ -1,4 +1,4 @@
-#### Property injection
+# Property injection
 InversifyJS supports property injection because sometimes constructor injection is not the best kind of injection pattern.
 ```ts
 let kernel = new Kernel();

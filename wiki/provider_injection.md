@@ -1,4 +1,4 @@
-#### Injecting a Provider (asynchronous Factory)
+# Injecting a Provider (asynchronous Factory)
 Binds an abstraction to a Provider. A provider is an asynchronous factory, this is useful when dealing with asynchronous  I/O operations.
 ```ts
 @injectable()

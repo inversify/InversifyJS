@@ -1,4 +1,4 @@
-#### Activation handler
+# Activation handler
 It is possible to add an activation handler for a type. The activation handler is invoked after a dependency has been resolved and before it is added to the cache (if singleton) and injected. This is useful to keep our dependencies agnostic of the  implementation of crosscutting concerns like caching or logging. The following example uses a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) to intercept one of the methods (`use`) of a dependency (`IKatana`).
 
 ```ts

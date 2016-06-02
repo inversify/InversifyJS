@@ -1,4 +1,4 @@
-#### Inheritance
+# Inheritance
 ```ts
 interface IWarrior {
     weapon: IWeapon;

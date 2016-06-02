@@ -1,4 +1,4 @@
-#### Kernel snapshots
+# Kernel snapshots
 Declaring kernel snapshots is a feature that helps you to write unit tests with ease:
 ```ts
 ///<reference path="../../src/interfaces/interfaces.d.ts" />

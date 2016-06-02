@@ -1,4 +1,4 @@
-#### Injecting a constant or dynamic value
+# Injecting a constant or dynamic value
 Binds an abstraction to a constant value:
 ```ts
 kernel.bind<IKatana>("IKatana").toConstantValue(new Katana());

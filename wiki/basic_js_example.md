@@ -1,4 +1,4 @@
-### The Basics (JavaScript)
+# The Basics (JavaScript)
 It is recommended to use TypeScript for the best development experience but you can use plain JavaScript
 if you preffer it. The following code snippet implements the previous example without TypeScript in Node.js v5.71: 
 

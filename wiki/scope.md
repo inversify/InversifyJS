@@ -1,4 +1,4 @@
-#### Controlling the scope of the dependencies
+# Controlling the scope of the dependencies
 
 InversifyJS uses transient scope by default but you can also use singleton scope:
 ```ts

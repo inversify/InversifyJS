@@ -1,4 +1,4 @@
-#### Create your own tag decorators
+# Create your own tag decorators
 
 Creating your own decorators is really simple:
 

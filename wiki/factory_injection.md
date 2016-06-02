@@ -1,4 +1,4 @@
-#### Injecting a Factory
+# Injecting a Factory
 Binds an abstraction to a user defined Factory.
 
 ```ts

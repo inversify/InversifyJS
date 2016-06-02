@@ -1,4 +1,4 @@
-#### Injecting a class constructor
+# Injecting a class constructor
 Binds an abstraction to a class constructor.
 ```ts
 @injectable()

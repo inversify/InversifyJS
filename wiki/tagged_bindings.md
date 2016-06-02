@@ -1,4 +1,4 @@
-#### Tagged bindings
+# Tagged bindings
 We can use tagged bindings to fix `AMBIGUOUS_MATCH` errors when two or more
 concretions have been bound to the an abstraction. Notice how the  constructor
 arguments of the `Ninja` class have been annotated using the `@tagged` decorator:

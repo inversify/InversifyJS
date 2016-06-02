@@ -1,4 +1,4 @@
-#### Auto factory
+# Auto factory
 Binds an abstraction to a auto-generated Factory.
 ```ts
 @injectable()

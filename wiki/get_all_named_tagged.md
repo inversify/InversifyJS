@@ -1,4 +1,4 @@
-#### Kernel.getAll<T>(), Kernel.getNamed<T>() & Kernel.getTagged<T>()
+# Kernel.getAll<T>(), Kernel.getNamed<T>() & Kernel.getTagged<T>()
 The InversifyJS kernel provides some helpers to resolve multi-injections:
 
 ```ts
