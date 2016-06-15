@@ -46,6 +46,14 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
+    public toFunction(func: (...args: any[]) => any): IBindingWhenOnSyntax<T> {
+        this._binding.type = BindingType.Function;
+        this._binding.cache = value;
+        this._binding.dynamicValue = null;
+        this._binding.implementationType = null;
+        return new BindingWhenOnSyntax<T>(this._binding);
+    }
+
     public toAutoFactory<T2>(serviceIdentifier: (string|Symbol|INewable<T2>)): IBindingWhenOnSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = (context) => {
