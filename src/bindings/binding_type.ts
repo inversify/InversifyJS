@@ -7,7 +7,8 @@ enum BindingType {
   DynamicValue = 3,
   Constructor = 4,
   Factory = 5,
-  Provider = 6
+  Function = 6,
+  Provider = 7
 }
 
 export default BindingType;
