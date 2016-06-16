@@ -434,6 +434,84 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should support the injection of Functions", () => {
+
+        let ninjaId = "INinja";
+        let shurikenId = "IShuriken";
+        let katanaFactoryId = "KatanaFactory";
+
+        interface KatanaFactory extends Function {
+            (): IKatana;
+        }
+
+        interface IKatanaBlade {}
+
+        @injectable()
+        class KatanaBlade implements IKatanaBlade {}
+
+        interface IKatanaHandler {}
+
+        @injectable()
+        class KatanaHandler implements IKatanaHandler {}
+
+        interface IKatana {
+            handler: IKatanaHandler;
+            blade: IKatanaBlade;
+        }
+
+        @injectable()
+        class Katana implements IKatana {
+            public handler: IKatanaHandler;
+            public blade: IKatanaBlade;
+            public constructor(handler: IKatanaHandler, blade: IKatanaBlade) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface IShuriken {}
+
+        @injectable()
+        class Shuriken implements IShuriken {}
+
+        interface INinja {
+            katanaFactory: KatanaFactory;
+            shuriken: IShuriken;
+        }
+
+        @injectable()
+        class Ninja implements INinja {
+            public katanaFactory: KatanaFactory;
+            public shuriken: IShuriken;
+            public constructor(
+                @inject(katanaFactoryId) @targetName("katana") katanaFactory: KatanaFactory,
+                @inject(shurikenId) @targetName("shuriken") shuriken: IShuriken
+            ) {
+                this.katanaFactory = katanaFactory;
+                this.shuriken = shuriken;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<INinja>(ninjaId).to(Ninja);
+        kernel.bind<IShuriken>(shurikenId).to(Shuriken);
+
+        let katanaFactory = function() {
+            return new Katana(new KatanaHandler(), new KatanaBlade());
+        };
+
+        kernel.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory); // IMPORTANT!
+        let ninja = kernel.get<INinja>(ninjaId);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(typeof ninja.katanaFactory === "function").eql(true);
+        expect(ninja.katanaFactory() instanceof Katana).eql(true);
+        expect(ninja.katanaFactory().handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
     it("Should support the injection of class constructors", () => {
 
       interface INinja {

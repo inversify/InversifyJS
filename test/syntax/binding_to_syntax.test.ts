@@ -5,6 +5,7 @@ import Binding from "../../src/bindings/binding";
 import BindingType from "../../src/bindings/binding_type";
 import BindingToSyntax from "../../src/syntax/binding_to_syntax";
 import injectable from "../../src/annotation/injectable";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("BindingToSyntax", () => {
 
@@ -62,6 +63,11 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingType.Factory);
         expect(binding.factory).not.to.eql(null);
 
+        let f = () => { return "test"; };
+        bindingToSyntax.toFunction(f);
+        expect(binding.type).eql(BindingType.Function);
+        expect(binding.cache === f).eql(true);
+
         bindingToSyntax.toAutoFactory<INinja>(ninjaIdentifier);
 
         expect(binding.type).eql(BindingType.Factory);
@@ -77,6 +83,25 @@ describe("BindingToSyntax", () => {
 
         expect(binding.type).eql(BindingType.Provider);
         expect(binding.provider).not.to.eql(null);
+
+    });
+
+    it("Should prevent invalid function bindings", () => {
+
+        interface INinja {}
+
+        @injectable()
+        class Ninja implements INinja {}
+        let ninjaIdentifier = "INinja";
+
+        let binding = new Binding<INinja>(ninjaIdentifier);
+        let bindingToSyntax = new BindingToSyntax<INinja>(binding);
+
+        let f = function () {
+            bindingToSyntax.toFunction(5);
+        };
+
+        expect(f).to.throw(ERROR_MSGS.INVALID_FUNCTION_BINDING);
 
     });
 
