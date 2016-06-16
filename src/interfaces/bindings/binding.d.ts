@@ -2,6 +2,7 @@
 
 interface IBinding<T> extends IClonable<IBinding<T>> {
     guid: string;
+    moduleId: string;
     activated: boolean;
     serviceIdentifier: (string|Symbol|INewable<T>);
     implementationType: INewable<T>;

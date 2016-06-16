@@ -1,4 +1,4 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+/// <reference path="../interfaces/interfaces.d.ts" />
 
 // Kernel
 // ------
@@ -49,7 +49,12 @@ class Kernel implements IKernel {
     }
 
     public load(...modules: IKernelModule[]): void {
-        modules.forEach((module) => { module(this); });
+        // TODO
+        // modules.forEach((module) => { module(this); });
+    }
+
+    public unload(...modules: IKernelModule[]): void {
+        // TODO
     }
 
     // Regiters a type binding

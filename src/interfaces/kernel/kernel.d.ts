@@ -11,6 +11,7 @@ interface IKernel {
     getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T;
     getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[];
     load(...modules: IKernelModule[]): void;
+    unload(...modules: IKernelModule[]): void;
     applyMiddleware(...middleware: IMiddleware[]): void;
     getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string;
     snapshot(): void;

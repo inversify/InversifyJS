@@ -68,7 +68,7 @@ describe("Kernel", () => {
       expect(serviceIdentifier).eql(ninjaId);
 
   });
-  
+
   it("Should have an unique identifier", () => {
 
       let kernel1 = new Kernel();

@@ -14,6 +14,7 @@ import guid from "../utils/guid";
 class Binding<T> implements IBinding<T> {
 
     public guid: string;
+    public moduleId: string;
 
     // Determines wether the bindings has been already activated
     // The activation action takes place when an instance is resolved

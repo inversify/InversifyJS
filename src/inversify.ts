@@ -6,6 +6,7 @@
 // The Inversify main file, the library entry point.
 
 import Kernel from "./kernel/kernel";
+import KernelModule from "./kernel/kernel_module";
 import injectable from "./annotation/injectable";
 import tagged from "./annotation/tagged";
 import named from "./annotation/named";
@@ -17,6 +18,7 @@ import { decorate } from "./annotation/decorator_utils";
 import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 
 export { Kernel };
+export { KernelModule };
 export { decorate };
 export { injectable };
 export { tagged };
