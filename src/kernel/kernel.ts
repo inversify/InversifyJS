@@ -49,12 +49,24 @@ class Kernel implements IKernel {
     }
 
     public load(...modules: IKernelModule[]): void {
-        // TODO
-        // modules.forEach((module) => { module(this); });
+        let getBindFunction = (moduleId: string) => {
+            return (serviceIdentifier: (string|Symbol|INewable<any>)) => {
+                let _bind = this.bind.bind(this);
+                let bindingToSyntax = _bind(serviceIdentifier);
+                (<any>bindingToSyntax)._binding.moduleId = moduleId;
+                return bindingToSyntax;
+            };
+        };
+        modules.forEach((module) => {
+            let bindFunction = getBindFunction(module.guid);
+            module.registry(bindFunction);
+        });
     }
 
     public unload(...modules: IKernelModule[]): void {
-        // TODO
+        modules.forEach((module) => {
+            this._bindingDictionary.removeByModuleId(module.guid);
+        });
     }
 
     // Regiters a type binding

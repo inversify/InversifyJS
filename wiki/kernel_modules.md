@@ -1,15 +1,15 @@
 # Declaring kernel modules
 Kernel modules can help you to manage the complexity of your bindings in very large applications.
 ```ts
-let warriors: IKernelModule = (k: IKernel) => {
-    k.bind<INinja>("INinja").to(Ninja);
-};
+let warriors = new KernelModule((bind: IBind) => {
+    bind<INinja>("INinja").to(Ninja);
+});
 
-let weapons: IKernelModule = (k: IKernel) => {
-    k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
-    k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
-};
+let weapons = new KernelModule((bind: IBind) => {
+    bind<IKatana>("IKatana").to(Katana);
+    bind<IShuriken>("IShuriken").to(Shuriken);
+});
 
-kernel = new Kernel();
+let kernel = new Kernel();
 kernel.load(warriors, weapons);
 ```

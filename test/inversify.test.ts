@@ -7,7 +7,8 @@ import * as Stubs from "./utils/stubs";
 import {
     Kernel, injectable, inject, multiInject,
     tagged, named, targetName, decorate, typeConstraint,
-    makePropertyInjectDecorator, makePropertyMultiInjectDecorator
+    makePropertyInjectDecorator, makePropertyMultiInjectDecorator,
+    KernelModule
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -278,22 +279,39 @@ describe("InversifyJS", () => {
 
         }
 
-        let warriors: IKernelModule = (kernel: IKernel) => {
-            kernel.bind<INinja>("INinja").to(Ninja);
-        };
+        let warriors = new KernelModule((bind: IBind) => {
+            bind<INinja>("INinja").to(Ninja);
+        });
 
-        let weapons: IKernelModule = (kernel: IKernel) => {
-            kernel.bind<IKatana>("IKatana").to(Katana);
-            kernel.bind<IShuriken>("IShuriken").to(Shuriken);
-        };
+        let weapons = new KernelModule((bind: IBind) => {
+            bind<IKatana>("IKatana").to(Katana);
+            bind<IShuriken>("IShuriken").to(Shuriken);
+        });
 
         let kernel = new Kernel();
+
+        // load
         kernel.load(warriors, weapons);
 
         let ninja = kernel.get<INinja>("INinja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
+
+        let tryGetNinja = () => { kernel.get("INinja"); };
+        let tryGetKatana = () => { kernel.get("IKatana"); };
+        let tryGetShuruken = () => { kernel.get("IShuriken"); };
+
+        // unload
+        kernel.unload(warriors);
+        expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(tryGetKatana).not.to.throw();
+        expect(tryGetShuruken).not.to.throw();
+
+        kernel.unload(weapons);
+        expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
 
     });
 
