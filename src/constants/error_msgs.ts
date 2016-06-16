@@ -17,3 +17,4 @@ export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and
     "must be applied to the parameters of a class constructor or a class property.";
 export const NO_MORE_SNAPSHOTS_AVAILABLE = "No snapshot available to restore.";
 export const INVALID_MIDDLEWARE_RETURN = "Invalid return type in middleware. Return must be an Array!";
+export const INVALID_FUNCTION_BINDING = "Value provided to function binding must be a function!";

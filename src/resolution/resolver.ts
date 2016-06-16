@@ -52,6 +52,10 @@ class Resolver implements IResolver {
                     result = binding.factory(request.parentContext);
                     break;
 
+                 case BindingType.Function:
+                    result = binding.cache;
+                    break;
+
                 case BindingType.Provider:
                     result = binding.provider(request.parentContext);
                     break;

@@ -1,4 +1,4 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+/// <reference path="../interfaces/interfaces.d.ts" />
 
 // Kernel
 // ------
@@ -27,8 +27,11 @@ import Metadata from "../planning/metadata";
 import Target from "../planning/target";
 import Request from "../planning/request";
 import KernelSnapshot from "./kernel_snapshot";
+import guid from "../utils/guid";
 
 class Kernel implements IKernel {
+
+    public guid: string;
     private _planner: IPlanner;
     private _resolver: IResolver;
     private _middleware: PlanAndResolve<any>;
@@ -37,6 +40,7 @@ class Kernel implements IKernel {
 
     // Initialize private properties
     public constructor() {
+        this.guid = guid();
         this._planner = new Planner();
         this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();
@@ -45,7 +49,24 @@ class Kernel implements IKernel {
     }
 
     public load(...modules: IKernelModule[]): void {
-        modules.forEach((module) => { module(this); });
+        let getBindFunction = (moduleId: string) => {
+            return (serviceIdentifier: (string|Symbol|INewable<any>)) => {
+                let _bind = this.bind.bind(this);
+                let bindingToSyntax = _bind(serviceIdentifier);
+                (<any>bindingToSyntax)._binding.moduleId = moduleId;
+                return bindingToSyntax;
+            };
+        };
+        modules.forEach((module) => {
+            let bindFunction = getBindFunction(module.guid);
+            module.registry(bindFunction);
+        });
+    }
+
+    public unload(...modules: IKernelModule[]): void {
+        modules.forEach((module) => {
+            this._bindingDictionary.removeByModuleId(module.guid);
+        });
     }
 
     // Regiters a type binding
@@ -56,7 +77,7 @@ class Kernel implements IKernel {
     }
 
     // Removes a type binding from the registry by its key
-    public unbind(serviceIdentifier: (string|Symbol|any)): void {
+    public unbind(serviceIdentifier: (string|Symbol|INewable<any>)): void {
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
@@ -67,6 +88,12 @@ class Kernel implements IKernel {
     // Removes all the type bindings from the registry
     public unbindAll(): void {
         this._bindingDictionary = new Lookup<IBinding<any>>();
+    }
+
+    // Allows to check if there are bindings available for serviceIdentifier
+    public isBound(serviceIdentifier: (string|Symbol|INewable<any>)): boolean {
+        let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
+        return bindings.length > 0;
     }
 
     // Resolves a dependency by its runtime identifier

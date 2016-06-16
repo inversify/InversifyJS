@@ -55,6 +55,18 @@ class Lookup<T extends IClonable<T>> implements ILookup<T> {
         } else {
             throw new Error(ERROR_MSGS.KEY_NOT_FOUND);
         }
+
+    }
+
+    public removeByModuleId(moduleId: string): void {
+        this._dictionary.forEach((keyValuePair: IKeyValuePair<any>) => {
+            keyValuePair.value = keyValuePair.value.filter((binding: any) => {
+                return binding.moduleId !== moduleId;
+            });
+        });
+        this._dictionary = this._dictionary.filter((keyValuePair: IKeyValuePair<any>) => {
+            return keyValuePair.value.length > 0;
+        });
     }
 
     // returns true if _dictionary contains serviceIdentifier

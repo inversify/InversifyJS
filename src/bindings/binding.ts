@@ -9,8 +9,12 @@
 
 import BindingScope from "./binding_scope";
 import BindingType from "./binding_type";
+import guid from "../utils/guid";
 
 class Binding<T> implements IBinding<T> {
+
+    public guid: string;
+    public moduleId: string;
 
     // Determines wether the bindings has been already activated
     // The activation action takes place when an instance is resolved
@@ -48,6 +52,7 @@ class Binding<T> implements IBinding<T> {
     public onActivation: (context: IContext, injectable: T) => T;
 
     constructor(serviceIdentifier: (string|Symbol|INewable<T>)) {
+        this.guid = guid();
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
         this.scope = BindingScope.Transient;

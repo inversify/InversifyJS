@@ -15,6 +15,7 @@ describe("Binding", () => {
     expect(fooBinding.implementationType).eql(null);
     expect(fooBinding.cache).eql(null);
     expect(fooBinding.scope).eql(BindingScope.Transient);
+    expect(fooBinding.guid.length).eql(36);
   });
 
 });

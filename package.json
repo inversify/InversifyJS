@@ -33,7 +33,6 @@
   },
   "homepage": "http://inversify.io",
   "engines": {},
-  "dependencies": {},
   "devDependencies": {
     "bluebird": "^3.3.3",
     "browserify": "^13.0.0",

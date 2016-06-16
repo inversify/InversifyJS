@@ -3,6 +3,7 @@
 import BindingInWhenOnSyntax from "./binding_in_when_on_syntax";
 import BindingWhenOnSyntax from "./binding_when_on_syntax";
 import BindingType from "../bindings/binding_type";
+import * as ERROR_MSGS from "../constants/error_msgs";
 
 class BindingToSyntax<T> implements IBindingToSyntax<T> {
 
@@ -44,6 +45,14 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = <any>factory;
         return new BindingWhenOnSyntax<T>(this._binding);
+    }
+
+    public toFunction(func: T): IBindingWhenOnSyntax<T> {
+        // toFunction is an alias of toConstantValue
+        if (typeof func !== "function") { throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING); };
+        let bindingWhenOnSyntax = this.toConstantValue(func);
+        this._binding.type = BindingType.Function;
+        return bindingWhenOnSyntax;
     }
 
     public toAutoFactory<T2>(serviceIdentifier: (string|Symbol|INewable<T2>)): IBindingWhenOnSyntax<T> {

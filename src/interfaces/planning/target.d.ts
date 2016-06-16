@@ -2,6 +2,7 @@
 /// <reference path="./metadata.d.ts" />
 
 interface ITarget {
+    guid: string;
     serviceIdentifier: (string|Symbol|INewable<any>);
     name: IQueryableString;
     metadata: Array<IMetadata>;

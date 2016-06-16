@@ -5,6 +5,7 @@ import * as sinon from "sinon";
 import Kernel from "../../src/kernel/kernel";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import injectable from "../../src/annotation/injectable";
+import KernelModule from "../../src/kernel/kernel_module";
 
 describe("Kernel", () => {
 
@@ -33,14 +34,14 @@ describe("Kernel", () => {
       @injectable()
       class Ninja implements INinja {}
 
-      let warriors = (kernel: IKernel) => {
-          kernel.bind<INinja>("INinja").to(Ninja);
-      };
+      let warriors = new KernelModule((bind: IBind) => {
+          bind<INinja>("INinja").to(Ninja);
+      });
 
-      let weapons = (kernel: IKernel) => {
-          kernel.bind<IKatana>("IKatana").to(Katana);
-          kernel.bind<IShuriken>("IShuriken").to(Shuriken);
-      };
+      let weapons = new KernelModule((bind: IBind) => {
+          bind<IKatana>("IKatana").to(Katana);
+          bind<IShuriken>("IShuriken").to(Shuriken);
+      });
 
       let kernel = new Kernel();
       kernel.load(warriors, weapons);
@@ -49,6 +50,23 @@ describe("Kernel", () => {
       expect(_kernel._bindingDictionary._dictionary[0].serviceIdentifier).eql("INinja");
       expect(_kernel._bindingDictionary._dictionary[1].serviceIdentifier).eql("IKatana");
       expect(_kernel._bindingDictionary._dictionary[2].serviceIdentifier).eql("IShuriken");
+      expect(_kernel._bindingDictionary._dictionary.length).eql(3);
+
+      let tryGetNinja = () => { _kernel.get("INinja"); };
+      let tryGetKatana = () => { _kernel.get("IKatana"); };
+      let tryGetShuruken = () => { _kernel.get("IShuriken"); };
+
+      kernel.unload(warriors);
+      expect(_kernel._bindingDictionary._dictionary.length).eql(2);
+      expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
+      expect(tryGetKatana).not.to.throw();
+      expect(tryGetShuruken).not.to.throw();
+
+      kernel.unload(weapons);
+      expect(_kernel._bindingDictionary._dictionary.length).eql(0);
+      expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
+      expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
+      expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
 
   });
 
@@ -66,6 +84,16 @@ describe("Kernel", () => {
       let _kernel: any = kernel;
       let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
       expect(serviceIdentifier).eql(ninjaId);
+
+  });
+
+  it("Should have an unique identifier", () => {
+
+      let kernel1 = new Kernel();
+      let kernel2 = new Kernel();
+      expect(kernel1.guid.length).eql(36);
+      expect(kernel2.guid.length).eql(36);
+      expect(kernel1.guid).not.eql(kernel2.guid);
 
   });
 
@@ -411,6 +439,7 @@ describe("Kernel", () => {
     });
 
     it("Should be able to snapshot and restore kernel", () => {
+
         interface IWarrior {
         }
 
@@ -450,4 +479,36 @@ describe("Kernel", () => {
 
         expect(() => kernel.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
     });
+
+    it("Should be able to check is there are bindings available for a given identifier", () => {
+
+        interface IWarrior {}
+        let warriorId = "IWarrior";
+        let warriorSymbol = Symbol("IWarrior");
+
+        @injectable()
+        class Ninja implements IWarrior {}
+
+        let kernel = new Kernel();
+        kernel.bind<IWarrior>(Ninja).to(Ninja);
+        kernel.bind<IWarrior>(warriorId).to(Ninja);
+        kernel.bind<IWarrior>(warriorSymbol).to(Ninja);
+
+        expect(kernel.isBound(Ninja)).eql(true);
+        expect(kernel.isBound(warriorId)).eql(true);
+        expect(kernel.isBound(warriorSymbol)).eql(true);
+
+        interface IKatana {}
+        let katanaId = "IKatana";
+        let katanaSymbol = Symbol("IKatana");
+
+        @injectable()
+        class Katana implements IKatana {}
+
+        expect(kernel.isBound(Katana)).eql(false);
+        expect(kernel.isBound(katanaId)).eql(false);
+        expect(kernel.isBound(katanaSymbol)).eql(false);
+
+    });
+
 });
