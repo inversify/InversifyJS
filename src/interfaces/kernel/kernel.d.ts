@@ -2,8 +2,9 @@
 
 interface IKernel {
     bind<T>(serviceIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T>;
-    unbind(serviceIdentifier: (string|Symbol|any)): void;
+    unbind(serviceIdentifier: (string|Symbol|INewable<any>)): void;
     unbindAll(): void;
+    isBound(serviceIdentifier: (string|Symbol|INewable<any>)): boolean;
     get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T;
     getNamed<T>(serviceIdentifier: (string|Symbol|INewable<T>), named: string): T;
     getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T;

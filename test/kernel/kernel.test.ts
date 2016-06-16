@@ -411,6 +411,7 @@ describe("Kernel", () => {
     });
 
     it("Should be able to snapshot and restore kernel", () => {
+
         interface IWarrior {
         }
 
@@ -450,4 +451,36 @@ describe("Kernel", () => {
 
         expect(() => kernel.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
     });
+
+    it("Should be able to check is there are bindings available for a given identifier", () => {
+
+        interface IWarrior {}
+        let warriorId = "IWarrior";
+        let warriorSymbol = Symbol("IWarrior");
+
+        @injectable()
+        class Ninja implements IWarrior {}
+
+        let kernel = new Kernel();
+        kernel.bind<IWarrior>(Ninja).to(Ninja);
+        kernel.bind<IWarrior>(warriorId).to(Ninja);
+        kernel.bind<IWarrior>(warriorSymbol).to(Ninja);
+
+        expect(kernel.isBound(Ninja)).eql(true);
+        expect(kernel.isBound(warriorId)).eql(true);
+        expect(kernel.isBound(warriorSymbol)).eql(true);
+
+        interface IKatana {}
+        let katanaId = "IKatana";
+        let katanaSymbol = Symbol("IKatana");
+
+        @injectable()
+        class Katana implements IKatana {}
+
+        expect(kernel.isBound(Katana)).eql(false);
+        expect(kernel.isBound(katanaId)).eql(false);
+        expect(kernel.isBound(katanaSymbol)).eql(false);
+
+    });
+
 });

@@ -56,7 +56,7 @@ class Kernel implements IKernel {
     }
 
     // Removes a type binding from the registry by its key
-    public unbind(serviceIdentifier: (string|Symbol|any)): void {
+    public unbind(serviceIdentifier: (string|Symbol|INewable<any>)): void {
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
@@ -67,6 +67,12 @@ class Kernel implements IKernel {
     // Removes all the type bindings from the registry
     public unbindAll(): void {
         this._bindingDictionary = new Lookup<IBinding<any>>();
+    }
+
+    // Allows to check if there are bindings available for serviceIdentifier
+    public isBound(serviceIdentifier: (string|Symbol|INewable<any>)): boolean {
+        let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
+        return bindings.length > 0;
     }
 
     // Resolves a dependency by its runtime identifier
