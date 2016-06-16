@@ -16,6 +16,10 @@ describe("Context", () => {
 
       expect(context1.kernel).not.to.eql(null);
       expect(context2.kernel).eql(null);
+      expect(context1.guid.length).eql(36);
+      expect(context2.guid.length).eql(36);
+      expect(context1.guid).not.eql(context2.guid);
+
   });
 
   it("Should be lickable to a Plan", () => {

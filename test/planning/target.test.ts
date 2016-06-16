@@ -86,5 +86,13 @@ describe("Target", () => {
         expect(target1.matchesTag("power")(5)).to.be.eql(true);
         expect(target1.matchesTag("power")(2)).to.be.eql(false);
     });
+    
+    it("Should contain an unique identifier", () => {
+        let target1 = new Target("katana", "IKatana", new Metadata("power", 5));
+        let target2 = new Target("katana", "IKatana", new Metadata("power", 5));
+        expect(target1.guid.length).eql(36);
+        expect(target2.guid.length).eql(36);
+        expect(target1.guid).not.eql(target2.guid);
+    });
 
 });

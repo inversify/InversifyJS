@@ -1,26 +1,29 @@
 interface IRequest {
 
-        /// The service that was requested.
-        serviceIdentifier: (string|Symbol|INewable<any>);
+    // An unique ID
+    guid: string;
 
-        /// The parent context.
-        parentContext: IContext;
+    // The service that was requested.
+    serviceIdentifier: (string|Symbol|INewable<any>);
 
-        /// The parent request.
-        parentRequest: IRequest;
+    // The parent context.
+    parentContext: IContext;
 
-        // The child requests
-        childRequests: IRequest[];
+    // The parent request.
+    parentRequest: IRequest;
 
-        /// Gets the target that will receive the injection, if any.
-        target: ITarget;
+    // The child requests
+    childRequests: IRequest[];
 
-        /// Gets the stack of bindings which have been activated by this request.
-        bindings: IBinding<any>[];
+    // Gets the target that will receive the injection, if any.
+    target: ITarget;
 
-        // Adds a child request to the request
-        addChildRequest(
-            serviceIdentifier: (string|Symbol|INewable<any>),
-            bindings: (IBinding<any>|IBinding<any>[]),
-            target: ITarget): IRequest;
+    // Gets the stack of bindings which have been activated by this request.
+    bindings: IBinding<any>[];
+
+    // Adds a child request to the request
+    addChildRequest(
+        serviceIdentifier: (string|Symbol|INewable<any>),
+        bindings: (IBinding<any>|IBinding<any>[]),
+        target: ITarget): IRequest;
 }

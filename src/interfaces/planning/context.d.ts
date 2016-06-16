@@ -1,5 +1,7 @@
 interface IContext {
 
+        guid: string;
+
         /// Gets the kernel that is driving the resolution.
         kernel: IKernel;
 

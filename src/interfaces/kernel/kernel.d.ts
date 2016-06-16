@@ -1,6 +1,7 @@
 ///<reference path="../interfaces.d.ts" />
 
 interface IKernel {
+    guid: string;
     bind<T>(serviceIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T>;
     unbind(serviceIdentifier: (string|Symbol|INewable<any>)): void;
     unbindAll(): void;

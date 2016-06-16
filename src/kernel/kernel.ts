@@ -27,8 +27,11 @@ import Metadata from "../planning/metadata";
 import Target from "../planning/target";
 import Request from "../planning/request";
 import KernelSnapshot from "./kernel_snapshot";
+import guid from "../utils/guid";
 
 class Kernel implements IKernel {
+
+    public guid: string;
     private _planner: IPlanner;
     private _resolver: IResolver;
     private _middleware: PlanAndResolve<any>;
@@ -37,6 +40,7 @@ class Kernel implements IKernel {
 
     // Initialize private properties
     public constructor() {
+        this.guid = guid();
         this._planner = new Planner();
         this._resolver = new Resolver();
         this._bindingDictionary = new Lookup<IBinding<any>>();

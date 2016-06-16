@@ -1,6 +1,7 @@
 /// <reference path="../interfaces.d.ts" />
 
 interface IBinding<T> extends IClonable<IBinding<T>> {
+    guid: string;
     activated: boolean;
     serviceIdentifier: (string|Symbol|INewable<T>);
     implementationType: INewable<T>;

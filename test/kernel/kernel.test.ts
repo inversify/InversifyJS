@@ -68,6 +68,16 @@ describe("Kernel", () => {
       expect(serviceIdentifier).eql(ninjaId);
 
   });
+  
+  it("Should have an unique identifier", () => {
+
+      let kernel1 = new Kernel();
+      let kernel2 = new Kernel();
+      expect(kernel1.guid.length).eql(36);
+      expect(kernel2.guid.length).eql(36);
+      expect(kernel1.guid).not.eql(kernel2.guid);
+
+  });
 
   it("Should unbind a binding when requested", () => {
 
