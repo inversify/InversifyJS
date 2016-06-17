@@ -105,7 +105,7 @@ The library has been developed using TypeScript so type safety comes out of the 
 with TypeScript but it is nice to mention that if you try to inject a Katana into a class that 
 expects an implementation of IShuriken you will get a compilation error.
 
-### Articles
+# Articles
 I wrote a few articles in defense of IoC containers in JavaScript that explain the preceding with much more details:
 - [The current state of dependency inversion in JavaScript](http://blog.wolksoftware.com/the-current-state-of-dependency-inversion-in-javascript)
 - [About object-oriented design and the “class” & “extends” keywords in TypeScript / ES6](http://blog.wolksoftware.com/about-classes-inheritance-and-object-oriented-design-in-typescript-and-es6)
