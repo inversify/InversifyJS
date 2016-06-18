@@ -61,15 +61,15 @@ The InversifyJS type definitions are included in the inversify-dts npm package:
 /// <reference path="node_modules/inversify-dts/inversify/inversify.d.ts" />
 ```
 
+Alternatively, you can install them with `typings` using:
+```
+    typings install npm:inversify-dts/inversify/inversify.d.ts --save --global
+```
+
 The reflect-metadata type definitions are included in the npm package:
 
 ```ts
 /// <reference path="node_modules/reflect-metadata/reflect-metadata.d.ts" />
-```
-
-Alternatively, you can install them with `typings` using:
-```
-    typings install npm:inversify-dts/inversify/inversify.d.ts --save --global
 ```
 
 If you are targeting ES5 you will get an error:
