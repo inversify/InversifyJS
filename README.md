@@ -67,6 +67,11 @@ The reflect-metadata type definitions are included in the npm package:
 /// <reference path="node_modules/reflect-metadata/reflect-metadata.d.ts" />
 ```
 
+Alternatively, you can install them with `typings` using:
+```
+    typings install npm:inversify-dts/inversify/inversify.d.ts --save --global
+```
+
 If you are targeting ES5 you will get an error:
 > TypeScript error: node_modules/inversify-dts/inversify/inversify.d.ts(108,13): Error TS2304: Cannot find name 'Promise'.
 
