@@ -5,26 +5,26 @@ becomes `constructor(a, b) { ...` after compression but thanks to `@targetName` 
 refer to the design-time names `katana` and `shuriken` at runtime.
 
 ```ts
-interface IWeapon {}
+interface Weapon {}
 
 @injectable()
-class Katana implements IWeapon {}
+class Katana implements Weapon {}
 
 @injectable()
-class Shuriken implements IWeapon {}
+class Shuriken implements Weapon {}
 
-interface INinja {
-    katana: IWeapon;
-    shuriken: IWeapon;
+interface Ninja {
+    katana: Weapon;
+    shuriken: Weapon;
 }
 
 @injectable()
-class Ninja implements INinja {
-    public katana: IWeapon;
-    public shuriken: IWeapon;
+class Ninja implements Ninja {
+    public katana: Weapon;
+    public shuriken: Weapon;
     public constructor(
-        @inject("IWeapon") @targetName("katana") katana: IWeapon,
-        @inject("IWeapon") @targetName("shuriken") shuriken: IWeapon
+        @inject("Weapon") @targetName("katana") katana: Weapon,
+        @inject("Weapon") @targetName("shuriken") shuriken: Weapon
     ) {
         this.katana = katana;
         this.shuriken = shuriken;
@@ -32,16 +32,16 @@ class Ninja implements INinja {
 }
 ```
 
-We are binding `Katana` and `Shuriken` to `IWeapon` but a custom `when` constraint is added to avoid `AMBIGUOUS_MATCH` errors:
+We are binding `Katana` and `Shuriken` to `Weapon` but a custom `when` constraint is added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```ts
-kernel.bind<INinja>(ninjaId).to(Ninja);
+kernel.bind<Ninja>(ninjaId).to(Ninja);
 
-kernel.bind<IWeapon>("IWeapon").to(Katana).when((request: IRequest) => {
+kernel.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
     return request.target.name.equals("katana");
 });
 
-kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
+kernel.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
     return request.target.name.equals("shuriken");
 });
 ```
@@ -49,7 +49,7 @@ kernel.bind<IWeapon>("IWeapon").to(Shuriken).when((request: IRequest) => {
 The target fields implement the `IQueryableString` interface to help you to create your custom constraints:
 
 ```ts
-interface IQueryableString {
+interface QueryableString {
 	 startsWith(searchString: string): boolean;
 	 endsWith(searchString: string): boolean;
 	 contains(searchString: string): boolean;
@@ -62,15 +62,15 @@ We have included some helpers to facilitate the creation of custom constraints:
 ```ts
 import { Kernel, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
 
-let whenParentNamedCanThrowConstraint = (request: IRequest) => {
+let whenParentNamedCanThrowConstraint = (request: interfaces.Request) => {
     return namedConstraint("canThrow")(request.parentRequest);
 };
 
-let whenAnyAncestorIsConstraint = (request: IRequest) => {
+let whenAnyAncestorIsConstraint = (request: interfaces.Request) => {
     return traverseAncerstors(request, typeConstraint(Ninja));
 };
 
-let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
+let whenAnyAncestorTaggedConstraint = (request: interfaces.Request) => {
     return traverseAncerstors(request, taggedConstraint("canThrow")(true));
 };
 ```
@@ -78,20 +78,20 @@ let whenAnyAncestorTaggedConstraint = (request: IRequest) => {
 The InversifyJS fluent syntax for bindings includes some already implemented common contextual constraints:
 
 ```ts
-interface IBindingWhenSyntax<T> {
-    when(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
-    whenTargetNamed(name: string): IBindingOnSyntax<T>;
-    whenTargetTagged(tag: string, value: any): IBindingOnSyntax<T>;
-    whenInjectedInto(parent: (Function|string)): IBindingOnSyntax<T>;
-    whenParentNamed(name: string): IBindingOnSyntax<T>;
-    whenParentTagged(tag: string, value: any): IBindingOnSyntax<T>;
-    whenAnyAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
-    whenNoAncestorIs(ancestor: (Function|string)): IBindingOnSyntax<T>;
-    whenAnyAncestorNamed(name: string): IBindingOnSyntax<T>;
-    whenAnyAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
-    whenNoAncestorNamed(name: string): IBindingOnSyntax<T>;
-    whenNoAncestorTagged(tag: string, value: any): IBindingOnSyntax<T>;
-    whenAnyAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
-    whenNoAncestorMatches(constraint: (request: IRequest) => boolean): IBindingOnSyntax<T>;
+interface BindingWhenSyntax<T> {
+    when(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T>;
+    whenTargetNamed(name: string): interfaces.BindingOnSyntax<T>;
+    whenTargetTagged(tag: string, value: any): interfaces.BindingOnSyntax<T>;
+    whenInjectedInto(parent: (Function|string)): interfaces.BindingOnSyntax<T>;
+    whenParentNamed(name: string): interfaces.BindingOnSyntax<T>;
+    whenParentTagged(tag: string, value: any): interfaces.BindingOnSyntax<T>;
+    whenAnyAncestorIs(ancestor: (Function|string)): interfaces.BindingOnSyntax<T>;
+    whenNoAncestorIs(ancestor: (Function|string)): interfaces.BindingOnSyntax<T>;
+    whenAnyAncestorNamed(name: string): interfaces.BindingOnSyntax<T>;
+    whenAnyAncestorTagged(tag: string, value: any): interfaces.BindingOnSyntax<T>;
+    whenNoAncestorNamed(name: string): interfaces.BindingOnSyntax<T>;
+    whenNoAncestorTagged(tag: string, value: any): interfaces.BindingOnSyntax<T>;
+    whenAnyAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T>;
+    whenNoAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T>;
 }
 ```

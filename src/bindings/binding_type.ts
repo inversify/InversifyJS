@@ -1,5 +1,3 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
 enum BindingType {
   Invalid = 0,
   Instance = 1,

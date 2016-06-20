@@ -1,30 +1,26 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
-
+import Kernel from "../../src/kernel/kernel";
+import injectable from "../../src/annotation/injectable";
+import named from "../../src/annotation/named";
+import tagged from "../../src/annotation/tagged";
 import {
     makePropertyInjectNamedDecorator,
     makePropertyInjectDecorator,
     makePropertyInjectTaggedDecorator
 } from "../../src/annotation/property_injectors";
 
-import Kernel from "../../src/kernel/kernel";
-import injectable from "../../src/annotation/injectable";
-import named from "../../src/annotation/named";
-import tagged from "../../src/annotation/tagged";
-
 describe("makePropertyInjectDecorator and makePropertyMultiInjectDecorator", () => {
 
-    let TYPES = { IWeapon: "IWeapon" };
+    let TYPES = { Weapon: "Weapon" };
 
-    interface IWeapon {
+    interface Weapon {
         name: string;
         durability: number;
         use(): void;
     }
 
     @injectable()
-    class Sword implements IWeapon {
+    class Sword implements Weapon {
         public name: string;
         public durability: number;
         public constructor() {
@@ -37,7 +33,7 @@ describe("makePropertyInjectDecorator and makePropertyMultiInjectDecorator", () 
     }
 
     @injectable()
-    class Shuriken implements IWeapon {
+    class Shuriken implements Weapon {
         public name: string;
         public durability: number;
         public constructor() {
@@ -56,18 +52,18 @@ describe("makePropertyInjectDecorator and makePropertyMultiInjectDecorator", () 
 
         class Warrior {
 
-            @injectNamed(TYPES.IWeapon, "not-throwwable")
+            @injectNamed(TYPES.Weapon, "not-throwwable")
             @named("not-throwwable")
-            public primaryWeapon: IWeapon;
+            public primaryWeapon: Weapon;
 
-            @injectNamed(TYPES.IWeapon, "throwwable")
+            @injectNamed(TYPES.Weapon, "throwwable")
             @named("throwwable")
-            public secondaryWeapon: IWeapon;
+            public secondaryWeapon: Weapon;
 
         }
 
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword).whenTargetNamed("not-throwwable");
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Shuriken).whenTargetNamed("throwwable");
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword).whenTargetNamed("not-throwwable");
+        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed("throwwable");
 
         let warrior1 = new Warrior();
 
@@ -83,18 +79,18 @@ describe("makePropertyInjectDecorator and makePropertyMultiInjectDecorator", () 
 
         class Warrior {
 
-            @injectTagged(TYPES.IWeapon, "throwwable", false)
+            @injectTagged(TYPES.Weapon, "throwwable", false)
             @tagged("throwwable", false)
-            public primaryWeapon: IWeapon;
+            public primaryWeapon: Weapon;
 
-            @injectTagged(TYPES.IWeapon, "throwwable", true)
+            @injectTagged(TYPES.Weapon, "throwwable", true)
             @tagged("throwwable", true)
-            public secondaryWeapon: IWeapon;
+            public secondaryWeapon: Weapon;
 
         }
 
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword).whenTargetTagged("throwwable", false);
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Shuriken).whenTargetTagged("throwwable", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword).whenTargetTagged("throwwable", false);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetTagged("throwwable", true);
 
         let warrior1 = new Warrior();
         expect(warrior1.primaryWeapon).to.be.instanceof(Sword);
@@ -108,11 +104,11 @@ describe("makePropertyInjectDecorator and makePropertyMultiInjectDecorator", () 
         let inject = makePropertyInjectDecorator(kernel);
 
         class Warrior {
-            @inject(TYPES.IWeapon)
-            public weapon: IWeapon;
+            @inject(TYPES.Weapon)
+            public weapon: Weapon;
         }
 
-        kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
 
         let warrior1 = new Warrior();
         expect(warrior1.weapon).to.be.instanceof(Sword);

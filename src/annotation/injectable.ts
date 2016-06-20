@@ -1,5 +1,3 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERRORS_MSGS from "../constants/error_msgs";
 

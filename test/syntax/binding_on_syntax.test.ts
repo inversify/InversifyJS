@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import BindingOnSyntax from "../../src/syntax/binding_on_syntax";
@@ -9,11 +8,11 @@ describe("BindingOnSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingOnSyntax = new BindingOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingOnSyntax = new BindingOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingOnSyntax: any = bindingOnSyntax;
@@ -24,15 +23,15 @@ describe("BindingOnSyntax", () => {
 
     it("Should be able to configure the activation handler of a binding", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingOnSyntax = new BindingOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingOnSyntax = new BindingOnSyntax<Ninja>(binding);
 
-        bindingOnSyntax.onActivation((context: IContext, ninja: INinja) => {
+        bindingOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) => {
             let handler = {};
-            return new Proxy<INinja>(ninja, handler);
+            return new Proxy<Ninja>(ninja, handler);
         });
 
         expect(binding.onActivation).not.to.eql(null);

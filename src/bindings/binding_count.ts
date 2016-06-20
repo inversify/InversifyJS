@@ -1,5 +1,3 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
 enum BindingCount {
     NoBindingsAvailable = 0,
     OnlyOneBindingAvailable = 1,

@@ -1,13 +1,17 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+import interfaces from "../interfaces/interfaces";
 
-export default class KernelSnapshot implements IKernelSnapshot {
-    public bindings: ILookup<IBinding<any>>;
-    public middleware: PlanAndResolve<any>;
+class KernelSnapshot implements interfaces.KernelSnapshot {
 
-    public static of(bindings: ILookup<IBinding<any>>, middleware: PlanAndResolve<any>) {
+    public bindings: interfaces.Lookup<interfaces.Binding<any>>;
+    public middleware: interfaces.PlanAndResolve<any>;
+
+    public static of(bindings: interfaces.Lookup<interfaces.Binding<any>>, middleware: interfaces.PlanAndResolve<any>) {
         let snapshot = new KernelSnapshot();
         snapshot.bindings = bindings;
         snapshot.middleware = middleware;
         return snapshot;
     }
+
 }
+
+export default KernelSnapshot;

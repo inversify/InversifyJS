@@ -1,5 +1,3 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
 import targetName from "../../src/annotation/target_name";
@@ -14,12 +12,12 @@ describe("@targetName", () => {
         @injectable()
         class Warrior {
 
-            public katana: Stubs.IKatana;
-            public shuriken: Stubs.IShuriken;
+            public katana: Stubs.Katana;
+            public shuriken: Stubs.Shuriken;
 
             constructor(
-                @targetName("katana") katana: Stubs.IKatana,
-                @targetName("shuriken") shuriken: Stubs.IShuriken
+                @targetName("katana") katana: Stubs.Katana,
+                @targetName("shuriken") shuriken: Stubs.Shuriken
             ) {
 
                 this.katana = katana;
@@ -41,11 +39,11 @@ describe("@targetName", () => {
 
     it("Should be usable in VanillaJS applications", () => {
 
-        interface IKatana {}
-        interface IShurien {}
+        interface Katana {}
+        interface Shurien {}
 
         let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary: IKatana, secondary: IShurien) {
+            function VanillaJSWarrior(primary: Katana, secondary: Shurien) {
                 // ...
             }
             return VanillaJSWarrior;

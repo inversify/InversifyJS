@@ -1,5 +1,3 @@
-/// <reference path="../interfaces/interfaces.d.ts" />
-
 // Kernel
 // ------
 
@@ -15,6 +13,7 @@
 // to be told which implementation type (classes) to associate
 // with each service type (interfaces).
 
+import interfaces from "../interfaces/interfaces";
 import BindingCount from "../bindings/binding_count";
 import Binding from "../bindings/binding";
 import Lookup from "./lookup";
@@ -29,13 +28,13 @@ import Request from "../planning/request";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
 
-class Kernel implements IKernel {
+class Kernel implements interfaces.Kernel {
 
     public guid: string;
-    private _planner: IPlanner;
-    private _resolver: IResolver;
-    private _middleware: PlanAndResolve<any>;
-    private _bindingDictionary: ILookup<IBinding<any>>;
+    private _planner: Planner;
+    private _resolver: Resolver;
+    private _middleware: interfaces.PlanAndResolve<any>;
+    private _bindingDictionary: interfaces.Lookup<Binding<any>>;
     private _snapshots: Array<KernelSnapshot>;
 
     // Initialize private properties
@@ -43,14 +42,14 @@ class Kernel implements IKernel {
         this.guid = guid();
         this._planner = new Planner();
         this._resolver = new Resolver();
-        this._bindingDictionary = new Lookup<IBinding<any>>();
+        this._bindingDictionary = new Lookup<Binding<any>>();
         this._middleware = null;
         this._snapshots = [];
     }
 
-    public load(...modules: IKernelModule[]): void {
+    public load(...modules: interfaces.KernelModule[]): void {
         let getBindFunction = (moduleId: string) => {
-            return (serviceIdentifier: (string|Symbol|INewable<any>)) => {
+            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 let _bind = this.bind.bind(this);
                 let bindingToSyntax = _bind(serviceIdentifier);
                 (<any>bindingToSyntax)._binding.moduleId = moduleId;
@@ -63,21 +62,21 @@ class Kernel implements IKernel {
         });
     }
 
-    public unload(...modules: IKernelModule[]): void {
+    public unload(...modules: interfaces.KernelModule[]): void {
         modules.forEach((module) => {
             this._bindingDictionary.removeByModuleId(module.guid);
         });
     }
 
     // Regiters a type binding
-    public bind<T>(serviceIdentifier: (string|Symbol|INewable<T>)): IBindingToSyntax<T> {
+    public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         let binding = new Binding<T>(serviceIdentifier);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }
 
     // Removes a type binding from the registry by its key
-    public unbind(serviceIdentifier: (string|Symbol|INewable<any>)): void {
+    public unbind(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
@@ -87,11 +86,11 @@ class Kernel implements IKernel {
 
     // Removes all the type bindings from the registry
     public unbindAll(): void {
-        this._bindingDictionary = new Lookup<IBinding<any>>();
+        this._bindingDictionary = new Lookup<Binding<any>>();
     }
 
     // Allows to check if there are bindings available for serviceIdentifier
-    public isBound(serviceIdentifier: (string|Symbol|INewable<any>)): boolean {
+    public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
         let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
         return bindings.length > 0;
     }
@@ -99,24 +98,24 @@ class Kernel implements IKernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
-    public get<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T {
+    public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
         return this._get<T>({
-            contextInterceptor: (context: IContext) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) =>  { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: null
         })[0];
     }
 
-    public getNamed<T>(serviceIdentifier: (string|Symbol|INewable<T>), named: string): T {
+    public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    public getTagged<T>(serviceIdentifier: (string|Symbol|INewable<T>), key: string, value: any): T {
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
         let metadata = new Metadata(key, value);
         let target = new Target(null, serviceIdentifier, metadata);
         return this._get<T>({
-            contextInterceptor: (context: IContext) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) =>  { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: target
@@ -136,7 +135,7 @@ class Kernel implements IKernel {
         this._middleware = snapshot.middleware;
     }
 
-    public getServiceIdentifierAsString(serviceIdentifier: (string|Symbol|INewable<any>)): string {
+    public getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
         let type = typeof serviceIdentifier;
         if (type === "function") {
             let _serviceIdentifier: any = serviceIdentifier;
@@ -149,8 +148,8 @@ class Kernel implements IKernel {
         }
     }
 
-    public applyMiddleware(...middlewares: IMiddleware[]): void {
-        let previous: PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
+    public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
+        let previous: interfaces.PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
         this._middleware = middlewares.reduce((prev, curr) => {
             return curr(prev);
         }, previous);
@@ -158,16 +157,16 @@ class Kernel implements IKernel {
 
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
-    public getAll<T>(serviceIdentifier: (string|Symbol|INewable<T>)): T[] {
+    public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
         return this._get<T>({
-            contextInterceptor: (context: IContext) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) =>  { return context; },
             multiInject: true,
             serviceIdentifier: serviceIdentifier,
             target: null
         });
     }
 
-    private _get<T>(args: PlanAndResolveArgs): T[] {
+    private _get<T>(args: interfaces.PlanAndResolveArgs): T[] {
         let result: T[] = null;
         if (this._middleware) {
             result = this._middleware(args);
@@ -180,13 +179,17 @@ class Kernel implements IKernel {
         return result;
     }
 
-    private _planAndResolve<T>(args: PlanAndResolveArgs): T[] {
+    private _planAndResolve<T>(args: interfaces.PlanAndResolveArgs): T[] {
         let contexts = this._plan<T>(args.multiInject, args.serviceIdentifier, args.target);
         let results = this._resolve<T>(contexts, args.contextInterceptor);
         return results;
     }
 
-    private _getActiveBindings<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): IBinding<T>[] {
+    private _getActiveBindings<T>(
+        multiInject: boolean,
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        target: interfaces.Target
+    ): interfaces.Binding<T>[] {
 
         let bindings = this._planner.getBindings<T>(this, serviceIdentifier);
 
@@ -225,7 +228,11 @@ class Kernel implements IKernel {
 
     }
 
-    private _plan<T>(multiInject: boolean, serviceIdentifier: (string|Symbol|INewable<T>), target: ITarget): IContext[] {
+    private _plan<T>(
+        multiInject: boolean,
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        target: interfaces.Target
+    ): interfaces.Context[] {
 
         let bindings = this._getActiveBindings(multiInject, serviceIdentifier, target);
 
@@ -236,13 +243,17 @@ class Kernel implements IKernel {
         return contexts;
     }
 
-    private _createContext<T>(binding: IBinding<T>, target: ITarget): IContext {
+    private _createContext<T>(binding: interfaces.Binding<T>, target: interfaces.Target): interfaces.Context {
         let context = this._planner.createContext(this);
         this._planner.createPlan(context, binding, target);
         return context;
     }
 
-    private _resolve<T>(contexts: IContext[], contextInterceptor: (context: IContext) => IContext): T[] {
+    private _resolve<T>(
+        contexts: interfaces.Context[],
+        contextInterceptor: (context: interfaces.Context) => interfaces.Context
+    ): T[] {
+
         let results = contexts.map((context) => {
             return this._resolver.resolve<T>(contextInterceptor(context));
         });

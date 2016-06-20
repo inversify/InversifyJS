@@ -7,34 +7,34 @@ In very large applications using strings as the identifiers of the types to be i
 import { Kernel, injectable, inject } from "inversify";
 
 let Symbols = {
-	INinja : Symbol("INinja"),
-	IKatana : Symbol("IKatana"),
-	IShuriken : Symbol("IShuriken")
+	Ninja : Symbol("Ninja"),
+	Katana : Symbol("Katana"),
+	Shuriken : Symbol("Shuriken")
 };
 
 @injectable()
-class Katana implements IKatana {
+class Katana implements Katana {
     public hit() {
         return "cut!";
     }
 }
 
 @injectable()
-class Shuriken implements IShuriken {
+class Shuriken implements Shuriken {
     public throw() {
         return "hit!";
     }
 }
 
 @injectable()
-class Ninja implements INinja {
+class Ninja implements Ninja {
 
-    private _katana: IKatana;
-    private _shuriken: IShuriken;
+    private _katana: Katana;
+    private _shuriken: Shuriken;
 
     public constructor(
-	    @inject(Symbols.IKatana) katana: IKatana,
-	    @inject(Symbols.IShuriken) shuriken: IShuriken
+	    @inject(Symbols.Katana) katana: Katana,
+	    @inject(Symbols.Shuriken) shuriken: Shuriken
     ) {
         this._katana = katana;
         this._shuriken = shuriken;
@@ -46,7 +46,7 @@ class Ninja implements INinja {
 }
 
 var kernel = new Kernel();
-kernel.bind<INinja>(Symbols.INinja).to(Ninja);
-kernel.bind<IKatana>(Symbols.IKatana).to(Katana);
-kernel.bind<IShuriken>(Symbols.IShuriken).to(Shuriken);
+kernel.bind<Ninja>(Symbols.Ninja).to(Ninja);
+kernel.bind<Katana>(Symbols.Katana).to(Katana);
+kernel.bind<Shuriken>(Symbols.Shuriken).to(Shuriken);
 ```

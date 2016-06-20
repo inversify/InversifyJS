@@ -5,10 +5,10 @@ The InversifyJS kernel provides some helpers to resolve multi-injections.
 ## Kernel.getAll<T>()
 ```ts
 let kernel = new Kernel();
-kernel.bind<IWeapon>("IWeapon").to(Katana);
-kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+kernel.bind<Weapon>("Weapon").to(Katana);
+kernel.bind<Weapon>("Weapon").to(Shuriken);
 
-let weapons = kernel.getAll<IWeapon[]>("IWeapon");
+let weapons = kernel.getAll<Weapon[]>("Weapon");
 ```
 
 ## Kernel.getNamed<T>()
@@ -16,11 +16,11 @@ Named bindings:
 
 ```ts
 let kernel = new Kernel();
-kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("japonese");
-kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("chinese");
+kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
+kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
 
-let katana = kernel.getNamed<IWeapon>("IWeapon", "japonese");
-let shuriken = kernel.getNamed<IWeapon>("IWeapon", "chinese");
+let katana = kernel.getNamed<Weapon>("Weapon", "japonese");
+let shuriken = kernel.getNamed<Weapon>("Weapon", "chinese");
 ```
 
 ## Kernel.getTagged<T>()
@@ -28,34 +28,34 @@ Tagged bindings:
 
 ```ts
 let kernel = new Kernel();
-kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetTagged("faction", "samurai");
-kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetTagged("faction", "ninja");
+kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
+kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
 
-let katana = kernel.getTagged<IWeapon>("IWeapon", "faction", "samurai");
-let shuriken = kernel.getTagged<IWeapon>("IWeapon", "faction", "ninja");
+let katana = kernel.getTagged<Weapon>("Weapon", "faction", "samurai");
+let shuriken = kernel.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
 ## Kernel.isBound()
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
 ```ts
-interface IWarrior {}
-let warriorId = "IWarrior";
-let warriorSymbol = Symbol("IWarrior");
+interface Warrior {}
+let warriorId = "Warrior";
+let warriorSymbol = Symbol("Warrior");
 
 @injectable()
-class Ninja implements IWarrior {}
+class Ninja implements Warrior {}
 
-interface IKatana {}
-let katanaId = "IKatana";
-let katanaSymbol = Symbol("IKatana");
+interface Katana {}
+let katanaId = "Katana";
+let katanaSymbol = Symbol("Katana");
 
 @injectable()
-class Katana implements IKatana {}
+class Katana implements Katana {}
 
 let kernel = new Kernel();
-kernel.bind<IWarrior>(Ninja).to(Ninja);
-kernel.bind<IWarrior>(warriorId).to(Ninja);
-kernel.bind<IWarrior>(warriorSymbol).to(Ninja);
+kernel.bind<Warrior>(Ninja).to(Ninja);
+kernel.bind<Warrior>(warriorId).to(Ninja);
+kernel.bind<Warrior>(warriorSymbol).to(Ninja);
 
 kernel.isBound(Ninja)).eql(true);
 kernel.isBound(warriorId)).eql(true);

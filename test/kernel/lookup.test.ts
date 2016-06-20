@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import Lookup from "../../src/kernel/lookup";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
@@ -50,7 +49,7 @@ describe("Lookup", () => {
 
   it("Should be clonable", () => {
 
-    let lookup = new Lookup<IClonable<any>>();
+    let lookup = new Lookup<interfaces.Clonable<any>>();
     let key1 = Symbol("TEST_KEY");
 
     class Warrior {
@@ -78,36 +77,36 @@ describe("Lookup", () => {
 
     let moduleId1 = "moduleId1";
     let moduleId2 = "moduleId2";
-    let warriorId = "IWarrior";
-    let weaponId = "IWeapon";
+    let warriorId = "Warrior";
+    let weaponId = "Weapon";
 
     let getLookup = () => {
 
-      interface IWarrior {}
+      interface Warrior {}
 
-      class Ninja implements IWarrior {}
+      class Ninja implements Warrior {}
       let ninjaBinding = new Binding(warriorId);
       ninjaBinding.implementationType = Ninja;
       ninjaBinding.moduleId = moduleId1;
 
-      class Samurai implements IWarrior {}
+      class Samurai implements Warrior {}
       let samuraiBinding = new Binding(warriorId);
       samuraiBinding.implementationType = Samurai;
       samuraiBinding.moduleId = moduleId2;
 
-      interface IWeapon {}
+      interface Weapon {}
 
-      class Shuriken implements IWeapon {}
+      class Shuriken implements Weapon {}
       let shurikenBinding = new Binding(weaponId);
       shurikenBinding.implementationType = Shuriken;
       shurikenBinding.moduleId = moduleId1;
 
-      class Katana implements IWeapon {}
+      class Katana implements Weapon {}
       let katanaBinding = new Binding(weaponId);
       katanaBinding.implementationType = Katana;
       katanaBinding.moduleId = moduleId2;
 
-      let lookup = new Lookup<IBinding<any>>();
+      let lookup = new Lookup<Binding<any>>();
       lookup.add(warriorId, ninjaBinding);
       lookup.add(warriorId, samuraiBinding);
       lookup.add(weaponId, shurikenBinding);

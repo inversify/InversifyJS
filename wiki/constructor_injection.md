@@ -1,15 +1,17 @@
 # Injecting a class constructor
+
 Binds an abstraction to a class constructor.
+
 ```ts
 @injectable()
-class Ninja implements INinja {
+class Ninja implements Ninja {
 
-    private _katana: IKatana;
-    private _shuriken: IShuriken;
+    private _katana: Katana;
+    private _shuriken: Shuriken;
 
     public constructor(
-	    @inject("INewable<IKatana>") Katana: INewable<IKatana>, 
-	    @inject("IShuriken") shuriken: IShuriken
+	    @inject("Newable<Katana>") Katana: Newable<Katana>, 
+	    @inject("Shuriken") shuriken: Shuriken
 	) {
         this._katana = new Katana();
         this._shuriken = shuriken;
@@ -22,5 +24,5 @@ class Ninja implements INinja {
 ```
 
 ```ts
-kernel.bind<INewable<IKatana>>("INewable<IKatana>").toConstructor<IKatana>(Katana);
+kernel.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
 ```

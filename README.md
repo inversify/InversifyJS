@@ -51,14 +51,9 @@ InversifyJS has been developed with 4 main goals:
 ### Installation
 
 You can get the latest release and the type definitions using npm:
-```
-npm install inversify@2.0.0-beta.8 inversify-dts reflect-metadata --save
-```
 
-The InversifyJS type definitions are included in the inversify-dts npm package:
-
-```ts
-/// <reference path="node_modules/inversify-dts/inversify/inversify.d.ts" />
+```
+npm install inversify@2.0.0-beta.9 @types/inversify reflect-metadata --save
 ```
 
 The reflect-metadata type definitions are included in the npm package:
@@ -106,16 +101,16 @@ This means that we should "depend upon Abstractions and do not depend upon concr
 Let's start by declaring some interfaces (abstractions).
 
 ```ts
-interface INinja {
+interface Ninja {
     fight(): string;
     sneak(): string;
 }
 
-interface IKatana {
+interface Katana {
     hit(): string;
 }
 
-interface IShuriken {
+interface Shuriken {
     throw(): string;
 }
 ```
@@ -123,7 +118,7 @@ interface IShuriken {
 #### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
 
-When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the string literals `"IKatana"` and `"IShuriken"` as runtime identifiers.
+When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the string literals `"Katana"` and `"Shuriken"` as runtime identifiers.
 
 > **Note**: InversifyJS also support the usage of Classes and Symbols (continue reading to learn more about this).
 
@@ -132,28 +127,28 @@ import { injectable, inject } from "inversify";
 import "reflect-metadata";
 
 @injectable()
-class Katana implements IKatana {
+class Katana implements Katana {
     public hit() {
         return "cut!";
     }
 }
 
 @injectable()
-class Shuriken implements IShuriken {
+class Shuriken implements Shuriken {
     public throw() {
         return "hit!";
     }
 }
 
 @injectable()
-class Ninja implements INinja {
+class Ninja implements Ninja {
 
-    private _katana: IKatana;
-    private _shuriken: IShuriken;
+    private _katana: Katana;
+    private _shuriken: Shuriken;
 
     public constructor(
-	    @inject("IKatana") katana: IKatana,
-	    @inject("IShuriken") shuriken: IShuriken
+	    @inject("Katana") katana: Katana,
+	    @inject("Shuriken") shuriken: Shuriken
     ) {
         this._katana = katana;
         this._shuriken = shuriken;
@@ -176,9 +171,9 @@ import { Katana } from "./entities/katana";
 import { Shuriken} from "./entities/shuriken";
 
 var kernel = new Kernel();
-kernel.bind<INinja>("INinja").to(Ninja);
-kernel.bind<IKatana>("IKatana").to(Katana);
-kernel.bind<IShuriken>("IShuriken").to(Shuriken);
+kernel.bind<Ninja>("Ninja").to(Ninja);
+kernel.bind<Katana>("Katana").to(Katana);
+kernel.bind<Shuriken>("Shuriken").to(Shuriken);
 
 export default kernel;
 ```
@@ -191,13 +186,13 @@ to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/Serv
 ```ts
 import kernel = from "./inversify.config";
 
-var ninja = kernel.get<INinja>("INinja");
+var ninja = kernel.get<Ninja>("Ninja");
 
 expect(ninja.fight()).eql("cut!"); // true
 expect(ninja.sneak()).eql("hit!"); // true
 ```
 
-As we can see the `IKatana` and `IShuriken` were successfully resolved and injected into `Ninja`.
+As we can see the `Katana` and `Shuriken` were successfully resolved and injected into `Ninja`.
 
 InversifyJS supports ES5 and ES6 and can work without TypeScript.
 Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!

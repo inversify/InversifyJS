@@ -1,5 +1,3 @@
-///<reference path="./interfaces/interfaces.d.ts" />
-
 // Inversify
 // ---------
 

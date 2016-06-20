@@ -54,12 +54,12 @@ export class FooBar implements FooBarInterface {
 
 // 2.0
 
-export interface IWeapon {}
-export interface IKatana extends IWeapon {}
-export interface IShuriken extends IWeapon {}
+export interface Weapon {}
+export interface Katana extends Weapon {}
+export interface Shuriken extends Weapon {}
 
-export class Katana implements IKatana {}
-export class Shuriken implements IShuriken {}
+export class Katana implements Katana {}
+export class Shuriken implements Shuriken {}
 
 export class WarriotWithoutInjections {}
 
@@ -68,12 +68,12 @@ export class DecoratedWarriotWithoutInjections {}
 
 @injectable()
 export class Warrior {
-    private _primaryWeapon: IKatana;
-    private _secondaryWeapon: IShuriken;
+    private _primaryWeapon: Katana;
+    private _secondaryWeapon: Shuriken;
 
     constructor(
-      @inject("IKatana") primary: IKatana,
-      @inject("IShuriken") secondary: IShuriken
+      @inject("Katana") primary: Katana,
+      @inject("Shuriken") secondary: Shuriken
     ) {
         // ...
     }
@@ -81,24 +81,24 @@ export class Warrior {
 
 export class InvalidDecoratorUsageWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      primary: IWeapon,
-      secondary: IWeapon) {
+      primary: Weapon,
+      secondary: Weapon) {
         // ...
     }
 }
 
 export class MissingInjectionWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      primary: IWeapon,
-      secondary: IWeapon) {
+      primary: Weapon,
+      secondary: Weapon) {
         // ...
     }
 }
@@ -106,12 +106,12 @@ export class MissingInjectionWarrior {
 @injectable()
 export class NamedWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      @inject("IKatana") @named("strong") primary: IWeapon,
-      @inject("IShuriken") @named("weak") secondary: IWeapon
+      @inject("Katana") @named("strong") primary: Weapon,
+      @inject("Shuriken") @named("weak") secondary: Weapon
     ) {
         // ...
     }
@@ -120,12 +120,12 @@ export class NamedWarrior {
 @injectable()
 export class TaggedWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      @inject("IKatana") @tagged("power", 5) primary: IWeapon,
-      @inject("IShuriken") @tagged("power", 1) secondary: IWeapon
+      @inject("Katana") @tagged("power", 5) primary: Weapon,
+      @inject("Shuriken") @tagged("power", 1) secondary: Weapon
     ) {
         // ...
     }
@@ -133,9 +133,9 @@ export class TaggedWarrior {
 
 @injectable()
 export abstract class BaseSoldier {
-    public weapon: IWeapon;
+    public weapon: Weapon;
     public constructor(
-        @inject("IWeapon") weapon: IWeapon
+        @inject("Weapon") weapon: Weapon
     ) {
         this.weapon = weapon;
     }

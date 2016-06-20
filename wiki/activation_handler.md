@@ -1,35 +1,41 @@
 # Activation handler
-It is possible to add an activation handler for a type. The activation handler is invoked after a dependency has been resolved and before it is added to the cache (if singleton) and injected. This is useful to keep our dependencies agnostic of the  implementation of crosscutting concerns like caching or logging. The following example uses a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) to intercept one of the methods (`use`) of a dependency (`IKatana`).
+
+It is possible to add an activation handler for a type. The activation handler is 
+invoked after a dependency has been resolved and before it is added to the cache 
+(if singleton) and injected. This is useful to keep our dependencies agnostic of 
+the implementation of crosscutting concerns like caching or logging. The following 
+example uses a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) 
+to intercept one of the methods (`use`) of a dependency (`Katana`).
 
 ```ts
-interface IKatana {
+interface Katana {
     use: () => void;
 }
 
 @injectable()
-class Katana implements IKatana {
+class Katana implements Katana {
     public use() {
         console.log("Used Katana!");
     }
 }
 
-interface INinja {
-    katana: IKatana;
+interface Ninja {
+    katana: Katana;
 }
 
 @injectable()
-class Ninja implements INinja {
-    public katana: IKatana;
-    public constructor(@inject("IKatana") katana: IKatana) {
+class Ninja implements Ninja {
+    public katana: Katana;
+    public constructor(@inject("Katana") katana: Katana) {
         this.katana = katana;
     }
 }
 ```
 
 ```ts
-kernel.bind<INinja>("INinja").to(Ninja);
+kernel.bind<Ninja>("Ninja").to(Ninja);
 
-kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context, katana) => {
+kernel.bind<Katana>("Katana").to(Katana).onActivation((context, katana) => {
     let handler = {
         apply: function(target, thisArgument, argumentsList) {
             console.log(`Starting: ${new Date().getTime()}`);
@@ -44,7 +50,7 @@ kernel.bind<IKatana>("IKatana").to(Katana).onActivation((context, katana) => {
 ```
 
 ```ts
-let ninja = kernelget<INinja>();
+let ninja = kernelget<Ninja>();
 ninja.katana.use();
 > Starting: 1457895135761
 > Used Katana!

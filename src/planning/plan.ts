@@ -1,11 +1,11 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+import interfaces from "../interfaces/interfaces";
 
-class Plan implements IPlan {
+class Plan implements interfaces.Plan {
 
-    public parentContext: IContext;
-    public rootRequest: IRequest;
+    public parentContext: interfaces.Context;
+    public rootRequest: interfaces.Request;
 
-    public constructor(parentContext: IContext, rootRequest: IRequest) {
+    public constructor(parentContext: interfaces.Context, rootRequest: interfaces.Request) {
         this.parentContext = parentContext;
         this.rootRequest = rootRequest;
     }

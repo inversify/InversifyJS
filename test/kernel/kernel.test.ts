@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import Kernel from "../../src/kernel/kernel";
@@ -21,40 +20,40 @@ describe("Kernel", () => {
 
   it("Should be able to use modules as configuration", () => {
 
-      interface INinja {}
-      interface IKatana {}
-      interface IShuriken {}
+      interface Ninja {}
+      interface Katana {}
+      interface Shuriken {}
 
       @injectable()
-      class Katana implements IKatana {}
+      class Katana implements Katana {}
 
       @injectable()
-      class Shuriken implements IShuriken {}
+      class Shuriken implements Shuriken {}
 
       @injectable()
-      class Ninja implements INinja {}
+      class Ninja implements Ninja {}
 
-      let warriors = new KernelModule((bind: IBind) => {
-          bind<INinja>("INinja").to(Ninja);
+      let warriors = new KernelModule((bind: interfaces.Bind) => {
+          bind<Ninja>("Ninja").to(Ninja);
       });
 
-      let weapons = new KernelModule((bind: IBind) => {
-          bind<IKatana>("IKatana").to(Katana);
-          bind<IShuriken>("IShuriken").to(Shuriken);
+      let weapons = new KernelModule((bind: interfaces.Bind) => {
+          bind<Katana>("Katana").to(Katana);
+          bind<Shuriken>("Shuriken").to(Shuriken);
       });
 
       let kernel = new Kernel();
       kernel.load(warriors, weapons);
 
       let _kernel: any = kernel;
-      expect(_kernel._bindingDictionary._dictionary[0].serviceIdentifier).eql("INinja");
-      expect(_kernel._bindingDictionary._dictionary[1].serviceIdentifier).eql("IKatana");
-      expect(_kernel._bindingDictionary._dictionary[2].serviceIdentifier).eql("IShuriken");
+      expect(_kernel._bindingDictionary._dictionary[0].serviceIdentifier).eql("Ninja");
+      expect(_kernel._bindingDictionary._dictionary[1].serviceIdentifier).eql("Katana");
+      expect(_kernel._bindingDictionary._dictionary[2].serviceIdentifier).eql("Shuriken");
       expect(_kernel._bindingDictionary._dictionary.length).eql(3);
 
-      let tryGetNinja = () => { _kernel.get("INinja"); };
-      let tryGetKatana = () => { _kernel.get("IKatana"); };
-      let tryGetShuruken = () => { _kernel.get("IShuriken"); };
+      let tryGetNinja = () => { _kernel.get("Ninja"); };
+      let tryGetKatana = () => { _kernel.get("Katana"); };
+      let tryGetShuruken = () => { _kernel.get("Shuriken"); };
 
       kernel.unload(warriors);
       expect(_kernel._bindingDictionary._dictionary.length).eql(2);
@@ -72,14 +71,14 @@ describe("Kernel", () => {
 
   it("Should be able to store bindings", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
-      let ninjaId = "INinja";
+      class Ninja implements Ninja {}
+      let ninjaId = "Ninja";
 
       let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
       let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
@@ -99,14 +98,14 @@ describe("Kernel", () => {
 
   it("Should unbind a binding when requested", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
-      let ninjaId = "INinja";
+      class Ninja implements Ninja {}
+      let ninjaId = "Ninja";
 
       let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
 
       let _kernel: any = kernel;
       let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
@@ -120,35 +119,35 @@ describe("Kernel", () => {
 
   it("Should throw when cannot unbind", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
+      class Ninja implements Ninja {}
 
-      let serviceIdentifier = "INinja";
+      let serviceIdentifier = "Ninja";
       let kernel = new Kernel();
-      let throwFunction = () => { kernel.unbind("INinja"); };
+      let throwFunction = () => { kernel.unbind("Ninja"); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${serviceIdentifier}`);
 
   });
 
   it("Should unbind a binding when requested", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
-      interface ISamurai {}
+      class Ninja implements Ninja {}
+      interface Samurai {}
 
       @injectable()
-      class Samurai implements ISamurai {}
+      class Samurai implements Samurai {}
 
-      let ninjaId = "INinja";
-      let samuraiId = "ISamurai";
+      let ninjaId = "Ninja";
+      let samuraiId = "Samurai";
 
       let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
-      kernel.bind<ISamurai>(samuraiId).to(Samurai);
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
+      kernel.bind<Samurai>(samuraiId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -165,22 +164,22 @@ describe("Kernel", () => {
 
   it("Should be able unbound all dependencies", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
+      class Ninja implements Ninja {}
 
-      interface ISamurai {}
+      interface Samurai {}
 
       @injectable()
-      class Samurai implements ISamurai {}
+      class Samurai implements Samurai {}
 
-      let ninjaId = "INinja";
-      let samuraiId = "ISamurai";
+      let ninjaId = "Ninja";
+      let samuraiId = "Samurai";
 
       let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
-      kernel.bind<ISamurai>(samuraiId).to(Samurai);
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
+      kernel.bind<Samurai>(samuraiId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -197,26 +196,26 @@ describe("Kernel", () => {
 
   it("Should NOT be able to get unregistered services", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
-      let ninjaId = "INinja";
+      class Ninja implements Ninja {}
+      let ninjaId = "Ninja";
 
       let kernel = new Kernel();
-      let throwFunction = () => { kernel.get<INinja>(ninjaId); };
+      let throwFunction = () => { kernel.get<Ninja>(ninjaId); };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
   });
 
   it("Should be able to get a registered and not ambiguous service", () => {
 
-      interface INinja {
+      interface Warrior {
           name: string;
       }
 
       @injectable()
-      class Ninja implements INinja {
+      class Ninja implements Warrior {
 
           public name: string;
 
@@ -225,18 +224,18 @@ describe("Kernel", () => {
           }
       }
 
-      let ninjaId = "INinja";
+      let warriorId = "Warrior";
       let ninjaName = "Ryu Hayabusa";
 
       let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<Warrior>(warriorId).to(Ninja);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
 
       // pre conditions
       expect(dictionary.length).eql(1);
-      expect(dictionary[0].serviceIdentifier).eql(ninjaId);
+      expect(dictionary[0].serviceIdentifier).eql(warriorId);
       expect(dictionary[0].value.length).eql(1);
 
       // mock planner and resolver
@@ -250,7 +249,7 @@ describe("Kernel", () => {
       let plannerCreatePlanStub = sandbox.stub(planner, "createPlan").returns(null);
       let resolverResolveStub =  sandbox.stub(resolver, "resolve").returns(new Ninja(ninjaName));
 
-      let ninja = kernel.get<INinja>(ninjaId);
+      let ninja = kernel.get<Warrior>(warriorId);
       expect(ninja.name).eql(ninjaName);
       expect(resolverResolveStub.calledOnce).eql(true);
       expect(plannerCreateContextStub.calledOnce).eql(true);
@@ -260,19 +259,19 @@ describe("Kernel", () => {
 
   it("Should NOT be able to get ambiguous match", () => {
 
-      interface IWarrior {}
+      interface Warrior {}
 
       @injectable()
-      class Ninja implements IWarrior {}
+      class Ninja implements Warrior {}
 
       @injectable()
-      class Samurai implements IWarrior {}
+      class Samurai implements Warrior {}
 
-      let warriorId = "IWarrior";
+      let warriorId = "Warrior";
 
       let kernel = new Kernel();
-      kernel.bind<IWarrior>(warriorId).to(Ninja);
-      kernel.bind<IWarrior>(warriorId).to(Samurai);
+      kernel.bind<Warrior>(warriorId).to(Ninja);
+      kernel.bind<Warrior>(warriorId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -281,21 +280,21 @@ describe("Kernel", () => {
       expect(dictionary[0].serviceIdentifier).eql(warriorId);
       expect(dictionary[0].value.length).eql(2);
 
-      let throwFunction = () => { kernel.get<IWarrior>(warriorId); };
+      let throwFunction = () => { kernel.get<Warrior>(warriorId); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${warriorId}`);
 
   });
 
   it("Should NOT be able to getAll of an unregistered services", () => {
 
-      interface INinja {}
+      interface Ninja {}
 
       @injectable()
-      class Ninja implements INinja {}
-      let ninjaId = "INinja";
+      class Ninja implements Ninja {}
+      let ninjaId = "Ninja";
 
       let kernel = new Kernel();
-      let throwFunction = () => { kernel.getAll<INinja>(ninjaId); };
+      let throwFunction = () => { kernel.getAll<Ninja>(ninjaId); };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
 
@@ -303,12 +302,12 @@ describe("Kernel", () => {
 
   it("Should be able to getAll of a registered and not ambiguous service", () => {
 
-      interface INinja {
+      interface Warrior {
           name: string;
       }
 
       @injectable()
-      class Ninja implements INinja {
+      class Ninja implements Warrior {
 
           public name: string;
 
@@ -317,18 +316,18 @@ describe("Kernel", () => {
           }
       }
 
-      let ninjaId = "INinja";
+      let warriorId = "Warrior";
       let ninjaName = "Ryu Hayabusa";
 
       let kernel = new Kernel();
-      kernel.bind<INinja>(ninjaId).to(Ninja);
+      kernel.bind<Warrior>(warriorId).to(Ninja);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
 
       // pre conditions
       expect(dictionary.length).eql(1);
-      expect(dictionary[0].serviceIdentifier).eql(ninjaId);
+      expect(dictionary[0].serviceIdentifier).eql(warriorId);
       expect(dictionary[0].value.length).eql(1);
 
       // mock planner and resolver
@@ -342,7 +341,7 @@ describe("Kernel", () => {
       let plannerCreatePlanStub = sandbox.stub(planner, "createPlan").returns(null);
       let resolverResolveStub =  sandbox.stub(resolver, "resolve").returns(new Ninja(ninjaName));
 
-      let ninjas = kernel.getAll<INinja>(ninjaId);
+      let ninjas = kernel.getAll<Warrior>(warriorId);
       expect(ninjas.length).eql(1);
       expect(ninjas[0].name).eql(ninjaName);
       expect(resolverResolveStub.calledOnce).eql(true);
@@ -353,12 +352,12 @@ describe("Kernel", () => {
 
   it("Should be able to getAll of an ambiguous service", () => {
 
-      interface IWarrior {
+      interface Warrior {
           name: string;
       }
 
       @injectable()
-      class Ninja implements IWarrior {
+      class Ninja implements Warrior {
 
           public name: string;
 
@@ -368,7 +367,7 @@ describe("Kernel", () => {
       }
 
       @injectable()
-      class Samurai implements IWarrior {
+      class Samurai implements Warrior {
 
           public name: string;
 
@@ -377,13 +376,13 @@ describe("Kernel", () => {
           }
       }
 
-      let warriorId = "IWarrior";
+      let warriorId = "Warrior";
       let ninjaName = "Ryu Hayabusa";
       let samuraiName = "Katsumoto";
 
       let kernel = new Kernel();
-      kernel.bind<IWarrior>(warriorId).to(Ninja);
-      kernel.bind<IWarrior>(warriorId).to(Samurai);
+      kernel.bind<Warrior>(warriorId).to(Ninja);
+      kernel.bind<Warrior>(warriorId).to(Samurai);
 
       let _kernel: any = kernel;
       let dictionary = _kernel._bindingDictionary._dictionary;
@@ -407,7 +406,7 @@ describe("Kernel", () => {
       resolverResolveStub.onCall(0).returns(new Ninja(ninjaName));
       resolverResolveStub.onCall(1).returns(new Samurai(samuraiName));
 
-      let warriors = kernel.getAll<IWarrior>(warriorId);
+      let warriors = kernel.getAll<Warrior>(warriorId);
       expect(warriors.length).eql(2);
       expect(warriors[0].name).eql(ninjaName);
       expect(warriors[1].name).eql(samuraiName);
@@ -418,17 +417,17 @@ describe("Kernel", () => {
   });
 
     it("Should be able to get a string literal identifier as a string", () => {
-        let IKatana = "IKatana";
+        let Katana = "Katana";
         let kernel = new Kernel();
-        let KatanaStr = kernel.getServiceIdentifierAsString(IKatana);
-        expect(KatanaStr).to.eql("IKatana");
+        let KatanaStr = kernel.getServiceIdentifierAsString(Katana);
+        expect(KatanaStr).to.eql("Katana");
     });
 
     it("Should be able to get a symbol identifier as a string", () => {
-        let IKatanaSymbol = Symbol("IKatana");
+        let KatanaSymbol = Symbol("Katana");
         let kernel = new Kernel();
-        let KatanaStr = kernel.getServiceIdentifierAsString(IKatanaSymbol);
-        expect(KatanaStr).to.eql("Symbol(IKatana)");
+        let KatanaStr = kernel.getServiceIdentifierAsString(KatanaSymbol);
+        expect(KatanaStr).to.eql("Symbol(Katana)");
     });
 
     it("Should be able to get a class identifier as a string", () => {
@@ -440,18 +439,18 @@ describe("Kernel", () => {
 
     it("Should be able to snapshot and restore kernel", () => {
 
-        interface IWarrior {
+        interface Warrior {
         }
 
         @injectable()
-        class Ninja implements IWarrior {}
+        class Ninja implements Warrior {}
 
         @injectable()
-        class Samurai implements IWarrior {}
+        class Samurai implements Warrior {}
 
         let kernel = new Kernel();
-        kernel.bind<IWarrior>(Ninja).to(Ninja);
-        kernel.bind<IWarrior>(Samurai).to(Samurai);
+        kernel.bind<Warrior>(Ninja).to(Ninja);
+        kernel.bind<Warrior>(Samurai).to(Samurai);
 
         expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
         expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
@@ -465,7 +464,7 @@ describe("Kernel", () => {
         kernel.snapshot(); // snapshot kernel = v2
         expect(() => kernel.get(Ninja )).to.throw();
 
-        kernel.bind<IWarrior>(Ninja).to(Ninja);
+        kernel.bind<Warrior>(Ninja).to(Ninja);
         expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
         expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
 
@@ -482,28 +481,28 @@ describe("Kernel", () => {
 
     it("Should be able to check is there are bindings available for a given identifier", () => {
 
-        interface IWarrior {}
-        let warriorId = "IWarrior";
-        let warriorSymbol = Symbol("IWarrior");
+        interface Warrior {}
+        let warriorId = "Warrior";
+        let warriorSymbol = Symbol("Warrior");
 
         @injectable()
-        class Ninja implements IWarrior {}
+        class Ninja implements Warrior {}
 
         let kernel = new Kernel();
-        kernel.bind<IWarrior>(Ninja).to(Ninja);
-        kernel.bind<IWarrior>(warriorId).to(Ninja);
-        kernel.bind<IWarrior>(warriorSymbol).to(Ninja);
+        kernel.bind<Warrior>(Ninja).to(Ninja);
+        kernel.bind<Warrior>(warriorId).to(Ninja);
+        kernel.bind<Warrior>(warriorSymbol).to(Ninja);
 
         expect(kernel.isBound(Ninja)).eql(true);
         expect(kernel.isBound(warriorId)).eql(true);
         expect(kernel.isBound(warriorSymbol)).eql(true);
 
-        interface IKatana {}
-        let katanaId = "IKatana";
-        let katanaSymbol = Symbol("IKatana");
+        interface Katana {}
+        let katanaId = "Katana";
+        let katanaSymbol = Symbol("Katana");
 
         @injectable()
-        class Katana implements IKatana {}
+        class Katana implements Katana {}
 
         expect(kernel.isBound(Katana)).eql(false);
         expect(kernel.isBound(katanaId)).eql(false);

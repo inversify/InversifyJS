@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import Binding from "../../src/bindings/binding";
@@ -20,11 +19,11 @@ describe("BindingWhenOnSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenOnSyntax = new BindingWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
@@ -35,21 +34,21 @@ describe("BindingWhenOnSyntax", () => {
 
     it("Should provide access to BindingWhenSyntax methods", () => {
 
-        interface IArmy {}
+        interface Army {}
 
         @injectable()
-        class Army implements IArmy {}
+        class Army implements Army {}
 
-        interface IZombieArmy {}
+        interface ZombieArmy {}
 
         @injectable()
-        class ZombieArmy implements IZombieArmy {}
+        class ZombieArmy implements ZombieArmy {}
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenOnSyntax = new BindingWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
@@ -87,7 +86,7 @@ describe("BindingWhenOnSyntax", () => {
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorMatches").returns(null);
 
         // invoke BindingWhenOnSyntax methods
-        bindingWhenOnSyntax.when((request: IRequest) => { return true; });
+        bindingWhenOnSyntax.when((request: interfaces.Request) => { return true; });
         bindingWhenOnSyntax.whenTargetNamed("test");
         bindingWhenOnSyntax.whenTargetTagged("test", true);
         bindingWhenOnSyntax.whenInjectedInto("armny");
@@ -100,8 +99,8 @@ describe("BindingWhenOnSyntax", () => {
         bindingWhenOnSyntax.whenAnyAncestorTagged("test", true);
         bindingWhenOnSyntax.whenNoAncestorNamed("test");
         bindingWhenOnSyntax.whenNoAncestorTagged("test", true);
-        bindingWhenOnSyntax.whenAnyAncestorMatches((request: IRequest) => { return true; });
-        bindingWhenOnSyntax.whenNoAncestorMatches((request: IRequest) => { return true; });
+        bindingWhenOnSyntax.whenAnyAncestorMatches((request: interfaces.Request) => { return true; });
+        bindingWhenOnSyntax.whenNoAncestorMatches((request: interfaces.Request) => { return true; });
 
         // assert invoked BindingWhenSyntax methods
         expect(whenStub.callCount).eql(1);
@@ -123,11 +122,11 @@ describe("BindingWhenOnSyntax", () => {
 
     it("Should provide access to BindingOnSyntax methods", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenOnSyntax = new BindingWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
@@ -136,7 +135,7 @@ describe("BindingWhenOnSyntax", () => {
         let onActivationStub = sinon.stub(_bindingWhenOnSyntax._bindingOnSyntax, "onActivation").returns(null);
 
         // invoke BindingWhenOnSyntax methods
-        bindingWhenOnSyntax.onActivation((context: IContext, ninja: INinja) => {
+        bindingWhenOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) => {
             // DO NOTHING
             return ninja;
         });

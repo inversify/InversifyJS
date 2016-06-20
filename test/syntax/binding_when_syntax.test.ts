@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import Request from "../../src/planning/request";
@@ -12,11 +11,11 @@ describe("BindingWhenSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenSyntax = new BindingWhenSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingWhenSyntax: any = bindingWhenSyntax;
@@ -27,13 +26,13 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to configure custom constraint of a binding", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenSyntax = new BindingWhenSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
-        bindingWhenSyntax.when((request: IRequest) => {
+        bindingWhenSyntax.when((request: interfaces.Request) => {
             return request.target.name.equals("ninja");
         });
 
@@ -45,11 +44,11 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to a named target", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenSyntax = new BindingWhenSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         let named = "primary";
 
@@ -68,11 +67,11 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to a tagged target", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingWhenSyntax = new BindingWhenSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         bindingWhenSyntax.whenTargetTagged("canSwim", true);
         expect(binding.constraint).not.to.eql(null);
@@ -89,57 +88,57 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to its parent", () => {
 
-        interface IWeapon {
+        interface Weapon {
             name: string;
         }
 
-        class Katana implements IWeapon {
+        class Katana implements Weapon {
             public name = "Katana";
         }
 
-        class Shuriken implements IWeapon {
+        class Shuriken implements Weapon {
             public name = "Shuriken";
         }
 
-        interface ISamurai {
-            katana: IWeapon;
+        interface JaponeseWarrior {
+            katana: Weapon;
         }
 
-        interface INinja {
-            shuriken: IWeapon;
+        interface ChineseWarrior {
+            shuriken: Weapon;
         }
 
-        class Ninja implements INinja {
-            public shuriken: IWeapon;
-            public constructor(shuriken: IWeapon) {
+        class Ninja implements ChineseWarrior {
+            public shuriken: Weapon;
+            public constructor(shuriken: Weapon) {
                 this.shuriken = shuriken;
             }
         }
 
-        class Samurai implements ISamurai {
-            public katana: IWeapon;
-            public constructor(katana: IWeapon) {
+        class Samurai implements JaponeseWarrior {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
                 this.katana = katana;
             }
         }
 
-        let samuraiBinding = new Binding<ISamurai>("ISamurai");
+        let samuraiBinding = new Binding<Samurai>("Samurai");
         samuraiBinding.implementationType = Samurai;
-        let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, null);
+        let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, null);
 
-        let ninjaBinding = new Binding<INinja>("INinja");
+        let ninjaBinding = new Binding<Ninja>("Ninja");
         ninjaBinding.implementationType = Ninja;
-        let ninjaRequest = new Request("INinja", null, null, ninjaBinding, null);
+        let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, null);
 
-        let katanaBinding = new Binding<IWeapon>("IWeapon");
-        let katanaBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(katanaBinding);
-        let katanaTarget = new Target("katana", "IWeapon");
-        let katanaRequest = new Request("IWeapon", null, samuraiRequest, katanaBinding, katanaTarget);
+        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        let katanaTarget = new Target("katana", "Weapon");
+        let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
-        let shurikenBinding = new Binding<IWeapon>("IWeapon");
-        let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
-        let shurikenTarget = new Target("shuriken", "IWeapon");
-        let shurikenRequest = new Request("IWeapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        let shurikenTarget = new Target("shuriken", "Weapon");
+        let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
 
         katanaBindingWhenSyntax.whenInjectedInto(Samurai);
         expect(katanaBinding.constraint(katanaRequest)).eql(true);
@@ -157,19 +156,19 @@ describe("BindingWhenSyntax", () => {
         expect(shurikenBinding.constraint(katanaRequest)).eql(false);
         expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
 
-        katanaBindingWhenSyntax.whenInjectedInto("ISamurai");
+        katanaBindingWhenSyntax.whenInjectedInto("Samurai");
         expect(katanaBinding.constraint(katanaRequest)).eql(true);
         expect(katanaBinding.constraint(shurikenRequest)).eql(false);
 
-        katanaBindingWhenSyntax.whenInjectedInto("INinja");
+        katanaBindingWhenSyntax.whenInjectedInto("Ninja");
         expect(katanaBinding.constraint(katanaRequest)).eql(false);
         expect(katanaBinding.constraint(shurikenRequest)).eql(true);
 
-        shurikenBindingWhenSyntax.whenInjectedInto("ISamurai");
+        shurikenBindingWhenSyntax.whenInjectedInto("Samurai");
         expect(shurikenBinding.constraint(katanaRequest)).eql(true);
         expect(shurikenBinding.constraint(shurikenRequest)).eql(false);
 
-        shurikenBindingWhenSyntax.whenInjectedInto("INinja");
+        shurikenBindingWhenSyntax.whenInjectedInto("Ninja");
         expect(shurikenBinding.constraint(katanaRequest)).eql(false);
         expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
 
@@ -177,57 +176,57 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to a named parent", () => {
 
-        interface IWeapon {
+        interface Weapon {
             name: string;
         }
 
-        class Katana implements IWeapon {
+        class Katana implements Weapon {
             public name = "Katana";
         }
 
-        class Shuriken implements IWeapon {
+        class Shuriken implements Weapon {
             public name = "Shuriken";
         }
 
-        interface ISamurai {
-            katana: IWeapon;
+        interface JaponeseWarrior {
+            katana: Weapon;
         }
 
-        interface INinja {
-            shuriken: IWeapon;
+        interface ChineseWarrior {
+            shuriken: Weapon;
         }
 
-        class Ninja implements INinja {
-            public shuriken: IWeapon;
-            public constructor(shuriken: IWeapon) {
+        class Ninja implements ChineseWarrior {
+            public shuriken: Weapon;
+            public constructor(shuriken: Weapon) {
                 this.shuriken = shuriken;
             }
         }
 
-        class Samurai implements ISamurai {
-            public katana: IWeapon;
-            public constructor(katana: IWeapon) {
+        class Samurai implements JaponeseWarrior {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
                 this.katana = katana;
             }
         }
 
-        let samuraiBinding = new Binding<ISamurai>("ISamurai");
+        let samuraiBinding = new Binding<Samurai>("Samurai");
         samuraiBinding.implementationType = Samurai;
-        let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, new Target(null, "ISamurai", "japonese"));
+        let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, new Target(null, "Samurai", "japonese"));
 
-        let ninjaBinding = new Binding<INinja>("INinja");
+        let ninjaBinding = new Binding<Ninja>("Ninja");
         ninjaBinding.implementationType = Ninja;
-        let ninjaRequest = new Request("INinja", null, null, ninjaBinding, new Target(null, "INinja", "chinese"));
+        let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, new Target(null, "Ninja", "chinese"));
 
-        let katanaBinding = new Binding<IWeapon>("IWeapon");
-        let katanaBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(katanaBinding);
-        let katanaTarget = new Target("katana", "IWeapon");
-        let katanaRequest = new Request("IWeapon", null, samuraiRequest, katanaBinding, katanaTarget);
+        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        let katanaTarget = new Target("katana", "Weapon");
+        let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
-        let shurikenBinding = new Binding<IWeapon>("IWeapon");
-        let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
-        let shurikenTarget = new Target("shuriken", "IWeapon");
-        let shurikenRequest = new Request("IWeapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        let shurikenTarget = new Target("shuriken", "Weapon");
+        let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
 
         katanaBindingWhenSyntax.whenParentNamed("chinese");
         shurikenBindingWhenSyntax.whenParentNamed("chinese");
@@ -243,59 +242,59 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to a tagged parent", () => {
 
-        interface IWeapon {
+        interface Weapon {
             name: string;
         }
 
-        class Katana implements IWeapon {
+        class Katana implements Weapon {
             public name = "Katana";
         }
 
-        class Shuriken implements IWeapon {
+        class Shuriken implements Weapon {
             public name = "Shuriken";
         }
 
-        interface ISamurai {
-            katana: IWeapon;
+        interface JaponeseWarrior {
+            katana: Weapon;
         }
 
-        interface INinja {
-            shuriken: IWeapon;
+        interface ChineseWarrior {
+            shuriken: Weapon;
         }
 
-        class Ninja implements INinja {
-            public shuriken: IWeapon;
-            public constructor(shuriken: IWeapon) {
+        class Ninja implements ChineseWarrior {
+            public shuriken: Weapon;
+            public constructor(shuriken: Weapon) {
                 this.shuriken = shuriken;
             }
         }
 
-        class Samurai implements ISamurai {
-            public katana: IWeapon;
-            public constructor(katana: IWeapon) {
+        class Samurai implements JaponeseWarrior {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
                 this.katana = katana;
             }
         }
 
-        let samuraiBinding = new Binding<ISamurai>("ISamurai");
+        let samuraiBinding = new Binding<Samurai>("Samurai");
         samuraiBinding.implementationType = Samurai;
-        let samuraiTarget = new Target(null, "ISamurai", new Metadata("sneaky", false));
-        let samuraiRequest = new Request("ISamurai", null, null, samuraiBinding, samuraiTarget);
+        let samuraiTarget = new Target(null, "Samurai", new Metadata("sneaky", false));
+        let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, samuraiTarget);
 
-        let ninjaBinding = new Binding<INinja>("INinja");
+        let ninjaBinding = new Binding<Ninja>("Ninja");
         ninjaBinding.implementationType = Ninja;
-        let ninjaTarget = new Target(null, "INinja", new Metadata("sneaky", true));
-        let ninjaRequest = new Request("INinja", null, null, ninjaBinding, ninjaTarget);
+        let ninjaTarget = new Target(null, "Ninja", new Metadata("sneaky", true));
+        let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, ninjaTarget);
 
-        let katanaBinding = new Binding<IWeapon>("IWeapon");
-        let katanaBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(katanaBinding);
-        let katanaTarget = new Target("katana", "IWeapon");
-        let katanaRequest = new Request("IWeapon", null, samuraiRequest, katanaBinding, katanaTarget);
+        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        let katanaTarget = new Target("katana", "Weapon");
+        let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
-        let shurikenBinding = new Binding<IWeapon>("IWeapon");
-        let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
-        let shurikenTarget = new Target("shuriken", "IWeapon");
-        let shurikenRequest = new Request("IWeapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        let shurikenTarget = new Target("shuriken", "Weapon");
+        let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
 
         katanaBindingWhenSyntax.whenParentTagged("sneaky", true);
         shurikenBindingWhenSyntax.whenParentTagged("sneaky", true);
@@ -311,112 +310,112 @@ describe("BindingWhenSyntax", () => {
 
     describe("BindingWhenSyntax.when*Ancestor*()", () => {
 
-        interface IMaterial {
+        interface Material {
             name: string;
         }
 
-        class Wood implements IMaterial {
+        class Wood implements Material {
             public name = "Wood";
         }
 
-        class Iron implements IMaterial {
+        class Iron implements Material {
             public name = "Iron";
         }
 
-        interface IWeapon {
+        interface Weapon {
             name: string;
-            material: IMaterial;
+            material: Material;
         }
 
-        class Katana implements IWeapon {
+        class Katana implements Weapon {
             public name = "Katana";
-            public material: IMaterial;
-            public contructor(material: IMaterial) {
+            public material: Material;
+            public contructor(material: Material) {
                 this.material = material;
             }
         }
 
-        class Shuriken implements IWeapon {
+        class Shuriken implements Weapon {
             public name = "Shuriken";
-            public material: IMaterial;
-            public contructor(material: IMaterial) {
+            public material: Material;
+            public contructor(material: Material) {
                 this.material = material;
             }
         }
 
-        interface ISamurai {
-            katana: IWeapon;
+        interface Samurai {
+            katana: Weapon;
         }
 
-        interface INinja {
-            shuriken: IWeapon;
+        interface Ninja {
+            shuriken: Weapon;
         }
 
-        class NinjaMaster implements INinja {
-            public shuriken: IWeapon;
-            public constructor(shuriken: IWeapon) {
+        class NinjaMaster implements Ninja {
+            public shuriken: Weapon;
+            public constructor(shuriken: Weapon) {
                 this.shuriken = shuriken;
             }
         }
 
-        class SamuraiMaster implements ISamurai {
-            public katana: IWeapon;
-            public constructor(katana: IWeapon) {
+        class SamuraiMaster implements Samurai {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
                 this.katana = katana;
             }
         }
 
-        class NinjaStudent implements INinja {
-            public shuriken: IWeapon;
-            public constructor(shuriken: IWeapon) {
+        class NinjaStudent implements Ninja {
+            public shuriken: Weapon;
+            public constructor(shuriken: Weapon) {
                 this.shuriken = shuriken;
             }
         }
 
-        class SamuraiStudent implements ISamurai {
-            public katana: IWeapon;
-            public constructor(katana: IWeapon) {
+        class SamuraiStudent implements Samurai {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
                 this.katana = katana;
             }
         }
 
         // Samurai
-        let samuraiMasterBinding = new Binding<ISamurai>("ISamurai");
+        let samuraiMasterBinding = new Binding<Samurai>("Samurai");
         samuraiMasterBinding.implementationType = SamuraiMaster;
 
-        let samuraiStudentBinding = new Binding<ISamurai>("ISamurai");
+        let samuraiStudentBinding = new Binding<Samurai>("Samurai");
         samuraiStudentBinding.implementationType = SamuraiStudent;
 
-        let samuraiTarget = new Target(null, "ISamurai", new Metadata("sneaky", false));
-        let samuraiMasterRequest = new Request("ISamurai", null, null, samuraiMasterBinding, samuraiTarget);
-        let samuraiStudentRequest = new Request("ISamurai", null, null, samuraiStudentBinding, samuraiTarget);
+        let samuraiTarget = new Target(null, "Samurai", new Metadata("sneaky", false));
+        let samuraiMasterRequest = new Request("Samurai", null, null, samuraiMasterBinding, samuraiTarget);
+        let samuraiStudentRequest = new Request("Samurai", null, null, samuraiStudentBinding, samuraiTarget);
 
         // Ninja
-        let ninjaMasterBinding = new Binding<INinja>("INinja");
+        let ninjaMasterBinding = new Binding<Ninja>("Ninja");
         ninjaMasterBinding.implementationType = NinjaMaster;
 
-        let ninjaStudentBinding = new Binding<INinja>("INinja");
+        let ninjaStudentBinding = new Binding<Ninja>("Ninja");
         ninjaStudentBinding.implementationType = NinjaStudent;
 
-        let ninjaTarget = new Target(null, "INinja", new Metadata("sneaky", true));
-        let ninjaMasterRequest = new Request("INinja", null, null, ninjaMasterBinding, ninjaTarget);
-        let ninjaStudentRequest = new Request("INinja", null, null, ninjaStudentBinding, ninjaTarget);
+        let ninjaTarget = new Target(null, "Ninja", new Metadata("sneaky", true));
+        let ninjaMasterRequest = new Request("Ninja", null, null, ninjaMasterBinding, ninjaTarget);
+        let ninjaStudentRequest = new Request("Ninja", null, null, ninjaStudentBinding, ninjaTarget);
 
         // Katana
-        let katanaBinding = new Binding<IWeapon>("IWeapon");
+        let katanaBinding = new Binding<Weapon>("Weapon");
         katanaBinding.implementationType = Katana;
-        let katanaBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(katanaBinding);
-        let katanaTarget = new Target("katana", "IWeapon");
-        let ironKatanaRequest = new Request("IWeapon", null, samuraiMasterRequest, katanaBinding, katanaTarget);
-        let woodKatanaRequest = new Request("IWeapon", null, samuraiStudentRequest, katanaBinding, katanaTarget);
+        let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        let katanaTarget = new Target("katana", "Weapon");
+        let ironKatanaRequest = new Request("Weapon", null, samuraiMasterRequest, katanaBinding, katanaTarget);
+        let woodKatanaRequest = new Request("Weapon", null, samuraiStudentRequest, katanaBinding, katanaTarget);
 
         // Shuriken
-        let shurikenBinding = new Binding<IWeapon>("IWeapon");
+        let shurikenBinding = new Binding<Weapon>("Weapon");
         shurikenBinding.implementationType = Shuriken;
-        let shurikenBindingWhenSyntax = new BindingWhenSyntax<IWeapon>(shurikenBinding);
-        let shurikenTarget = new Target("shuriken", "IWeapon");
-        let ironShurikenRequest = new Request("IWeapon", null, ninjaMasterRequest, shurikenBinding, shurikenTarget);
-        let woodShurikenRequest = new Request("IWeapon", null, ninjaStudentRequest, shurikenBinding, shurikenTarget);
+        let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        let shurikenTarget = new Target("shuriken", "Weapon");
+        let ironShurikenRequest = new Request("Weapon", null, ninjaMasterRequest, shurikenBinding, shurikenTarget);
+        let woodShurikenRequest = new Request("Weapon", null, ninjaStudentRequest, shurikenBinding, shurikenTarget);
 
         it("Should be able to apply a type constraint to some of its ancestors", () => {
 

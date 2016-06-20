@@ -1,5 +1,3 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import BindingScope from "../../src/bindings/binding_scope";

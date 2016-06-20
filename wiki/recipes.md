@@ -66,28 +66,33 @@ testFunc();
 // > Injected! 1
 // > Injected! 2
 ```
-## Overriding bindings on unit tests
-Sometimes you want to use your binding declarations in your unit test but you need to override some of them. We recommend you to declare your bindings as kernel modules inside your application:
-```ts
-let warriors: IKernelModule = (k: IKernel) => {
-    k.bind<INinja>("INinja").to(Ninja);
-};
 
-let weapons: IKernelModule = (k: IKernel) => {
-    k.bind<IKatana>("IKatana").to(Katana).inTransientScope();
-    k.bind<IShuriken>("IShuriken").to(Shuriken).inSingletonScope();
-};
+## Overriding bindings on unit tests
+
+Sometimes you want to use your binding declarations in your unit test but you need to override some of them. We recommend you to declare your bindings as kernel modules inside your application:
+
+```ts
+let warriors = new KernelModule((bind: Bind) => {
+    bind<Ninja>("Ninja").to(Ninja);
+});
+
+let weapons = new KernelModule((bind: Bind) => {
+    bind<Katana>("Katana").to(Katana);
+    bind<Shuriken>("Shuriken").to(Shuriken);
+});
 
 export { warriors, weapons };
 ```
+
 You will then be able to create a new kernel using the bindings from your application:
+
 ```ts
 import { warriors, weapons} from './shared/kernel_modules';
 import { Kernel } from "inversify";
 
 describe("something", () => {
 
-  let kernel: inversify.IKernel;
+  let kernel: inversify.Kernel;
 
   beforeEach(() => {
       kernel = new Kernel();
@@ -106,4 +111,5 @@ describe("something", () => {
 
 });
 ```
+
 As you can see you can then override specific bindings in each test case.
