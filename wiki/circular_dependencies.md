@@ -3,5 +3,5 @@ InversifyJS is able to identify circular dependencies and will throw an exceptio
 to identify the location of the problem if a circular dependency is detected:
 
 ```ts
-Error: Circular dependency found between services: IKatana and INinja
+Error: Circular dependency found between services: Katana and Ninja
 ```

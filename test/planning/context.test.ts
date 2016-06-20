@@ -1,5 +1,3 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
 import Kernel from "../../src/kernel/kernel";
 import Context from "../../src/planning/context";
@@ -28,7 +26,7 @@ describe("Context", () => {
       let context = new Context(kernel);
 
       let ninjaRequest = new Request(
-          "INinja",
+          "Ninja",
           context,
           null,
           null
@@ -37,7 +35,7 @@ describe("Context", () => {
       let plan = new Plan(context, ninjaRequest);
       context.addPlan(plan);
 
-      expect(context.plan.rootRequest.serviceIdentifier).eql("INinja");
+      expect(context.plan.rootRequest.serviceIdentifier).eql("Ninja");
   });
 
 });

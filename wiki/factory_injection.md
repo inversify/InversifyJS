@@ -3,14 +3,14 @@ Binds an abstraction to a user defined Factory.
 
 ```ts
 @injectable()
-class Ninja implements INinja {
+class Ninja implements Ninja {
 
-    private _katana: IKatana;
-    private _shuriken: IShuriken;
+    private _katana: Katana;
+    private _shuriken: Shuriken;
 
     public constructor(
-	    @inject("IFactory<IKatana>") katanaFactory: () => IKatana, 
-	    @inject("IShuriken") shuriken: IShuriken
+	    @inject("Factory<Katana>") katanaFactory: () => Katana, 
+	    @inject("Shuriken") shuriken: Shuriken
     ) {
         this._katana = katanaFactory();
         this._shuriken = shuriken;
@@ -23,9 +23,9 @@ class Ninja implements INinja {
 ```
 
 ```ts
-kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context) => {
+kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context: interfaces.Context) => {
     return () => {
-        return context.kernel.get<IKatana>("IKatana");
+        return context.kernel.get<Katana>("Katana");
     };
 });
 ```
@@ -33,39 +33,40 @@ kernel.bind<IFactory<IKatana>>("IFactory<IKatana>").toFactory<IKatana>((context)
 You can also define a Factory with args:
 
 ```ts
-kernel.bind<IFactory<IWeapon>>("IFactory<IWeapon>").toFactory<IWeapon>((context) => {
+kernel.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context: interfaces.Context) => {
     return (throwable: boolean) => {
         if (throwable) {
-            return context.kernel.getTagged<IWeapon>("IWeapon", "throwable", true);
+            return context.kernel.getTagged<Weapon>("Weapon", "throwable", true);
         } else {
-            return context.kernel.getTagged<IWeapon>("IWeapon", "throwable", false);
+            return context.kernel.getTagged<Weapon>("Weapon", "throwable", false);
         }
     };
 });
 ```
 
 Sometimes you might need to pass arguments to a factory in different moments during the execution:
-```ts
-kernel.bind<IEngine>("IEngine").to(PetrolEngine).whenTargetNamed("petrol");
-kernel.bind<IEngine>("IEngine").to(DieselEngine).whenTargetNamed("diesel");
 
-kernel.bind<IFactory<IEngine>>("IFactory<IEngine>").toFactory<IEngine>((context) => {
+```ts
+kernel.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
+kernel.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
+
+kernel.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context) => {
     return (named: string) => (displacement: number) => {
-        let engine = context.kernel.getNamed<IEngine>("IEngine", named);
+        let engine = context.kernel.getNamed<Engine>("Engine", named);
         engine.displacement = displacement;
         return engine;
     };
 });
 
 @injectable()
-class DieselCarFactory implements ICarFactory {
-    private _dieselFactory: (displacement: number) => IEngine ;
+class DieselCarFactory implements CarFactory {
+    private _dieselFactory: (displacement: number) => Engine ;
     constructor(
-        @inject("IFactory<IEngine>") factory: (category: string) => (displacement: number) => IEngine
+        @inject("Factory<Engine>") factory: (category: string) => (displacement: number) => Engine
     ) {
         this._dieselFactory = factory("diesel");
     }
-    public createEngine(displacement: number): IEngine {
+    public createEngine(displacement: number): Engine {
         return this._dieselFactory(displacement);
     }
 }

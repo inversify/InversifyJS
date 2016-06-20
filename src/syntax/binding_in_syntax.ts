@@ -1,17 +1,16 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
+import interfaces from "../interfaces/interfaces";
 import BindingScope from "../bindings/binding_scope";
 import BindingWhenOnSyntax from "./binding_when_on_syntax";
 
-class BindingInSyntax<T> implements IBindingInSyntax<T> {
+class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
 
-    private _binding: IBinding<T>;
+    private _binding: interfaces.Binding<T>;
 
-    public constructor(binding: IBinding<T>) {
+    public constructor(binding: interfaces.Binding<T>) {
         this._binding = binding;
     }
 
-    public inSingletonScope(): IBindingWhenOnSyntax<T> {
+    public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
         this._binding.scope = BindingScope.Singleton;
         return new BindingWhenOnSyntax<T>(this._binding);
     }

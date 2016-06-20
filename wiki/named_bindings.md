@@ -2,27 +2,28 @@
 We can use named bindings to fix `AMBIGUOUS_MATCH` errors when two or more concretions have
 been bound to the an abstraction. Notice how the constructor arguments of the `Ninja` class
 have been annotated using the `@named` decorator:
+
 ```ts
-interface IWeapon {}
+interface Weapon {}
 
 @injectable()
-class Katana implements IWeapon {}
+class Katana implements Weapon {}
 
 @injectable()
-class Shuriken implements IWeapon {}
+class Shuriken implements Weapon {}
 
-interface INinja {
-    katana: IWeapon;
-    shuriken: IWeapon;
+interface Ninja {
+    katana: Weapon;
+    shuriken: Weapon;
 }
 
 @injectable()
-class Ninja implements INinja {
-    public katana: IWeapon;
-    public shuriken: IWeapon;
+class Ninja implements Ninja {
+    public katana: Weapon;
+    public shuriken: Weapon;
     public constructor(
-        @inject("IWeapon") @named("strong")katana: IWeapon,
-        @inject("IWeapon") @named("weak") shuriken: IWeapon
+        @inject("Weapon") @named("strong")katana: Weapon,
+        @inject("Weapon") @named("weak") shuriken: Weapon
     ) {
         this.katana = katana;
         this.shuriken = shuriken;
@@ -30,11 +31,11 @@ class Ninja implements INinja {
 }
 ```
 
-We are binding `Katana` and `Shuriken` to `IWeapon` but a `whenTargetNamed` constraint is
+We are binding `Katana` and `Shuriken` to `Weapon` but a `whenTargetNamed` constraint is
 added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```ts
-kernel.bind<INinja>("INinja").to(Ninja);
-kernel.bind<IWeapon>("IWeapon").to(Katana).whenTargetNamed("strong");
-kernel.bind<IWeapon>("IWeapon").to(Shuriken).whenTargetNamed("weak");
+kernel.bind<Ninja>("Ninja").to(Ninja);
+kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
 ```

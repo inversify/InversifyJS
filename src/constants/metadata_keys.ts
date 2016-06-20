@@ -1,5 +1,3 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
 // Used for named bindings
 export const NAMED_TAG = "named";
 

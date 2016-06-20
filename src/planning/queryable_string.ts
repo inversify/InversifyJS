@@ -1,6 +1,6 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+import interfaces from "../interfaces/interfaces";
 
-class QueryableString implements IQueryableString {
+class QueryableString implements interfaces.QueryableString {
 
   private str: string;
 

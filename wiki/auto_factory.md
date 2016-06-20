@@ -1,15 +1,17 @@
 # Auto factory
+
 Binds an abstraction to a auto-generated Factory.
+
 ```ts
 @injectable()
-class Ninja implements INinja {
+class Ninja implements Ninja {
 
-    private _katana: IKatana;
-    private _shuriken: IShuriken;
+    private _katana: Katana;
+    private _shuriken: Shuriken;
 
     public constructor(
-	    @inject("IFactory<IKatana>") katanaFactory: IFactory<IKatana>,
-	    @inject("IShuriken") shuriken: IShuriken
+	    @inject("Factory<Katana>") katanaFactory: interfaces.Factory<Katana>,
+	    @inject("Shuriken") shuriken: Shuriken
     ) {
         this._katana = katanaFactory();
         this._shuriken = shuriken;
@@ -22,6 +24,6 @@ class Ninja implements INinja {
 ```
 
 ```ts
-kernel.bind<IFactory<IKatana>>("IFactory<IKatana>")
-	  .toAutoFactory<IKatana>("IKatana");
+kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>")
+	  .toAutoFactory<Katana>("Katana");
 ```

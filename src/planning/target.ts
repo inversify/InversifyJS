@@ -1,25 +1,28 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
+import interfaces from "../interfaces/interfaces";
 import Metadata from "../planning/metadata";
 import QueryableString from "./queryable_string";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
 import guid from "../utils/guid";
 
-class Target implements ITarget {
+class Target implements interfaces.Target {
 
     public guid: string;
-    public serviceIdentifier: (string|Symbol|INewable<any>);
-    public name: QueryableString;
-    public metadata: Array<IMetadata>;
+    public serviceIdentifier: interfaces.ServiceIdentifier<any>;
+    public name: interfaces.QueryableString;
+    public metadata: Array<Metadata>;
 
-    constructor(name: string, serviceIdentifier: (string|Symbol|INewable<any>), namedOrTagged?: (string|IMetadata)) {
+    constructor(
+        name: string,
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        namedOrTagged?: (string|Metadata)
+    ) {
 
         this.guid = guid();
         this.serviceIdentifier = serviceIdentifier;
         this.name = new QueryableString(name || "");
-        this.metadata = new Array<IMetadata>();
-        let metadataItem: IMetadata = null;
+        this.metadata = new Array<Metadata>();
+        let metadataItem: interfaces.Metadata = null;
 
         // is named target
         if (typeof namedOrTagged === "string") {

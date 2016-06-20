@@ -1,32 +1,34 @@
 # Multi-injection
+
 We can use multi-injection When two or more concretions have been bound to the an abstraction.
-Notice how an array of `IWeapon` is injected into the `Ninja` class via its constructor thanks to the usage of the `@multiInject` decorator:
+Notice how an array of `Weapon` is injected into the `Ninja` class via its constructor thanks to the usage of the `@multiInject` decorator:
+
 ```ts
-interface IWeapon {
+interface Weapon {
     name: string;
 }
 
 @injectable()
-class Katana implements IWeapon {
+class Katana implements Weapon {
     public name = "Katana";
 }
 
 @injectable()
-class Shuriken implements IWeapon {
+class Shuriken implements Weapon {
     public name = "Shuriken";
 }
 
-interface INinja {
-    katana: IWeapon;
-    shuriken: IWeapon;
+interface Ninja {
+    katana: Weapon;
+    shuriken: Weapon;
 }
 
 @injectable()
-class Ninja implements INinja {
-    public katana: IWeapon;
-    public shuriken: IWeapon;
+class Ninja implements Ninja {
+    public katana: Weapon;
+    public shuriken: Weapon;
     public constructor(
-	    @multiInject("IWeapon") weapons: IWeapon[]
+	    @multiInject("Weapon") weapons: Weapon[]
     ) {
         this.katana = weapons[0];
         this.shuriken = weapons[1];
@@ -34,10 +36,10 @@ class Ninja implements INinja {
 }
 ```
 
-We are binding `Katana` and `Shuriken` to `IWeapon`:
+We are binding `Katana` and `Shuriken` to `Weapon`:
 
 ```ts
-kernel.bind<INinja>("INinja").to(Ninja);
-kernel.bind<IWeapon>("IWeapon").to(Katana);
-kernel.bind<IWeapon>("IWeapon").to(Shuriken);
+kernel.bind<Ninja>("Ninja").to(Ninja);
+kernel.bind<Weapon>("Weapon").to(Katana);
+kernel.bind<Weapon>("Weapon").to(Shuriken);
 ```

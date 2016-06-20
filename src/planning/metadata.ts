@@ -1,6 +1,6 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+import interfaces from "../interfaces/interfaces";
 
-class Metadata implements IMetadata {
+class Metadata implements interfaces.Metadata {
 
   public key: string;
   public value: any;

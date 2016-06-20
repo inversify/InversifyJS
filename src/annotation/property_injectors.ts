@@ -1,4 +1,4 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+import interfaces from "../interfaces/interfaces";
 
 const INJECTION = Symbol();
 
@@ -26,8 +26,8 @@ function _proxyGetter(
     });
 }
 
-function makePropertyInjectDecorator(kernel: IKernel) {
-    return function(serviceIdentifier: (string|Symbol|INewable<any>)) {
+function makePropertyInjectDecorator(kernel: interfaces.Kernel) {
+    return function(serviceIdentifier: interfaces.ServiceIdentifier<any>) {
         return function(proto: any, key: string): void {
 
             let resolve = () => {
@@ -40,8 +40,8 @@ function makePropertyInjectDecorator(kernel: IKernel) {
     };
 }
 
-function makePropertyInjectNamedDecorator(kernel: IKernel) {
-    return function(serviceIdentifier: (string|Symbol|INewable<any>), named: string) {
+function makePropertyInjectNamedDecorator(kernel: interfaces.Kernel) {
+    return function(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string) {
         return function(proto: any, key: string): void {
 
             let resolve = () => {
@@ -54,8 +54,8 @@ function makePropertyInjectNamedDecorator(kernel: IKernel) {
     };
 }
 
-function makePropertyInjectTaggedDecorator(kernel: IKernel) {
-    return function(serviceIdentifier: (string|Symbol|INewable<any>), key: string, value: any) {
+function makePropertyInjectTaggedDecorator(kernel: interfaces.Kernel) {
+    return function(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any) {
         return function(proto: any, propertyName: string): void {
 
             let resolve = () => {
@@ -68,8 +68,8 @@ function makePropertyInjectTaggedDecorator(kernel: IKernel) {
     };
 }
 
-function makePropertyMultiInjectDecorator(kernel: IKernel) {
-    return function(serviceIdentifier: (string|Symbol|INewable<any>)) {
+function makePropertyMultiInjectDecorator(kernel: interfaces.Kernel) {
+    return function(serviceIdentifier: interfaces.ServiceIdentifier<any>) {
         return function(proto: any, key: string): void {
 
             let resolve = () => {

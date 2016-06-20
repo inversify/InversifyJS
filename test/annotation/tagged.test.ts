@@ -1,26 +1,25 @@
 declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
 import tagged from "../../src/annotation/tagged";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 
-interface IWeapon {}
-class Katana implements IWeapon {}
-class Shuriken implements IWeapon {}
+interface Weapon {}
+class Katana implements Weapon {}
+class Shuriken implements Weapon {}
 
 class UnTaggedWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      primary: IWeapon,
-      secondary: IWeapon) {
+      primary: Weapon,
+      secondary: Weapon) {
 
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -29,12 +28,12 @@ class UnTaggedWarrior {
 
 class TaggedWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      @tagged("power", 1) primary: IWeapon,
-      @tagged("power", 2) secondary: IWeapon) {
+      @tagged("power", 1) primary: Weapon,
+      @tagged("power", 2) secondary: Weapon) {
 
           this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -43,12 +42,12 @@ class TaggedWarrior {
 
 class DoubleTaggedWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      @tagged("power", 1) @tagged("distance", 1) primary: IWeapon,
-      @tagged("power", 2) @tagged("distance", 5) secondary: IWeapon) {
+      @tagged("power", 1) @tagged("distance", 1) primary: Weapon,
+      @tagged("power", 2) @tagged("distance", 5) secondary: Weapon) {
 
           this._primaryWeapon = primary;
           this._secondaryWeapon = secondary;
@@ -57,12 +56,12 @@ class DoubleTaggedWarrior {
 
 class InvalidDecoratorUsageWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      primary: IWeapon,
-      secondary: IWeapon) {
+      primary: Weapon,
+      secondary: Weapon) {
 
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -81,7 +80,7 @@ describe("@Tagged", () => {
 
     // assert metadata for first argument
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
-    let m1: IMetadata = paramsMetadata["0"][0];
+    let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql("power");
     expect(m1.value).to.be.eql(1);
 
@@ -90,7 +89,7 @@ describe("@Tagged", () => {
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
-    let m2: IMetadata = paramsMetadata["1"][0];
+    let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql("power");
     expect(m2.value).to.be.eql(2);
 
@@ -105,7 +104,7 @@ describe("@Tagged", () => {
 
     class Warrior {
       @tagged("throwwable", false)
-      public weapon: IWeapon;
+      public weapon: Weapon;
     }
 
     let metadataKey = METADATA_KEY.TAGGED_PROP;
@@ -126,12 +125,12 @@ describe("@Tagged", () => {
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
 
     // assert argument at index 0 first tag
-    let m11: IMetadata = paramsMetadata["0"][0];
+    let m11: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m11.key).to.be.eql("distance");
     expect(m11.value).to.be.eql(1);
 
     // assert argument at index 0 second tag
-    let m12: IMetadata = paramsMetadata["0"][1];
+    let m12: interfaces.Metadata = paramsMetadata["0"][1];
     expect(m12.key).to.be.eql("power");
     expect(m12.value).to.be.eql(1);
 
@@ -139,12 +138,12 @@ describe("@Tagged", () => {
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
 
     // assert argument at index 1 first tag
-    let m21: IMetadata = paramsMetadata["1"][0];
+    let m21: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m21.key).to.be.eql("distance");
     expect(m21.value).to.be.eql(5);
 
     // assert argument at index 1 second tag
-    let m22: IMetadata = paramsMetadata["1"][1];
+    let m22: interfaces.Metadata = paramsMetadata["1"][1];
     expect(m22.key).to.be.eql("power");
     expect(m22.value).to.be.eql(2);
 
@@ -181,11 +180,11 @@ describe("@Tagged", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface IKatana {}
-    interface IShurien {}
+    interface Katana {}
+    interface Shurien {}
 
     let VanillaJSWarrior = (function () {
-        function TaggedVanillaJSWarrior(primary: IKatana, secondary: IShurien) {
+        function TaggedVanillaJSWarrior(primary: Katana, secondary: Shurien) {
             // ...
         }
         return TaggedVanillaJSWarrior;
@@ -200,7 +199,7 @@ describe("@Tagged", () => {
 
     // assert metadata for first argument
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
-    let m1: IMetadata = paramsMetadata["0"][0];
+    let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql("power");
     expect(m1.value).to.be.eql(1);
 
@@ -209,7 +208,7 @@ describe("@Tagged", () => {
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
-    let m2: IMetadata = paramsMetadata["1"][0];
+    let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql("power");
     expect(m2.value).to.be.eql(2);
 

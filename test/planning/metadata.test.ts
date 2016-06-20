@@ -1,5 +1,3 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
 import Metadata from "../../src/planning/metadata";
 

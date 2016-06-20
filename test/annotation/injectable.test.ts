@@ -1,5 +1,3 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
 import { injectable, decorate } from "../../src/inversify";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
@@ -11,15 +9,15 @@ describe("@injectable", () => {
 
         class Katana {}
 
-        interface IWeapon {}
+        interface Weapon {}
 
         @injectable()
         class Warrior {
 
             private _primaryWeapon: Katana;
-            private _secondaryWeapon: IWeapon;
+            private _secondaryWeapon: Weapon;
 
-            public constructor(primaryWeapon: Katana, secondaryWeapon: IWeapon) {
+            public constructor(primaryWeapon: Katana, secondaryWeapon: Weapon) {
                 this._primaryWeapon = primaryWeapon;
                 this._secondaryWeapon = secondaryWeapon;
             }
@@ -49,11 +47,11 @@ describe("@injectable", () => {
 
     it("Should be usable in VanillaJS applications", () => {
 
-        interface IKatana {}
-        interface IShuriken {}
+        interface Katana {}
+        interface Shuriken {}
 
         let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary: IKatana, secondary: IShuriken) {
+            function VanillaJSWarrior(primary: Katana, secondary: Shuriken) {
                 // ...
             }
             return VanillaJSWarrior;

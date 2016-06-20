@@ -1,5 +1,3 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
 import { expect } from "chai";
 import Plan from "../../src/planning/plan";
 import Request from "../../src/planning/request";

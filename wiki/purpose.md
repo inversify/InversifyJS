@@ -16,22 +16,20 @@ InversifyJS solves these problems:
 - There are no namespace collisions thanks to tagged, named and contextual bindings.
 - It is a stand alone library.
 
-
-
 InversifyJS offers you real decoupling. Consider the following class:
 
 ```
 import TYPES from "./constants/types";
 
 @injectable()
-class Ninja implements INinja {
+class Ninja implements Ninja {
 
-    private _katana: IKatana;
-    private _shuriken: IShuriken;
+    private _katana: Katana;
+    private _shuriken: Shuriken;
 
     public constructor(
-        @inject(TYPES.IKatana) katana: IKatana,
-        @inject(TYPES.IShuriken) shuriken: IShuriken
+        @inject(TYPES.Katana) katana: Katana,
+        @inject(TYPES.Shuriken) shuriken: Shuriken
     ) {
         this._katana = katana;
         this._shuriken = shuriken;
@@ -42,11 +40,12 @@ class Ninja implements INinja {
 
 }
 ```
+
 ```
 let TYPES = {
-  INinja: Symbol("INinja"),
-  IKatana: Symbol("IKatana"),
-  IShuriken: Symbol("IShuriken")
+  Ninja: Symbol("Ninja"),
+  Katana: Symbol("Katana"),
+  Shuriken: Symbol("Shuriken")
 };
 
 export default TYPES;
@@ -68,9 +67,9 @@ that contains the application source code:
     import Shuriken from "./entitites/shuriken";
     import Ninja from "./entitites/ninja";
 
-    kernel.bind<IKatana>(TYPES.IKATANA).to(Katana);
-    kernel.bind<IShuriken>(TYPES.ISHURIKEN).to(Shuriken);
-    kernel.bind<INinja>(TYPES.ININJA).to(Ninja);
+    kernel.bind<Katana>(TYPES.KATANA).to(Katana);
+    kernel.bind<Shuriken>(TYPES.SHURIKEN).to(Shuriken);
+    kernel.bind<Ninja>(TYPES.NINJA).to(Ninja);
 
 This means that all the coupling in your application takes place in one unique place: the `inversify.config.ts` file. 
 This is really important and we are going to prove it with an example. 
@@ -80,9 +79,9 @@ We just need to go to the `inversify.config.ts` and change the Katana binding:
     import Katana from "./entitites/SharpKatana";
 
     if(difficulty === "hard") {
-        kernel.bind<IKatana>(TYPES.IKATANA).to(SharpKatana);
+        kernel.bind<Katana>(TYPES.KATANA).to(SharpKatana);
     } else {
-        kernel.bind<IKatana>(TYPES.IKATANA).to(Katana);
+        kernel.bind<Katana>(TYPES.KATANA).to(Katana);
     }
 
 You don't need to change the Ninja file!
@@ -103,14 +102,4 @@ We also have plans for the development of dev-tools like browser extensions and 
 ### 3. Type safety
 The library has been developed using TypeScript so type safety comes out of the box if you work 
 with TypeScript but it is nice to mention that if you try to inject a Katana into a class that 
-expects an implementation of IShuriken you will get a compilation error.
-
-# Articles
-I wrote a few articles in defense of IoC containers in JavaScript that explain the preceding with much more details:
-- [The current state of dependency inversion in JavaScript](http://blog.wolksoftware.com/the-current-state-of-dependency-inversion-in-javascript)
-- [About object-oriented design and the “class” & “extends” keywords in TypeScript / ES6](http://blog.wolksoftware.com/about-classes-inheritance-and-object-oriented-design-in-typescript-and-es6)
-- [Introducing InversifyJS 2.0](http://blog.wolksoftware.com/introducing-inversify-2)
-- [Introducing InversifyJS](http://blog.wolksoftware.com/introducing-inversifyjs)
-
-
-
+expects an implementation of `Shuriken` you will get a compilation error.

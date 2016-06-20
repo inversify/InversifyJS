@@ -1,17 +1,11 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
-// TypeBinding
-// -----------
-
-// A dictionary with support for duplicate keys
-
+import interfaces from "../interfaces/interfaces";
 import KeyValuePair from "./key_value_pair";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
-class Lookup<T extends IClonable<T>> implements ILookup<T> {
+class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
 
 	// dictionary used store multiple values for each key <key>
-    private _dictionary: Array<IKeyValuePair<T>>;
+    private _dictionary: Array<interfaces.KeyValuePair<T>>;
 
     public constructor() {
         this._dictionary = [];
@@ -59,12 +53,12 @@ class Lookup<T extends IClonable<T>> implements ILookup<T> {
     }
 
     public removeByModuleId(moduleId: string): void {
-        this._dictionary.forEach((keyValuePair: IKeyValuePair<any>) => {
+        this._dictionary.forEach((keyValuePair: KeyValuePair<any>) => {
             keyValuePair.value = keyValuePair.value.filter((binding: any) => {
                 return binding.moduleId !== moduleId;
             });
         });
-        this._dictionary = this._dictionary.filter((keyValuePair: IKeyValuePair<any>) => {
+        this._dictionary = this._dictionary.filter((keyValuePair: KeyValuePair<any>) => {
             return keyValuePair.value.length > 0;
         });
     }
@@ -84,7 +78,8 @@ class Lookup<T extends IClonable<T>> implements ILookup<T> {
 
     // returns a new Lookup instance; note: this is not a deep clone, only Lookup related data structure (dictionary) is
     // cloned, content remains the same
-    public clone(): ILookup<T> {
+    public clone(): interfaces.Lookup<T> {
+
         let l = new Lookup<T>();
 
         for (let entry of this._dictionary) {

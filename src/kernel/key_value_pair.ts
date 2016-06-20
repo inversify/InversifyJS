@@ -1,6 +1,6 @@
-///<reference path="../interfaces/interfaces.d.ts" />
+import interfaces from "../interfaces/interfaces";
 
-class KeyValuePair<T> implements IKeyValuePair<T> {
+class KeyValuePair<T> implements interfaces.KeyValuePair<T> {
 
     public serviceIdentifier: (string|Symbol|any);
     public value: Array<T>;

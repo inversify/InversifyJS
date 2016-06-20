@@ -1,8 +1,11 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
+import interfaces from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
-let traverseAncerstors = (request: IRequest, constraint: (request: IRequest) => boolean): boolean => {
+let traverseAncerstors = (
+    request: interfaces.Request,
+    constraint: (request: interfaces.Request) => boolean
+): boolean => {
+
     let parent = request.parentRequest;
     if (parent !== null) {
         return constraint(parent) ? true : traverseAncerstors(parent, constraint);
@@ -13,13 +16,13 @@ let traverseAncerstors = (request: IRequest, constraint: (request: IRequest) => 
 
 // This helpers use currying to help you to generate constraints
 
-let taggedConstraint = (key: string) => (value: any) => (request: IRequest) => {
+let taggedConstraint = (key: string) => (value: any) => (request: interfaces.Request) => {
     return request.target.matchesTag(key)(value);
 };
 
 let namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
-let typeConstraint = (type: (Function|string)) => (request: IRequest) => {
+let typeConstraint = (type: (Function|string)) => (request: interfaces.Request) => {
 
     // Using index 0 because constraints are applied 
     // to one binding at a time (see Planner class)

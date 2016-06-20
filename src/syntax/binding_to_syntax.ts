@@ -1,25 +1,24 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
+import interfaces from "../interfaces/interfaces";
 import BindingInWhenOnSyntax from "./binding_in_when_on_syntax";
 import BindingWhenOnSyntax from "./binding_when_on_syntax";
 import BindingType from "../bindings/binding_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
-class BindingToSyntax<T> implements IBindingToSyntax<T> {
+class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
-    private _binding: IBinding<T>;
+    private _binding: interfaces.Binding<T>;
 
-    public constructor(binding: IBinding<T>) {
+    public constructor(binding: interfaces.Binding<T>) {
         this._binding = binding;
     }
 
-    public to(constructor: { new(...args: any[]): T; }): IBindingInWhenOnSyntax<T> {
+    public to(constructor: { new(...args: any[]): T; }): interfaces.BindingInWhenOnSyntax<T> {
         this._binding.type = BindingType.Instance;
         this._binding.implementationType = constructor;
         return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
-    public toConstantValue(value: T): IBindingWhenOnSyntax<T> {
+    public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.ConstantValue;
         this._binding.cache = value;
         this._binding.dynamicValue = null;
@@ -27,7 +26,7 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toDynamicValue(func: () => T): IBindingWhenOnSyntax<T> {
+    public toDynamicValue(func: () => T): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.DynamicValue;
         this._binding.cache = null;
         this._binding.dynamicValue = func;
@@ -35,19 +34,19 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toConstructor<T2>(constructor: INewable<T2>): IBindingWhenOnSyntax<T> {
+    public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.Constructor;
         this._binding.implementationType = <any>constructor;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toFactory<T2>(factory: IFactoryCreator<T2>): IBindingWhenOnSyntax<T> {
+    public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = <any>factory;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toFunction(func: T): IBindingWhenOnSyntax<T> {
+    public toFunction(func: T): interfaces.BindingWhenOnSyntax<T> {
         // toFunction is an alias of toConstantValue
         if (typeof func !== "function") { throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING); };
         let bindingWhenOnSyntax = this.toConstantValue(func);
@@ -55,7 +54,7 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return bindingWhenOnSyntax;
     }
 
-    public toAutoFactory<T2>(serviceIdentifier: (string|Symbol|INewable<T2>)): IBindingWhenOnSyntax<T> {
+    public toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = (context) => {
             return () => {
@@ -65,7 +64,7 @@ class BindingToSyntax<T> implements IBindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toProvider<T2>(provider: IProviderCreator<T2>): IBindingWhenOnSyntax<T> {
+    public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.Provider;
         this._binding.provider = <any>provider;
         return new BindingWhenOnSyntax<T>(this._binding);

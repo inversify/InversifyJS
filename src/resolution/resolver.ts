@@ -1,17 +1,16 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
+import interfaces from "../interfaces/interfaces";
 import BindingScope from "../bindings/binding_scope";
 import BindingType from "../bindings/binding_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
-class Resolver implements IResolver {
+class Resolver implements interfaces.Resolver {
 
-    public resolve<Service>(context: IContext): Service {
+    public resolve<T>(context: interfaces.Context): T {
         let rootRequest = context.plan.rootRequest;
         return this._resolve(rootRequest);
     }
 
-    private _resolve(request: IRequest): any {
+    private _resolve(request: interfaces.Request): any {
 
         let bindings = request.bindings;
         let childRequests = request.childRequests;
@@ -22,7 +21,7 @@ class Resolver implements IResolver {
         ) {
 
             // Create an array instead of creating an instance
-            return childRequests.map((childRequest) => { return this._resolve(childRequest); });
+            return childRequests.map((childRequest: interfaces.Request) => { return this._resolve(childRequest); });
 
         } else {
 
@@ -65,7 +64,7 @@ class Resolver implements IResolver {
                     let constr = binding.implementationType;
 
                     if (childRequests.length > 0) {
-                        let injections = childRequests.map((childRequest) => {
+                        let injections = childRequests.map((childRequest: interfaces.Request) => {
                             return this._resolve(childRequest);
                         });
 
@@ -79,7 +78,7 @@ class Resolver implements IResolver {
                 case BindingType.Invalid:
                 default:
                     // The user probably created a binding but didn't finish it
-                    // e.g. kernel.bind<T>("ISomething"); missing BindingToSyntax
+                    // e.g. kernel.bind<T>("Something"); missing BindingToSyntax
                     let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
                     throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
             }

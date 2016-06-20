@@ -4,13 +4,13 @@ InversifyJS supports property injection because sometimes constructor injection 
 let kernel = new Kernel();
 let inject = makePropertyInjectDecorator(kernel);
 
-interface ISomeService {
+interface SomeService {
     count: number;
     increment(): void;
 }
 
 @injectable()
-class SomeService implements ISomeService {
+class SomeService implements SomeService {
     public count: number;
     public constructor() {
         this.count = 0;
@@ -21,8 +21,8 @@ class SomeService implements ISomeService {
 }
 
 class SomeWebComponent {
-    @inject("ISomeService")
-    private _service: ISomeService;
+    @inject("SomeService")
+    private _service: SomeService;
     public doSomething() {
         let count =  this._service.count;
         this._service.increment();
@@ -30,7 +30,7 @@ class SomeWebComponent {
     }
 }
 
-kernel.bind<ISomeService>("ISomeService").to(SomeService);
+kernel.bind<SomeService>("SomeService").to(SomeService);
 
 let someComponent = new SomeWebComponent();
 expect(someComponent.doSomething()).eql(0);
@@ -51,25 +51,25 @@ The `propertyIsEnumerable` function returns `false` for properties that return `
 ```ts
 class Warrior {
 
-    @injectNamed(TYPES.IWeapon, "not-throwwable")
+    @injectNamed(TYPES.Weapon, "not-throwwable")
     @named("not-throwwable")
-    public primaryWeapon: IWeapon;
+    public primaryWeapon: Weapon;
 
-    @injectNamed(TYPES.IWeapon, "throwwable")
+    @injectNamed(TYPES.Weapon, "throwwable")
     @named("throwwable")
-    public secondaryWeapon: IWeapon;
+    public secondaryWeapon: Weapon;
 
 }
 
 class Warrior {
 
-    @injectTagged(TYPES.IWeapon, "throwwable", false)
+    @injectTagged(TYPES.Weapon, "throwwable", false)
     @tagged("throwwable", false)
-    public primaryWeapon: IWeapon;
+    public primaryWeapon: Weapon;
 
-    @injectTagged(TYPES.IWeapon, "throwwable", true)
+    @injectTagged(TYPES.Weapon, "throwwable", true)
     @tagged("throwwable", true)
-    public secondaryWeapon: IWeapon;
+    public secondaryWeapon: Weapon;
 
 }
 ```
@@ -79,15 +79,15 @@ class Warrior {
 let kernel = new Kernel();
 let multiInject = makePropertyMultiInjectDecorator(kernel);
 
-let TYPES = { IWeapon: "IWeapon" };
+let TYPES = { Weapon: "Weapon" };
 
-interface IWeapon {
+interface Weapon {
     durability: number;
     use(): void;
 }
 
 @injectable()
-class Sword implements IWeapon {
+class Sword implements Weapon {
     public durability: number;
     public constructor() {
         this.durability = 100;
@@ -98,7 +98,7 @@ class Sword implements IWeapon {
 }
 
 @injectable()
-class WarHammer implements IWeapon {
+class WarHammer implements Weapon {
     public durability: number;
     public constructor() {
         this.durability = 100;
@@ -109,12 +109,12 @@ class WarHammer implements IWeapon {
 }
 
 class Warrior {
-    @multiInject(TYPES.IWeapon)
-    public weapons: IWeapon[];
+    @multiInject(TYPES.Weapon)
+    public weapons: Weapon[];
 }
 
-kernel.bind<IWeapon>(TYPES.IWeapon).to(Sword);
-kernel.bind<IWeapon>(TYPES.IWeapon).to(WarHammer);
+kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+kernel.bind<Weapon>(TYPES.Weapon).to(WarHammer);
 
 let warrior1 = new Warrior();
 

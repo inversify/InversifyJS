@@ -1,5 +1,3 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
 // Binding
 // -----------
 
@@ -7,11 +5,12 @@
 // (an interface), and an implementation type to be used to satisfy such
 // a service requirement.
 
+import interfaces from "../interfaces/interfaces";
 import BindingScope from "./binding_scope";
 import BindingType from "./binding_type";
 import guid from "../utils/guid";
 
-class Binding<T> implements IBinding<T> {
+class Binding<T> implements interfaces.Binding<T> {
 
     public guid: string;
     public moduleId: string;
@@ -22,10 +21,10 @@ class Binding<T> implements IBinding<T> {
     public activated: boolean;
 
     // A runtime identifier because at runtime we don't have interfaces
-    public serviceIdentifier: (string|Symbol|INewable<T>);
+    public serviceIdentifier: interfaces.ServiceIdentifier<T>;
 
     // The constructor of a class which must implement T
-    public implementationType: INewable<T>;
+    public implementationType: interfaces.Newable<T>;
 
     // Cache used to allow singleton scope and BindingType.ConstantValue bindings
     public cache: T;
@@ -40,24 +39,24 @@ class Binding<T> implements IBinding<T> {
     public type: BindingType;
 
     // A factory method used in BindingType.Factory bindings
-    public factory: IFactoryCreator<T>;
+    public factory: interfaces.FactoryCreator<T>;
 
     // An async factory method used in BindingType.Provider bindings
-    public provider: IProviderCreator<T>;
+    public provider: interfaces.ProviderCreator<T>;
 
     // A constraint used to limit the contexts in which this binding is applicable
-    public constraint: (request: IRequest) => boolean;
+    public constraint: (request: interfaces.Request) => boolean;
 
     // On activation handler (invoked just before an instance is added to cache and injected)
-    public onActivation: (context: IContext, injectable: T) => T;
+    public onActivation: (context: interfaces.Context, injectable: T) => T;
 
-    constructor(serviceIdentifier: (string|Symbol|INewable<T>)) {
+    constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>) {
         this.guid = guid();
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
         this.scope = BindingScope.Transient;
         this.type = BindingType.Invalid;
-        this.constraint = (request: IRequest) => { return true; };
+        this.constraint = (request: interfaces.Request) => { return true; };
         this.implementationType = null;
         this.cache = null;
         this.factory = null;
@@ -65,7 +64,7 @@ class Binding<T> implements IBinding<T> {
         this.onActivation = null;
     }
 
-    public clone(): IBinding<T> {
+    public clone(): interfaces.Binding<T> {
         let clone = new Binding(this.serviceIdentifier);
         clone.activated = false;
         clone.implementationType = this.implementationType;

@@ -1,26 +1,25 @@
 declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
 import named from "../../src/annotation/named";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
-interface IWeapon {}
-class Katana implements IWeapon {}
-class Shuriken implements IWeapon {}
+interface Weapon {}
+class Katana implements Weapon {}
+class Shuriken implements Weapon {}
 
 class NamedWarrior {
 
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      @named("more_powerful") primary: IWeapon,
-      @named("less_powerful") secondary: IWeapon) {
+      @named("more_powerful") primary: Weapon,
+      @named("less_powerful") secondary: Weapon) {
 
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -28,12 +27,12 @@ class NamedWarrior {
 }
 
 class InvalidDecoratorUsageWarrior {
-    private _primaryWeapon: IWeapon;
-    private _secondaryWeapon: IWeapon;
+    private _primaryWeapon: Weapon;
+    private _secondaryWeapon: Weapon;
 
     constructor(
-      primary: IWeapon,
-      secondary: IWeapon
+      primary: Weapon,
+      secondary: Weapon
     ) {
 
           this._primaryWeapon = primary;
@@ -53,14 +52,14 @@ describe("@named", () => {
 
     // assert metadata for first argument
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
-    let m1: IMetadata = paramsMetadata["0"][0];
+    let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("more_powerful");
     expect(paramsMetadata["0"][1]).to.be.undefined;
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
-    let m2: IMetadata = paramsMetadata["1"][0];
+    let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m2.value).to.be.eql("less_powerful");
     expect(paramsMetadata["1"][1]).to.be.undefined;
@@ -74,7 +73,7 @@ describe("@named", () => {
 
     class Warrior {
       @named("throwwable")
-      public weapon: IWeapon;
+      public weapon: Weapon;
     }
 
     let metadataKey = METADATA_KEY.TAGGED_PROP;
@@ -113,11 +112,11 @@ describe("@named", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface IKatana {}
-    interface IShurien {}
+    interface Katana {}
+    interface Shurien {}
 
     let VanillaJSWarrior = (function () {
-        function NamedVanillaJSWarrior(primary: IKatana, secondary: IShurien) {
+        function NamedVanillaJSWarrior(primary: Katana, secondary: Shurien) {
             // ...
         }
         return NamedVanillaJSWarrior;
@@ -132,14 +131,14 @@ describe("@named", () => {
 
     // assert metadata for first argument
     expect(paramsMetadata["0"]).to.be.instanceof(Array);
-    let m1: IMetadata = paramsMetadata["0"][0];
+    let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("more_powerful");
     expect(paramsMetadata["0"][1]).to.be.undefined;
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
-    let m2: IMetadata = paramsMetadata["1"][0];
+    let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m2.value).to.be.eql("less_powerful");
     expect(paramsMetadata["1"][1]).to.be.undefined;

@@ -1,5 +1,4 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
+import interfaces from "../interfaces/interfaces";
 import Plan from "./plan";
 import Context from "./context";
 import Request from "./request";
@@ -8,13 +7,17 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
 
-class Planner implements IPlanner {
+class Planner implements interfaces.Planner {
 
-    public createContext(kernel: IKernel): IContext {
+    public createContext(kernel: interfaces.Kernel): interfaces.Context {
         return new Context(kernel);
     }
 
-    public createPlan(context: IContext, binding: IBinding<any>, target: ITarget): IPlan {
+    public createPlan(
+        context: interfaces.Context,
+        binding: interfaces.Binding<any>,
+        target: interfaces.Target
+    ): interfaces.Plan {
 
         let rootRequest = new Request(
             binding.serviceIdentifier,
@@ -33,8 +36,12 @@ class Planner implements IPlanner {
         return plan;
     }
 
-    public getBindings<T>(kernel: IKernel, serviceIdentifier: (string|Symbol|INewable<T>)): IBinding<T>[] {
-        let bindings: IBinding<T>[] = [];
+    public getBindings<T>(
+        kernel: interfaces.Kernel,
+        serviceIdentifier: interfaces.ServiceIdentifier<T>
+    ): interfaces.Binding<T>[] {
+
+        let bindings: interfaces.Binding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
         if (_bindingDictionary.hasKey(serviceIdentifier)) {
@@ -43,10 +50,13 @@ class Planner implements IPlanner {
         return bindings;
     }
 
-    public getActiveBindings(parentRequest: IRequest, target: ITarget): IBinding<any>[] {
+    public getActiveBindings(
+        parentRequest: interfaces.Request,
+        target: interfaces.Target
+    ): interfaces.Binding<any>[] {
 
         let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.serviceIdentifier);
-        let activeBindings: IBinding<any>[] = [];
+        let activeBindings: interfaces.Binding<any>[] = [];
 
         if (bindings.length > 1 && target.isArray() === false) {
 
@@ -72,7 +82,7 @@ class Planner implements IPlanner {
         return activeBindings;
     }
 
-    private _createSubRequest(parentRequest: IRequest, target: ITarget) {
+    private _createSubRequest(parentRequest: interfaces.Request, target: interfaces.Target) {
 
         try {
             let activeBindings = this.getActiveBindings(parentRequest, target);
@@ -106,7 +116,11 @@ class Planner implements IPlanner {
         }
     }
 
-    private _createChildRequest(parentRequest: IRequest, target: ITarget, bindings: IBinding<any>[]) {
+    private _createChildRequest(
+        parentRequest: interfaces.Request,
+        target: interfaces.Target,
+        bindings: interfaces.Binding<any>[]
+    ) {
 
         // Use the only active binding to create a child request
         let childRequest = parentRequest.addChildRequest(target.serviceIdentifier, bindings, target);
@@ -132,7 +146,8 @@ class Planner implements IPlanner {
     }
 
     private _throwWhenCircularDependenciesFound(
-        request: IRequest, previousServiceIdentifiers: (string|Symbol|INewable<any>)[] = []
+        request: interfaces.Request,
+        previousServiceIdentifiers: interfaces.ServiceIdentifier<any>[] = []
     ) {
 
         previousServiceIdentifiers.push(request.serviceIdentifier);
@@ -154,7 +169,7 @@ class Planner implements IPlanner {
         });
     }
 
-    private _getDependencies(func: Function): ITarget[] {
+    private _getDependencies(func: Function): interfaces.Target[] {
 
         if (func === null) { return []; }
         let constructorName = (<any>func).name;
@@ -171,7 +186,7 @@ class Planner implements IPlanner {
         // User generated annotations
         let targetsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
-        let targets: ITarget[] = [];
+        let targets: interfaces.Target[] = [];
 
         for (let i = 0; i < func.length; i++) {
 
@@ -180,7 +195,7 @@ class Planner implements IPlanner {
             // Create map from array of metadata for faster access to metadata
             let targetMetadata = targetsMetadata[i.toString()] || [];
             let targetMetadataMap: any = {};
-            targetMetadata.forEach((m: IMetadata) => {
+            targetMetadata.forEach((m: interfaces.Metadata) => {
                 targetMetadataMap[m.key.toString()] = m.value;
             });
 

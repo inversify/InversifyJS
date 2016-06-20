@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import BindingType from "../../src/bindings/binding_type";
@@ -11,11 +10,11 @@ describe("BindingToSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingToSyntax = new BindingToSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingToSyntax: any = bindingToSyntax;
@@ -26,14 +25,14 @@ describe("BindingToSyntax", () => {
 
     it("Should be able to configure the type of a binding", () => {
 
-        interface INinja {}
+        interface Ninja {}
 
         @injectable()
-        class Ninja implements INinja {}
-        let ninjaIdentifier = "INinja";
+        class Ninja implements Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingToSyntax = new BindingToSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         expect(binding.type).eql(BindingType.Invalid);
 
@@ -50,11 +49,11 @@ describe("BindingToSyntax", () => {
         expect(typeof binding.dynamicValue).eql("function");
         expect(binding.dynamicValue() instanceof Ninja).eql(true);
 
-        bindingToSyntax.toConstructor<INinja>(Ninja);
+        bindingToSyntax.toConstructor<Ninja>(Ninja);
         expect(binding.type).eql(BindingType.Constructor);
         expect(binding.implementationType).not.to.eql(null);
 
-        bindingToSyntax.toFactory<INinja>((context) => {
+        bindingToSyntax.toFactory<Ninja>((context: interfaces.Context) => {
             return () => {
                 return new Ninja();
             };
@@ -68,14 +67,14 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingType.Function);
         expect(binding.cache === f).eql(true);
 
-        bindingToSyntax.toAutoFactory<INinja>(ninjaIdentifier);
+        bindingToSyntax.toAutoFactory<Ninja>(ninjaIdentifier);
 
         expect(binding.type).eql(BindingType.Factory);
         expect(binding.factory).not.to.eql(null);
 
-        bindingToSyntax.toProvider<INinja>((context) => {
+        bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) => {
             return () => {
-                return new Promise<INinja>((resolve) => {
+                return new Promise<Ninja>((resolve) => {
                     resolve(new Ninja());
                 });
             };
@@ -88,14 +87,14 @@ describe("BindingToSyntax", () => {
 
     it("Should prevent invalid function bindings", () => {
 
-        interface INinja {}
+        interface Ninja {}
 
         @injectable()
-        class Ninja implements INinja {}
-        let ninjaIdentifier = "INinja";
+        class Ninja implements Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingToSyntax = new BindingToSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         let f = function () {
             bindingToSyntax.toFunction(5);

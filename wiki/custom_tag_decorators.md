@@ -7,12 +7,12 @@ let throwable = tagged("canThrow", true);
 let notThrowable = tagged("canThrow", false);
 
 @injectable()
-class Ninja implements INinja {
-    public katana: IWeapon;
-    public shuriken: IWeapon;
+class Ninja implements Ninja {
+    public katana: Weapon;
+    public shuriken: Weapon;
     public constructor(
-        @inject("IWeapon") @notThrowable katana: IWeapon,
-        @inject("IWeapon") @throwable shuriken: IWeapon
+        @inject("Weapon") @notThrowable katana: Weapon,
+        @inject("Weapon") @throwable shuriken: Weapon
     ) {
         this.katana = katana;
         this.shuriken = shuriken;

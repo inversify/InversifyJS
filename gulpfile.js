@@ -64,7 +64,7 @@ gulp.task("build-bundle-src", function() {
 
   // TS compiler options are in tsconfig.json file
   return bundler.add(mainTsFilePath)
-                .plugin(tsify)
+                .plugin(tsify, { typescript: require("typescript") })
                 .bundle()
                 .pipe(source(outputFileName))
                 .pipe(buffer())
@@ -98,13 +98,16 @@ gulp.task("build-bundle-compress-src", function() {
                 .pipe(gulp.dest(outputFolder));
 });
 
-var tsLibProject = tsc.createProject("tsconfig.json", { module : "commonjs" });
+var tsLibProject = tsc.createProject("tsconfig.json", { module : "commonjs", typescript: require("typescript") });
 
 gulp.task("build-lib", function() {
     return gulp.src([
-        "src/**/*.ts"
+        "typings/index.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts",
+        "src/interfaces/globals.d.ts",
+        "src/inversify.ts"
     ])
-    .pipe(tsc(tsLibProject ))
+    .pipe(tsc(tsLibProject))
     .on("error", function (err) {
         process.exit(1);
     })
@@ -113,11 +116,14 @@ gulp.task("build-lib", function() {
       .pipe(gulp.dest("lib/"));
 });
 
-var tsEsProject = tsc.createProject("tsconfig.json", { module : "es2015" });
+var tsEsProject = tsc.createProject("tsconfig.json", { module : "es2015", typescript: require("typescript") });
 
 gulp.task("build-es", function() {
     return gulp.src([
-        "src/**/*.ts"
+        "typings/index.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts",
+        "src/interfaces/globals.d.ts",
+        "src/inversify.ts"
     ])
     .pipe(tsc(tsEsProject))
     .on("error", function (err) {
@@ -135,6 +141,9 @@ var tstProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-src", function() {
     return gulp.src([
+        "typings/index.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts",
+        "src/interfaces/globals.d.ts",
         "src/**/*.ts"
     ])
     .pipe(tsc(tstProject))
@@ -148,6 +157,9 @@ var tsTestProject = tsc.createProject("tsconfig.json");
 
 gulp.task("build-test", function() {
     return gulp.src([
+        "typings/index.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts",
+        "src/interfaces/globals.d.ts",
         "test/**/*.ts"
     ])
     .pipe(tsc(tsTestProject))

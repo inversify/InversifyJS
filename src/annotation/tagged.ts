@@ -1,5 +1,3 @@
-///<reference path="../interfaces/interfaces.d.ts" />
-
 import Metadata from "../planning/metadata";
 import { tagParameter, tagProperty } from "./decorator_utils";
 

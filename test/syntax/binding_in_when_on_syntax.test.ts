@@ -1,5 +1,4 @@
-///<reference path="../../src/interfaces/interfaces.d.ts" />
-
+import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import Binding from "../../src/bindings/binding";
@@ -20,11 +19,11 @@ describe("BindingInWhenOnSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
@@ -35,11 +34,11 @@ describe("BindingInWhenOnSyntax", () => {
 
     it("Should provide access to BindingInSyntax methods", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
@@ -57,21 +56,21 @@ describe("BindingInWhenOnSyntax", () => {
 
     it("Should provide access to BindingWhenSyntax methods", () => {
 
-        interface IArmy {}
+        interface Army {}
 
         @injectable()
-        class Army implements IArmy {}
+        class Army implements Army {}
 
-        interface IZombieArmy {}
+        interface ZombieArmy {}
 
         @injectable()
-        class ZombieArmy implements IZombieArmy {}
+        class ZombieArmy implements ZombieArmy {}
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
@@ -109,7 +108,7 @@ describe("BindingInWhenOnSyntax", () => {
             _bindingInWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorMatches").returns(null);
 
         // invoke BindingWhenOnSyntax methods
-        bindingInWhenOnSyntax.when((request: IRequest) => { return true; });
+        bindingInWhenOnSyntax.when((request: interfaces.Request) => { return true; });
         bindingInWhenOnSyntax.whenTargetNamed("test");
         bindingInWhenOnSyntax.whenTargetTagged("test", true);
         bindingInWhenOnSyntax.whenInjectedInto("armny");
@@ -122,8 +121,8 @@ describe("BindingInWhenOnSyntax", () => {
         bindingInWhenOnSyntax.whenAnyAncestorTagged("test", true);
         bindingInWhenOnSyntax.whenNoAncestorNamed("test");
         bindingInWhenOnSyntax.whenNoAncestorTagged("test", true);
-        bindingInWhenOnSyntax.whenAnyAncestorMatches((request: IRequest) => { return true; });
-        bindingInWhenOnSyntax.whenNoAncestorMatches((request: IRequest) => { return true; });
+        bindingInWhenOnSyntax.whenAnyAncestorMatches((request: interfaces.Request) => { return true; });
+        bindingInWhenOnSyntax.whenNoAncestorMatches((request: interfaces.Request) => { return true; });
 
         // assert invoked BindingWhenSyntax methods
         expect(whenStub.callCount).eql(1);
@@ -145,11 +144,11 @@ describe("BindingInWhenOnSyntax", () => {
 
     it("Should provide access to BindingOnSyntax methods", () => {
 
-        interface INinja {}
-        let ninjaIdentifier = "INinja";
+        interface Ninja {}
+        let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<INinja>(ninjaIdentifier);
-        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<INinja>(binding);
+        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
         let _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
@@ -158,7 +157,7 @@ describe("BindingInWhenOnSyntax", () => {
         let onActivationStub = sinon.stub(_bindingInWhenOnSyntax._bindingOnSyntax, "onActivation").returns(null);
 
         // invoke BindingWhenOnSyntax methods
-        bindingInWhenOnSyntax.onActivation((context: IContext, ninja: INinja) => {
+        bindingInWhenOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) => {
             // DO NOTHING
             return ninja;
         });

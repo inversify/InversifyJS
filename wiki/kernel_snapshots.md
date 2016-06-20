@@ -1,8 +1,8 @@
 # Kernel snapshots
-Declaring kernel snapshots is a feature that helps you to write unit tests with ease:
-```ts
-///<reference path="../../src/interfaces/interfaces.d.ts" />
 
+Declaring kernel snapshots is a feature that helps you to write unit tests with ease:
+
+```ts
 import { expect } from "chai";
 import * as sinon from "sinon";
 
@@ -35,9 +35,9 @@ describe("Ninja", () => {
             hit: () => { return "hit with mock"; } 
         };
 
-        kernel.unbind("IKatana");
-        kernel.bind<ISomething>("IKatana").toConstantValue(katanaMock);
-        let ninja = kernel.get<INinja>("INinja");
+        kernel.unbind("Katana");
+        kernel.bind<Something>("Katana").toConstantValue(katanaMock);
+        let ninja = kernel.get<Ninja>("Ninja");
         expect(ninja.fight()).eql("hit with mock");
 
     });
@@ -48,9 +48,9 @@ describe("Ninja", () => {
             throw: () => { return "hit with mock"; } 
         };
 
-        kernel.unbind("IShuriken");
-        kernel.bind<ISomething>("IShuriken").toConstantValue(shurikenMock);
-        let ninja = kernel.get<INinja>("IShuriken");
+        kernel.unbind("Shuriken");
+        kernel.bind<Something>("Shuriken").toConstantValue(shurikenMock);
+        let ninja = kernel.get<Ninja>("Shuriken");
         expect(ninja.sneak()).eql("hit with mock");
 
     });
