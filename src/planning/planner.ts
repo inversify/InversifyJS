@@ -225,14 +225,16 @@ class Planner implements interfaces.Planner {
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies
         // and one of the derived classes (children) has no dependencies
-        if (func.length === 0 && targets.length === 0 && this._baseClassHasDepencencies(func)) {
-            throw new Error(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} ${constructorName}.`);
+        let baseClassHasDepencencies = this._baseClassDepencencyCount(func);
+        if (targets.length < baseClassHasDepencencies) {
+            let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+            throw new Error(error);
         }
 
         return targets;
     }
 
-    private _baseClassHasDepencencies(func: Function): boolean {
+    private _baseClassDepencencyCount(func: Function): number {
 
         let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
 
@@ -247,13 +249,13 @@ class Planner implements interfaces.Planner {
             }
 
             if (baseConstructor.length > 0 && targetsTypes) {
-                return true;
+                return baseConstructor.length;
             } else {
-                return this._baseClassHasDepencencies(baseConstructor);
+                return this._baseClassDepencencyCount(baseConstructor);
             }
 
         } else {
-            return false;
+            return 0;
         }
 
     }

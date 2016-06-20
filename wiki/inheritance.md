@@ -1,98 +1,170 @@
 # Inheritance
 
-```ts
-interface Warrior {
-    weapon: Weapon;
-}
+We try to provide developers with useful error feedback like:
 
-@injectable()
-class Samurai implements Warrior {
+> Error: Missing required @injectable annotation in: SamuraiMaster
 
-    public weapon: Weapon;
+This works fine in most cases but it causes some problem when using inheritance. 
 
-    public constructor(weapon: Weapon) {
-        this.weapon = weapon;
-    }
-}
-```
+For example, the following code snippet throw a misleading error:
 
-The constructor of a derived class must be manually implemented and annotated. Therefore, the following code snippet:
+> Error: Derived class must explicitly declare its constructor: SamuraiMaster
 
 ```ts
 @injectable()
-class SamuraiMaster extends Samurai implements Warrior {
-    public isMaster: boolean;
-}
-```
-
-Throws an exception:
-
-```
-Error: Derived class must explicitly declare its constructor: SamuraiMaster
-```
-
-However, he following works:
-
-```ts
-@injectable()
-class SamuraiMaster extends Samurai implements Warrior {
-    public isMaster: boolean;
-    public constructor(@inject(SYMBOLS.Weapon) weapon: Weapon) {
-        super(weapon);
-        this.isMaster = true;
-    }
-}
-```
-
-The above also works with `abstract` classes but it has one limitation. 
-It doesn't work when a base class has constructor injections and its derived 
-class don't have any constructor injections:
-
-```ts
-@injectable()
-class Samurai implements Samurai {
-
+class Warrior {
     public rank: string;
-
-    public constructor(rank: string) {
+    public constructor(rank: string) { // args count  = 1
         this.rank = rank;
     }
 }
 
 @injectable()
-class SamuraiMaster extends Samurai implements Samurai {
-    constructor() {
-        super("Master");
+class SamuraiMaster extends Warrior  {
+    public constructor() { // args count = 0
+       super("master");
     }
 }
 ```
 
-The precedding code snippet throws an error. Unfortunately, as a result of 
-the technical limitation, this error is misleading:
+In order to overcome this issues InversifyJS restricts the usage of inheritance.
 
-```
-Error: Derived class must explicitly declare its constructor: SamuraiMaster.
-```
+> The number of constructor arguments in a derived class must be >= than the number of constructor arguments of its base class.
 
-You can overcome this limitation by injecting into the derived class:
+If you don't follow this rule and exception will be thrown:
+
+> Error: The number of constructor arguments in the derived class SamuraiMaster must be >= than the number of constructor arguments of its base class.
+
+The users have a few ways to overcome this limitation available:
+
+### WORKAROUND A) Property setter
+
+You can use the `public`, `protected` or `private` access modifier and a 
+property setter to avoid injecting into the base class:
 
 ```ts
-kernel.bind<string>(SYMBOLS.RANK).toConstantValue("Master");
+@injectable()
+class Warrior {
+    protected rank: string;
+    public constructor() { // args count = 0
+        this.rank = null;
+    }
+}
 
 @injectable()
-class Samurai implements Samurai {
+class SamuraiMaster extends Warrior {
+    public constructor() { // args count = 0
+       super();
+	   this.rank = "master";
+    }
+}
+```
 
-    public rank: string;
+### WORKAROUND B) Property injection
 
-    public constructor(rank: string) {
+We can also use property injection to avoid injecting into the base class:
+
+```ts
+@injectable()
+class Warrior {
+    protected rank: string;
+    public constructor() {} // args count = 0
+}
+
+let TYPES = { Rank: "Rank" };
+
+@injectable()
+class SamuraiMaster extends Warrior  {
+
+    @injectNamed(TYPES.Rank, "master")
+    @named("master")
+    protected rank: string;
+	
+    public constructor() { // args count = 0
+       super();
+    }
+}
+
+kernel.bind<string>(TYPES.Rank)
+      .toConstantValue("master")
+	  .whenTargetNamed("master");
+```
+
+### WORKAROUND C) Inject into the derived class
+
+If we don't want to avoid injecting into the base class we can 
+inject into the derived class and then into the base class using 
+its constructor (super).
+
+```ts
+@injectable()
+class Warrior {
+    protected rank: string;
+    public constructor(rank: string) { // args count = 1
         this.rank = rank;
     }
 }
 
+let TYPES = { Rank: "Rank" };
+
 @injectable()
-class SamuraiMaster extends Samurai implements Samurai {
-    constructor(@inject(SYMBOLS.RANK) rank: string) {
-        super(rank);
+class SamuraiMaster extends Warrior  {
+    public constructor(
+		@inject(TYPES.Rank) @named("master") rank: string // args count = 1
+	) {
+       super(rank);
     }
 }
+
+kernel.bind<string>(TYPES.Rank)
+      .toConstantValue("master")
+	  .whenTargetNamed("master");
+```
+
+The following should also work:
+
+```ts
+@injectable()
+class Warrior {
+    protected rank: string;
+    public constructor(rank: string) { // args count = 1
+        this.rank = rank;
+    }
+}
+
+interface Weapon {
+	name: string;
+}
+
+@injectable()
+class Katana implements Weapon {
+	public name: string;
+	public constructor() {
+		this.name = "Katana";
+	}
+}
+
+let TYPES = { 
+    Rank: "Rank",
+    Weapon: "Weapon"
+};
+
+@injectable()
+class SamuraiMaster extends Warrior  {
+	public weapon: Weapon;
+    public constructor(
+		@inject(TYPES.Rank) @named("master") rank: string, // args count = 2
+		@inject(TYPES.Weapon) weapon: Weapon
+	) {
+       super(rank);
+	   this.weapon = weapon;
+    }
+}
+
+kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
+
+kernel.bind<string>(TYPES.Rank)
+      .toConstantValue("master")
+      .whenTargetNamed("master");
+
 ```
