@@ -2016,7 +2016,8 @@ describe("InversifyJS", () => {
         kernel.bind<Warrior>(SYMBOLS.SamuraiMaster2).to(SamuraiMaster2);
 
         let errorFunction = () => { kernel.get<Warrior>(SYMBOLS.SamuraiMaster); };
-        expect(errorFunction).to.throw(`${ERROR_MSGS.MISSING_EXPLICIT_CONSTRUCTOR} SamuraiMaster.`);
+        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        expect(errorFunction).to.throw(error);
 
         let samuraiMaster2 = kernel.get<Warrior>(SYMBOLS.SamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
@@ -2950,9 +2951,13 @@ describe("InversifyJS", () => {
         let throw2 = () => { kernel.getNamed<Stubs.BaseSoldier>("BaseSoldier", "knight"); };
         let throw3 = () => { kernel.getNamed<Stubs.BaseSoldier>("BaseSoldier", "archer"); };
 
-        expect(throw1).to.throw("Derived class must explicitly declare its constructor: Soldier.");
-        expect(throw2).to.throw("Derived class must explicitly declare its constructor: Knight.");
-        expect(throw3).to.throw("Derived class must explicitly declare its constructor: Archer.");
+        function getError(className: string) {
+            return ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + className + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        }
+
+        expect(throw1).to.throw(getError("Soldier"));
+        expect(throw2).to.throw(getError("Knight"));
+        expect(throw3).to.throw(getError("Archer"));
 
     });
 

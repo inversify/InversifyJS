@@ -19,6 +19,3 @@ export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and
 
 export const ARGUMENTS_LENGTH_MISMATCH_1 = "The number of constructor arguments in the derived class ";
 export const ARGUMENTS_LENGTH_MISMATCH_2 = " must be >= than the number of constructor arguments of its base class.";
-
-// TODO REMOVE
-export const MISSING_EXPLICIT_CONSTRUCTOR = "Derived class must explicitly declare its constructor:";
