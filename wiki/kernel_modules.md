@@ -13,4 +13,5 @@ let weapons = new KernelModule((bind: Bind) => {
 
 let kernel = new Kernel();
 kernel.load(warriors, weapons);
+kernel.unload(warriors);
 ```
