@@ -105,7 +105,7 @@ gulp.task("build-lib", function() {
         "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "src/interfaces/globals.d.ts",
-        "src/inversify.ts"
+        "src/**/*.ts"
     ])
     .pipe(tsc(tsLibProject))
     .on("error", function (err) {
@@ -123,7 +123,7 @@ gulp.task("build-es", function() {
         "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "src/interfaces/globals.d.ts",
-        "src/inversify.ts"
+        "src/**/*.ts"
     ])
     .pipe(tsc(tsEsProject))
     .on("error", function (err) {
