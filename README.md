@@ -53,7 +53,13 @@ InversifyJS has been developed with 4 main goals:
 You can get the latest release and the type definitions using npm:
 
 ```
-npm install inversify@2.0.0-beta.9 @types/inversify reflect-metadata --save
+npm install inversify@2.0.0-beta.9 reflect-metadata --save
+```
+
+You will also need the type definitions files for inversify and reflect-metadata:
+
+```
+npm install inversify-dts --save-dev
 ```
 
 The reflect-metadata type definitions are included in the npm package:
@@ -62,7 +68,9 @@ The reflect-metadata type definitions are included in the npm package:
 /// <reference path="node_modules/reflect-metadata/reflect-metadata.d.ts" />
 ```
 
-If you are targeting ES5 you will get an error:
+InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. 
+If your environment don't support one of these you will need to import a shim or polyfill. If you are targeting ES5 you will get the following error:
+
 > TypeScript error: node_modules/inversify-dts/inversify/inversify.d.ts(108,13): Error TS2304: Cannot find name 'Promise'.
 
 You can solve this problem by installing type definitions for the Promise API. If you are working on node the node type definitions already include the required definitions. If you are working on a browser app you can use the bluebird type definitions and polyfill:
@@ -71,9 +79,7 @@ You can solve this problem by installing type definitions for the Promise API. I
 $ typings install --save --global dt~bluebird
 ```
 
-InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. 
-If your environment don't support one of these you will need to import a shim or polyfill. Check out the 
-[Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
+ Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
 
 The relect-metadata polyfill can be importing as follows:
 
