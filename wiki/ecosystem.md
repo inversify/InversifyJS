@@ -15,4 +15,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-chrome-devtools](https://github.com/inversify/inversify-chrome-devtools) - A chrome extension that aims to help developers working with InversifyJS.
 
 ### Examples
-- [inversify-code-samples]() - Code samples to showcase the integration of inversify with frameworks and module loaders.
+- [Express](https://github.com/inversify/inversify-express-example)
+- [Hapi](https://github.com/inversify/inversify-hapi-example)
+- [InversifyJS Binding Decorators](https://github.com/inversify/inversify-binding-decorators-example)
+- [Marionette](https://github.com/inversify/inversify-marionette-example)
