@@ -90,7 +90,7 @@ The relect-metadata polyfill can be importing as follows:
 import "relect-metadata";
 ```
 
-> **The `relect-metadata` polyfill should be be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
+> **The `relect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
 InversifyJS requires the following TypeScript compilation options in your `tsconfig.json` file:
 
