@@ -87,10 +87,10 @@ $ typings install --save --global dt~bluebird
 The relect-metadata polyfill can be importing as follows:
 
 ```ts
-import "relect-metadata";
+import "reflect-metadata";
 ```
 
-> **The `relect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
+> **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
 InversifyJS requires the following TypeScript compilation options in your `tsconfig.json` file:
 
