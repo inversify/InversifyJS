@@ -4,7 +4,7 @@ namespace interfaces {
         new(...args: any[]): T;
     }
 
-    export type ServiceIdentifier<T> = (string|Symbol|Newable<T>);
+    export type ServiceIdentifier<T> = ServiceIdentifier<T>;
 
     export interface Binding<T> extends Clonable<Binding<T>> {
         guid: string;
@@ -44,7 +44,7 @@ namespace interfaces {
 
     export interface PlanAndResolveArgs {
         multiInject: boolean;
-        serviceIdentifier: (string|Symbol|Newable<any>);
+        serviceIdentifier: ServiceIdentifier<any>;
         target: Target;
         contextInterceptor: (contexts: Context) => Context;
     }
@@ -91,14 +91,14 @@ namespace interfaces {
 
     export interface Request {
         guid: string;
-        serviceIdentifier: (string|Symbol|Newable<any>);
+        serviceIdentifier: ServiceIdentifier<any>;
         parentContext: Context;
         parentRequest: Request;
         childRequests: Request[];
         target: Target;
         bindings: Binding<any>[];
         addChildRequest(
-            serviceIdentifier: (string|Symbol|Newable<any>),
+            serviceIdentifier: ServiceIdentifier<any>,
             bindings: (Binding<any>|Binding<any>[]),
             target: Target
         ): Request;
@@ -106,12 +106,12 @@ namespace interfaces {
 
     export interface Target {
         guid: string;
-        serviceIdentifier: (string|Symbol|Newable<any>);
+        serviceIdentifier: ServiceIdentifier<any>;
         name: QueryableString;
         metadata: Array<Metadata>;
         hasTag(key: string): boolean;
         isArray(): boolean;
-        matchesArray(name: string|Symbol|any): boolean;
+        matchesArray(name: string|Symbol|Newable<any>): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
         matchesNamedTag(name: string): boolean;
@@ -159,15 +159,15 @@ namespace interfaces {
     }
 
     export interface Lookup<T> extends Clonable<Lookup<T>> {
-        add(serviceIdentifier: (string|Symbol|any), value: T): void;
-        get(serviceIdentifier: (string|Symbol|any)): Array<T>;
-        remove(serviceIdentifier: (string|Symbol|any)): void;
+        add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
+        get(serviceIdentifier: ServiceIdentifier<any>): Array<T>;
+        remove(serviceIdentifier: ServiceIdentifier<any>): void;
         removeByModuleId(moduleId: string): void;
-        hasKey(serviceIdentifier: (string|Symbol|any)): boolean;
+        hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
     }
 
     export interface KeyValuePair<T> {
-        serviceIdentifier: (string|Symbol|any);
+        serviceIdentifier: ServiceIdentifier<any>;
         value: Array<T>;
     }
 
@@ -188,7 +188,7 @@ namespace interfaces {
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;
-        toAutoFactory<T2>(serviceIdentifier: (string|Symbol|Newable<T2>)): BindingWhenOnSyntax<T>;
+        toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
         toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
     }
 
