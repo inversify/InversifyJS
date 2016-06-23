@@ -127,7 +127,7 @@ describe("Kernel", () => {
       let serviceIdentifier = "Ninja";
       let kernel = new Kernel();
       let throwFunction = () => { kernel.unbind("Ninja"); };
-      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${serviceIdentifier}`);
+      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${kernel.getServiceIdentifierAsString(serviceIdentifier)}`);
 
   });
 

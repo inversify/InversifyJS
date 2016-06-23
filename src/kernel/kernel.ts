@@ -80,7 +80,7 @@ class Kernel implements interfaces.Kernel {
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
-            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${serviceIdentifier}`);
+            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
         }
     }
 
@@ -210,7 +210,7 @@ class Kernel implements interfaces.Kernel {
         switch (bindings.length) {
 
             case BindingCount.NoBindingsAvailable:
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
+                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
 
             case BindingCount.OnlyOneBindingAvailable:
                 if (multiInject === false) {
@@ -220,7 +220,7 @@ class Kernel implements interfaces.Kernel {
             case BindingCount.MultipleBindingsAvailable:
             default:
                 if (multiInject === false) {
-                    throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
+                    throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
                 } else {
                     return bindings;
                 }
