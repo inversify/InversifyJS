@@ -19,3 +19,12 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Hapi](https://github.com/inversify/inversify-hapi-example)
 - [InversifyJS Binding Decorators](https://github.com/inversify/inversify-binding-decorators-example)
 - [Marionette](https://github.com/inversify/inversify-marionette-example)
+
+### Projects using InversifyJS
+- [Dwatch](https://github.com/Mercateo/dwatch) - Manage your docker containers, images and networks in a nice and clean way.
+- [Retax](https://github.com/retaxJS) - Universal React Redux Framework.
+- [Demgel-mvc](https://github.com/DemgelOpenSource/demgel-mvc) - MVC framework using express and inversify
+- [Prettygoat](https://www.npmjs.com/package/prettygoat) - The not so baaaaaaad Event Sourcing Projection Engine.
+- [Ninjagoat](https://www.npmjs.com/package/ninjagoat) - The not so baaaaaaad MVVM framework.
+- [Rokot](https://github.com/Rocketmakers/rokot) Rocketmakers Node-Typescript Platform.
+- [Homenet Core](https://github.com/denwilliams/homenet-core) - Homenet home automation
