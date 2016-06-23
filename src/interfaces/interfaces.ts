@@ -4,7 +4,7 @@ namespace interfaces {
         new(...args: any[]): T;
     }
 
-    export type ServiceIdentifier<T> = ServiceIdentifier<T>;
+    export type ServiceIdentifier<T> = (string|Symbol|Newable<T>);
 
     export interface Binding<T> extends Clonable<Binding<T>> {
         guid: string;
