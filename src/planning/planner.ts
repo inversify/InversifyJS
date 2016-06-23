@@ -154,7 +154,7 @@ class Planner implements interfaces.Planner {
 
         request.childRequests.forEach((childRequest) => {
 
-            let serviceIdentifier = childRequest.serviceIdentifier;
+            let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
             if (previousServiceIdentifiers.indexOf(serviceIdentifier) === -1) {
                 if (childRequest.childRequests.length > 0) {
                     this._throwWhenCircularDependenciesFound(childRequest, previousServiceIdentifiers);

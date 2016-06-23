@@ -1,6 +1,13 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { Kernel, injectable, named, inject, makePropertyInjectNamedDecorator } from "../../src/inversify";
+
+import {
+    Kernel,
+    injectable,
+    named,
+    inject,
+    makePropertyInjectNamedDecorator
+} from "../../src/inversify";
 
 describe("Bugs", () => {
 
@@ -175,6 +182,20 @@ describe("Bugs", () => {
         let master: any = kernel.get<SamuraiMaster>(SamuraiMaster);
         expect(master.rank).eql("master");
         expect(master.weapon.name).eql("Katana");
+
+    });
+
+    it("Should be able to convert a Symbol value to a string", () => {
+
+        interface Weapon {}
+
+        let TYPES = {
+            Weapon: Symbol("Weapon")
+        };
+
+        let kernel = new Kernel();
+        let throwF = () => { kernel.get<Weapon>(TYPES.Weapon); };
+        expect(throwF).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${kernel.getServiceIdentifierAsString(TYPES.Weapon)}`);
 
     });
 
