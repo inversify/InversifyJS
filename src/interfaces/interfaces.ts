@@ -169,6 +169,7 @@ namespace interfaces {
     export interface KeyValuePair<T> {
         serviceIdentifier: ServiceIdentifier<any>;
         value: Array<T>;
+        guid: string;
     }
 
     export interface BindingInSyntax<T> {

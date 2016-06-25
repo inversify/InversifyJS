@@ -9,6 +9,7 @@ describe("KeyValuePair", () => {
         expect(keyValuePair.serviceIdentifier).eql("test");
         expect(keyValuePair.value.length).eql(1);
         expect(keyValuePair.value[0]).eql(1);
+        expect(keyValuePair.guid.length).eql(36);
 
     });
 
