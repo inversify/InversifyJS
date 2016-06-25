@@ -13,6 +13,7 @@ import multiInject from "./annotation/multi_inject";
 import targetName from "./annotation/target_name";
 import { decorate } from "./annotation/decorator_utils";
 import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
+import guid from "./utils/guid";
 import {
     makePropertyInjectDecorator,
     makePropertyMultiInjectDecorator,
@@ -37,3 +38,4 @@ export { traverseAncerstors };
 export { taggedConstraint };
 export { namedConstraint };
 export { typeConstraint };
+export { guid };
