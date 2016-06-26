@@ -241,7 +241,7 @@ In order to provide a state of the art development experience we are also workin
 Please refer to the [ecosystem page on the wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more about it.
 
 ### Examples
-Some integration examples are available in the [official examples repository](https://github.com/inversify/Inversify-code-samples).
+Some integration examples are available in the [examples](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#examples).
 
 ### Support
 If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
