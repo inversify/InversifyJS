@@ -236,12 +236,13 @@ Let's take a look to the InversifyJS features!
 Please refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) for additional details.
 
 ### Ecosystem
-In order to provide a state of the art development experience we are also working on a series of middleware extensions and other development tools. 
+In order to provide a state of the art development experience we are also working on:
 
-Please refer to the [ecosystem page on the wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more about it.
+- [Middleware extensions](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#extensions).
+- [Development tools](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#development-tools).
+- [Examples](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#examples).
 
-### Examples
-Some integration examples are available in the [examples](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#examples).
+Please refer to the [ecosystem wiki page](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more.
 
 ### Support
 If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
