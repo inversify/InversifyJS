@@ -1,5 +1,12 @@
 # Property injection
-InversifyJS supports property injection because sometimes constructor injection is not the best kind of injection pattern.
+InversifyJS supports property injection because sometimes constructor injection is not the best kind of injection pattern. However, you should try to avoid using property injection and prefer constructor injection in most cases.
+
+> If the class cannot do its job without the dependency, then add it to the constructor. The class needs the new dependency, so you want your change to break things. Also, creating a class that is not fully initialized ("two-step construction") is an anti-pattern (IMHO). If the class can work without the dependency, a setter is fine.
+
+> Source: [http://stackoverflow.com/](http://stackoverflow.com/questions/1503584/dependency-injection-through-constructors-or-property-setters)
+
+Let's take a look to the Property injection API:
+
 ```ts
 let kernel = new Kernel();
 let inject = makePropertyInjectDecorator(kernel);
