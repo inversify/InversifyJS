@@ -6,7 +6,7 @@ There are many good reasons to use InversifyJS but we would like to highlight so
 
 InversifyJS offers you real decoupling. Consider the following class:
 
-```
+```ts
 import TYPES from "./constants/types";
 
 @injectable()
@@ -29,7 +29,7 @@ class Ninja implements Ninja {
 }
 ```
 
-```
+```ts
 let TYPES = {
   Ninja: Symbol("Ninja"),
   Katana: Symbol("Katana"),
@@ -49,28 +49,32 @@ The InversifyJS kernel is the only element in the application aware of the life-
 We recommend to do this in a file named `inversify.config.ts` and store the file in the root folder 
 that contains the application source code:
 
-    import TYPES from "./constants/types";
+```ts
+import TYPES from "./constants/types";
 
-    import Katana from "./entitites/katana";
-    import Shuriken from "./entitites/shuriken";
-    import Ninja from "./entitites/ninja";
+import Katana from "./entitites/katana";
+import Shuriken from "./entitites/shuriken";
+import Ninja from "./entitites/ninja";
 
-    kernel.bind<Katana>(TYPES.KATANA).to(Katana);
-    kernel.bind<Shuriken>(TYPES.SHURIKEN).to(Shuriken);
-    kernel.bind<Ninja>(TYPES.NINJA).to(Ninja);
+kernel.bind<Katana>(TYPES.KATANA).to(Katana);
+kernel.bind<Shuriken>(TYPES.SHURIKEN).to(Shuriken);
+kernel.bind<Ninja>(TYPES.NINJA).to(Ninja);
+```
 
 This means that all the coupling in your application takes place in one unique place: the `inversify.config.ts` file. 
 This is really important and we are going to prove it with an example. 
 Let's imagine that we are changing the difficulty in a game. 
 We just need to go to the `inversify.config.ts` and change the Katana binding:
 
-    import Katana from "./entitites/SharpKatana";
+```ts
+import Katana from "./entitites/SharpKatana";
 
-    if(difficulty === "hard") {
-        kernel.bind<Katana>(TYPES.KATANA).to(SharpKatana);
-    } else {
-        kernel.bind<Katana>(TYPES.KATANA).to(Katana);
-    }
+if(difficulty === "hard") {
+    kernel.bind<Katana>(TYPES.KATANA).to(SharpKatana);
+} else {
+    kernel.bind<Katana>(TYPES.KATANA).to(Katana);
+}
+```
 
 You don't need to change the Ninja file!
 
