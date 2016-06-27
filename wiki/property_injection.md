@@ -5,7 +5,22 @@ InversifyJS supports property injection because sometimes constructor injection 
 
 > Source: [http://stackoverflow.com/](http://stackoverflow.com/questions/1503584/dependency-injection-through-constructors-or-property-setters)
 
-Let's take a look to the Property injection API:
+Property injection is quite different of constructor injection and has some limitations.
+
+- The property `@inject` decorator requires an instance of kernel.
+- The property `@inject` decorator is not an annotation (generation of metadata) it invoked `Kernel.get<T>()` under the hood.
+- Injection takes place the first time the property is accessed via its getter.
+- The `@targetName` decorator is not supported.
+- The only supported contextual constraints are `whenTargetNamed` and `whenTargetTagged`.
+- Property injection supports the `@named` and `@tagged` decorators.
+- Property injection supports multi-injection.
+- The function `Object.prototype.propertyIsEnumerable()` returns false for properties decorated with `@inject`. 
+This is caused because the declared class property is replaced by a new instance property once the injection takes place. 
+The `propertyIsEnumerable` function returns `false` for properties that return `false` for `hasOwnProperty`.
+
+Let's take a look to the Property injection API.
+
+### Basic property injection
 
 ```ts
 let kernel = new Kernel();
@@ -44,16 +59,7 @@ expect(someComponent.doSomething()).eql(0);
 expect(someComponent.doSomething()).eql(1);
 ```
 
-Property injection is quite different of constructor injection and has some limitations.
-
-- The `@inject` decorator requires an instance of kernel.
-- Injection takes place the first time the property is accessed via its getter.
-- The `@targetName` decorator is not supported.
-- The only supported contextual constraints are `whenTargetNamed` and `whenTargetTagged`.
-- Property injection supports the `@named` and `@tagged` decorators.
-- The function `Object.prototype.propertyIsEnumerable()` returns false for properties decorated with `@inject`. 
-This is caused because the declared class property is replaced by a new instance property once the injection takes place. 
-The `propertyIsEnumerable` function returns `false` for properties that return `false` for `hasOwnProperty`.
+### Named and tagged property injection
 
 ```ts
 class Warrior {
@@ -80,7 +86,8 @@ class Warrior {
 
 }
 ```
-- Property injection supports multi-injection.
+
+### Property multi-injection
 
 ```ts
 let kernel = new Kernel();
