@@ -182,6 +182,9 @@ class Ninja implements Ninja {
     public sneak() { return this._shuriken.throw(); };
 
 }
+
+export { Ninja, Katana, Shuriken };
+
 ```
 
 #### Step 3: Create and configure a Kernel
@@ -190,9 +193,7 @@ In the rest of your application your classes should be free of references to oth
 ```ts
 import { Kernel } from "inversify";
 import TYPES from "./types";
-import { Ninja } from "./entities/ninja";
-import { Katana } from "./entities/katana";
-import { Shuriken} from "./entities/shuriken";
+import { Ninja, Katana, Shuriken } from "./entities";
 
 var kernel = new Kernel();
 kernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
