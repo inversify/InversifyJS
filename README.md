@@ -113,18 +113,29 @@ This means that we should "depend upon Abstractions and do not depend upon concr
 Let's start by declaring some interfaces (abstractions).
 
 ```ts
-interface Ninja {
+interface Warrior {
     fight(): string;
     sneak(): string;
 }
 
-interface Katana {
+interface Weapon {
     hit(): string;
 }
 
-interface Shuriken {
+interface ThrowableWeapon {
     throw(): string;
 }
+```
+
+```
+let TYPES = {
+    Warrior: Symbol("Warrior"),
+    Warrior: Symbol("Weapon"),
+    Warrior: Symbol("ThrowableWeapon")
+};
+
+export default TYPES;
+
 ```
 
 #### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
@@ -137,16 +148,17 @@ When a class has a  dependency on an interface we also need to use the `@inject`
 ```ts
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
+import TYPES from "./types";
 
 @injectable()
-class Katana implements Katana {
+class Katana implements Weapon {
     public hit() {
         return "cut!";
     }
 }
 
 @injectable()
-class Shuriken implements Shuriken {
+class Shuriken implements ThrowableWeapon {
     public throw() {
         return "hit!";
     }
@@ -155,12 +167,12 @@ class Shuriken implements Shuriken {
 @injectable()
 class Ninja implements Ninja {
 
-    private _katana: Katana;
-    private _shuriken: Shuriken;
+    private _katana: Weapon;
+    private _shuriken: ThrowableWeapon;
 
     public constructor(
-	    @inject("Katana") katana: Katana,
-	    @inject("Shuriken") shuriken: Shuriken
+	    @inject(TYPES.Weapon) katana: Weapon,
+	    @inject(TYPES.ThrowableWeapon) shuriken: ThrowableWeapon
     ) {
         this._katana = katana;
         this._shuriken = shuriken;
@@ -177,15 +189,15 @@ We recommend to do this in a file named `inversify.config.ts`. This is the only 
 In the rest of your application your classes should be free of references to other classes.
 ```ts
 import { Kernel } from "inversify";
-
+import TYPES from "./types";
 import { Ninja } from "./entities/ninja";
 import { Katana } from "./entities/katana";
 import { Shuriken} from "./entities/shuriken";
 
 var kernel = new Kernel();
-kernel.bind<Ninja>("Ninja").to(Ninja);
-kernel.bind<Katana>("Katana").to(Katana);
-kernel.bind<Shuriken>("Shuriken").to(Shuriken);
+kernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
+kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
+kernel.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 
 export default kernel;
 ```
@@ -198,7 +210,7 @@ to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/Serv
 ```ts
 import kernel = from "./inversify.config";
 
-var ninja = kernel.get<Ninja>("Ninja");
+var ninja = kernel.get<Warrior>(TYPES.Warrior);
 
 expect(ninja.fight()).eql("cut!"); // true
 expect(ninja.sneak()).eql("hit!"); // true
