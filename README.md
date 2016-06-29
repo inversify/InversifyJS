@@ -127,7 +127,7 @@ interface ThrowableWeapon {
 }
 ```
 
-```
+```ts
 let TYPES = {
     Warrior: Symbol("Warrior"),
     Warrior: Symbol("Weapon"),
