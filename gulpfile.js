@@ -131,9 +131,7 @@ gulp.task("test", function(cb) {
 
 gulp.task("build", function(cb) {
   runSequence(
-      "lint", 
-      "build-bundle-src",                       // for nodejs
-      "build-bundle-compress-src",              // for browsers
+      "lint",
       ["build-src", "build-es", "build-lib"],   // tests + build es and lib
       "build-test", cb);
 });
