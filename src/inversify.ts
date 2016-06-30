@@ -3,6 +3,7 @@
 
 // The Inversify main file, the library entry point.
 
+import "reflect-metadata";
 import Kernel from "./kernel/kernel";
 import KernelModule from "./kernel/kernel_module";
 import injectable from "./annotation/injectable";
