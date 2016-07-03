@@ -130,8 +130,8 @@ interface ThrowableWeapon {
 ```ts
 let TYPES = {
     Warrior: Symbol("Warrior"),
-    Warrior: Symbol("Weapon"),
-    Warrior: Symbol("ThrowableWeapon")
+    Weapon: Symbol("Weapon"),
+    ThrowableWeapon: Symbol("ThrowableWeapon")
 };
 
 export default TYPES;
