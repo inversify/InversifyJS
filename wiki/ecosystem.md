@@ -19,7 +19,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 ### Examples
 - [Express](https://github.com/inversify/inversify-express-example)
 - [Hapi](https://github.com/inversify/inversify-hapi-example)
-- [InversifyJS Binding Decorators](https://github.com/inversify/inversify-binding-decorators-example)
+- [InversifyJS Binding Decorators](https://github.com/inversify/inversify-express-example/tree/master/BindingDecorators)
 - [Marionette](https://github.com/inversify/inversify-marionette-example)
 
 ### Projects using InversifyJS
