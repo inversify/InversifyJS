@@ -15,7 +15,6 @@ var gulp        = require("gulp"),
     tslint      = require("gulp-tslint"),
     tsc         = require("gulp-typescript"),
     sourcemaps  = require("gulp-sourcemaps"),
-    codecov     = require("gulp-codecov"),
     uglify      = require("gulp-uglify"),
     typedoc     = require("gulp-typedoc"),
     rename      = require("gulp-rename"),
@@ -185,14 +184,8 @@ gulp.task("istanbul:hook", function() {
       .pipe(istanbul.hookRequire());
 });
 
-gulp.task("cover", function() {
-  if (!process.env.CI) return;
-  return gulp.src("coverage/lcov.info")
-      .pipe(codecov());
-});
-
 gulp.task("test", function(cb) {
-  runSequence("mocha", "cover", cb);
+  runSequence("mocha", cb);
 });
 
 gulp.task("build", function(cb) {
