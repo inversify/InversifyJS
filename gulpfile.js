@@ -70,7 +70,7 @@ gulp.task("build-bundle-src", function() {
                 .pipe(buffer())
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(header(banner, { pkg : pkg } ))
-                .pipe(sourcemaps.write('.'))
+                .pipe(sourcemaps.write("."))
                 .pipe(gulp.dest(outputFolder));
 });
 
@@ -94,7 +94,7 @@ gulp.task("build-bundle-compress-src", function() {
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(uglify())
                 .pipe(header(banner, { pkg : pkg } ))
-                .pipe(sourcemaps.write('.'))
+                .pipe(sourcemaps.write("."))
                 .pipe(gulp.dest(outputFolder));
 });
 
@@ -169,7 +169,7 @@ gulp.task("build-test", function() {
     .js.pipe(gulp.dest("test/"));
 });
 
-gulp.task("mocha", function() {
+gulp.task("mocha", [ "istanbul:hook" ], function() {
   return gulp.src([
       "node_modules/reflect-metadata/Reflect.js",
       "test/**/*.test.js"
@@ -180,20 +180,19 @@ gulp.task("mocha", function() {
 
 gulp.task("istanbul:hook", function() {
   return gulp.src(["src/**/*.js"])
-      // Covering files
       .pipe(istanbul())
-      // Force `require` to return covered files
+      .pipe(sourcemaps.write("."))
       .pipe(istanbul.hookRequire());
 });
 
 gulp.task("cover", function() {
   if (!process.env.CI) return;
-  return gulp.src("coverage/**/lcov.info")
+  return gulp.src("coverage/lcov.info")
       .pipe(codecov());
 });
 
 gulp.task("test", function(cb) {
-  runSequence("istanbul:hook", "mocha", "cover", cb);
+  runSequence("mocha", "cover", cb);
 });
 
 gulp.task("build", function(cb) {
