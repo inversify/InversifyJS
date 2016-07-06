@@ -187,7 +187,7 @@ gulp.task("istanbul:hook", function() {
 
 gulp.task("cover", function() {
   if (!process.env.CI) return;
-  return gulp.src("coverage/lcov.info")
+  return gulp.src("coverage/coverage-final.json")
       .pipe(codecov());
 });
 
