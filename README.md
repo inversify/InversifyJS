@@ -3,7 +3,7 @@
 [![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://secure.travis-ci.org/inversify/InversifyJS.svg?branch=master)](https://travis-ci.org/inversify/InversifyJS)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/cd9ekn86p8y2t7h4/branch/master?svg=true)](https://ci.appveyor.com/project/remojansen/inversifyjs/branch/master)
-[![codecov.io](https://codecov.io/github/inversify/InversifyJS/coverage.svg?branch=master)](https://codecov.io/github/inversify/InversifyJS?branch=master)
+[![Code Climate](https://codeclimate.com/github/inversify/InversifyJS/badges/gpa.svg)](https://codeclimate.com/github/inversify/InversifyJS)
 [![npm version](https://badge.fury.io/js/inversify.svg)](http://badge.fury.io/js/inversify)
 [![Package Quality](http://npm.packagequality.com/shield/inversify.svg)](http://packagequality.com/#?package=inversify)
 [![Dependencies](https://david-dm.org/inversify/InversifyJS.svg)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
