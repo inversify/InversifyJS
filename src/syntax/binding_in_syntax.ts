@@ -15,6 +15,11 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
+    public inTransientScope(): interfaces.BindingWhenOnSyntax<T> {
+        this._binding.scope = BindingScope.Transient;
+        return new BindingWhenOnSyntax<T>(this._binding);
+    }
+
 }
 
 export default BindingInSyntax;

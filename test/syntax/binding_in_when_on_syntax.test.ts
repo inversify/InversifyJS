@@ -45,12 +45,15 @@ describe("BindingInWhenOnSyntax", () => {
 
         // stubs for BindingWhenSyntax methods
         let inSingletonScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inSingletonScope").returns(null);
+        let inTransientScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inTransientScope").returns(null);
 
         // invoke BindingWhenOnSyntax methods
         bindingInWhenOnSyntax.inSingletonScope();
+        bindingInWhenOnSyntax.inTransientScope();
 
         // assert invoked BindingWhenSyntax methods
         expect(inSingletonScopeStub.callCount).eql(1);
+        expect(inTransientScopeStub.callCount).eql(1);
 
     });
 
