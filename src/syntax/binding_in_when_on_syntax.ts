@@ -21,6 +21,10 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
         return this._bindingInSyntax.inSingletonScope();
     }
 
+    public inTransientScope(): interfaces.BindingWhenOnSyntax<T> {
+        return this._bindingInSyntax.inTransientScope();
+    }
+
     public when(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
         return this._bindingWhenSyntax.when(constraint);
     }

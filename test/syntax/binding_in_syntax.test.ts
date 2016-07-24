@@ -35,6 +35,10 @@ describe("BindingInSyntax", () => {
         bindingInSyntax.inSingletonScope();
         expect(binding.scope).eql(BindingScope.Singleton);
 
+        // set transient scope explicitly
+        bindingInSyntax.inTransientScope();
+        expect(binding.scope).eql(BindingScope.Transient);
+
     });
 
 });
