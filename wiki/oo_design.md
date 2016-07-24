@@ -57,7 +57,7 @@ class DerivedModel extends BaseModel {
 export DerivedModel;
 ```
 
-This time we are using composition and because wr are using dependency injection and dependency inversion 
+This time we are using composition and because we are using dependency injection and dependency inversion 
 the base and derived classes are not coupled anymore.
 
 ### The Dependency Inversion Principle
