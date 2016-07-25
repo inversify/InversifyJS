@@ -63,7 +63,7 @@ class Planner implements interfaces.Planner {
             // apply constraints if available to reduce the number of active bindings
             activeBindings = bindings.filter((binding) => {
 
-                let request =  new Request(
+                let request = new Request(
                     binding.serviceIdentifier,
                     parentRequest.parentContext,
                     parentRequest,
@@ -169,10 +169,14 @@ class Planner implements interfaces.Planner {
         });
     }
 
+    private _getFunctionName(f: any) {
+        return f.name ?  f.name : f.toString().match(/^function\s*([^\s(]+)/)[1];
+    }
+
     private _getDependencies(func: Function): interfaces.Target[] {
 
         if (func === null) { return []; }
-        let constructorName = (<any>func).name;
+        let constructorName = this._getFunctionName(func);
 
         // TypeScript compiler generated annotations
         let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
