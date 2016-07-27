@@ -49,6 +49,9 @@ InversifyJS has been developed with 4 main goals:
 > *"Nice work! I've taken a couple shots at creating DI frameworks for JavaScript and TypeScript, but the lack of RTTI really hinders things.* 
 > *The ES7 metadata gets us part of the way there (as you've discovered). Keep up the great work!"*
 
+**[Michel Weststrate](https://twitter.com/mweststrate)** - Author of [MobX](https://github.com/mobxjs/mobx)
+> *Dependency injection like InversifyJS works nicely*
+
 ### Installation
 
 You can get the latest release and the type definitions using npm:
