@@ -18,6 +18,10 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         return new BindingInWhenOnSyntax<T>(this._binding);
     }
 
+    public toSelf(): interfaces.BindingInWhenOnSyntax<T> {
+        return this.to(<any>this._binding.serviceIdentifier);
+    }
+
     public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.ConstantValue;
         this._binding.cache = value;

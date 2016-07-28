@@ -185,6 +185,7 @@ namespace interfaces {
 
     export interface BindingToSyntax<T> {
         to(constructor: { new(...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+        toSelf(): BindingWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
         toDynamicValue(func: () => T): BindingWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
