@@ -389,6 +389,26 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should support the injection of classes to itself", () => {
+
+        let heroName = "superman";
+
+        @injectable()
+        class Hero {
+            public name: string;
+            public constructor() {
+                this.name = heroName;
+            }
+        }
+
+        const kernel = new Kernel();
+        kernel.bind(Hero).toSelf();
+        let hero = kernel.get<Hero>(Hero);
+
+        expect(hero.name).eql(heroName);
+
+    });
+
     it("Should support the injection of constant values", () => {
 
         interface Warrior {
