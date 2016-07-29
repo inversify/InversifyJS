@@ -1769,6 +1769,11 @@ describe("InversifyJS", () => {
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
+        let tryGetTaggedWeapon = () => { kernel.getTagged("Weapon", "canShoot", true); };
+
+        // expect the error message to contain the serviceIdentifier and the provided tag/value 
+        expect(tryGetTaggedWeapon).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
+
     });
 
     it("Should support named bindings", () => {
@@ -1808,6 +1813,10 @@ describe("InversifyJS", () => {
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
+        let tryGetNamedWeapon = () => { kernel.getNamed("Weapon", "superior"); };
+
+        // expect the error message to contain the serviceIdentifier and the provided name 
+        expect(tryGetNamedWeapon).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
     });
 
     it("Should support contextual bindings and targetName annotation", () => {

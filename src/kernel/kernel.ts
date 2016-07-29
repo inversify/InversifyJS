@@ -100,7 +100,7 @@ class Kernel implements interfaces.Kernel {
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
         return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: null
@@ -115,18 +115,18 @@ class Kernel implements interfaces.Kernel {
         let metadata = new Metadata(key, value);
         let target = new Target(null, serviceIdentifier, metadata);
         return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: target
         })[0];
     }
 
-    public snapshot (): void {
+    public snapshot(): void {
         this._snapshots.push(KernelSnapshot.of(this._bindingDictionary.clone(), this._middleware));
     }
 
-    public restore (): void {
+    public restore(): void {
         if (this._snapshots.length === 0) {
             throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
         }
@@ -159,7 +159,7 @@ class Kernel implements interfaces.Kernel {
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
         return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: true,
             serviceIdentifier: serviceIdentifier,
             target: null
@@ -210,7 +210,18 @@ class Kernel implements interfaces.Kernel {
         switch (bindings.length) {
 
             case BindingCount.NoBindingsAvailable:
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
+
+               let msg = `${ERROR_MSGS.NOT_REGISTERED} ${this.getServiceIdentifierAsString(serviceIdentifier)}`;
+
+                if (target !== null) {
+                    if (target.isNamed()) {
+                        msg = `${msg} and name: ${target.metadata[0].value}`;
+                    }  else if (target.isTagged()) {
+                        msg = `${msg} and tag: { key:${target.metadata[0].key}, value: ${target.metadata[0].value} }`;
+                    }
+                }
+              
+                throw new Error(msg);
 
             case BindingCount.OnlyOneBindingAvailable:
                 if (multiInject === false) {
