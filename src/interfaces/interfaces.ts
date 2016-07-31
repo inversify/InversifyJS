@@ -1,10 +1,10 @@
 namespace interfaces {
 
     export interface Newable<T> {
-        new(...args: any[]): T;
+        new (...args: any[]): T;
     }
 
-    export type ServiceIdentifier<T> = (string|Symbol|Newable<T>);
+    export type ServiceIdentifier<T> = (string | Symbol | Newable<T>);
 
     export interface Binding<T> extends Clonable<Binding<T>> {
         guid: string;
@@ -14,7 +14,7 @@ namespace interfaces {
         implementationType: Newable<T>;
         factory: FactoryCreator<any>;
         provider: ProviderCreator<any>;
-        constraint: (request: Request) => boolean;
+        constraint: ConstraintFunction;
         onActivation: (context: Context, injectable: T) => T;
         cache: T;
         dynamicValue: () => T;
@@ -23,7 +23,7 @@ namespace interfaces {
     }
 
     export interface Factory<T> extends Function {
-        (...args: any[]): (((...args: any[]) => T)|T);
+        (...args: any[]): (((...args: any[]) => T) | T);
     }
 
     export interface FactoryCreator<T> extends Function {
@@ -99,7 +99,7 @@ namespace interfaces {
         bindings: Binding<any>[];
         addChildRequest(
             serviceIdentifier: ServiceIdentifier<any>,
-            bindings: (Binding<any>|Binding<any>[]),
+            bindings: (Binding<any> | Binding<any>[]),
             target: Target
         ): Request;
     }
@@ -111,7 +111,7 @@ namespace interfaces {
         metadata: Array<Metadata>;
         hasTag(key: string): boolean;
         isArray(): boolean;
-        matchesArray(name: string|Symbol|Newable<any>): boolean;
+        matchesArray(name: string | Symbol | Newable<any>): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
         matchesNamedTag(name: string): boolean;
@@ -177,14 +177,14 @@ namespace interfaces {
         inTransientScope(): BindingWhenOnSyntax<T>;
     }
 
-    export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> {}
+    export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
 
     export interface BindingOnSyntax<T> {
         onActivation(fn: (context: Context, injectable: T) => T): BindingWhenSyntax<T>;
     }
 
     export interface BindingToSyntax<T> {
-        to(constructor: { new(...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+        to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
         toDynamicValue(func: () => T): BindingWhenOnSyntax<T>;
@@ -195,17 +195,17 @@ namespace interfaces {
         toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
     }
 
-    export interface BindingWhenOnSyntax<T> extends BindingWhenSyntax<T>, BindingOnSyntax<T> {}
+    export interface BindingWhenOnSyntax<T> extends BindingWhenSyntax<T>, BindingOnSyntax<T> { }
 
     export interface BindingWhenSyntax<T> {
         when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
         whenTargetNamed(name: string): BindingOnSyntax<T>;
         whenTargetTagged(tag: string, value: any): BindingOnSyntax<T>;
-        whenInjectedInto(parent: (Function|string)): BindingOnSyntax<T>;
+        whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
         whenParentNamed(name: string): BindingOnSyntax<T>;
         whenParentTagged(tag: string, value: any): BindingOnSyntax<T>;
-        whenAnyAncestorIs(ancestor: (Function|string)): BindingOnSyntax<T>;
-        whenNoAncestorIs(ancestor: (Function|string)): BindingOnSyntax<T>;
+        whenAnyAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
+        whenNoAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
         whenAnyAncestorNamed(name: string): BindingOnSyntax<T>;
         whenAnyAncestorTagged(tag: string, value: any): BindingOnSyntax<T>;
         whenNoAncestorNamed(name: string): BindingOnSyntax<T>;
@@ -214,6 +214,10 @@ namespace interfaces {
         whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
     }
 
+    export interface ConstraintFunction extends Function {
+       (request: Request) : boolean;
+        metaData?: Metadata;
+    }
 }
 
 export default interfaces;

@@ -1,9 +1,10 @@
 import interfaces from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
+import Metadata from "../planning/metadata";
 
 let traverseAncerstors = (
     request: interfaces.Request,
-    constraint: (request: interfaces.Request) => boolean
+    constraint: interfaces.ConstraintFunction
 ): boolean => {
 
     let parent = request.parentRequest;
@@ -16,13 +17,23 @@ let traverseAncerstors = (
 
 // This helpers use currying to help you to generate constraints
 
-let taggedConstraint = (key: string) => (value: any) => (request: interfaces.Request) => {
-    return request.target.matchesTag(key)(value);
+let taggedConstraint = (key: string) => (value: any) => {
+    // TODO: This can be refactor with TypeScript 2.x 
+    // `(this: interfaces.ContstraintFunction, request: interfaces.Request) =>`
+
+    let constraint: interfaces.ConstraintFunction =  (request: interfaces.Request) =>  {
+        return request.target.matchesTag(key)(value);
+    };
+
+    constraint.metaData = new Metadata(key, value);
+
+    return constraint;
 };
+
 
 let namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
-let typeConstraint = (type: (Function|string)) => (request: interfaces.Request) => {
+let typeConstraint = (type: (Function | string)) => (request: interfaces.Request) => {
 
     // Using index 0 because constraints are applied 
     // to one binding at a time (see Planner class)

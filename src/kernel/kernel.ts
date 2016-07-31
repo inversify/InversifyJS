@@ -211,16 +211,24 @@ class Kernel implements interfaces.Kernel {
 
             case BindingCount.NoBindingsAvailable:
 
-               let msg = `${ERROR_MSGS.NOT_REGISTERED} ${this.getServiceIdentifierAsString(serviceIdentifier)}`;
+                let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
+                    msg = ERROR_MSGS.NOT_REGISTERED;
 
                 if (target !== null) {
-                    if (target.isNamed()) {
-                        msg = `${msg} and name: ${target.metadata[0].value}`;
-                    }  else if (target.isTagged()) {
-                        msg = `${msg} and tag: { key:${target.metadata[0].key}, value: ${target.metadata[0].value} }`;
+                    msg = `${msg}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
+
+                    let possibleBindings = this._planner.getBindings<T>(this, serviceIdentifier);
+                    if (possibleBindings.length !== 0) {
+                        msg = `${msg}\nPossible bindings:`;
+
+                        possibleBindings.forEach((binding) => {
+                            msg = `${msg}\n ${serviceIdentifierString} - ${binding.constraint.metaData}`;
+                        });
                     }
+                } else {
+                    msg = `${msg} ${serviceIdentifierString}`;
                 }
-              
+
                 throw new Error(msg);
 
             case BindingCount.OnlyOneBindingAvailable:
