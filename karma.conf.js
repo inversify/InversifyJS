@@ -27,7 +27,6 @@ module.exports = function (config) {
     plugins : plugins,
     files : [
         { pattern: "node_modules/reflect-metadata/Reflect.js", include: true },
-        { pattern: "node_modules/es-symbol/dist/symbol.js", include: true },
         { pattern: "node_modules/bluebird/js/browser/bluebird.js", include: true },
         { pattern: "temp/bundle.test.js", included: true }
     ],
