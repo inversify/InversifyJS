@@ -247,7 +247,7 @@ class Planner implements interfaces.Planner {
             let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, baseConstructor);
 
             if (targetsTypes === undefined) {
-                let baseConstructorName = (<any>baseConstructor).name;
+                let baseConstructorName = this._getFunctionName(baseConstructor);
                 let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${baseConstructorName}.`;
                 throw new Error(msg);
             }
