@@ -37,6 +37,7 @@
     "bluebird": "^3.4.1",
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
+    "es6-symbol": "^3.1.0",
     "gulp": "^3.9.0",
     "gulp-header": "1.8.7",
     "gulp-istanbul": "^1.0.0",
