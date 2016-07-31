@@ -27,6 +27,7 @@ import Target from "../planning/target";
 import Request from "../planning/request";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
+import { getFunctionName } from "../utils/utils";
 
 class Kernel implements interfaces.Kernel {
 
@@ -100,7 +101,7 @@ class Kernel implements interfaces.Kernel {
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
         return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: null
@@ -115,18 +116,18 @@ class Kernel implements interfaces.Kernel {
         let metadata = new Metadata(key, value);
         let target = new Target(null, serviceIdentifier, metadata);
         return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: target
         })[0];
     }
 
-    public snapshot (): void {
+    public snapshot(): void {
         this._snapshots.push(KernelSnapshot.of(this._bindingDictionary.clone(), this._middleware));
     }
 
-    public restore (): void {
+    public restore(): void {
         if (this._snapshots.length === 0) {
             throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
         }
@@ -159,7 +160,7 @@ class Kernel implements interfaces.Kernel {
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
         return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) =>  { return context; },
+            contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: true,
             serviceIdentifier: serviceIdentifier,
             target: null
@@ -210,7 +211,18 @@ class Kernel implements interfaces.Kernel {
         switch (bindings.length) {
 
             case BindingCount.NoBindingsAvailable:
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
+
+                let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
+                    msg = ERROR_MSGS.NOT_REGISTERED;
+
+                if (target !== null) {
+                    msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
+                    msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
+                } else {
+                    msg = `${msg} ${serviceIdentifierString}`;
+                }
+
+                throw new Error(msg);
 
             case BindingCount.OnlyOneBindingAvailable:
                 if (multiInject === false) {
@@ -220,7 +232,11 @@ class Kernel implements interfaces.Kernel {
             case BindingCount.MultipleBindingsAvailable:
             default:
                 if (multiInject === false) {
-                    throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
+                    let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
+                        msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                    msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
+
+                    throw new Error(msg);
                 } else {
                     return bindings;
                 }
@@ -258,6 +274,25 @@ class Kernel implements interfaces.Kernel {
             return this._resolver.resolve<T>(contextInterceptor(context));
         });
         return results;
+    }
+
+    private _listRegisteredBindingsForServiceIdentifier(serviceIdentifier: string): string {
+        let registeredBindingsList = "",
+            registeredBindings = this._planner.getBindings(this, serviceIdentifier);
+
+        if (registeredBindings.length !== 0) {
+            registeredBindingsList = `\nRegistered bindings:`;
+
+            registeredBindings.forEach((binding) => {
+                registeredBindingsList = `${registeredBindingsList}\n ${getFunctionName(binding.implementationType)}`;
+
+                if (binding.constraint.metaData) {
+                    registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
+                }
+            });
+        }
+
+        return registeredBindingsList;
     }
 
 }

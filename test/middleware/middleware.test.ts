@@ -3,6 +3,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import Kernel from "../../src/kernel/kernel";
 import injectable from "../../src/annotation/injectable";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Middleware", () => {
 
@@ -175,7 +176,7 @@ describe("Middleware", () => {
         kernel.bind<Ninja>("Ninja").to(Ninja);
         kernel.get<any>("SOME_NOT_REGISTERED_ID");
         expect(log.length).eql(1);
-        expect(log[0]).eql(`No bindings found for serviceIdentifier: SOME_NOT_REGISTERED_ID`);
+        expect(log[0]).eql(`${ERROR_MSGS.NOT_REGISTERED} SOME_NOT_REGISTERED_ID`);
 
     });
 
@@ -210,7 +211,7 @@ describe("Middleware", () => {
 
         kernel.get<any>("Warrior");
         expect(log.length).eql(1);
-        expect(log[0]).eql(`Ambiguous match found for serviceIdentifier: Warrior`);
+        expect(log[0]).to.contain(`${ERROR_MSGS.AMBIGUOUS_MATCH} Warrior`);
 
     });
 
@@ -244,7 +245,7 @@ describe("Middleware", () => {
 
         kernel.get<any>("Warrior");
         expect(log.length).eql(1);
-        expect(log[0]).eql(`Invalid binding type: Warrior`);
+        expect(log[0]).eql(`${ERROR_MSGS.INVALID_BINDING_TYPE} Warrior`);
 
     });
 
@@ -272,7 +273,7 @@ describe("Middleware", () => {
 
         kernel.applyMiddleware(middleware);
         let throws = () => { kernel.get<any>("SOME_NOT_REGISTERED_ID"); };
-        expect(throws).to.throw(`Invalid return type in middleware. Return must be an Array!`);
+        expect(throws).to.throw(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
 
     });
 
