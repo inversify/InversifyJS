@@ -47,7 +47,13 @@ class Planner implements interfaces.Planner {
         let _bindingDictionary = _kernel._bindingDictionary;
         if (_bindingDictionary.hasKey(serviceIdentifier)) {
             bindings = _bindingDictionary.get(serviceIdentifier);
+
+        } else if (_kernel._parentKernel !== undefined) {
+            // recursively try to get bindings from parent kernel
+            bindings = this.getBindings<T>(_kernel._parentKernel, serviceIdentifier);
+
         }
+
         return bindings;
     }
 

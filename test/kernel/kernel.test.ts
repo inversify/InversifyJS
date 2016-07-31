@@ -510,4 +510,44 @@ describe("Kernel", () => {
 
     });
 
+    it("Should be able to get services from parent kernel", () => {
+        let weaponIdentifier = "Weapon";
+
+        @injectable()
+        class Katana {}
+
+        let kernel = new Kernel();
+        kernel.bind(weaponIdentifier).to(Katana);
+
+        let childKernel = new Kernel();
+        childKernel.parent = kernel;
+
+        let secondChildKernel = new Kernel();
+        secondChildKernel.parent = childKernel;
+
+        expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(Katana);
+    });
+
+    it("Should prioritize requested kernel to resolve a service identifier", () => {
+        let weaponIdentifier = "Weapon";
+
+        @injectable()
+        class Katana {}
+
+        @injectable()
+        class DivineRapier {}
+
+        let kernel = new Kernel();
+        kernel.bind(weaponIdentifier).to(Katana);
+
+        let childKernel = new Kernel();
+        childKernel.parent = kernel;
+
+        let secondChildKernel = new Kernel();
+        secondChildKernel.parent = childKernel;
+        secondChildKernel.bind(weaponIdentifier).to(DivineRapier);
+
+        expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(DivineRapier);
+    });
+
 });
