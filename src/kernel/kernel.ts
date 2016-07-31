@@ -36,6 +36,7 @@ class Kernel implements interfaces.Kernel {
     private _middleware: interfaces.PlanAndResolve<any>;
     private _bindingDictionary: interfaces.Lookup<Binding<any>>;
     private _snapshots: Array<KernelSnapshot>;
+    private _parentKernel: interfaces.Kernel;
 
     // Initialize private properties
     public constructor() {
@@ -164,6 +165,10 @@ class Kernel implements interfaces.Kernel {
             serviceIdentifier: serviceIdentifier,
             target: null
         });
+    }
+
+    public set parent (kernel: interfaces.Kernel) {
+        this._parentKernel = kernel;
     }
 
     private _get<T>(args: interfaces.PlanAndResolveArgs): T[] {
