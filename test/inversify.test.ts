@@ -2987,7 +2987,7 @@ describe("InversifyJS", () => {
 
         });
 
-        it("Should list all possible bindings in error message", () => {
+        it("Should list all possible bindings in error message if no matching binding found", () => {
 
             let kernel = new Kernel();
             kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
@@ -2997,9 +2997,25 @@ describe("InversifyJS", () => {
             try {
                 kernel.getNamed("Weapon", "superior");
             } catch (error) {
-                expect(error.message).to.match(/.*\bWeapon\b.*\bnamed\b.*\bstrong\b/);
-                expect(error.message).to.match(/.*\bWeapon\b.*\bnamed\b.*\bweak\b/);
-                expect(error.message).to.match(/.*\bWeapon\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
+                expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
+                expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
+                expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
+            }
+        });
+
+        it("Should list all possible bindings in error message if ambiguous matching binding found", () => {
+
+            let kernel = new Kernel();
+            kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+            kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
+            kernel.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
+
+            try {
+                kernel.get("Weapon");
+            } catch (error) {
+                expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
+                expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
+                expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
             }
         });
     });

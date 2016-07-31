@@ -215,16 +215,8 @@ class Kernel implements interfaces.Kernel {
                     msg = ERROR_MSGS.NOT_REGISTERED;
 
                 if (target !== null) {
-                    msg = `${msg}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
-
-                    let possibleBindings = this._planner.getBindings<T>(this, serviceIdentifier);
-                    if (possibleBindings.length !== 0) {
-                        msg = `${msg}\nPossible bindings:`;
-
-                        possibleBindings.forEach((binding) => {
-                            msg = `${msg}\n ${serviceIdentifierString} - ${binding.constraint.metaData}`;
-                        });
-                    }
+                    msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
+                    msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
                 } else {
                     msg = `${msg} ${serviceIdentifierString}`;
                 }
@@ -239,7 +231,11 @@ class Kernel implements interfaces.Kernel {
             case BindingCount.MultipleBindingsAvailable:
             default:
                 if (multiInject === false) {
-                    throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
+                    let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
+                        msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                    msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
+
+                    throw new Error(msg);
                 } else {
                     return bindings;
                 }
@@ -277,6 +273,25 @@ class Kernel implements interfaces.Kernel {
             return this._resolver.resolve<T>(contextInterceptor(context));
         });
         return results;
+    }
+
+    private _listRegisteredBindingsForServiceIdentifier(serviceIdentifier: string): string {
+        let registeredBindingsList = "",
+            registeredBindings = this._planner.getBindings(this, serviceIdentifier);
+
+        if (registeredBindings.length !== 0) {
+            registeredBindingsList = `\nRegistered bindings:`;
+
+            registeredBindings.forEach((binding) => {
+                registeredBindingsList = `${registeredBindingsList}\n ${(<any>binding.implementationType).name}`;
+
+                if (binding.constraint.metaData) {
+                    registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
+                }
+            });
+        }
+
+        return registeredBindingsList;
     }
 
 }
