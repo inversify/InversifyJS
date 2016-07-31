@@ -1,6 +1,7 @@
 var browsers = [
     "Firefox",
-    "Chrome"
+    "Chrome",
+    "IE"
 ];
 
 var plugins = [
@@ -9,13 +10,9 @@ var plugins = [
     "karma-chai",
     "karma-sinon",
     "karma-firefox-launcher",
-    "karma-chrome-launcher"
+    "karma-chrome-launcher",
+    "karma-ie-launcher"
 ];
-
-if (process.env.APPVEYOR) {
-    browsers.push("IE");
-    plugins.push("karma-ie-launcher");
-}
 
 module.exports = function (config) {
 
@@ -30,6 +27,7 @@ module.exports = function (config) {
     plugins : plugins,
     files : [
         { pattern: "node_modules/reflect-metadata/Reflect.js", include: true },
+        { pattern: "node_modules/bluebird/js/browser/bluebird.js", include: true },
         { pattern: "temp/bundle.test.js", included: true }
     ],
     port: 9876,

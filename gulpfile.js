@@ -224,13 +224,20 @@ gulp.task("karma", ["build-bundle-test"], function (done) {
     }).start();
 });
 
+// Run browser testings on AppVeyor not in Travis CI
+if (process.env.APPVEYOR) {
+    gulp.task("test", function(cb) {
+        runSequence("mocha", "karma", cb);
+    });
+} else {
+    gulp.task("test", function(cb) {
+        runSequence("mocha", cb);
+    });
+}
+
 //******************************************************************************
 //* DEFAULT
 //******************************************************************************
-gulp.task("test", function(cb) {
-  runSequence("mocha", "karma", cb);
-});
-
 gulp.task("build", function(cb) {
   runSequence(
       "lint", 
