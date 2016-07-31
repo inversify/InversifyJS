@@ -3,6 +3,7 @@ test
 typings
 bundled
 build
+temp
 coverage
 docs
 wiki

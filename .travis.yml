@@ -1,15 +1,23 @@
 language: node_js
 node_js:
-- 'stable'
-- '5.4.1'
-- '5.4.0'
-- '5.3.0'
-- '5.2.0'
-- '5.1.1'
-- '0.12'
+- stable
+- 5.4.1
+- 5.4.0
+- 5.3.0
+- 5.2.0
+- 5.1.1
+- 4.4.6
 before_install:
 - npm install -g typings
 - npm install -g codeclimate-test-reporter
 - typings install
 after_success:
 - codeclimate-test-reporter < coverage/lcov.info
+deploy:
+  provider: npm
+  email: remo.jansen@wolksoftware.com
+  api_key:
+    secure: IDRiIMv+f6+3Z8/5kyJzENQBFVJSNWx0KDx3LSdqnOSTTts33iw/W93g+Xuf7ikXYcjUhKmuNHM4fEKVRWzcD2RpmHFiMe2oAmqN2Sh0OX0/2HKg/JjxvyXaXuSCtiUda6hiy6BiXNrYu9SZWrbt6gtwr7kEfgw8rrDRvrLq9Dv92jT1IZQH90ubuTSjcxhYyXLVhVJMHH9irK401IshkaPkZqBESEs9LmLbgcAtKO/xNUa2LQlZq820BhLwvAr1qoOXYL5ydlDjD5eW6c/p7UZyQ/Ou5vnMjZlBq1OFh7xMwYHH2ab0AQ/71HAJx1ONdYMuFK+11ZiXmGB2+cT9pFeyBRvWBs8T2IrkFNmEjW67uNb+ntJLrDJ4aAEuBqnHTnnMeSjPfvu37T6H5JFAe6ZgnfrPgpEBfLojGnRYoL092EPT+k7y9rnf+Tzjpt5BLpDGiN6t88ZeYgvGcGOCDARgaJd9cOF0oLiWNRlqlSGW07C0BuyEh8wuzQ1idUnlmVVmXdzzxkiFT8cvBGEij7Jm9yPGMEPsp8UKWMpxV0Y8Y8kZboeMW0TjFnr3OFSBxnbRvk/ZdMnMV7FM8HnTNP7JjHrrAAzYY2Lh+FqAN3cS8btwRuDbamC5gyrf3/AztIul8G4j1yVR976ZXfMgf7gwGHyhlSk159tQM0tjnYE=
+  on:
+    tags: true
+    branch: master
