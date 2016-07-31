@@ -6,6 +6,7 @@ import Target from "./target";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
+import { getFunctionName } from "../utils/utils";
 
 class Planner implements interfaces.Planner {
 
@@ -169,14 +170,10 @@ class Planner implements interfaces.Planner {
         });
     }
 
-    private _getFunctionName(f: any) {
-        return f.name ?  f.name : f.toString().match(/^function\s*([^\s(]+)/)[1];
-    }
-
     private _getDependencies(func: Function): interfaces.Target[] {
 
         if (func === null) { return []; }
-        let constructorName = this._getFunctionName(func);
+        let constructorName = getFunctionName(func);
 
         // TypeScript compiler generated annotations
         let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
@@ -247,7 +244,7 @@ class Planner implements interfaces.Planner {
             let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, baseConstructor);
 
             if (targetsTypes === undefined) {
-                let baseConstructorName = this._getFunctionName(baseConstructor);
+                let baseConstructorName = getFunctionName(baseConstructor);
                 let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${baseConstructorName}.`;
                 throw new Error(msg);
             }

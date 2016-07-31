@@ -651,29 +651,4 @@ describe("Planner", () => {
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
     });
-
-
-    it("Should return a good function name", () => {
-        const planner = new Planner();
-
-        function testFunction() {
-            return false;
-        }
-
-        expect((planner as any)._getFunctionName(testFunction)).eql("testFunction");
-    });
-
-    it("Should return a good function name by using the regex", () => {
-        const planner = new Planner();
-
-        const testFunction: any = { name: null };
-        testFunction.toString = () => {
-            return "function testFunction";
-        };
-
-        console.log((planner as any)._getFunctionName(testFunction));
-
-        expect((planner as any)._getFunctionName(testFunction)).eql("testFunction");
-    });
-
 });

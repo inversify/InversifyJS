@@ -27,6 +27,7 @@ import Target from "../planning/target";
 import Request from "../planning/request";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
+import { getFunctionName } from "../utils/utils";
 
 class Kernel implements interfaces.Kernel {
 
@@ -283,7 +284,7 @@ class Kernel implements interfaces.Kernel {
             registeredBindingsList = `\nRegistered bindings:`;
 
             registeredBindings.forEach((binding) => {
-                registeredBindingsList = `${registeredBindingsList}\n ${(<any>binding.implementationType).name}`;
+                registeredBindingsList = `${registeredBindingsList}\n ${getFunctionName(binding.implementationType)}`;
 
                 if (binding.constraint.metaData) {
                     registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
