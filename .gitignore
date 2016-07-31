@@ -37,6 +37,7 @@ typings
 .typingsrc
 dist
 lib
+temp
 es
 
 type_definitions/inversify/*.js

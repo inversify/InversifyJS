@@ -16,12 +16,12 @@ var gulp        = require("gulp"),
     tsc         = require("gulp-typescript"),
     sourcemaps  = require("gulp-sourcemaps"),
     uglify      = require("gulp-uglify"),
-    typedoc     = require("gulp-typedoc"),
     rename      = require("gulp-rename"),
     runSequence = require("run-sequence"),
     header      = require("gulp-header"),
     mocha       = require("gulp-mocha"),
-    istanbul    = require("gulp-istanbul");
+    istanbul    = require("gulp-istanbul"),
+    karma       = require("karma");
 
 //******************************************************************************
 //* LINT
@@ -134,7 +134,7 @@ gulp.task("build-es", function() {
 });
 
 //******************************************************************************
-//* TESTS
+//* TESTS NODE
 //******************************************************************************
 var tstProject = tsc.createProject("tsconfig.json");
 
@@ -184,10 +184,60 @@ gulp.task("istanbul:hook", function() {
       .pipe(istanbul.hookRequire());
 });
 
-gulp.task("test", function(cb) {
-  runSequence("mocha", cb);
+//******************************************************************************
+//* TESTS BROWSER
+//******************************************************************************
+gulp.task("build-bundle-test", function() {
+
+  var mainTsFilePath = "test/inversify.test.ts";
+  var outputFolder   = "temp/";
+  var outputFileName = "bundle.test.js";
+
+  var bundler = browserify({
+    debug: true,
+    standalone : "inversify"
+  });
+
+  // TS compiler options are in tsconfig.json file
+  return bundler.add(mainTsFilePath)
+                .plugin(tsify, { typescript: require("typescript") })
+                .bundle()
+                .pipe(source(outputFileName))
+                .pipe(buffer())
+                .pipe(sourcemaps.init({ loadMaps: true }))
+                .pipe(header(banner, { pkg : pkg } ))
+                .pipe(sourcemaps.write("."))
+                .pipe(gulp.dest(outputFolder));
 });
 
+gulp.task("karma", ["build-bundle-test"], function (done) {
+  new karma.Server({
+    configFile: __dirname + "/karma.conf.js"
+  }, function(code) {
+        if (code === 1){
+           console.log('Browser test failures, exiting process');
+           done('Browser test Failures');
+        } else {
+            console.log('Browser tests passed');
+            done();
+        }
+    }).start();
+});
+
+// Run browser testings on AppVeyor not in Travis CI
+if (process.env.APPVEYOR) {
+    gulp.task("test", function(cb) {
+        runSequence("mocha", "karma", cb);
+    });
+} else {
+    gulp.task("test", function(cb) {
+        runSequence("mocha", cb);
+    });
+}
+
+//******************************************************************************
+//* DEFAULT
+//******************************************************************************
 gulp.task("build", function(cb) {
   runSequence(
       "lint", 
@@ -197,40 +247,6 @@ gulp.task("build", function(cb) {
       "build-test", cb);
 });
 
-//******************************************************************************
-//* DOCS
-//******************************************************************************
-gulp.task("document", function () {
-	return gulp
-		.src([
-            "src/**/**.ts",
-            "typings/browser.d.ts",
-            "node_modules/reflect-metadata/reflect-metadata.d.ts"
-        ])
-		.pipe(typedoc({ 
-			// TypeScript options (see typescript docs) 
-            target: "es6",
-            module: "commonjs",
-            moduleResolution: "node",
-            isolatedModules: false,
-            jsx: "react",
-            experimentalDecorators: true,
-            emitDecoratorMetadata: true,
-            noImplicitAny: true,
-            noLib: false,
-            preserveConstEnums: true,
-            suppressImplicitAnyIndexErrors: true,
-			// Output options (see typedoc docs) 
-			out: "./docs",
-			name: "InversifyJS",
-			version: true,
-            theme: "minimal"
-		}));
-});
-
-//******************************************************************************
-//* DEFAULT
-//******************************************************************************
 gulp.task("default", function (cb) {
   runSequence(
     "build",

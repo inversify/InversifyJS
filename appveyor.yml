@@ -15,7 +15,7 @@ environment:
     - nodejs_version: "5.3.0"
     - nodejs_version: "5.2.0"
     - nodejs_version: "5.1.1"
-    - nodejs_version: "0.12"
+    - nodejs_version: "4.4.6"
 
 build: off
 

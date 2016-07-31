@@ -6,6 +6,7 @@
 		"test/**/*.js": true,
         "**/es": true,
         "**/lib": true,
+		"**/temp": true,
         "**/coverage": true,
         "**/dist": true,
         "**/docs": true,

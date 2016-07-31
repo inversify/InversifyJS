@@ -1,7 +1,7 @@
 import interfaces from "../src/interfaces/interfaces";
 import { expect } from "chai";
+import "es6-symbol/implement";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
-import * as Proxy from "harmony-proxy";
 import * as Stubs from "./utils/stubs";
 import {
     Kernel, injectable, inject, multiInject,
@@ -937,60 +937,6 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support the injection of proxied objects", () => {
-
-        let weaponId = "Weapon";
-        let warriorId = "Warrior";
-
-        interface Weapon {
-            use: () => void;
-        }
-
-        @injectable()
-        class Katana implements Weapon {
-            public use() {
-                return "Used Katana!";
-            }
-        }
-
-        interface Warrior {
-            weapon: Weapon;
-        }
-
-        @injectable()
-        class Ninja implements Warrior {
-            public weapon: Weapon;
-            public constructor(@inject(weaponId) weapon: Weapon) {
-                this.weapon = weapon;
-            }
-        }
-
-        let kernel = new Kernel();
-        kernel.bind<Warrior>(warriorId).to(Ninja);
-        let log: string[] = [];
-
-        kernel.bind<Weapon>(weaponId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
-            let handler = {
-                apply: function(target: any, thisArgument: any, argumentsList: any[]) {
-                    log.push(`Starting: ${new Date().getTime()}`);
-                    let result = target.apply(thisArgument, argumentsList);
-                    log.push(`Finished: ${new Date().getTime()}`);
-                    return result;
-                }
-            };
-            katana.use = new Proxy(katana.use, handler);
-            return katana;
-        });
-
-        let ninja = kernel.get<Warrior>(warriorId);
-        ninja.weapon.use();
-
-        expect(log.length).eql(2);
-        expect(log[0].indexOf(`Starting: `)).not.to.eql(-1);
-        expect(log[1].indexOf(`Finished: `)).not.to.eql(-1);
-
-    });
-
     describe("Injection of multiple values with string as keys", () => {
 
         it("Should support the injection of multiple values", () => {
@@ -1852,60 +1798,6 @@ describe("InversifyJS", () => {
         let ninja = kernel.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-    });
-
-    it("Should throw if circular dependencies found", () => {
-
-        interface A {}
-        interface B {}
-        interface C {}
-        interface D {}
-
-        @injectable()
-        class A implements A {
-            public b: B;
-            public c: C;
-            public constructor(
-                @inject("B")  b: B,
-                @inject("C")  c: C
-            ) {
-                this.b = b;
-                this.c = c;
-            }
-        }
-
-        @injectable()
-        class B implements B {}
-
-        @injectable()
-        class C implements C {
-            public d: D;
-            public constructor(@inject("D") d: D) {
-                this.d = d;
-            }
-        }
-
-        @injectable()
-        class D implements D {
-            public a: A;
-            public constructor(@inject("A") a: A) {
-                this.a = a;
-            }
-        }
-
-        let kernel = new Kernel();
-        kernel.bind<A>("A").to(A);
-        kernel.bind<B>("B").to(B);
-        kernel.bind<C>("C").to(C);
-        kernel.bind<D>("D").to(D);
-
-        function willThrow() {
-            let a = kernel.get<A>("A");
-            return a;
-        }
-
-        expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A and D`);
 
     });
 
