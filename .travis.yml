@@ -6,7 +6,7 @@ node_js:
 - 5.3.0
 - 5.2.0
 - 5.1.1
-- '0.12'
+- 4.4.6
 before_install:
 - npm install -g typings
 - npm install -g codeclimate-test-reporter
