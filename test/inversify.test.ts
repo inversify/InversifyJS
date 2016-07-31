@@ -1,6 +1,5 @@
 import interfaces from "../src/interfaces/interfaces";
 import { expect } from "chai";
-import "es6-symbol/implement";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Stubs from "./utils/stubs";
 import {

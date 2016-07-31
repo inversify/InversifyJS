@@ -44,7 +44,3 @@ interface SymbolConstructor {
 declare var Map: MapConstructor;
 declare var WeakMap: WeakMapConstructor;
 declare var Symbol: SymbolConstructor;
-
-declare module "es6-symbol/implement" {
-    /* declares globals */
-}
