@@ -12,11 +12,4 @@ before_install:
 - npm install -g codeclimate-test-reporter
 - typings install
 after_success:
-  codeclimate-test-reporter < coverage/lcov.info
-  if ([ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ]) && 
-      [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    echo "Deploying application!"
-    npm publish-please
-  else
-    echo "Skipping a deployment because this is not a tagged commit!"
-  fi
+- codeclimate-test-reporter < coverage/lcov.info
