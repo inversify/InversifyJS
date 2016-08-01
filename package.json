@@ -5,7 +5,9 @@
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
   "directories": {
-    "test": "test"
+    "test": "gulp",
+    "prepublish": "publish-please guard",
+    "publish-please": "publish-please"
   },
   "scripts": {
     "test": "gulp"
@@ -58,6 +60,7 @@
     "karma-mocha-reporter": "^2.0.5",
     "karma-sinon": "^1.0.5",
     "mocha": "^3.0.0",
+    "publish-please": "^2.1.3",
     "reflect-metadata": "^0.1.3",
     "run-sequence": "^1.2.0",
     "sinon": "^1.17.3",
