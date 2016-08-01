@@ -245,6 +245,7 @@ Let's take a look to the InversifyJS features!
 - [Create your own tag decorators](https://github.com/inversify/InversifyJS/blob/master/wiki/custom_tag_decorators.md)
 - [Named bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/named_bindings.md)
 - [Kernel.getAll<T>(), Kernel.getNamed<T>() & Kernel.getTagged<T>()](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
+- [Support for hierarchical DI systems](https://github.com/inversify/InversifyJS/blob/master/wiki/hierarchical_di.md)
 - [Contextual bindings & @targetName](https://github.com/inversify/InversifyJS/blob/master/wiki/contextual_bindings.md)
 - [Property injection](https://github.com/inversify/InversifyJS/blob/master/wiki/property_injection.md)
 - [Circular dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/circular_dependencies.md)
