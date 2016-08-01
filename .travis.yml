@@ -13,12 +13,3 @@ before_install:
 - typings install
 after_success:
 - codeclimate-test-reporter < coverage/lcov.info
-deploy:
-  provider: npm
-  skip_cleanup: true
-  email: remo.jansen@wolksoftware.com
-  api_key:
-    secure: kQ4Rkk0E6SYRwpWCnkm/25kazb2q5vBwV8IoMMFgTa7OqarAz3rMQl+738Cnuv48yycehTxeg9Zwpp6icRGO+FPK0vhR+j4H6pYOxhrW9blxVpif8gaRVC/5KuJJbl8fb5lUdXJwE9AphqiHsRdf0+CHSDWkmbOT1YEJ9XACmCbIQa/Zbb2gbaWgVKgvLZx31EvGaE/KHjrLKxKh9chuH7izTMnk5K2jK+QjGMnwP3+c29MGsn5xbUh/ubQbMsoP+NBenHzM8E7UAu2RyiOOIwRBPIOiQyavPcmqX+srCFC2s6cPpXwgNw18wOAsw6oDWlCf0R6t+IyOoG0D1Mepx9Wr8kzCvzDAH3mD2oNb72g+B/+3GYPYx5mtdqNjza3nC/35lLyNZf4AEsmSfu5GBsMkxK3GQcPqx4MJO1jbFqS5VKOk6VLJSfcjBzlyCcakBXItPk6BZ6EYLAEF2ixFVZGMZgTMI8PWTUT9kFxoL9uf68fK/BA66pHY8m2XQbnlT0QmR1ouVHJukeiI4aYPgikt0QrqnPWpjLnA8by/pyX2uL2uAg32YQCRNVp5pbup/wr2VlI8tSxBwQ0XWOn+tHwzr+qlPR+T8oqRNqBZA7mll4qw12CQU4rSE/bwpJPpWVmLQhV4oYooTKkvxMfcUvh7oxuVa8B+GfExI/hBtjw=
-  on:
-    tags: true
-    branch: master
