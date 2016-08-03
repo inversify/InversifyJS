@@ -8,7 +8,7 @@ import KernelModule from "../../src/kernel/kernel_module";
 
 describe("Kernel", () => {
 
-    let sandbox: sinon.SinonSandbox;
+    let sandbox: Sinon.SinonSandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
