@@ -7,7 +7,7 @@ import injectable from "../../src/annotation/injectable";
 
 describe("BindingInWhenOnSyntax", () => {
 
-    let sandbox: sinon.SinonSandbox;
+    let sandbox: Sinon.SinonSandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
