@@ -8,7 +8,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 ### Utilitites
 - [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - An utility that allows developers to declare InversifyJS bindings using ES2016 decorators.
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
--[inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
+- [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 
 ### Extensions
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
