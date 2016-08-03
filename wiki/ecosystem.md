@@ -8,6 +8,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 ### Utilitites
 - [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - An utility that allows developers to declare InversifyJS bindings using ES2016 decorators.
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
+-[inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 
 ### Extensions
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
@@ -22,7 +23,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [InversifyJS Binding Decorators](https://github.com/inversify/inversify-express-example/tree/master/BindingDecorators)
 - [Marionette](https://github.com/inversify/inversify-marionette-example)
 
-### Projects using InversifyJS
+### Open Source Projects using InversifyJS
 - [Dwatch](https://github.com/Mercateo/dwatch) - Manage your docker containers, images and networks in a nice and clean way.
 - [Retax](https://github.com/retaxJS) - Universal React Redux Framework.
 - [Demgel-mvc](https://github.com/DemgelOpenSource/demgel-mvc) - MVC framework using express and inversify.
