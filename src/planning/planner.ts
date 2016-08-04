@@ -201,19 +201,11 @@ class Planner implements interfaces.Planner {
 
             // Create map from array of metadata for faster access to metadata
             let targetMetadata = targetsMetadata[i.toString()] || [];
-            let targetMetadataMap: any = {};
-            targetMetadata.forEach((m: interfaces.Metadata) => {
-                targetMetadataMap[m.key.toString()] = m.value;
-            });
-
-            // user generated metadata
-            let inject: any = targetMetadataMap[METADATA_KEY.INJECT_TAG];
-            let multiInject: any = targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG];
-            let targetName: any = targetMetadataMap[METADATA_KEY.NAME_TAG];
+            let metadata = this._formatTargetMetadata(targetMetadata);
 
             // Take type to be injected from user-generated metadata
             // if not available use compiler-generated metadata
-            targetType = (inject || multiInject) ? (inject || multiInject) : targetType;
+            targetType = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : targetType;
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
@@ -223,7 +215,7 @@ class Planner implements interfaces.Planner {
             }
 
             // Create target
-            let target = new Target(targetName, targetType);
+            let target = new Target(metadata.targetName, targetType);
             target.metadata = targetMetadata;
             targets.push(target);
 
@@ -232,13 +224,30 @@ class Planner implements interfaces.Planner {
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies
         // and one of the derived classes (children) has no dependencies
-        let baseClassHasDepencencies = this._baseClassDepencencyCount(func);
-        if (targets.length < baseClassHasDepencencies) {
+        let baseClassDepencencyCount = this._baseClassDepencencyCount(func);
+        if (targets.length < baseClassDepencencyCount) {
             let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
             throw new Error(error);
         }
 
         return targets;
+    }
+
+    private _formatTargetMetadata(targetMetadata: any[]) {
+
+        // Create map from array of metadata for faster access to metadata
+        let targetMetadataMap: any = {};
+        targetMetadata.forEach((m: interfaces.Metadata) => {
+            targetMetadataMap[m.key.toString()] = m.value;
+        });
+
+        // user generated metadata
+        return {
+            inject : targetMetadataMap[METADATA_KEY.INJECT_TAG],
+            multiInject: targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG],
+            targetName:  targetMetadataMap[METADATA_KEY.NAME_TAG]
+        };
+
     }
 
     private _baseClassDepencencyCount(func: Function): number {
