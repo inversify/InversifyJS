@@ -176,7 +176,7 @@ class Planner implements interfaces.Planner {
         });
     }
 
-    private _getDependencies(func: Function): interfaces.Target[] {
+    private _getTargets(func: Function): interfaces.Target[] {
 
         if (func === null) { return []; }
         let constructorName = getFunctionName(func);
@@ -221,6 +221,16 @@ class Planner implements interfaces.Planner {
 
         }
 
+        return targets;
+
+    }
+
+    private _getDependencies(func: Function): interfaces.Target[] {
+
+        if (func === null) { return []; }
+        let constructorName = getFunctionName(func);
+        let targets: interfaces.Target[] = this._getTargets(func);
+
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies
         // and one of the derived classes (children) has no dependencies
@@ -245,7 +255,8 @@ class Planner implements interfaces.Planner {
         return {
             inject : targetMetadataMap[METADATA_KEY.INJECT_TAG],
             multiInject: targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG],
-            targetName:  targetMetadataMap[METADATA_KEY.NAME_TAG]
+            targetName: targetMetadataMap[METADATA_KEY.NAME_TAG],
+            unmanaged: targetMetadataMap[METADATA_KEY.UNMANAGED_TAG]
         };
 
     }
