@@ -176,6 +176,24 @@ class Planner implements interfaces.Planner {
         });
     }
 
+    private _formatTargetMetadata(targetMetadata: any[]) {
+
+        // Create map from array of metadata for faster access to metadata
+        let targetMetadataMap: any = {};
+        targetMetadata.forEach((m: interfaces.Metadata) => {
+            targetMetadataMap[m.key.toString()] = m.value;
+        });
+
+        // user generated metadata
+        return {
+            inject : targetMetadataMap[METADATA_KEY.INJECT_TAG],
+            multiInject: targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG],
+            targetName: targetMetadataMap[METADATA_KEY.NAME_TAG],
+            unmanaged: targetMetadataMap[METADATA_KEY.UNMANAGED_TAG]
+        };
+
+    }
+
     private _getTargets(func: Function): interfaces.Target[] {
 
         if (func === null) { return []; }
@@ -197,14 +215,13 @@ class Planner implements interfaces.Planner {
 
         for (let i = 0; i < func.length; i++) {
 
-            let targetType = targetsTypes[i];
-
             // Create map from array of metadata for faster access to metadata
             let targetMetadata = targetsMetadata[i.toString()] || [];
             let metadata = this._formatTargetMetadata(targetMetadata);
 
             // Take type to be injected from user-generated metadata
             // if not available use compiler-generated metadata
+            let targetType = targetsTypes[i];
             targetType = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : targetType;
 
             // Types Object and Function are too ambiguous to be resolved
@@ -241,24 +258,6 @@ class Planner implements interfaces.Planner {
         }
 
         return targets;
-    }
-
-    private _formatTargetMetadata(targetMetadata: any[]) {
-
-        // Create map from array of metadata for faster access to metadata
-        let targetMetadataMap: any = {};
-        targetMetadata.forEach((m: interfaces.Metadata) => {
-            targetMetadataMap[m.key.toString()] = m.value;
-        });
-
-        // user generated metadata
-        return {
-            inject : targetMetadataMap[METADATA_KEY.INJECT_TAG],
-            multiInject: targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG],
-            targetName: targetMetadataMap[METADATA_KEY.NAME_TAG],
-            unmanaged: targetMetadataMap[METADATA_KEY.UNMANAGED_TAG]
-        };
-
     }
 
     private _baseClassDepencencyCount(func: Function): number {
