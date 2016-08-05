@@ -194,7 +194,7 @@ class Planner implements interfaces.Planner {
 
     }
 
-    private _getTargets(func: Function): interfaces.Target[] {
+    private _getTargets(func: Function, isBaseClass: boolean): interfaces.Target[] {
 
         if (func === null) { return []; }
         let constructorName = getFunctionName(func);
@@ -226,7 +226,7 @@ class Planner implements interfaces.Planner {
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
-            if (targetType === Object || targetType === Function || targetType === undefined) {
+            if (isBaseClass === false && (targetType === Object || targetType === Function || targetType === undefined)) {
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
@@ -246,7 +246,7 @@ class Planner implements interfaces.Planner {
 
         if (func === null) { return []; }
         let constructorName = getFunctionName(func);
-        let targets: interfaces.Target[] = this._getTargets(func);
+        let targets: interfaces.Target[] = this._getTargets(func, false);
 
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies
@@ -266,15 +266,9 @@ class Planner implements interfaces.Planner {
 
         if (baseConstructor !== Object) {
 
-            let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, baseConstructor);
+            let targets = this._getTargets(baseConstructor, true);
 
-            if (targetsTypes === undefined) {
-                let baseConstructorName = getFunctionName(baseConstructor);
-                let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${baseConstructorName}.`;
-                throw new Error(msg);
-            }
-
-            if (baseConstructor.length > 0 && targetsTypes) {
+            if (targets.length > 0 ) {
                 return baseConstructor.length;
             } else {
                 return this._baseClassDepencencyCount(baseConstructor);
