@@ -196,7 +196,6 @@ class Planner implements interfaces.Planner {
 
     private _getTargets(func: Function, isBaseClass: boolean): interfaces.Target[] {
 
-        if (func === null) { return []; }
         let constructorName = getFunctionName(func);
 
         // TypeScript compiler generated annotations
@@ -268,8 +267,17 @@ class Planner implements interfaces.Planner {
 
             let targets = this._getTargets(baseConstructor, true);
 
-            if (targets.length > 0 ) {
-                return baseConstructor.length;
+            let metadata: any[] = targets.map((t: interfaces.Target) => {
+                return t.metadata.filter((m: interfaces.Metadata) => {
+                    return m.key === METADATA_KEY.UNMANAGED_TAG;
+                });
+            });
+
+            let unmanagedCount = [].concat.apply([], metadata).length;
+            let dependencyCount = targets.length - unmanagedCount;
+
+            if (dependencyCount > 0 ) {
+                return dependencyCount;
             } else {
                 return this._baseClassDepencencyCount(baseConstructor);
             }
