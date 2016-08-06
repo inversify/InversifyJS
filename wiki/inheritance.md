@@ -8,7 +8,7 @@ This works fine in most cases but it causes some problem when using inheritance.
 
 For example, the following code snippet throw a misleading error:
 
-> Error: Derived class must explicitly declare its constructor: SamuraiMaster
+> The number of constructor arguments in a derived class must be >= than the number of constructor arguments of its base class.
 
 ```ts
 @injectable()
@@ -27,7 +27,9 @@ class SamuraiMaster extends Warrior  {
 }
 ```
 
-In order to overcome this issues InversifyJS restricts the usage of inheritance.
+In order to overcome this issues InversifyJS restricts the usage of inheritance with two rules:
+
+> A derived class must explicitly declare its constructor.
 
 > The number of constructor arguments in a derived class must be >= than the number of constructor arguments of its base class.
 
@@ -37,7 +39,44 @@ If you don't follow this rule and exception will be thrown:
 
 The users have a few ways to overcome this limitation available:
 
-### WORKAROUND A) Property setter
+### WORKAROUND A) Use the @unmanaged decorator 
+The `@unmanaged()` decorator allow users to flag that an argument will
+be manually injected into a base class. We use the word "unmanaged" 
+because InversifyJS does not have control under user provided values 
+and it doesn't manage their injection.
+
+The following code snippet showcases how to apply this decorator:
+
+```ts
+import { 
+    Kernel, injectable, unmanaged 
+} from "../src/inversify";
+
+const BaseId = "Base";
+
+@injectable()
+class Base {
+    public prop: string;
+    public constructor(@unmanaged() arg: string) {
+        this.prop = arg;
+    }
+}
+
+@injectable()
+class Derived extends Base {
+    public constructor() {
+        super("unmanaged-injected-value");
+    }
+}
+
+kernel.bind<Base>(BaseId).to(Derived);
+let derived = kernel.get<Base>(BaseId);
+
+derived instanceof Derived2; // true
+derived.prop; // "unmanaged-injected-value"
+```
+
+### WORKAROUND B) Property setter
 
 You can use the `public`, `protected` or `private` access modifier and a 
 property setter to avoid injecting into the base class:
@@ -60,7 +99,7 @@ class SamuraiMaster extends Warrior {
 }
 ```
 
-### WORKAROUND B) Property injection
+### WORKAROUND C) Property injection
 
 We can also use property injection to avoid injecting into the base class:
 
@@ -168,3 +207,22 @@ kernel.bind<string>(TYPES.Rank)
       .whenTargetNamed("master");
 
 ```
+
+## What can I do when my base class is provided by a third party module?
+In some cases you may get errors about missing annotations classes 
+provided by a third party modul like:
+
+> Error: Missing required @injectable annotation in: SamuraiMaster
+
+You can overcome this problem using the decorate function:
+
+```ts
+import { decorate, injectable } from "inversify";
+import SomeClass from "some-module";
+
+decorate(injectable(), SomeClass);
+return SomeClass;
+```
+
+Check out the [JS example](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md)
+page on the wiki for more info.
