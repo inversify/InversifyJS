@@ -7,7 +7,7 @@ import {
     Kernel, injectable, inject, multiInject,
     tagged, named, targetName, decorate, typeConstraint,
     makePropertyInjectDecorator, makePropertyMultiInjectDecorator,
-    KernelModule
+    KernelModule, unmanaged
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -1934,6 +1934,88 @@ describe("InversifyJS", () => {
         let samuraiMaster2 = kernel.get<Warrior>(SYMBOLS.SamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
         expect(typeof (<any>samuraiMaster2).isMaster).eql("boolean");
+
+    });
+
+    it("Should allow to flag arguments as unmanaged", () => {
+
+        let kernel = new Kernel();
+
+        // CASE 1: should throw
+
+        const Base1Id = "Base1";
+
+        @injectable()
+        class Base1 {
+            public prop: string;
+            public constructor(arg: string) {
+                this.prop = arg;
+            }
+        }
+
+        @injectable()
+        class Derived1 extends Base1 {
+            public constructor() {
+                super("unmanaged-injected-value");
+            }
+        }
+
+        kernel.bind<Base1>(Base1Id).to(Derived1);
+        let tryGet = () => { kernel.get(Base1Id); };
+        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "Derived1" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        expect(tryGet).to.throw(error);
+
+        // CASE 2: Use @unmanaged to overcome issue
+
+        const Base2Id = "Base2";
+
+        @injectable()
+        class Base2 {
+            public prop1: string;
+            public constructor(@unmanaged() arg1: string) {
+                this.prop1 = arg1;
+            }
+        }
+
+        @injectable()
+        class Derived2 extends Base2 {
+            public constructor() {
+                super("unmanaged-injected-value");
+            }
+        }
+
+        kernel.bind<Base2>(Base2Id).to(Derived2);
+        let derived1 = kernel.get<Base2>(Base2Id);
+        expect(derived1 instanceof Derived2).to.eql(true);
+        expect(derived1.prop1).to.eql("unmanaged-injected-value");
+
+        // CASE 3: Use @unmanaged to overcome issue when multiple args
+
+        const Base3Id = "Base3";
+
+        @injectable()
+        class Base3 {
+            public prop1: string;
+            public prop2: string;
+            public constructor(@unmanaged() arg1: string, arg2: string) {
+                this.prop1 = arg1;
+                this.prop2 = arg2;
+            }
+        }
+
+        @injectable()
+        class Derived3 extends Base3 {
+            public constructor(@inject("SomeId") arg1: string) {
+                super("unmanaged-injected-value", arg1);
+            }
+        }
+
+        kernel.bind<Base3>(Base3Id).to(Derived3);
+        kernel.bind<string>("SomeId").toConstantValue("managed-injected-value");
+        let derived2 = kernel.get<Base3>(Base3Id);
+        expect(derived2 instanceof Base3).to.eql(true);
+        expect(derived2.prop1).to.eql("unmanaged-injected-value");
+        expect(derived2.prop2).to.eql("managed-injected-value");
 
     });
 

@@ -176,9 +176,26 @@ class Planner implements interfaces.Planner {
         });
     }
 
-    private _getDependencies(func: Function): interfaces.Target[] {
+    private _formatTargetMetadata(targetMetadata: any[]) {
 
-        if (func === null) { return []; }
+        // Create map from array of metadata for faster access to metadata
+        let targetMetadataMap: any = {};
+        targetMetadata.forEach((m: interfaces.Metadata) => {
+            targetMetadataMap[m.key.toString()] = m.value;
+        });
+
+        // user generated metadata
+        return {
+            inject : targetMetadataMap[METADATA_KEY.INJECT_TAG],
+            multiInject: targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG],
+            targetName: targetMetadataMap[METADATA_KEY.NAME_TAG],
+            unmanaged: targetMetadataMap[METADATA_KEY.UNMANAGED_TAG]
+        };
+
+    }
+
+    private _getTargets(func: Function, isBaseClass: boolean): interfaces.Target[] {
+
         let constructorName = getFunctionName(func);
 
         // TypeScript compiler generated annotations
@@ -197,43 +214,44 @@ class Planner implements interfaces.Planner {
 
         for (let i = 0; i < func.length; i++) {
 
-            let targetType = targetsTypes[i];
-
             // Create map from array of metadata for faster access to metadata
             let targetMetadata = targetsMetadata[i.toString()] || [];
-            let targetMetadataMap: any = {};
-            targetMetadata.forEach((m: interfaces.Metadata) => {
-                targetMetadataMap[m.key.toString()] = m.value;
-            });
-
-            // user generated metadata
-            let inject: any = targetMetadataMap[METADATA_KEY.INJECT_TAG];
-            let multiInject: any = targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG];
-            let targetName: any = targetMetadataMap[METADATA_KEY.NAME_TAG];
+            let metadata = this._formatTargetMetadata(targetMetadata);
 
             // Take type to be injected from user-generated metadata
             // if not available use compiler-generated metadata
-            targetType = (inject || multiInject) ? (inject || multiInject) : targetType;
+            let targetType = targetsTypes[i];
+            targetType = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : targetType;
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
-            if (targetType === Object || targetType === Function || targetType === undefined) {
+            if (isBaseClass === false && (targetType === Object || targetType === Function || targetType === undefined)) {
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
 
             // Create target
-            let target = new Target(targetName, targetType);
+            let target = new Target(metadata.targetName, targetType);
             target.metadata = targetMetadata;
             targets.push(target);
 
         }
 
+        return targets;
+
+    }
+
+    private _getDependencies(func: Function): interfaces.Target[] {
+
+        if (func === null) { return []; }
+        let constructorName = getFunctionName(func);
+        let targets: interfaces.Target[] = this._getTargets(func, false);
+
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies
         // and one of the derived classes (children) has no dependencies
-        let baseClassHasDepencencies = this._baseClassDepencencyCount(func);
-        if (targets.length < baseClassHasDepencencies) {
+        let baseClassDepencencyCount = this._baseClassDepencencyCount(func);
+        if (targets.length < baseClassDepencencyCount) {
             let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
             throw new Error(error);
         }
@@ -247,16 +265,19 @@ class Planner implements interfaces.Planner {
 
         if (baseConstructor !== Object) {
 
-            let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, baseConstructor);
+            let targets = this._getTargets(baseConstructor, true);
 
-            if (targetsTypes === undefined) {
-                let baseConstructorName = getFunctionName(baseConstructor);
-                let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${baseConstructorName}.`;
-                throw new Error(msg);
-            }
+            let metadata: any[] = targets.map((t: interfaces.Target) => {
+                return t.metadata.filter((m: interfaces.Metadata) => {
+                    return m.key === METADATA_KEY.UNMANAGED_TAG;
+                });
+            });
 
-            if (baseConstructor.length > 0 && targetsTypes) {
-                return baseConstructor.length;
+            let unmanagedCount = [].concat.apply([], metadata).length;
+            let dependencyCount = targets.length - unmanagedCount;
+
+            if (dependencyCount > 0 ) {
+                return dependencyCount;
             } else {
                 return this._baseClassDepencencyCount(baseConstructor);
             }
