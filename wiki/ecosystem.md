@@ -7,7 +7,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 
 ### Utilitites
 - [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - An utility that allows developers to declare lazy evaluated property injection using ES2016 decorators.
-- - [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - An utility that allows developers to declare InversifyJS bindings using ES2016 decorators.
+- [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - An utility that allows developers to declare InversifyJS bindings using ES2016 decorators.
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 - [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 
