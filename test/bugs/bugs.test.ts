@@ -5,8 +5,7 @@ import {
     Kernel,
     injectable,
     named,
-    inject,
-    makePropertyInjectNamedDecorator
+    inject
 } from "../../src/inversify";
 
 describe("Bugs", () => {
@@ -60,42 +59,6 @@ describe("Bugs", () => {
 
         let kernel = new Kernel();
         kernel.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-        let master: any = kernel.get<SamuraiMaster>(SamuraiMaster);
-        expect(master.rank).eql("master");
-
-    });
-
-    it("Should not throw when args length of base and derived class match (property injection)", () => {
-
-        let kernel = new Kernel();
-        let injectNamed = makePropertyInjectNamedDecorator(kernel);
-
-        @injectable()
-        class Warrior {
-            protected rank: string;
-            public constructor() { // length = 0
-            }
-        }
-
-        let TYPES = { Rank: "Rank" };
-
-        @injectable()
-        class SamuraiMaster extends Warrior  {
-
-            @injectNamed(TYPES.Rank, "master")
-            @named("master")
-            protected rank: string;
-
-            public constructor() { // length = 0
-                super();
-            }
-        }
-
-        kernel.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-        kernel.bind<string>(TYPES.Rank)
-            .toConstantValue("master")
-            .whenTargetNamed("master");
-
         let master: any = kernel.get<SamuraiMaster>(SamuraiMaster);
         expect(master.rank).eql("master");
 
