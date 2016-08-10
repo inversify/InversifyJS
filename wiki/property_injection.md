@@ -14,7 +14,7 @@ These cases are quite different an require different implementations of property
 
 ## When we CAN use InversifyJS to create an instance of a class
 
-:construction: **[WIP] This feture is under development** :construction:
+:construction: **[WIP] This feature is under development** :construction:
 
 If you are working with a library or framework that allows InversifyJS
 to create instances of the classes in the application, then you can inject into
