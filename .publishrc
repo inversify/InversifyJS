@@ -7,7 +7,7 @@
     "branch": "master",
     "gitTag": true
   },
-  "confirm": yes,
+  "confirm": true,
   "publishTag": "latest",
   "prePublishScript": "npm test"
 }
