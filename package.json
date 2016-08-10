@@ -39,7 +39,7 @@
     "chai": "^3.4.1",
     "es6-symbol": "^3.1.0",
     "gulp": "^3.9.0",
-    "gulp-header": "1.8.7",
+    "gulp-header": "1.8.8",
     "gulp-istanbul": "^1.0.0",
     "gulp-mocha": "^3.0.0",
     "gulp-rename": "^1.2.2",
