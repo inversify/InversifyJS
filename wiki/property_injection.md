@@ -3,135 +3,131 @@ InversifyJS supports property injection because sometimes constructor injection 
 
 > If the class cannot do its job without the dependency, then add it to the constructor. The class needs the new dependency, so you want your change to break things. Also, creating a class that is not fully initialized ("two-step construction") is an anti-pattern (IMHO). If the class can work without the dependency, a setter is fine.
 
-> Source: [http://stackoverflow.com/](http://stackoverflow.com/questions/1503584/dependency-injection-through-constructors-or-property-setters)
+Source: [http://stackoverflow.com/](http://stackoverflow.com/questions/1503584/dependency-injection-through-constructors-or-property-setters)
 
-Property injection is quite different of constructor injection and has some limitations.
+There are two cases in wich you may want to use property injection.
 
-- The property `@inject` decorator requires an instance of kernel.
-- The property `@inject` decorator is not an annotation (generation of metadata) it invoked `Kernel.get<T>()` under the hood.
-- Injection takes place the first time the property is accessed via its getter.
-- The `@targetName` decorator is not supported.
-- The only supported contextual constraints are `whenTargetNamed` and `whenTargetTagged`.
-- Property injection supports the `@named` and `@tagged` decorators.
-- Property injection supports multi-injection.
-- The function `Object.prototype.propertyIsEnumerable()` returns false for properties decorated with `@inject`. 
-This is caused because the declared class property is replaced by a new instance property once the injection takes place. 
-The `propertyIsEnumerable` function returns `false` for properties that return `false` for `hasOwnProperty`.
+- When we CAN use InversifyJS to create an instance of a class.
+- When we CANNOT use InversifyJS to create an instance of a class.
 
-Let's take a look to the Property injection API.
+These cases are quite different an require different implementations of property injection.
 
-### Basic property injection
+## When we CAN use InversifyJS to create an instance of a class
+
+:construction: **[WIP] This feture is under development ** :construction:
+
+If you are working with a library or framework that allows InversifyJS
+to create instances of the classes in the application, then you can inject into
+a property using the `@inject` decorator:
 
 ```ts
+import { injectable, inject, kernel } from "inversify";
+
+@injectable()
+class PrintService {
+    // ...
+}
+
+@injectable()
+class Summary {
+    // ...
+}
+
+@injectable()
+class Author {
+    // ...
+}
+
+@injectable()
+class Book {
+
+  private _author: Author;
+  private _summary: Summary;
+
+  @inject("PrintService")
+  private _printService: PrintService;
+
+  public constructor(
+      @inject("Author") author: Author,
+      @inject("Summary") summary: Summary
+) {
+    this._author = author;
+    this._summary = summary;
+  }
+
+  public print() {
+     this._printService.print(this);
+  }
+
+}
+
 let kernel = new Kernel();
-let inject = makePropertyInjectDecorator(kernel);
+kernel.bind<PrintService>("PrintService").to(PrintService);
+kernel.bind<Author>("Author").to(Author);
+kernel.bind<Summary>("Summary").to(Summary);
+kernel.bind<Book>("Book").to(Book);
 
-interface SomeService {
-    count: number;
-    increment(): void;
-}
+// Book instance is created by InversifyJS
+let book = kernel.get<Book>("Book");
+book.print();
+```
+
+## When we CANNOT use InversifyJS to create an instance of a class
+InversifyJS has been designed in a way that facilitates its integration with as many
+libraries and frameworks as possible. However, many of its features requre being able to
+create the instances of the classes in an application. 
+
+The problem is that some frameworks take the control over the creation of instances. 
+For example, React takes control over the creation of instances of a given Component.
+
+We have developed an utility that allows you to inject into a property even when 
+InversifyJS has not created its instances:
+
+```ts
+import getDecorators from "inversify-inject-decorators";
+import { Kernel, injectable  } from "inversify";
 
 @injectable()
-class SomeService implements SomeService {
-    public count: number;
-    public constructor() {
-        this.count = 0;
-    }
-    public increment() {
-        this.count = this.count + 1;
-    }
+class PrintService {
+    // ...
 }
 
-class SomeWebComponent {
-    @inject("SomeService")
-    private _service: SomeService;
-    public doSomething() {
-        let count =  this._service.count;
-        this._service.increment();
-        return count;
-    }
-}
-
-kernel.bind<SomeService>("SomeService").to(SomeService);
-
-let someComponent = new SomeWebComponent();
-expect(someComponent.doSomething()).eql(0);
-expect(someComponent.doSomething()).eql(1);
-```
-
-### Named and tagged property injection
-
-```ts
-class Warrior {
-
-    @injectNamed(TYPES.Weapon, "not-throwwable")
-    @named("not-throwwable")
-    public primaryWeapon: Weapon;
-
-    @injectNamed(TYPES.Weapon, "throwwable")
-    @named("throwwable")
-    public secondaryWeapon: Weapon;
-
-}
-
-class Warrior {
-
-    @injectTagged(TYPES.Weapon, "throwwable", false)
-    @tagged("throwwable", false)
-    public primaryWeapon: Weapon;
-
-    @injectTagged(TYPES.Weapon, "throwwable", true)
-    @tagged("throwwable", true)
-    public secondaryWeapon: Weapon;
-
-}
-```
-
-### Property multi-injection
-
-```ts
 let kernel = new Kernel();
-let multiInject = makePropertyMultiInjectDecorator(kernel);
+kernel.bind<PrintService>("PrintService").to(PrintService);
+let { lazyInject } = getDecorators(kernel);
 
-let TYPES = { Weapon: "Weapon" };
+class Book {
 
-interface Weapon {
-    durability: number;
-    use(): void;
+  private _author: string;
+  private _summary: string;
+
+  @lazyInject("PrintService")
+  private _printService: PrintService;
+
+  public constructor(author: string, summary: string) {
+    this._author = author;
+    this._summary = summary;
+  }
+
+  public print() {
+     this._printService.print(this);
+  }
+
 }
 
-@injectable()
-class Sword implements Weapon {
-    public durability: number;
-    public constructor() {
-        this.durability = 100;
-    }
-    public use() {
-        this.durability = this.durability - 10;
-    }
-}
-
-@injectable()
-class WarHammer implements Weapon {
-    public durability: number;
-    public constructor() {
-        this.durability = 100;
-    }
-    public use() {
-        this.durability = this.durability - 10;
-    }
-}
-
-class Warrior {
-    @multiInject(TYPES.Weapon)
-    public weapons: Weapon[];
-}
-
-kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
-kernel.bind<Weapon>(TYPES.Weapon).to(WarHammer);
-
-let warrior1 = new Warrior();
-
-expect(warrior1.weapons[0]).to.be.instanceof(Sword);
-expect(warrior1.weapons[1]).to.be.instanceof(WarHammer);
+// Book instance is NOT created by InversifyJS
+let book = new Book("Title", "Summary");
+book.print();
 ```
+
+The utility module is called `inversify-inject-decorators`
+and privides the following decorators:
+
+- `@lazyInject` for the injection of a property without metadata
+- `@lazyInjectNamed` for the injection of a property without named metadata.
+- `@lazyInjectTagged` for the injection of a property without tagged metadata.
+- `@lazyMultiInject` for multi-injections.
+
+Please visit the module 
+[project on GitHub](https://github.com/inversify/inversify-inject-decorators) 
+to learn more.

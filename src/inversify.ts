@@ -15,12 +15,6 @@ import targetName from "./annotation/target_name";
 import { decorate } from "./annotation/decorator_utils";
 import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 import guid from "./utils/guid";
-import {
-    makePropertyInjectDecorator,
-    makePropertyMultiInjectDecorator,
-    makePropertyInjectTaggedDecorator,
-    makePropertyInjectNamedDecorator
-} from "./annotation/property_injectors";
 
 export { Kernel };
 export { KernelModule };
@@ -30,10 +24,6 @@ export { tagged };
 export { named };
 export { inject };
 export { unmanaged };
-export { makePropertyInjectDecorator };
-export { makePropertyMultiInjectDecorator };
-export { makePropertyInjectTaggedDecorator };
-export { makePropertyInjectNamedDecorator };
 export { multiInject };
 export { targetName };
 export { traverseAncerstors };
