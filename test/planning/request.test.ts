@@ -3,6 +3,7 @@ import Request from "../../src/planning/request";
 import Context from "../../src/planning/context";
 import Kernel from "../../src/kernel/kernel";
 import Target from "../../src/planning/target";
+import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
 
 describe("Request", () => {
@@ -98,7 +99,7 @@ describe("Request", () => {
       ninjaRequest.addChildRequest(
           identifiers.Katana,
           null,
-          new Target("katana", identifiers.Katana));
+          new Target(TargetType.ConstructorArgument, "katana", identifiers.Katana));
 
       let katanaRequest = ninjaRequest.childRequests[0];
 

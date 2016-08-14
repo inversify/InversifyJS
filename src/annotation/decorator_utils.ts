@@ -2,18 +2,31 @@ import interfaces from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
-function tagParameter(annotationTarget: any, propertyName: string, parameterIndex: number, metadata: interfaces.Metadata) {
+function tagParameter(
+    annotationTarget: any,
+    propertyName: string,
+    parameterIndex: number,
+    metadata: interfaces.Metadata
+) {
     let metadataKey = METADATA_KEY.TAGGED;
     return _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
 }
 
-function tagProperty(annotationTarget: any, propertyName: string, metadata: interfaces.Metadata) {
+function tagProperty(
+    annotationTarget: any,
+    propertyName: string,
+    metadata: interfaces.Metadata
+) {
     let metadataKey = METADATA_KEY.TAGGED_PROP;
     return _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
 }
 
 function _tagParameterOrProperty(
-    metadataKey: string, annotationTarget: any, propertyName: string, metadata: interfaces.Metadata, parameterIndex?: number
+    metadataKey: string,
+    annotationTarget: any,
+    propertyName: string,
+    metadata: interfaces.Metadata,
+    parameterIndex?: number
 ) {
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};

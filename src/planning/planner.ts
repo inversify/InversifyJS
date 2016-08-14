@@ -7,6 +7,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
 import { getFunctionName } from "../utils/utils";
+import TargetType from "./target_type";
 
 class Planner implements interfaces.Planner {
 
@@ -235,7 +236,7 @@ class Planner implements interfaces.Planner {
             }
 
             // Create target
-            let target = new Target(metadata.targetName, targetType);
+            let target = new Target(TargetType.ConstructorArgument, metadata.targetName, targetType);
             target.metadata = targetMetadata;
             targets.push(target);
 

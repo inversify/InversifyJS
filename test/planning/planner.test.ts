@@ -7,6 +7,7 @@ import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
+import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
 import targetName from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
@@ -111,10 +112,22 @@ describe("Planner", () => {
         */
         let ninjaRequest = new Request(ninjaId, context, null, null, null);
         let expectedPlan = new Plan(context, ninjaRequest);
-        let katanaRequest = expectedPlan.rootRequest.addChildRequest(katanaId, null, new Target("katana", katanaId));
-        let katanaHandlerRequest = katanaRequest.addChildRequest(katanaHandlerId, null, new Target("handler", katanaHandlerId));
-        let katanaBladeRequest = katanaRequest.addChildRequest(katanaBladeId, null, new Target("blade", katanaBladeId));
-        let shurikenRequest = expectedPlan.rootRequest.addChildRequest(shurikenId, null, new Target("shuriken", shurikenId));
+
+        let katanaRequest = expectedPlan.rootRequest.addChildRequest(
+            katanaId, null, new Target(TargetType.ConstructorArgument, "katana", katanaId)
+        );
+
+        let katanaHandlerRequest = katanaRequest.addChildRequest(
+            katanaHandlerId, null, new Target(TargetType.ConstructorArgument, "handler", katanaHandlerId)
+        );
+
+        let katanaBladeRequest = katanaRequest.addChildRequest(
+            katanaBladeId, null, new Target(TargetType.ConstructorArgument, "blade", katanaBladeId)
+        );
+
+        let shurikenRequest = expectedPlan.rootRequest.addChildRequest(
+            shurikenId, null, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+        );
 
         // Actual
         let _kernel: any = kernel;

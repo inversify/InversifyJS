@@ -24,6 +24,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import BindingToSyntax from "../syntax/binding_to_syntax";
 import Metadata from "../planning/metadata";
 import Target from "../planning/target";
+import TargetType from "../planning/target_type";
 import Request from "../planning/request";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
@@ -115,7 +116,7 @@ class Kernel implements interfaces.Kernel {
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
         let metadata = new Metadata(key, value);
-        let target = new Target(null, serviceIdentifier, metadata);
+        let target = new Target(TargetType.ConstructorArgument, null, serviceIdentifier, metadata);
         return this._get<T>({
             contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: false,
