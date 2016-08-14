@@ -2849,6 +2849,11 @@ describe("InversifyJS", () => {
 
         it("Should be able to inject a property", () => {
 
+            let TYPES = {
+                Warrior: "Warrior",
+                Weapon: "Weapon"
+            };
+
             interface Weapon {
                 name: string;
             }
@@ -2876,18 +2881,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let TYPES = {
-                Warrior: "Warrior",
-                Weapon: "Weapon"
-            };
-
             let kernel = new Kernel();
             kernel.bind<Warrior>(TYPES.Warrior).to(Samurai);
             kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
 
             let warrior = kernel.get<Warrior>(TYPES.Warrior);
             expect(warrior.name).to.eql("Samurai");
-            expect(warrior.weapon).to.eql("Katana");
+            expect(warrior.weapon).not.to.eql(undefined);
+            expect(warrior.weapon.name).to.eql("Katana");
 
         });
 
@@ -2954,8 +2955,10 @@ describe("InversifyJS", () => {
 
             let warrior = kernel.get<Warrior>(TYPES.Warrior);
             expect(warrior.name).to.eql("Samurai");
-            expect(warrior.primaryWeapon).to.eql("Katana");
-            expect(warrior.secondaryWeapon).to.eql("Shuriken");
+            expect(warrior.primaryWeapon).not.to.eql(undefined);
+            expect(warrior.primaryWeapon.name).to.eql("Katana");
+            expect(warrior.secondaryWeapon).not.to.eql(undefined);
+            expect(warrior.secondaryWeapon.name).to.eql("Shuriken");
 
         });
 

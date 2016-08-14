@@ -16,8 +16,6 @@ describe("Utils", () => {
             return "function testFunction";
         };
 
-        console.log(getFunctionName(testFunction));
-
         expect(getFunctionName(testFunction)).eql("testFunction");
     });
 

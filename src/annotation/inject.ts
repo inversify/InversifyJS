@@ -8,7 +8,7 @@ function inject(serviceIdentifier: (string|Symbol)) {
 
     let metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
 
-    if (index !== undefined) {
+    if (typeof index === "number") {
       return tagParameter(target, targetKey, index, metadata);
     } else {
       return tagProperty(target, targetKey, metadata);
