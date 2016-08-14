@@ -5,7 +5,8 @@ import {
     Kernel,
     injectable,
     named,
-    inject
+    inject,
+    interfaces
 } from "../../src/inversify";
 
 describe("Bugs", () => {
@@ -159,6 +160,35 @@ describe("Bugs", () => {
         let kernel = new Kernel();
         let throwF = () => { kernel.get<Weapon>(TYPES.Weapon); };
         expect(throwF).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${kernel.getServiceIdentifierAsString(TYPES.Weapon)}`);
+
+    });
+
+    it("Should be not require @inject annotation in toConstructor bindings", () => {
+
+        interface ICategorySortingFn {}
+        interface IContentSortingFn {}
+        interface Collection {}
+
+        @injectable()
+        class Category {
+            constructor(
+                public id: string,
+                public title: string,
+                public categoryFirstPermalink: string,
+                public categoryPermalink: string,
+                public pagination: number,
+                public categorySortingFn: ICategorySortingFn,
+                public contentSortingFn: IContentSortingFn,
+                public belongsToCollection: Collection
+            ) {
+                // do nothing
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<interfaces.Newable<Category>>("Newable<Category>").toConstructor(Category);
+        let expected = kernel.get<interfaces.Newable<Category>>("Newable<Category>");
+        expect(expected).eql(Category);
 
     });
 

@@ -32,8 +32,11 @@ class Planner implements interfaces.Planner {
         // Plan and Context are duable linked
         context.addPlan(plan);
 
-        let dependencies = this._getDependencies(binding.implementationType);
-        dependencies.forEach((dependency) => { this._createSubRequest(rootRequest, dependency); });
+        if (binding.type === BindingType.Instance) {
+            let dependencies = this._getDependencies(binding.implementationType);
+            dependencies.forEach((dependency) => { this._createSubRequest(rootRequest, dependency); });
+        }
+
         return plan;
     }
 
@@ -225,7 +228,8 @@ class Planner implements interfaces.Planner {
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
-            if (isBaseClass === false && (targetType === Object || targetType === Function || targetType === undefined)) {
+            let isUnknownType = (targetType === Object || targetType === Function || targetType === undefined);
+            if (isBaseClass === false && isUnknownType) {
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
