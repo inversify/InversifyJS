@@ -246,8 +246,6 @@ class Planner implements interfaces.Planner {
     }
 
     private _getDependencies(func: Function): interfaces.Target[] {
-
-        if (func === null) { return []; }
         let constructorName = getFunctionName(func);
         let targets: interfaces.Target[] = this._getTargets(func, false);
 
