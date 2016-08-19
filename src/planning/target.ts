@@ -3,7 +3,6 @@ import Metadata from "../planning/metadata";
 import QueryableString from "./queryable_string";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import TargetType from "./target_type";
-
 import guid from "../utils/guid";
 
 class Target implements interfaces.Target {
