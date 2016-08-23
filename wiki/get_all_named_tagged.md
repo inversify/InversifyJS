@@ -8,7 +8,7 @@ let kernel = new Kernel();
 kernel.bind<Weapon>("Weapon").to(Katana);
 kernel.bind<Weapon>("Weapon").to(Shuriken);
 
-let weapons = kernel.getAll<Weapon[]>("Weapon");
+let weapons = kernel.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
 ## Kernel.getNamed<T>()
