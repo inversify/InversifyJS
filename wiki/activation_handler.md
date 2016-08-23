@@ -50,7 +50,7 @@ kernel.bind<Katana>("Katana").to(Katana).onActivation((context, katana) => {
 ```
 
 ```ts
-let ninja = kernelget<Ninja>();
+let ninja = kernel.get<Ninja>();
 ninja.katana.use();
 > Starting: 1457895135761
 > Used Katana!
