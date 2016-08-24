@@ -1,3 +1,3 @@
-export function getFunctionName(f: any) {
-    return f.name ? f.name : f.toString().match(/^function\s*([^\s(]+)/)[1];
+export function getFunctionName(v: any): string {
+    return v.name ? v.name : v.toString().match(/^function\s*([^\s(]+)/)[1];
 }

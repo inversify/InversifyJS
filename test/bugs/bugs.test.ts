@@ -192,4 +192,18 @@ describe("Bugs", () => {
 
     });
 
+    it("Should be able to combine tagged injection and constant value bindings", () => {
+
+        let kernel = new Kernel();
+
+        interface Intl {}
+
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+
+        let f = function() { kernel.getTagged<Intl>("Intl", "lang", "fr"); };
+        expect(f).to.throw();
+
+    });
+
 });

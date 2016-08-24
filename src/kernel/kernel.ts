@@ -238,9 +238,8 @@ class Kernel implements interfaces.Kernel {
             default:
                 if (multiInject === false) {
                     let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
-                        msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                    msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
                     msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
-
                     throw new Error(msg);
                 } else {
                     return bindings;
@@ -282,19 +281,32 @@ class Kernel implements interfaces.Kernel {
     }
 
     private _listRegisteredBindingsForServiceIdentifier(serviceIdentifier: string): string {
+
         let registeredBindingsList = "",
             registeredBindings = this._planner.getBindings(this, serviceIdentifier);
 
         if (registeredBindings.length !== 0) {
+
             registeredBindingsList = `\nRegistered bindings:`;
 
             registeredBindings.forEach((binding) => {
-                registeredBindingsList = `${registeredBindingsList}\n ${getFunctionName(binding.implementationType)}`;
+
+                // Use "Object as name of constant value injections"
+                let name = "Object";
+
+                // Use function name if available
+                if (binding.implementationType !== null) {
+                    name = getFunctionName(binding.implementationType);
+                }
+
+                registeredBindingsList = `${registeredBindingsList}\n ${name}`;
 
                 if (binding.constraint.metaData) {
                     registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
                 }
+
             });
+
         }
 
         return registeredBindingsList;
