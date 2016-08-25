@@ -168,6 +168,21 @@ class Kernel implements interfaces.Kernel {
         });
     }
 
+    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
+        return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
+        let metadata = new Metadata(key, value);
+        let target = new Target(null, serviceIdentifier, metadata);
+        return this._get<T>({
+            contextInterceptor: (context: interfaces.Context) => { return context; },
+            multiInject: true,
+            serviceIdentifier: serviceIdentifier,
+            target: target
+        });
+    }
+
     public set parent (kernel: interfaces.Kernel) {
         this._parentKernel = kernel;
     }
