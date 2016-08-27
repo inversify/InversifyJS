@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import guid  from "../../src/utils/guid";
 
-describe("Utils", () => {
+describe("GUID", () => {
 
   it("Should be able to generate a guid", () => {
       let guid1 = guid();

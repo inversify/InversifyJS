@@ -1,6 +1,7 @@
 import interfaces from "../interfaces/interfaces";
 import BindingScope from "../bindings/binding_scope";
 import BindingType from "../bindings/binding_type";
+import TargetType from "../planning/target_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Resolver implements interfaces.Resolver {
@@ -64,11 +65,18 @@ class Resolver implements interfaces.Resolver {
                     let constr = binding.implementationType;
 
                     if (childRequests.length > 0) {
-                        let injections = childRequests.map((childRequest: interfaces.Request) => {
+
+                        let constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
+                            return childRequest.target.type === TargetType.ConstructorArgument;
+                        });
+
+                        let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {
                             return this._resolve(childRequest);
                         });
 
-                        result = this._createInstance(constr, injections);
+                        result = this._createInstance(constr, constructorInjections);
+                        result = this._injectProperties(result, childRequests);
+
                     } else {
                         result = new constr();
                     }
@@ -96,6 +104,25 @@ class Resolver implements interfaces.Resolver {
 
             return result;
         }
+
+    }
+
+    private _injectProperties(instance: any, childRequests: interfaces.Request[]) {
+
+        let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
+            return childRequest.target.type === TargetType.ClassProperty;
+        });
+
+        let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
+            return this._resolve(childRequest);
+        });
+
+        propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
+            let injection = propertyInjections[index];
+            instance[r.target.name.value()] = injection;
+        });
+
+        return instance;
 
     }
 

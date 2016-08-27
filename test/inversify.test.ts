@@ -2842,5 +2842,7 @@ describe("InversifyJS", () => {
                 expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
             }
         });
+
     });
+
 });

@@ -7,6 +7,7 @@ import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
+import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
 import inject from "../../src/annotation/inject";
 import multiInject from "../../src/annotation/multi_inject";
@@ -116,10 +117,23 @@ describe("Resolver", () => {
       */
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      let katanaRequest = plan.rootRequest.addChildRequest(katanaId, katanaBinding, new Target("katana", katanaId));
-      katanaRequest.addChildRequest(katanaHandlerId, katanaHandlerBinding, new Target("handler", katanaHandlerId));
-      katanaRequest.addChildRequest(katanaBladeId, katanaBladeBinding, new Target("blade", katanaBladeId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      let katanaRequest = plan.rootRequest.addChildRequest(
+          katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
+      );
+
+      katanaRequest.addChildRequest(
+          katanaHandlerId, katanaHandlerBinding, new Target(TargetType.ConstructorArgument, "handler", katanaHandlerId)
+      );
+
+      katanaRequest.addChildRequest(
+          katanaBladeId, katanaBladeBinding, new Target(TargetType.ConstructorArgument, "blade", katanaBladeId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -220,10 +234,23 @@ describe("Resolver", () => {
       */
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      let katanaRequest = plan.rootRequest.addChildRequest(katanaId, katanaBinding, new Target("katana", katanaId));
-      katanaRequest.addChildRequest(katanaHandlerId, katanaHandlerBinding, new Target("handler", katanaHandlerId));
-      katanaRequest.addChildRequest(katanaBladeId, katanaBladeBinding, new Target("blade", katanaBladeId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      let katanaRequest = plan.rootRequest.addChildRequest(
+          katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
+      );
+
+      katanaRequest.addChildRequest(
+          katanaHandlerId, katanaHandlerBinding, new Target(TargetType.ConstructorArgument, "handler", katanaHandlerId)
+      );
+
+      katanaRequest.addChildRequest(
+          katanaBladeId, katanaBladeBinding, new Target(TargetType.ConstructorArgument, "blade", katanaBladeId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -378,8 +405,15 @@ describe("Resolver", () => {
       */
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(katanaId, katanaBinding, new Target("katana", katanaId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      plan.rootRequest.addChildRequest(
+          katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -497,8 +531,15 @@ describe("Resolver", () => {
 
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(newableKatanaId, newableKatanaBinding, new Target("Katana", newableKatanaId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      plan.rootRequest.addChildRequest(
+          newableKatanaId, newableKatanaBinding, new Target(TargetType.ConstructorArgument, "Katana", newableKatanaId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -599,8 +640,15 @@ describe("Resolver", () => {
 
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(swordFactoryId, katanaFactoryBinding, new Target("makeKatana", swordFactoryId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      plan.rootRequest.addChildRequest(
+          swordFactoryId, katanaFactoryBinding, new Target(TargetType.ConstructorArgument, "makeKatana", swordFactoryId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -697,8 +745,15 @@ describe("Resolver", () => {
 
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(katanaFactoryId, katanaFactoryBinding, new Target("makeKatana", katanaFactoryId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      plan.rootRequest.addChildRequest(
+          katanaFactoryId, katanaFactoryBinding, new Target(TargetType.ConstructorArgument, "makeKatana", katanaFactoryId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -801,8 +856,15 @@ describe("Resolver", () => {
 
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(swordProviderId, katanaFactoryBinding, new Target("katanaProvider", swordProviderId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      plan.rootRequest.addChildRequest(
+          swordProviderId, katanaFactoryBinding, new Target(TargetType.ConstructorArgument, "katanaProvider", swordProviderId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();
@@ -1205,8 +1267,15 @@ describe("Resolver", () => {
       */
       let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
       let plan = new Plan(context, ninjaRequest);
-      plan.rootRequest.addChildRequest(katanaFactoryId, katanaBinding, new Target("katana", katanaFactoryId));
-      plan.rootRequest.addChildRequest(shurikenId, shurikenBinding, new Target("shuriken", shurikenId));
+
+      plan.rootRequest.addChildRequest(
+          katanaFactoryId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaFactoryId)
+      );
+
+      plan.rootRequest.addChildRequest(
+          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
+      );
+
       context.addPlan(plan);
 
       let resolver = new Resolver();

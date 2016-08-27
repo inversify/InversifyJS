@@ -14,8 +14,6 @@ These cases are quite different an require different implementations of property
 
 ## When we CAN use InversifyJS to create an instance of a class
 
-:construction: **[WIP] This feature is under development** :construction:
-
 If you are working with a library or framework that allows InversifyJS
 to create instances of the classes in the application, then you can inject into
 a property using the `@inject` decorator:
@@ -71,6 +69,8 @@ kernel.bind<Book>("Book").to(Book);
 let book = kernel.get<Book>("Book");
 book.print();
 ```
+
+Please refer to our [unit tests](https://github.com/Inversify/InversifyJS/blob/master/wiki/property_injection.md) for additonal examples.
 
 ## When we CANNOT use InversifyJS to create an instance of a class
 InversifyJS has been designed in a way that facilitates its integration with as many

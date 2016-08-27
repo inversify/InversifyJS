@@ -2,23 +2,26 @@ import interfaces from "../interfaces/interfaces";
 import Metadata from "../planning/metadata";
 import QueryableString from "./queryable_string";
 import * as METADATA_KEY from "../constants/metadata_keys";
-
+import TargetType from "./target_type";
 import guid from "../utils/guid";
 
 class Target implements interfaces.Target {
 
     public guid: string;
+    public type: TargetType;
     public serviceIdentifier: interfaces.ServiceIdentifier<any>;
     public name: interfaces.QueryableString;
     public metadata: Array<Metadata>;
 
     constructor(
+        type: TargetType,
         name: string,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         namedOrTagged?: (string|Metadata)
     ) {
 
         this.guid = guid();
+        this.type = type;
         this.serviceIdentifier = serviceIdentifier;
         this.name = new QueryableString(name || "");
         this.metadata = new Array<Metadata>();

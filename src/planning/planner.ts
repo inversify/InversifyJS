@@ -7,6 +7,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
 import { getFunctionName } from "../utils/utils";
+import TargetType from "./target_type";
 
 class Planner implements interfaces.Planner {
 
@@ -202,50 +203,114 @@ class Planner implements interfaces.Planner {
         let constructorName = getFunctionName(func);
 
         // TypeScript compiler generated annotations
-        let targetsTypes = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
+        let serviceIdentifiers = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
 
         // All types resolved bust be annotated with @injectable
-        if (targetsTypes === undefined) {
+        if (serviceIdentifiers === undefined) {
             let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${constructorName}.`;
             throw new Error(msg);
         }
 
         // User generated annotations
-        let targetsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
+        let constructorArgsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
+
+        let targets = [
+            ...(this._constructorArgsTargets(isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length)),
+            ...(this._getClassPropsTargets(func))
+        ];
+
+        return targets;
+
+    }
+
+    private _constructorArgsTargets(
+        isBaseClass: boolean,
+        constructorName: string,
+        serviceIdentifiers: any,
+        constructorArgsMetadata: any,
+        constructorLength: number
+    ) {
 
         let targets: interfaces.Target[] = [];
 
-        for (let i = 0; i < func.length; i++) {
+        for (let i = 0; i < constructorLength; i++) {
 
             // Create map from array of metadata for faster access to metadata
-            let targetMetadata = targetsMetadata[i.toString()] || [];
+            let targetMetadata = constructorArgsMetadata[i.toString()] || [];
             let metadata = this._formatTargetMetadata(targetMetadata);
 
-            // Take type to be injected from user-generated metadata
+            // Take types to be injected from user-generated metadata
             // if not available use compiler-generated metadata
-            let targetType = targetsTypes[i];
-            targetType = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : targetType;
+            let serviceIndentifier = serviceIdentifiers[i];
+            serviceIndentifier = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : serviceIndentifier;
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
-            let isUnknownType = (targetType === Object || targetType === Function || targetType === undefined);
+            let isUnknownType = (serviceIndentifier === Object || serviceIndentifier === Function || serviceIndentifier === undefined);
+
             if (isBaseClass === false && isUnknownType) {
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
                 throw new Error(msg);
             }
 
             // Create target
-            let target = new Target(metadata.targetName, targetType);
+            let target = new Target(TargetType.ConstructorArgument, metadata.targetName, serviceIndentifier);
             target.metadata = targetMetadata;
             targets.push(target);
 
         }
 
         return targets;
+    }
 
+    private _getClassPropsTargets(func: Function) {
+
+        let classPropsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, func) || [];
+        let targets: interfaces.Target[] = [];
+        let keys = Object.keys(classPropsMetadata);
+
+        for (let i = 0; i < keys.length; i++) {
+
+            // the key of the property being injected
+            let key = keys[i];
+
+            // the metadata for the property being injected
+            let targetMetadata = classPropsMetadata[key];
+
+            // the metadata formatted for easier access
+            let metadata = this._formatTargetMetadata(classPropsMetadata[key]);
+
+            // the name of the property being injected
+            let targetName = metadata.targetName || key;
+
+            // Take types to be injected from user-generated metadata
+            let serviceIndentifier = (metadata.inject || metadata.multiInject);
+
+            // The property target
+            let target = new Target(TargetType.ClassProperty, targetName, serviceIndentifier);
+            target.metadata = targetMetadata;
+            targets.push(target);
+        }
+
+        // Check if base class has injected properties
+        let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
+
+        if (baseConstructor !== Object) {
+
+            let baseTargets = this._getClassPropsTargets(baseConstructor);
+
+            targets = [
+                ...targets,
+                ...baseTargets
+            ];
+
+        }
+
+        return targets;
     }
 
     private _getDependencies(func: Function): interfaces.Target[] {
+
         let constructorName = getFunctionName(func);
         let targets: interfaces.Target[] = this._getTargets(func, false);
 
