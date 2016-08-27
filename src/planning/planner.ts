@@ -213,11 +213,10 @@ class Planner implements interfaces.Planner {
 
         // User generated annotations
         let constructorArgsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
-        let classPropsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, func) || [];
 
         let targets = [
             ...(this._constructorArgsTargets(isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length)),
-            ...(this._getClassPropsTargets(classPropsMetadata))
+            ...(this._getClassPropsTargets(func))
         ];
 
         return targets;
@@ -264,8 +263,9 @@ class Planner implements interfaces.Planner {
         return targets;
     }
 
-    private _getClassPropsTargets(classPropsMetadata: any) {
+    private _getClassPropsTargets(func: Function) {
 
+        let classPropsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, func) || [];
         let targets: interfaces.Target[] = [];
         let keys = Object.keys(classPropsMetadata);
 
@@ -286,22 +286,31 @@ class Planner implements interfaces.Planner {
             // Take types to be injected from user-generated metadata
             let serviceIndentifier = (metadata.inject || metadata.multiInject);
 
-            // User needs to generate metadata manually for those
-            if (serviceIndentifier === undefined) {
-                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} in property ${key}.`;
-                throw new Error(msg);
-            }
-
             // The property target
             let target = new Target(TargetType.ClassProperty, targetName, serviceIndentifier);
             target.metadata = targetMetadata;
             targets.push(target);
         }
 
+        // Check if base class has injected properties
+        let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
+
+        if (baseConstructor !== Object) {
+
+            let baseTargets = this._getClassPropsTargets(baseConstructor);
+
+            targets = [
+                ...targets,
+                ...baseTargets
+            ];
+
+        }
+
         return targets;
     }
 
     private _getDependencies(func: Function): interfaces.Target[] {
+
         let constructorName = getFunctionName(func);
         let targets: interfaces.Target[] = this._getTargets(func, false);
 

@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { getFunctionName } from "../../src/utils/utils";
 
 describe("Utils", () => {
+
     it("Should return a good function name", () => {
         function testFunction() {
             return false;
