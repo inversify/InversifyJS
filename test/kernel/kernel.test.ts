@@ -550,4 +550,58 @@ describe("Kernel", () => {
         expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(DivineRapier);
     });
 
+    it("Should be able to resolve named multi-injection", () => {
+
+        let kernel = new Kernel();
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
+
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
+
+        let fr = kernel.getAllNamed<Intl>("Intl", "fr");
+        expect(fr.length).to.eql(2);
+        expect(fr[0].hello).to.eql("bonjour");
+        expect(fr[1].goodbye).to.eql("au revoir");
+
+        let es = kernel.getAllNamed<Intl>("Intl", "es");
+        expect(es.length).to.eql(2);
+        expect(es[0].hello).to.eql("hola");
+        expect(es[1].goodbye).to.eql("adios");
+
+    });
+
+    it("Should be able to resolve tagged multi-injection", () => {
+
+        let kernel = new Kernel();
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
+
+        let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
+        expect(fr.length).to.eql(2);
+        expect(fr[0].hello).to.eql("bonjour");
+        expect(fr[1].goodbye).to.eql("au revoir");
+
+        let es = kernel.getAllTagged<Intl>("Intl", "lang", "es");
+        expect(es.length).to.eql(2);
+        expect(es[0].hello).to.eql("hola");
+        expect(es[1].goodbye).to.eql("adios");
+
+    });
+
 });

@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "2.0.0-rc.10",
+  "version": "2.0.0-rc.11",
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
@@ -52,7 +52,7 @@
     "istanbul": "^0.4.2",
     "karma": "^1.1.2",
     "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^1.0.1",
+    "karma-chrome-launcher": "^2.0.0",
     "karma-commonjs": "^1.0.0",
     "karma-firefox-launcher": "^1.0.0",
     "karma-ie-launcher": "^1.0.0",

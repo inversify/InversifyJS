@@ -169,6 +169,21 @@ class Kernel implements interfaces.Kernel {
         });
     }
 
+    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
+        return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
+        let metadata = new Metadata(key, value);
+        let target = new Target(null, serviceIdentifier, metadata);
+        return this._get<T>({
+            contextInterceptor: (context: interfaces.Context) => { return context; },
+            multiInject: true,
+            serviceIdentifier: serviceIdentifier,
+            target: target
+        });
+    }
+
     public set parent (kernel: interfaces.Kernel) {
         this._parentKernel = kernel;
     }
@@ -239,9 +254,8 @@ class Kernel implements interfaces.Kernel {
             default:
                 if (multiInject === false) {
                     let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
-                        msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                    msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
                     msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
-
                     throw new Error(msg);
                 } else {
                     return bindings;
@@ -283,19 +297,32 @@ class Kernel implements interfaces.Kernel {
     }
 
     private _listRegisteredBindingsForServiceIdentifier(serviceIdentifier: string): string {
+
         let registeredBindingsList = "",
             registeredBindings = this._planner.getBindings(this, serviceIdentifier);
 
         if (registeredBindings.length !== 0) {
+
             registeredBindingsList = `\nRegistered bindings:`;
 
             registeredBindings.forEach((binding) => {
-                registeredBindingsList = `${registeredBindingsList}\n ${getFunctionName(binding.implementationType)}`;
+
+                // Use "Object as name of constant value injections"
+                let name = "Object";
+
+                // Use function name if available
+                if (binding.implementationType !== null) {
+                    name = getFunctionName(binding.implementationType);
+                }
+
+                registeredBindingsList = `${registeredBindingsList}\n ${name}`;
 
                 if (binding.constraint.metaData) {
                     registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
                 }
+
             });
+
         }
 
         return registeredBindingsList;
