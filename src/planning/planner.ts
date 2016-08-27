@@ -217,7 +217,7 @@ class Planner implements interfaces.Planner {
 
         let targets = [
             ...(this._constructorArgsTargets(isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length)),
-            ...(this._getClassPropsTargtes(classPropsMetadata))
+            ...(this._getClassPropsTargets(classPropsMetadata))
         ];
 
         return targets;
@@ -264,14 +264,40 @@ class Planner implements interfaces.Planner {
         return targets;
     }
 
-    private _getClassPropsTargtes(classPropsMetadata: any) {
+    private _getClassPropsTargets(classPropsMetadata: any) {
+
         let targets: interfaces.Target[] = [];
-        // TODO
-        // console.log(classPropsMetadata);
-        // let target = new Target(TargetType.ClassProperty, metadata.targetName, serviceIndentifier);
-        // target.metadata = targetMetadata;
-        // targets.push(target);
-        // TODO
+        let keys = Object.keys(classPropsMetadata);
+
+        for (let i = 0; i < keys.length; i++) {
+
+            // the key of the property being injected
+            let key = keys[i];
+
+            // the metadata for the property being injected
+            let targetMetadata = classPropsMetadata[key];
+
+            // the metadata formatted for easier access
+            let metadata = this._formatTargetMetadata(classPropsMetadata[key]);
+
+            // the name of the property being injected
+            let targetName = metadata.targetName || key;
+
+            // Take types to be injected from user-generated metadata
+            let serviceIndentifier = (metadata.inject || metadata.multiInject);
+
+            // User needs to generate metadata manually for those
+            if (serviceIndentifier === undefined) {
+                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} in property ${key}.`;
+                throw new Error(msg);
+            }
+
+            // The property target
+            let target = new Target(TargetType.ClassProperty, targetName, serviceIndentifier);
+            target.metadata = targetMetadata;
+            targets.push(target);
+        }
+
         return targets;
     }
 

@@ -107,6 +107,7 @@ namespace interfaces {
     export interface Target {
         guid: string;
         serviceIdentifier: ServiceIdentifier<any>;
+        type: number; // TargetType
         name: QueryableString;
         metadata: Array<Metadata>;
         hasTag(key: string): boolean;

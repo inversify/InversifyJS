@@ -110,7 +110,7 @@ describe("Property Injection", () => {
         let kernel = new Kernel();
         kernel.bind<Warrior>(TYPES.Warrior).to(Samurai);
         kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetNamed(TAGS.Primary);
-        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetNamed(TAGS.Secondary);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAGS.Secondary);
 
         let warrior = kernel.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
@@ -122,6 +122,7 @@ describe("Property Injection", () => {
     });
 
     it("Should be able to inject a property in a base class");
+
     it("Should be able to inject a property using contextual constrains");
 
 });
