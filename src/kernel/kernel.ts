@@ -175,7 +175,7 @@ class Kernel implements interfaces.Kernel {
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
         let metadata = new Metadata(key, value);
-        let target = new Target(null, serviceIdentifier, metadata);
+        let target = new Target(null, null, serviceIdentifier, metadata);
         return this._get<T>({
             contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: true,

@@ -48,6 +48,7 @@ var banner = ["/**",
     " * <%= pkg.homepage %>",
     " */",
     ""].join("\n");
+
 var pkg = require("./package.json");
 
 gulp.task("build-bundle-src", function() {
