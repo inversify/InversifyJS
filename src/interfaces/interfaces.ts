@@ -17,7 +17,7 @@ namespace interfaces {
         constraint: ConstraintFunction;
         onActivation: (context: Context, injectable: T) => T;
         cache: T;
-        dynamicValue: () => T;
+        dynamicValue: (context: Context) => T;
         scope: number; // BindingScope
         type: number; // BindingType
     }
