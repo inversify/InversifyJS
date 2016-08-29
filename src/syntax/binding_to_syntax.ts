@@ -30,7 +30,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
-    public toDynamicValue(func: () => T): interfaces.BindingWhenOnSyntax<T> {
+    public toDynamicValue(func: (context: interfaces.Context) => T): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingType.DynamicValue;
         this._binding.cache = null;
         this._binding.dynamicValue = func;
