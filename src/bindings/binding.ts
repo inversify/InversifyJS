@@ -30,7 +30,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public cache: T;
 
     // Cache used to allow BindingType.DynamicValue bindings
-    public dynamicValue: () => T;
+    public dynamicValue: (context: interfaces.Context) => T;
 
     // The scope mode to be used
     public scope: BindingScope;

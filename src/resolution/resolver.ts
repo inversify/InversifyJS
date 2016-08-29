@@ -41,7 +41,7 @@ class Resolver implements interfaces.Resolver {
                     break;
 
                 case BindingType.DynamicValue:
-                    result = binding.dynamicValue();
+                    result = binding.dynamicValue(request.parentContext);
                     break;
 
                 case BindingType.Constructor:
