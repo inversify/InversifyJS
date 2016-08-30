@@ -162,29 +162,34 @@ class Planner implements interfaces.Planner {
     ) {
 
         // Add to list so we know that we have already visit this node in the request tree
-        previousServiceIdentifiers.push(request.serviceIdentifier);
+        let parentServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+        previousServiceIdentifiers.push(parentServiceIdentifier);
 
         // iterate child requests
         request.childRequests.forEach((childRequest) => {
 
             // the service identifier of a child request
-            let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
+            let childServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
 
             // check if the child request has been already visited
-            if (previousServiceIdentifiers.indexOf(serviceIdentifier) === -1) {
+            if (previousServiceIdentifiers.indexOf(childServiceIdentifier) === -1) {
 
                 if (childRequest.childRequests.length > 0) {
                     // use recursion to continue traversing the request tree
                     this._throwWhenCircularDependenciesFound(childRequest, previousServiceIdentifiers);
                 } else {
                     // the node has no child so we add it to list to know that we have already visit this node
-                    previousServiceIdentifiers.push(serviceIdentifier);
+                    previousServiceIdentifiers.push(childServiceIdentifier);
                 }
 
             } else {
 
+                // create description of circular dependency
+                let services = previousServiceIdentifiers.reduce((prev, curr) => {
+                 return (prev!== "") ? `${prev} -> ${curr}`: `${curr}`;
+                }, "");
+
                 // throw when we have already visit this node in the request tree
-                let tailServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
                 throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${serviceIdentifier} and ${tailServiceIdentifier}`);
 
             }
