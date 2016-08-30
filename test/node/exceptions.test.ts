@@ -2,7 +2,7 @@ import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Kernel, injectable, inject } from "../../src/inversify";
 
-describe("InversifyJS", () => {
+describe("Node", () => {
 
     it("Should throw if circular dependencies found", () => {
 
@@ -54,7 +54,7 @@ describe("InversifyJS", () => {
             return a;
         }
 
-        expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A and D`);
+        expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B -> C -> D`);
 
     });
 
