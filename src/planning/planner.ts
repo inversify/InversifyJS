@@ -185,6 +185,9 @@ class Planner implements interfaces.Planner {
             } else {
 
                 // create description of circular dependency
+                let tailServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+                previousServiceIdentifiers.push(tailServiceIdentifier);
+
                 let services = previousServiceIdentifiers.reduce((prev, curr) => {
                     return (prev !== "") ? `${prev} -> ${curr}` : `${curr}`;
                 }, "");
