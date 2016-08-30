@@ -161,23 +161,36 @@ class Planner implements interfaces.Planner {
         previousServiceIdentifiers: interfaces.ServiceIdentifier<any>[] = []
     ) {
 
+        // Add to list so we know that we have already visit this node in the request tree
         previousServiceIdentifiers.push(request.serviceIdentifier);
 
+        // iterate child requests
         request.childRequests.forEach((childRequest) => {
 
+            // the service identifier of a child request
             let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
+
+            // check if the child request has been already visited
             if (previousServiceIdentifiers.indexOf(serviceIdentifier) === -1) {
+
                 if (childRequest.childRequests.length > 0) {
+                    // use recursion to continue traversing the request tree
                     this._throwWhenCircularDependenciesFound(childRequest, previousServiceIdentifiers);
                 } else {
+                    // the node has no child so we add it to list to know that we have already visit this node
                     previousServiceIdentifiers.push(serviceIdentifier);
                 }
+
             } else {
+
+                // throw when we have already visit this node in the request tree
                 let tailServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
                 throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${serviceIdentifier} and ${tailServiceIdentifier}`);
+
             }
 
         });
+
     }
 
     private _formatTargetMetadata(targetMetadata: any[]) {
