@@ -190,7 +190,7 @@ class Planner implements interfaces.Planner {
                 }, "");
 
                 // throw when we have already visit this node in the request tree
-                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${serviceIdentifier} and ${tailServiceIdentifier}`);
+                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
 
             }
 
