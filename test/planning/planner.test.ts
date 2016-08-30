@@ -263,7 +263,7 @@ describe("Planner", () => {
             kernel.get(aId);
         };
 
-        expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${aId} and ${dId}`);
+        expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B -> C -> D -> A`);
 
     });
 

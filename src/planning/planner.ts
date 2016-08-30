@@ -161,23 +161,43 @@ class Planner implements interfaces.Planner {
         previousServiceIdentifiers: interfaces.ServiceIdentifier<any>[] = []
     ) {
 
-        previousServiceIdentifiers.push(request.serviceIdentifier);
+        // Add to list so we know that we have already visit this node in the request tree
+        let parentServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+        previousServiceIdentifiers.push(parentServiceIdentifier);
 
+        // iterate child requests
         request.childRequests.forEach((childRequest) => {
 
-            let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
-            if (previousServiceIdentifiers.indexOf(serviceIdentifier) === -1) {
+            // the service identifier of a child request
+            let childServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
+
+            // check if the child request has been already visited
+            if (previousServiceIdentifiers.indexOf(childServiceIdentifier) === -1) {
+
                 if (childRequest.childRequests.length > 0) {
+                    // use recursion to continue traversing the request tree
                     this._throwWhenCircularDependenciesFound(childRequest, previousServiceIdentifiers);
                 } else {
-                    previousServiceIdentifiers.push(serviceIdentifier);
+                    // the node has no child so we add it to list to know that we have already visit this node
+                    previousServiceIdentifiers.push(childServiceIdentifier);
                 }
+
             } else {
-                let tailServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
-                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${serviceIdentifier} and ${tailServiceIdentifier}`);
+
+                // create description of circular dependency
+                previousServiceIdentifiers.push(childServiceIdentifier);
+
+                let services = previousServiceIdentifiers.reduce((prev, curr) => {
+                    return (prev !== "") ? `${prev} -> ${curr}` : `${curr}`;
+                }, "");
+
+                // throw when we have already visit this node in the request tree
+                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
+
             }
 
         });
+
     }
 
     private _formatTargetMetadata(targetMetadata: any[]) {
