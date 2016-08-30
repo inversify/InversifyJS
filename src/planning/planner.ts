@@ -186,7 +186,7 @@ class Planner implements interfaces.Planner {
 
                 // create description of circular dependency
                 let services = previousServiceIdentifiers.reduce((prev, curr) => {
-                    return (prev !== "") ? `${prev} -> ${curr}`: `${curr}`;
+                    return (prev !== "") ? `${prev} -> ${curr}` : `${curr}`;
                 }, "");
 
                 // throw when we have already visit this node in the request tree
