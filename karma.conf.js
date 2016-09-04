@@ -1,7 +1,8 @@
 var browsers = [
     "Firefox",
     "Chrome",
-    "IE"
+    "IE",
+    "PhantomJS"
 ];
 
 var plugins = [
@@ -11,7 +12,9 @@ var plugins = [
     "karma-sinon",
     "karma-firefox-launcher",
     "karma-chrome-launcher",
-    "karma-ie-launcher"
+    "karma-ie-launcher",
+    "karma-phantomjs-launcher",
+    "karma-es6-shim"
 ];
 
 module.exports = function (config) {
@@ -21,7 +24,7 @@ module.exports = function (config) {
   config.set({
     singleRun: true,
     basePath: "",
-    frameworks: ["mocha", "chai", "sinon"],
+    frameworks: ["mocha", "chai", "sinon", "es6-shim"],
     browsers: browsers,
     reporters: ["mocha"],
     plugins : plugins,
