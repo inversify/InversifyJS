@@ -137,7 +137,7 @@ gulp.task("build-es", function() {
 //******************************************************************************
 //* TESTS NODE
 //******************************************************************************
-var tstProject = tsc.createProject("tsconfig.json");
+var tstProject = tsc.createProject("tsconfig.json", { typescript: require("typescript") });
 
 gulp.task("build-src", function() {
     return gulp.src([
@@ -153,7 +153,7 @@ gulp.task("build-src", function() {
     .js.pipe(gulp.dest("src/"));
 });
 
-var tsTestProject = tsc.createProject("tsconfig.json");
+var tsTestProject = tsc.createProject("tsconfig.json", { typescript: require("typescript") });
 
 gulp.task("build-test", function() {
     return gulp.src([
