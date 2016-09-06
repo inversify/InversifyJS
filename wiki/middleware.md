@@ -63,7 +63,7 @@ When multiple middleware functions are applied:
 kernel.applyMiddleware(middleware1, middleware2);
 ```
 
-The middleware will be invoked from right to leaft. 
+The middleware will be invoked from right to left. 
 This means that `middleware2` is invoked before `middleware1`.
 
 ## Context interceptor
