@@ -18,7 +18,6 @@ var gulp        = require("gulp"),
     uglify      = require("gulp-uglify"),
     rename      = require("gulp-rename"),
     runSequence = require("run-sequence"),
-    header      = require("gulp-header"),
     mocha       = require("gulp-mocha"),
     istanbul    = require("gulp-istanbul"),
     karma       = require("karma");
@@ -39,65 +38,8 @@ gulp.task("lint", function() {
 });
 
 //******************************************************************************
-//* SOURCE
+//* BUILD
 //******************************************************************************
-var banner = ["/**",
-    " * <%= pkg.name %> v.<%= pkg.version %> - <%= pkg.description %>",
-    " * Copyright (c) 2015 <%= pkg.author %>",
-    " * <%= pkg.license %> inversify.io/LICENSE",
-    " * <%= pkg.homepage %>",
-    " */",
-    ""].join("\n");
-
-var pkg = require("./package.json");
-
-gulp.task("build-bundle-src", function() {
-
-  var mainTsFilePath = "src/inversify.ts";
-  var outputFolder   = "dist/";
-  var outputFileName = "inversify.js";
-
-  var bundler = browserify({
-    debug: true,
-    standalone : "inversify"
-  });
-
-  // TS compiler options are in tsconfig.json file
-  return bundler.add(mainTsFilePath)
-                .plugin(tsify, { typescript: require("typescript") })
-                .bundle()
-                .pipe(source(outputFileName))
-                .pipe(buffer())
-                .pipe(sourcemaps.init({ loadMaps: true }))
-                .pipe(header(banner, { pkg : pkg } ))
-                .pipe(sourcemaps.write("."))
-                .pipe(gulp.dest(outputFolder));
-});
-
-gulp.task("build-bundle-compress-src", function() {
-
-  var mainTsFilePath = "src/inversify.ts";
-  var outputFolder   = "dist/";
-  var outputFileName = "inversify.min.js";
-
-  var bundler = browserify({
-    debug: true,
-    standalone : "inversify"
-  });
-
-  // TS compiler options are in tsconfig.json file
-  return bundler.add(mainTsFilePath)
-                .plugin(tsify)
-                .bundle()
-                .pipe(source(outputFileName))
-                .pipe(buffer())
-                .pipe(sourcemaps.init({ loadMaps: true }))
-                .pipe(uglify())
-                .pipe(header(banner, { pkg : pkg } ))
-                .pipe(sourcemaps.write("."))
-                .pipe(gulp.dest(outputFolder));
-});
-
 var tsLibProject = tsc.createProject("tsconfig.json", { module : "commonjs", typescript: require("typescript") });
 
 gulp.task("build-lib", function() {
@@ -110,9 +52,7 @@ gulp.task("build-lib", function() {
     .on("error", function (err) {
         process.exit(1);
     })
-    .js
-      .pipe(header(banner, { pkg : pkg } ))
-      .pipe(gulp.dest("lib/"));
+    .js.pipe(gulp.dest("lib/"));
 });
 
 var tsEsProject = tsc.createProject("tsconfig.json", { module : "es2015", typescript: require("typescript") });
@@ -127,9 +67,7 @@ gulp.task("build-es", function() {
     .on("error", function (err) {
         process.exit(1);
     })
-    .js
-      .pipe(header(banner, { pkg : pkg } ))
-      .pipe(gulp.dest("es/"));
+    .js.pipe(gulp.dest("es/"));
 });
 
 //******************************************************************************
@@ -202,7 +140,6 @@ gulp.task("build-bundle-test", function() {
                 .pipe(source(outputFileName))
                 .pipe(buffer())
                 .pipe(sourcemaps.init({ loadMaps: true }))
-                .pipe(header(banner, { pkg : pkg } ))
                 .pipe(sourcemaps.write("."))
                 .pipe(gulp.dest(outputFolder));
 });
@@ -238,8 +175,6 @@ if (process.env.APPVEYOR) {
 gulp.task("build", function(cb) {
   runSequence(
       "lint", 
-      "build-bundle-src",                       // for nodejs
-      "build-bundle-compress-src",              // for browsers
       ["build-src", "build-es", "build-lib"],   // tests + build es and lib
       "build-test", cb);
 });
