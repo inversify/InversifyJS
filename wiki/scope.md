@@ -41,6 +41,8 @@ We can select the scope of this types of binding with the exception of the `toCo
 
 When we invoke `kernel.get` for the first time and we are using `to`, `toSelf` or `toDynamicValue` the InversifyJS kernel will try to generate an object instance or value using a constructor or the dynamic value factory. If the scope has been set to `inSingletonScope` the value is cached. The second time we invoke `kernel.get`, and if `inSingletonScope` has been selected, InversifyJS will try to get the value from the cache.
 
+Note that a class can have some dependencies and a dynamic value can access other types via the current context. These dependencies may or many not be a singleton independently of the selected scope of their parent object in their respective composition tree,
+
 ### Bindings that will inject an `function`
 In this group are included the following types of binding:
 ```ts
