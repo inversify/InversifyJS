@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
+        "lib": ["es6", "dom"],
         "module": "commonjs",
         "moduleResolution": "node",
         "isolatedModules": false,
@@ -10,14 +11,12 @@
         "declaration": false,
         "noImplicitAny": true,
         "removeComments": true,
-        "noLib": false,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": false
     },
     "files": [
         "./typings/index.d.ts",
         "./node_modules/reflect-metadata/reflect-metadata.d.ts",
-        "./src/interfaces/globals.d.ts",
         "./src/inversify.ts"
     ]
 }

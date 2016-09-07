@@ -68,8 +68,7 @@
     "sinon": "^1.17.3",
     "tsify": "^1.0.3",
     "tslint": "^3.12.0",
-    "typedoc": ">=0.3.9",
-    "typescript": "^1.8.10",
+    "typescript": "^2.0.2",
     "typings": "^1.0.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"

@@ -104,7 +104,6 @@ gulp.task("build-lib", function() {
     return gulp.src([
         "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
-        "src/interfaces/globals.d.ts",
         "src/**/*.ts"
     ])
     .pipe(tsc(tsLibProject))
@@ -122,7 +121,6 @@ gulp.task("build-es", function() {
     return gulp.src([
         "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
-        "src/interfaces/globals.d.ts",
         "src/**/*.ts"
     ])
     .pipe(tsc(tsEsProject))
@@ -143,7 +141,6 @@ gulp.task("build-src", function() {
     return gulp.src([
         "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
-        "src/interfaces/globals.d.ts",
         "src/**/*.ts"
     ])
     .pipe(tsc(tstProject))
@@ -159,7 +156,6 @@ gulp.task("build-test", function() {
     return gulp.src([
         "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
-        "src/interfaces/globals.d.ts",
         "test/**/*.ts"
     ])
     .pipe(tsc(tsTestProject))
