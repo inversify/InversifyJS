@@ -37,7 +37,7 @@ interface BindingToSyntax<T> {
     toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
 }
 ```
-We can select the scope of this types of binding with the exception of the `toConstantValue` which will always be a singleton.
+The `inTransientScope` is used by default and we can select the scope of this types of binding with the exception of the `toConstantValue` which will always use `inSingletonScope`.
 
 When we invoke `kernel.get` for the first time and we are using `to`, `toSelf` or `toDynamicValue` the InversifyJS kernel will try to generate an object instance or value using a constructor or the dynamic value factory. If the scope has been set to `inSingletonScope` the value is cached. The second time we invoke `kernel.get`, and if `inSingletonScope` has been selected, InversifyJS will try to get the value from the cache.
 
