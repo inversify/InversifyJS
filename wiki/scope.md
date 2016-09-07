@@ -27,7 +27,7 @@ In terms of how scope behaves we can group these types of bindings in two main g
 - Bindings that will inject an `object`
 - Bindings that will inject a `function`
 
-### Bindings that will inject a `object`
+### Bindings that will inject an `object`
 In this group are included the following types of binding:
 ```ts
 interface BindingToSyntax<T> {
@@ -37,13 +37,13 @@ interface BindingToSyntax<T> {
     toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
 }
 ```
-The `inTransientScope` is used by default and we can select the scope of this types of binding with the exception of the `toConstantValue` which will always use `inSingletonScope`.
+The `inTransientScope` is used by default and we can select the scope of this types of binding, except for `toConstantValue` which will always use `inSingletonScope`.
 
-When we invoke `kernel.get` for the first time and we are using `to`, `toSelf` or `toDynamicValue` the InversifyJS kernel will try to generate an object instance or value using a constructor or the dynamic value factory. If the scope has been set to `inSingletonScope` the value is cached. The second time we invoke `kernel.get`, and if `inSingletonScope` has been selected, InversifyJS will try to get the value from the cache.
+When we invoke `kernel.get` for the first time and we are using `to`, `toSelf` or `toDynamicValue` the InversifyJS kernel will try to generate an object instance or value using a constructor or the dynamic value factory. If the scope has been set to `inSingletonScope` the value is cached. The second time we invoke `kernel.get` for the same resource ID, and if `inSingletonScope` has been selected, InversifyJS will try to get the value from the cache.
 
 Note that a class can have some dependencies and a dynamic value can access other types via the current context. These dependencies may or many not be a singleton independently of the selected scope of their parent object in their respective composition tree,
 
-### Bindings that will inject an `function`
+### Bindings that will inject a `function`
 In this group are included the following types of binding:
 ```ts
 interface BindingToSyntax<T> {
