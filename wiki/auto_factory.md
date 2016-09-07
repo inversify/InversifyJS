@@ -24,6 +24,8 @@ class Ninja implements Ninja {
 ```
 
 ```ts
+kernel.bind<Katana>("Katana").to(Katana);
+
 kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>")
 	  .toAutoFactory<Katana>("Katana");
 ```
