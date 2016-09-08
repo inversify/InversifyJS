@@ -10,7 +10,8 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": false
+        "suppressImplicitAnyIndexErrors": false,
+        "noResolve": false
     },
     "files": [
         "./typings/index.d.ts",
