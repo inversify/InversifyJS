@@ -67,7 +67,6 @@
     "reflect-metadata": "^0.1.3",
     "run-sequence": "^1.2.0",
     "sinon": "^1.17.3",
-    "tsify": "^1.0.3",
     "tslint": "^3.12.0",
     "typescript": "^2.0.2",
     "typings": "^1.0.4",

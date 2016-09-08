@@ -9,7 +9,6 @@ require("harmonize")();
 
 var gulp        = require("gulp"),
     browserify  = require("browserify"),
-    tsify       = require("tsify"),
     source      = require("vinyl-source-stream"),
     buffer      = require("vinyl-buffer"),
     tslint      = require("gulp-tslint"),
@@ -142,9 +141,9 @@ gulp.task("istanbul:hook", function() {
 //******************************************************************************
 //* TESTS BROWSER
 //******************************************************************************
-gulp.task("build-bundle-test", function() {
+gulp.task("bundle-test", function() {
 
-  var mainTsFilePath = "test/inversify.test.ts";
+  var mainJsFilePath = "test/inversify.test.js";
   var outputFolder   = "temp/";
   var outputFileName = "bundle.test.js";
 
@@ -153,9 +152,7 @@ gulp.task("build-bundle-test", function() {
     standalone : "inversify"
   });
 
-  // TS compiler options are in tsconfig.json file
-  return bundler.add(mainTsFilePath)
-                .plugin(tsify, { typescript: require("typescript") })
+  return bundler.add(mainJsFilePath)
                 .bundle()
                 .pipe(source(outputFileName))
                 .pipe(buffer())
@@ -164,7 +161,7 @@ gulp.task("build-bundle-test", function() {
                 .pipe(gulp.dest(outputFolder));
 });
 
-gulp.task("karma", ["build-bundle-test"], function (done) {
+gulp.task("karma", ["bundle-test"], function (done) {
   new karma.Server({
     configFile: __dirname + "/karma.conf.js"
   }, function(code) {
