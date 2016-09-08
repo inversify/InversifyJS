@@ -70,6 +70,26 @@ gulp.task("build-es", function() {
     .js.pipe(gulp.dest("es/"));
 });
 
+var tsDtsProject = tsc.createProject("tsconfig.json", {
+    declaration: true,
+    noExternalResolve: false,
+    typescript: require("typescript") 
+});
+
+gulp.task("build-dts", function() {
+    return gulp.src([
+        "typings/index.d.ts",
+        "node_modules/reflect-metadata/reflect-metadata.d.ts",
+        "src/**/*.ts"
+    ])
+    .pipe(tsc(tsDtsProject))
+    .on("error", function (err) {
+        process.exit(1);
+    })
+    .dts.pipe(gulp.dest("dts"));
+
+});
+
 //******************************************************************************
 //* TESTS NODE
 //******************************************************************************
@@ -175,7 +195,7 @@ if (process.env.APPVEYOR) {
 gulp.task("build", function(cb) {
   runSequence(
       "lint", 
-      ["build-src", "build-es", "build-lib"],   // tests + build es and lib
+      ["build-src", "build-es", "build-lib", "build-dts"],   // tests + build es and lib
       "build-test", cb);
 });
 
