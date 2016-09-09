@@ -17,7 +17,7 @@ import multiInject from "../../src/annotation/multi_inject";
 
 describe("Planner", () => {
 
-    let sandbox: Sinon.SinonSandbox;
+    let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();

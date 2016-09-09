@@ -7,22 +7,12 @@
 $ git clone https://github.com/YOUR_USERNAME/InversifyJS.git
 ```
 
-2 - Install typings:
-```
-$ npm install -g typings
-```
-
-3 - Install type definitions:
-```
-$ typings install
-```
-
-4 - Install npm dependencies:
+2 - Install npm dependencies:
 ```
 $ npm install
 ```
 
-5 - Run build process
+3 - Run build process
 ```
 $ gulp
 ```

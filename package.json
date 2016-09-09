@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "2.0.0-rc.13",
+  "version": "2.0.0-rc.14",
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
@@ -35,6 +35,10 @@
   "homepage": "http://inversify.io",
   "engines": {},
   "devDependencies": {
+    "@types/chai": "^3.4.32",
+    "@types/harmony-proxy": "^1.0.27",
+    "@types/mocha": "^2.2.31",
+    "@types/sinon": "^1.16.29",
     "bluebird": "^3.4.1",
     "browserify": "^13.0.0",
     "chai": "^3.4.1",
@@ -69,7 +73,6 @@
     "sinon": "^1.17.3",
     "tslint": "^3.12.0",
     "typescript": "^2.0.2",
-    "typings": "^1.0.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

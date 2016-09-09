@@ -26,10 +26,8 @@ branches:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install -g npm
-  - npm install -g typings
   - npm config set progress=false
   - npm install
-  - typings install
 
 # Fix line endings on Windows
 init:
