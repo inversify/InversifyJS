@@ -158,22 +158,15 @@ Let's take a look to each of the steps in the preceding code snippet:
 
 - **Step 2: Declare abstractions (interfaces)** Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle). This means that we should "depend upon Abstractions and do not depend upon concretions". 
 
-
 - **Step 3: Declare types** InversifyJS need to use the type as identifiers at runtime. We use symbols as identifiers but you can also [use classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md) and or string literals.
 
-- **Step 4: Declare implementations (classes) & dependencies** Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
-
-  When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
-
-  > **Note**: It is recommended to use Symbols but InversifyJS also support the usage of Classes and string literals (please refer to the features section to learn more).
+- **Step 4: Declare implementations (classes) & dependencies** Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
 
 - **Step 5: Declare type bindings** We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
 In the rest of your application your classes should be free of references to other classes.
 
 - **Step 6: Resolve dependencies** You can use the method `get<T>` from the `Kernel` class to resolve a dependency. It is a good practice do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
-to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
-
-  As we can see the `Katana` and `Shuriken` were successfully resolved and injected into `Ninja`.
+to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/). As we can see, the `Katana` and `Shuriken` were successfully resolved and injected into `Ninja`.
 
 InversifyJS supports ES5 and ES6 and can work without TypeScript. Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!
 
