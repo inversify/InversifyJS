@@ -4,7 +4,7 @@ namespace interfaces {
         new (...args: any[]): T;
     }
 
-    export type ServiceIdentifier<T> = (string | Symbol | Newable<T>);
+    export type ServiceIdentifier<T> = (string | symbol | Newable<T>);
 
     export interface Binding<T> extends Clonable<Binding<T>> {
         guid: string;
@@ -112,7 +112,7 @@ namespace interfaces {
         metadata: Array<Metadata>;
         hasTag(key: string): boolean;
         isArray(): boolean;
-        matchesArray(name: string | Symbol | Newable<any>): boolean;
+        matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
         matchesNamedTag(name: string): boolean;
@@ -188,7 +188,7 @@ namespace interfaces {
         to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toDynamicValue(func: (context: Context) => T): BindingWhenOnSyntax<T>;
+        toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;

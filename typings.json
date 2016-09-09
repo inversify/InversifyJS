@@ -1,7 +1,6 @@
 {
   "name": "inversify",
   "globalDependencies": {
-    "bluebird": "registry:dt/bluebird#2.0.0+20160701023356",
     "chai": "registry:dt/chai#3.4.0+20160601211834",
     "harmony-proxy": "registry:dt/harmony-proxy#1.0.0+20160317120654",
     "mocha": "registry:dt/mocha#2.2.5+20160720003353",

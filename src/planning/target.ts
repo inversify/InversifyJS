@@ -56,7 +56,7 @@ class Target implements interfaces.Target {
         return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
     }
 
-    public matchesArray(name: string|Symbol|any): boolean {
+    public matchesArray(name: interfaces.ServiceIdentifier<any>): boolean {
         return this.matchesTag(METADATA_KEY.MULTI_INJECT_TAG)(name);
     }
 

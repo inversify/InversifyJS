@@ -21,19 +21,16 @@ import "reflect-metadata";
 ```
 This will create the Reflect object as a global.
 
+> **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
+
 ## Promise
 Required only if you use want to 
 [inject a provider](https://github.com/inversify/InversifyJS#injecting-a-provider-asynchronous-factory). 
-Use the [bluebird](https://www.npmjs.com/package/bluebird) as polyfill.
+Use the [bluebird](https://www.npmjs.com/package/bluebird) polyfill.
 ```
-$ npm install bluebird
-$ typings install bluebird
+$ npm install bluebird @types/bluebird
 ```
-After installing it add a reference to the `bluebird.d.ts` file:
-```
-/// <reference path="typings/main.d.ts" />
-```
-Finally, import bluebird:
+After installing you will be able to import bluebird:
 ```
 import "bluebird";
 ```
@@ -42,6 +39,3 @@ This will create the Promise object as a global.
 ## Proxy
 Required only if you want to [inject a proxy](https://github.com/inversify/InversifyJS#injecting-a-proxy). 
 Use [harmony-proxy](https://www.npmjs.com/package/harmony-proxy) as polyfill.
-
-**Important** There is an issue with this feature at the moment. 
-You can track the progress [here](https://github.com/inversify/InversifyJS/issues/106).

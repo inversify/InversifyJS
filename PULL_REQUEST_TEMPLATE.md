@@ -29,8 +29,6 @@
 - [ ] My code follows the code style of this project.
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.
-- [ ] My change requires a change to the type definitions.
-- [ ] I have updated the type definitions accordingly.
 - [ ] I have read the **CONTRIBUTING** document.
 - [ ] I have added tests to cover my changes.
 - [ ] All new and existing tests passed.

@@ -57,38 +57,39 @@ InversifyJS has been developed with 4 main goals:
 You can get the latest release and the type definitions using npm:
 
 ```
-npm install inversify@2.0.0-rc.13 reflect-metadata --save
-npm install inversify-dts --save-dev
+npm install inversify@2.0.0-rc.14 reflect-metadata --save
 ```
 
-You will also need the type definitions files for inversify and reflect-metadata.
+The InversifyJS type definitions are included in the inversify npm package.
+You will also need the type definitions files for `reflect-metadata`.
+The `reflect-metadata` type definitions are included in its npm package.
 
-The InversifyJS type definitions are included in the inversify-dts npm package:
-
-```ts
-/// <reference path="node_modules/inversify-dts/inversify/inversify.d.ts" />
-```
-
-The reflect-metadata type definitions are included in the npm package:
-
-```ts
-/// <reference path="node_modules/reflect-metadata/reflect-metadata.d.ts" />
-```
-
-InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect (with metadata) and Proxy objects. 
-If your environment don't support one of these you will need to import a shim or polyfill. If you are targeting ES5 you will get the following error:
-
-> TypeScript error: node_modules/inversify-dts/inversify/inversify.d.ts(108,13): Error TS2304: Cannot find name 'Promise'.
-
-You can solve this problem by installing type definitions for the Promise API. If you are working on node the node type definitions already include the required definitions. If you are working on a browser app you can use the bluebird type definitions and polyfill:
+InversifyJS requires the `experimentalDecorators`, `emitDecoratorMetadata` 
+and `lib` compilation options in your `tsconfig.json` file:
 
 ```
-$ typings install --save --global dt~bluebird
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": ["es6", "dom"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "noImplicitAny": true
+    },
+    "files": [
+        "./node_modules/reflect-metadata/reflect-metadata.d.ts",
+    ]
+}
 ```
 
- Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
+InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect Metadats and Proxy objects. 
+If your environment don't support one of these you will need to import a shim or polyfill. 
 
-The relect-metadata polyfill can be importing as follows:
+At the time of writing this guide (September 2016) it is necesary to 
+use the `relect-metadata` polyfill. This polyfill can be importing as follows:
 
 ```ts
 import "reflect-metadata";
@@ -96,16 +97,7 @@ import "reflect-metadata";
 
 > **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
-InversifyJS requires the following TypeScript compilation options in your `tsconfig.json` file:
-
-```
-{
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  }
-}
-```
+Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
 
 ### The Basics (TypeScript)
 Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:

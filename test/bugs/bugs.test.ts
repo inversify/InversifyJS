@@ -206,4 +206,28 @@ describe("Bugs", () => {
 
     });
 
+    it("Should be able to combine dynamic value with singleton scope", () => {
+
+        let kernel = new Kernel();
+
+        kernel.bind<number>("transient_random").toDynamicValue((context: interfaces.Context) => {
+            return Math.random();
+        }).inTransientScope();
+
+        kernel.bind<number>("singleton_random").toDynamicValue((context: interfaces.Context) => {
+            return Math.random();
+        }).inSingletonScope();
+
+        let a = kernel.get<number>("transient_random");
+        let b = kernel.get<number>("transient_random");
+
+        expect(a).not.to.eql(b);
+
+        let c = kernel.get<number>("singleton_random");
+        let d = kernel.get<number>("singleton_random");
+
+        expect(c).to.eql(d);
+
+    });
+
 });

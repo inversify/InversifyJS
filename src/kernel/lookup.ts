@@ -12,7 +12,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     }
 
 	// adds a new KeyValuePair to _dictionary
-    public add(serviceIdentifier: (string|Symbol|any), value: T): void {
+    public add(serviceIdentifier: interfaces.ServiceIdentifier<any>, value: T): void {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); };
         if (value === null || value === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); };
@@ -26,7 +26,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     }
 
     // gets the value of a KeyValuePair by its serviceIdentifier
-    public get(serviceIdentifier: (string|Symbol|any)): Array<T> {
+    public get(serviceIdentifier: interfaces.ServiceIdentifier<any>): Array<T> {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
@@ -39,7 +39,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     }
 
 	// removes a KeyValuePair from _dictionary by its serviceIdentifier
-    public remove(serviceIdentifier: (string|Symbol|any)): void {
+    public remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
@@ -64,7 +64,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     }
 
     // returns true if _dictionary contains serviceIdentifier
-    public hasKey(serviceIdentifier: (string|Symbol|any)): boolean {
+    public hasKey(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
@@ -92,7 +92,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     }
 
 	// finds the location of a KeyValuePair pair in _dictionary by its serviceIdentifier
-    private getIndexByKey(serviceIdentifier: (string|Symbol|any)): number {
+    private getIndexByKey(serviceIdentifier: interfaces.ServiceIdentifier<any>): number {
         let index = -1;
         for (let i = 0; i < this._dictionary.length; i++) {
             let keyValuePair = this._dictionary[i];
