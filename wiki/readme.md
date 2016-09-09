@@ -1,6 +1,14 @@
 # Wiki
 Welcome to the InversifyJS wiki!
 
+### Installation and enviroment suppurt
+- [Installation](https://github.com/inversify/InversifyJS/blob/master/wiki/installation.md)
+- [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
+- [Vanilla JavaScript example](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md)
+- [Working with module bundlers](https://github.com/inversify/InversifyJS/blob/master/wiki/module_bundlers.md)
+- [ES5 and ES6 support](https://github.com/inversify/InversifyJS/blob/master/wiki/javascript.md)
+- [How to upgrade from 1.x to 2.x](https://github.com/inversify/InversifyJS/blob/master/wiki/upgrade.md)
+
 ### The InversifyJS Features and API
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
 - [Support for Symbols](https://github.com/inversify/InversifyJS/blob/master/wiki/symbols_as_id.md)
@@ -27,13 +35,8 @@ Welcome to the InversifyJS wiki!
 
 ### Other documents
 - [Why InversifyJS?](https://github.com/inversify/InversifyJS/blob/master/wiki/purpose.md)
-- [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
-- [Vanilla JavaScript example](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md)
-- [Working with module bundlers](https://github.com/inversify/InversifyJS/blob/master/wiki/module_bundlers.md)
-- [ES5 and ES6 support](https://github.com/inversify/InversifyJS/blob/master/wiki/javascript.md)
 - [Object-oriented design](https://github.com/inversify/InversifyJS/blob/master/wiki/oo_design.md)
 - [Good practices](https://github.com/inversify/InversifyJS/blob/master/wiki/good_practices.md)
-- [How to upgrade from 1.x to 2.x](https://github.com/inversify/InversifyJS/blob/master/wiki/upgrade.md)
 - [Ecosystem](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md)
 - [Recipes](https://github.com/inversify/InversifyJS/blob/master/wiki/recipes.md)
 - [Architecture overview](https://github.com/inversify/InversifyJS/blob/master/wiki/architecture.md)
