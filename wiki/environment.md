@@ -11,9 +11,10 @@ Required always. Use [reflect-metadata](https://www.npmjs.com/package/reflect-me
 ```
 $ npm install reflect-metadata
 ```
-The type definitions for reflect-metadata are included in the npm package. You need to add the following reference:
+The type definitions for reflect-metadata are included in the npm package. You need to add the following 
+reference to the types field in your `tsconfig.json`:
 ```
-/// <reference path="node_modules/reflect-metadata/reflect-metadata.d.ts" />
+"types": ["reflect-metadata"]
 ```
 Finally, import reflect-metadata. If you are working in Node.js you can use:
 
@@ -26,7 +27,6 @@ If you are working in a web browser you can use a script tag:
 ```
 <script src="./node_modules/reflect-metadata/Reflect.js"></script>
 ```
-
 
 This will create the Reflect object as a global.
 

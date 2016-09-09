@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es5",
         "lib": ["es6", "dom"],
-        "types": ["mocha"],
+        "types": ["mocha", "reflect-metadata"],
         "module": "commonjs",
         "moduleResolution": "node",
         "jsx": "react",
@@ -13,8 +13,5 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": false,
         "noResolve": false
-    },
-    "exclude": [
-        "./node_modules/karma/**"
-    ]
+    }
 }

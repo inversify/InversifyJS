@@ -12,14 +12,12 @@ The InversifyJS type definitions are included in the inversify npm package. Inve
     "compilerOptions": {
         "target": "es5",
         "lib": ["es6", "dom"],
+        "types": ["reflect-metadata"],
         "module": "commonjs",
         "moduleResolution": "node",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
-    },
-    "files": [
-        "./node_modules/reflect-metadata/reflect-metadata.d.ts",
-    ]
+    }
 }
 ```
 
