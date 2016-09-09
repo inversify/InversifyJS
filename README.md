@@ -91,12 +91,13 @@ page in the wiki to learn more.**
 ## The Basics
 Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
 
-```ts
-// Step 1: Import dependencies
-import { Kernel, injectable, inject } from "inversify";
-import "reflect-metadata";
+### Step 1: Declare your interfaces and types
 
-// Step 2: Declare abstractions (interfaces)
+Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle). 
+This means that we should "depend upon Abstractions and do not depend upon concretions". 
+Let's start by declaring some interfaces (abstractions).
+
+```ts
 interface Warrior {
     fight(): string;
     sneak(): string;
@@ -109,15 +110,33 @@ interface Weapon {
 interface ThrowableWeapon {
     throw(): string;
 }
+```
 
-// Step 3: Declare types
+InversifyJS need to use the type as identifiers at runtime. We use symbols as identifiers but you can also use classes and or string literals.
+ 
+```ts
 let TYPES = {
     Warrior: Symbol("Warrior"),
     Weapon: Symbol("Weapon"),
     ThrowableWeapon: Symbol("ThrowableWeapon")
 };
 
-// Step 4: Declare implementations (classes) & dependencies
+export default TYPES;
+
+```
+
+> **Note**: It is recommended to use Symbols but InversifyJS also support the usage of Classes and string literals (please refer to the features section to learn more).
+
+### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
+Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
+
+When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
+
+```ts
+import { injectable, inject } from "inversify";
+import "reflect-metadata";
+import TYPES from "./types";
+
 @injectable()
 class Katana implements Weapon {
     public hit() {
@@ -134,41 +153,72 @@ class Shuriken implements ThrowableWeapon {
 
 @injectable()
 class Ninja implements Warrior {
+
+    private _katana: Weapon;
+    private _shuriken: ThrowableWeapon;
+
+    public constructor(
+	    @inject(TYPES.Weapon) katana: Weapon,
+	    @inject(TYPES.ThrowableWeapon) shuriken: ThrowableWeapon
+    ) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+
+export { Ninja, Katana, Shuriken };
+```
+
+If you prefer it you can use property injection instead of constructor injection so you don't have to declare the class constructor:
+
+```ts
+@injectable()
+class Ninja implements Warrior {
     @inject(TYPES.Weapon) private _katana: Weapon;
     @inject(TYPES.ThrowableWeapon) private _shuriken: ThrowableWeapon;
     public fight() { return this._katana.hit(); };
     public sneak() { return this._shuriken.throw(); };
 }
+```
 
-// Step 5: Declare type bindings
+### Step 3: Create and configure a Kernel
+We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
+In the rest of your application your classes should be free of references to other classes.
+```ts
+import { Kernel } from "inversify";
+import TYPES from "./types";
+import { Ninja, Katana, Shuriken } from "./entities";
+
 var kernel = new Kernel();
 kernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
 kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
 kernel.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 
-// Step 6: Resolve dependencies
-var ninja = kernel.get<Warrior>(TYPES.Warrior);
-ninja.fight().eql("cut!"); // "cut!"
-ninja.sneak().eql("hit!"); // "hit!"
+export default kernel;
 ```
 
-Let's take a look to each of the steps in the preceding code snippet:
+### Step 4: Resolve dependencies
+You can use the method `get<T>` from the `Kernel` class to resolve a dependency.
+Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
+to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
-- **Step 1: Import dependencies** We need to import `inversify` and `reflect-metadata`. Check out the [installation](https://github.com/inversify/InversifyJS/blob/master/wiki/installation.md) and the [environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) pages in the wiki to learn more.
+```ts
+import kernel = from "./inversify.config";
 
-- **Step 2: Declare abstractions (interfaces)** Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle). This means that we should "depend upon Abstractions and do not depend upon concretions". 
+var ninja = kernel.get<Warrior>(TYPES.Warrior);
 
-- **Step 3: Declare types** InversifyJS need to use the type as identifiers at runtime. We use symbols as identifiers but you can also [use classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md) and or string literals.
+expect(ninja.fight()).eql("cut!"); // true
+expect(ninja.sneak()).eql("hit!"); // true
+```
 
-- **Step 4: Declare implementations (classes) & dependencies** Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
+As we can see the `Katana` and `Shuriken` were successfully resolved and injected into `Ninja`.
 
-- **Step 5: Declare type bindings** We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
-In the rest of your application your classes should be free of references to other classes.
-
-- **Step 6: Resolve dependencies** You can use the method `get<T>` from the `Kernel` class to resolve a dependency. It is a good practice do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
-to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/). As we can see, the `Katana` and `Shuriken` were successfully resolved and injected into `Ninja`.
-
-InversifyJS supports ES5 and ES6 and can work without TypeScript. Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!
+InversifyJS supports ES5 and ES6 and can work without TypeScript.
+Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!
 
 ## The InversifyJS Features and API
 Let's take a look to the InversifyJS features!
