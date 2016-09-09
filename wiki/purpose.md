@@ -118,3 +118,9 @@ If the [preceding argument](http://stackoverflow.com/questions/871405/why-do-i-n
 The library has been developed using TypeScript so type safety comes out of the box if you work 
 with TypeScript but it is nice to mention that if you try to inject a Katana into a class that 
 expects an implementation of `Shuriken` you will get a compilation error.
+
+### 6. Great development experience
+We are working hard to provide you with a great IoC container for your JavaScript apps but also a great development experience. 
+We have spend a lot of time trying to make the InversifyJS as user friendly as possible and are working on development tools for chrome and we have already developed a logger middleware to help you to debug in Node.js.
+
+![](http://inversify.io/img/devtools1.png)
