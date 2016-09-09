@@ -18,12 +18,12 @@
 
 A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
 
-### About
+## About
 InversifyJS is a lightweight (4KB) inversion of control (IoC) container for TypeScript and JavaScript apps.
 A IoC container uses a class constructor to identify and inject its dependencies.
 InversifyJS has a friendly API and encourage the usage of the best OOP and IoC practices.
 
-### Motivation
+## Motivation
 JavaScript now supports object oriented (OO) programming with class based inheritance. These features are great but the truth is that they are also
 [dangerous](https://medium.com/@dan_abramov/how-to-use-classes-and-sleep-at-night-9af8de78ccb4).
 
@@ -31,7 +31,7 @@ We need a good OO design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-or
 
 InversifyJS is a tool that helps JavaScript developers to write code with a good OO design.
 
-### Philosophy
+## Philosophy
 InversifyJS has been developed with 4 main goals:
 
 1. Allow JavaScript developers to write code that adheres to the SOLID principles.
@@ -42,7 +42,7 @@ InversifyJS has been developed with 4 main goals:
 
 4. Provide a [state of the art development experience](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md).
 
-### Testimonies
+## Testimonies
 
 **[Nate Kohari](https://twitter.com/nkohari)** - Author of [Ninject](https://github.com/ninject/Ninject)
 
@@ -52,7 +52,7 @@ InversifyJS has been developed with 4 main goals:
 **[Michel Weststrate](https://twitter.com/mweststrate)** - Author of [MobX](https://github.com/mobxjs/mobx)
 > *Dependency injection like InversifyJS works nicely*
 
-### Installation
+## Installation
 
 You can get the latest release and the type definitions using npm:
 
@@ -60,24 +60,16 @@ You can get the latest release and the type definitions using npm:
 npm install inversify@2.0.0-rc.14 reflect-metadata --save
 ```
 
-The InversifyJS type definitions are included in the inversify npm package.
-You will also need the type definitions files for `reflect-metadata`.
-The `reflect-metadata` type definitions are included in its npm package.
-
-InversifyJS requires the `experimentalDecorators`, `emitDecoratorMetadata` 
-and `lib` compilation options in your `tsconfig.json` file:
-
-```
+The InversifyJS type definitions are included in the inversify npm package. InversifyJS requires the `experimentalDecorators`, `emitDecoratorMetadata`and `lib` compilation options in your `tsconfig.json` file.
+```js
 {
     "compilerOptions": {
         "target": "es5",
         "lib": ["es6", "dom"],
         "module": "commonjs",
         "moduleResolution": "node",
-        "jsx": "react",
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "noImplicitAny": true
+        "emitDecoratorMetadata": true
     },
     "files": [
         "./node_modules/reflect-metadata/reflect-metadata.d.ts",
@@ -85,24 +77,21 @@ and `lib` compilation options in your `tsconfig.json` file:
 }
 ```
 
-InversifyJS requires a modern JavaScript engine with support for the Promise, Reflect Metadats and Proxy objects. 
-If your environment don't support one of these you will need to import a shim or polyfill. 
+InversifyJS requires a modern JavaScript engine with support for:
 
-At the time of writing this guide (September 2016) it is necesary to 
-use the `relect-metadata` polyfill. This polyfill can be importing as follows:
+- [Reflect metadata](https://github.com/rbuckton/ReflectDecorators/blob/master/spec/metadata.md)
+- [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (Only required if using [provider Injection](https://github.com/inversify/InversifyJS#injecting-a-provider-asynchronous-factory))
+- [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) (Only required if using [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md))
 
-```ts
-import "reflect-metadata";
-```
+If your environment don't support one of these you will need to import a shim or polyfill.
 
-> **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
+**Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
+page in the wiki to learn more.**
 
-Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md) page in the wiki to learn more.
-
-### The Basics (TypeScript)
+## The Basics
 Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
 
-#### Step 1: Declare your interfaces
+### Step 1: Declare your interfaces
 Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle). 
 This means that we should "depend upon Abstractions and do not depend upon concretions". 
 Let's start by declaring some interfaces (abstractions).
@@ -133,7 +122,7 @@ export default TYPES;
 
 ```
 
-#### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
+### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
 
 When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
@@ -182,7 +171,7 @@ export { Ninja, Katana, Shuriken };
 
 ```
 
-#### Step 3: Create and configure a Kernel
+### Step 3: Create and configure a Kernel
 We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
 In the rest of your application your classes should be free of references to other classes.
 ```ts
@@ -198,7 +187,7 @@ kernel.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 export default kernel;
 ```
 
-#### Step 4: Resolve dependencies
+### Step 4: Resolve dependencies
 You can use the method `get<T>` from the `Kernel` class to resolve a dependency.
 Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
@@ -217,7 +206,7 @@ As we can see the `Katana` and `Shuriken` were successfully resolved and injecte
 InversifyJS supports ES5 and ES6 and can work without TypeScript.
 Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!
 
-### The InversifyJS Features and API
+## The InversifyJS Features and API
 Let's take a look to the InversifyJS features!
 
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
@@ -245,7 +234,7 @@ Let's take a look to the InversifyJS features!
 
 Please refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) for additional details.
 
-### Ecosystem
+## Ecosystem
 In order to provide a state of the art development experience we are also working on:
 
 - [Middleware extensions](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#extensions).
@@ -254,21 +243,21 @@ In order to provide a state of the art development experience we are also workin
 
 Please refer to the [ecosystem wiki page](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more.
 
-### Support
+## Support
 If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
 If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
 [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) and browse the [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
 
-### Acknowledgements
+## Acknowledgements
 
 Thanks a lot to all the [contributors](https://github.com/inversify/InversifyJS/graphs/contributors), all the developers out there using InversifyJS and all those that help us to spread the word by sharing content about InversifyJS online. Without your feedback and support this project would not be possible.
 
-### License
+## License
 
 License under the MIT License (MIT)
 
-Copyright © 2015 [Remo H. Jansen](http://www.remojansen.com)
+Copyright © 2015-2016 [Remo H. Jansen](http://www.remojansen.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
