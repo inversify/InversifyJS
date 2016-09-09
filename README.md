@@ -168,7 +168,18 @@ class Ninja implements Warrior {
 }
 
 export { Ninja, Katana, Shuriken };
+```
 
+If you prefer it you can use property injection instead of constructor injection so you don't have to declare the class constructor:
+
+```ts
+@injectable()
+class Ninja implements Warrior {
+    @inject(TYPES.Weapon) private _katana: Weapon;
+    @inject(TYPES.ThrowableWeapon) private _shuriken: ThrowableWeapon;
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+}
 ```
 
 ### Step 3: Create and configure a Kernel
