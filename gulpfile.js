@@ -43,7 +43,6 @@ var tsLibProject = tsc.createProject("tsconfig.json", { module : "commonjs", typ
 
 gulp.task("build-lib", function() {
     return gulp.src([
-        "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "src/**/*.ts"
     ])
@@ -58,7 +57,6 @@ var tsEsProject = tsc.createProject("tsconfig.json", { module : "es2015", typesc
 
 gulp.task("build-es", function() {
     return gulp.src([
-        "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "src/**/*.ts"
     ])
@@ -77,7 +75,6 @@ var tsDtsProject = tsc.createProject("tsconfig.json", {
 
 gulp.task("build-dts", function() {
     return gulp.src([
-        "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "src/**/*.ts"
     ])
@@ -96,7 +93,6 @@ var tstProject = tsc.createProject("tsconfig.json", { typescript: require("types
 
 gulp.task("build-src", function() {
     return gulp.src([
-        "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "src/**/*.ts"
     ])
@@ -111,7 +107,6 @@ var tsTestProject = tsc.createProject("tsconfig.json", { typescript: require("ty
 
 gulp.task("build-test", function() {
     return gulp.src([
-        "typings/index.d.ts",
         "node_modules/reflect-metadata/reflect-metadata.d.ts",
         "test/**/*.ts"
     ])

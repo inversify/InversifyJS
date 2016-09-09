@@ -1,9 +1,0 @@
-{
-  "name": "inversify",
-  "globalDependencies": {
-    "chai": "registry:dt/chai#3.4.0+20160601211834",
-    "harmony-proxy": "registry:dt/harmony-proxy#1.0.0+20160317120654",
-    "mocha": "registry:dt/mocha#2.2.5+20160720003353",
-    "sinon": "registry:dt/sinon#1.16.0+20160517064723"
-  }
-}

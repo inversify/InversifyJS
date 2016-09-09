@@ -35,6 +35,10 @@
   "homepage": "http://inversify.io",
   "engines": {},
   "devDependencies": {
+    "@types/chai": "^3.4.32",
+    "@types/harmony-proxy": "^1.0.27",
+    "@types/mocha": "^2.2.31",
+    "@types/sinon": "^1.16.29",
     "bluebird": "^3.4.1",
     "browserify": "^13.0.0",
     "chai": "^3.4.1",

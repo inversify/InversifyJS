@@ -7,7 +7,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Middleware", () => {
 
-    let sandbox: Sinon.SinonSandbox;
+    let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
