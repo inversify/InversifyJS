@@ -73,7 +73,6 @@
     "sinon": "^1.17.3",
     "tslint": "^3.12.0",
     "typescript": "^2.0.2",
-    "typings": "^1.0.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
