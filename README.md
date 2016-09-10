@@ -61,8 +61,9 @@ npm install inversify@2.0.0-rc.14 reflect-metadata --save
 ```
 
 The InversifyJS type definitions are included in the inversify npm package. 
-InversifyJS requires the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib` 
-compilation options in your `tsconfig.json` file.
+InversifyJS requires TypeScript 2.0 and the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib` 
+compilation options in your `tsconfig.json` file:
+
 ```js
 {
     "compilerOptions": {
@@ -85,8 +86,8 @@ InversifyJS requires a modern JavaScript engine with support for:
 
 If your environment don't support one of these you will need to import a shim or polyfill.
 
-**Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
-page in the wiki to learn more.**
+Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
+page in the wiki and the [Basic example](https://github.com/inversify/inversify-basic-example) to learn more.
 
 ## The Basics
 Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
