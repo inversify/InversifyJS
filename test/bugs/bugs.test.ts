@@ -6,7 +6,8 @@ import {
     injectable,
     named,
     inject,
-    interfaces
+    interfaces,
+    unmanaged
 } from "../../src/inversify";
 
 describe("Bugs", () => {
@@ -227,6 +228,51 @@ describe("Bugs", () => {
         let d = kernel.get<number>("singleton_random");
 
         expect(c).to.eql(d);
+
+    });
+
+    it("Should be able to use an abstract class as the serviceIdentifier", () => {
+
+        @injectable()
+        abstract class Animal {
+            protected name: string;
+            constructor(@unmanaged() name: string) {
+                this.name = name;
+            }
+            public abstract makeSound(input: string): string;
+            public move(meters: number) {
+                return this.name + " moved " + meters + "m";
+            }
+        }
+
+        @injectable()
+        class Snake extends Animal {
+            constructor() {
+                super("Snake");
+            }
+            public makeSound(input: string): string {
+                return "sssss" + input;
+            }
+            public move() {
+                return "Slithering... " + super.move(5);
+            }
+        }
+
+        @injectable()
+        class Jungle {
+            public animal: Animal;
+            constructor(@inject(Animal) animal: Animal) {
+                this.animal = animal;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<Animal>(Animal).to(Snake);
+        kernel.bind<Jungle>(Jungle).to(Jungle);
+
+        let jungle = kernel.get(Jungle);
+        expect(jungle.animal.makeSound("zzz")).to.eql("ssssszzz");
+        expect(jungle.animal.move(5)).to.eql("Slithering... Snake moved 5m");
 
     });
 

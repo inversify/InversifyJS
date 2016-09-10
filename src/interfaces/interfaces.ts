@@ -4,7 +4,11 @@ namespace interfaces {
         new (...args: any[]): T;
     }
 
-    export type ServiceIdentifier<T> = (string | symbol | Newable<T>);
+    export interface Abstract<T> {
+         prototype: T;
+    }
+
+    export type ServiceIdentifier<T> = (string | symbol | Newable<T> | Abstract<T>);
 
     export interface Binding<T> extends Clonable<Binding<T>> {
         guid: string;
