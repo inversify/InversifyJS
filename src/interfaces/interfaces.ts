@@ -129,6 +129,7 @@ namespace interfaces {
 
     export interface Kernel {
         guid: string;
+        parent: Kernel;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
