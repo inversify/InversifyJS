@@ -33,6 +33,10 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
         return this._bindingWhenSyntax.whenTargetNamed(name);
     }
 
+    public whenTargetIsDefault(): interfaces.BindingOnSyntax<T> {
+        return this._bindingWhenSyntax.whenTargetIsDefault();
+    }
+
     public whenTargetTagged(tag: string, value: any): interfaces.BindingOnSyntax<T> {
         return this._bindingWhenSyntax.whenTargetTagged(tag, value);
     }

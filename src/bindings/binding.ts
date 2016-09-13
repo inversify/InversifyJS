@@ -35,6 +35,9 @@ class Binding<T> implements interfaces.Binding<T> {
     // The scope mode to be used
     public scope: BindingScope;
 
+    // Used to determine if the binding should be used in case of ambiguous injection
+    public isDefault: boolean;
+
     // The kind of binding
     public type: BindingType;
 
@@ -55,6 +58,7 @@ class Binding<T> implements interfaces.Binding<T> {
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
         this.scope = BindingScope.Transient;
+        this.isDefault = false;
         this.type = BindingType.Invalid;
         this.constraint = (request: interfaces.Request) => { return true; };
         this.implementationType = null;

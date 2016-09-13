@@ -23,6 +23,7 @@ namespace interfaces {
         cache: T;
         dynamicValue: (context: Context) => T;
         scope: number; // BindingScope
+        isDefault: boolean;
         type: number; // BindingType
     }
 
@@ -206,6 +207,7 @@ namespace interfaces {
     export interface BindingWhenSyntax<T> {
         when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
         whenTargetNamed(name: string): BindingOnSyntax<T>;
+        whenTargetIsDefault(): BindingOnSyntax<T>;
         whenTargetTagged(tag: string, value: any): BindingOnSyntax<T>;
         whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
         whenParentNamed(name: string): BindingOnSyntax<T>;

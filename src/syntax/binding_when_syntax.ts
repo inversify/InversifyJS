@@ -20,6 +20,12 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
         return new BindingOnSyntax<T>(this._binding);
     }
 
+    public whenTargetIsDefault(): interfaces.BindingOnSyntax<T> {
+        this._binding.isDefault = true;
+        this._binding.constraint = (request: interfaces.Request) => true;
+        return new BindingOnSyntax<T>(this._binding);
+    }
+
     public whenTargetTagged(tag: string, value: any): interfaces.BindingOnSyntax<T> {
         this._binding.constraint = taggedConstraint(tag)(value);
         return new BindingOnSyntax<T>(this._binding);
