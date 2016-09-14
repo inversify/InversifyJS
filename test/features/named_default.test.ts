@@ -118,11 +118,11 @@ describe("Named default", () => {
         kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
         kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 
-        let weapon1 = kernel.get<Weapon>(TYPES.Weapon);
-        let weapon2 = kernel.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
+        let defaultWeapon = kernel.get<Weapon>(TYPES.Weapon);
+        let throwableWeapon = kernel.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
 
-        expect(weapon1.name).eql("Katana");
-        expect(weapon2.name).eql("Shuriken");
+        expect(defaultWeapon.name).eql("Katana");
+        expect(throwableWeapon.name).eql("Shuriken");
 
     });
 
