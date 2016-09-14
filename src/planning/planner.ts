@@ -95,34 +95,7 @@ class Planner implements interfaces.Planner {
         return activeBindings;
     }
 
-    public getActiveBindings2<T>(
-        kernel: interfaces.Kernel,
-        multiInject: boolean,
-        serviceIdentifier: interfaces.ServiceIdentifier<T>,
-        target: interfaces.Target
-    ): interfaces.Binding<T>[] {
-
-        let bindings = this.getBindings<T>(kernel, serviceIdentifier);
-
-        // Filter bindings using the target and the binding constraints
-        if (target !== null) {
-
-            let request = new Request(
-                serviceIdentifier,
-                this.createContext(kernel),
-                null,
-                bindings,
-                target
-            );
-
-            bindings = this.getActiveBindings(request, target);
-        }
-
-        return this._validateActiveBindingCount(serviceIdentifier, multiInject, bindings, target, kernel);
-
-    }
-
-    private _validateActiveBindingCount(
+    public validateActiveBindingCount(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         multiInject: boolean,
         bindings: interfaces.Binding<any>[],
@@ -170,7 +143,7 @@ class Planner implements interfaces.Planner {
         try {
             let activeBindings = this.getActiveBindings(parentRequest, target);
 
-            activeBindings = this._validateActiveBindingCount(
+            activeBindings = this.validateActiveBindingCount(
                 target.serviceIdentifier,
                 target.isArray(),
                 activeBindings,

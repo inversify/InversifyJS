@@ -23,6 +23,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import BindingToSyntax from "../syntax/binding_to_syntax";
 import Metadata from "../planning/metadata";
 import Target from "../planning/target";
+import Request from "../planning/request";
 import TargetType from "../planning/target_type";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import KernelSnapshot from "./kernel_snapshot";
@@ -199,7 +200,23 @@ class Kernel implements interfaces.Kernel {
         target: interfaces.Target
     ): interfaces.Context[] {
 
-        let bindings = this._planner.getActiveBindings2(this, multiInject, serviceIdentifier, target);
+        let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
+
+        // Filter bindings using the target and the binding constraints
+        if (target !== null) {
+
+            let request = new Request(
+                serviceIdentifier,
+                this._planner.createContext(this),
+                null,
+                bindings,
+                target
+            );
+
+            bindings = this._planner.getActiveBindings(request, target);
+        }
+
+        this._planner.validateActiveBindingCount(serviceIdentifier, multiInject, bindings, target, this);
 
         let contexts = bindings.map((binding: interfaces.Binding<any>) => {
             return this._createContext(binding, target);

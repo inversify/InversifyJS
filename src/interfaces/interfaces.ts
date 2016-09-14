@@ -84,6 +84,13 @@ namespace interfaces {
         createPlan(parentContext: Context, binding: Binding<any>, target: Target): Plan;
         getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
         getActiveBindings(parentRequest: Request, target: Target): Binding<any>[];
+        validateActiveBindingCount(
+            serviceIdentifier: interfaces.ServiceIdentifier<any>,
+            multiInject: boolean,
+            bindings: interfaces.Binding<any>[],
+            target: interfaces.Target,
+            kernel: interfaces.Kernel
+        ): interfaces.Binding<any>[];
     }
 
     export interface QueryableString {
