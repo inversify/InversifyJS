@@ -24,7 +24,6 @@ import BindingToSyntax from "../syntax/binding_to_syntax";
 import Metadata from "../planning/metadata";
 import Target from "../planning/target";
 import Request from "../planning/request";
-import TargetType from "../planning/target_type";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
@@ -116,7 +115,7 @@ class Kernel implements interfaces.Kernel {
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
         let metadata = new Metadata(key, value);
-        let target = new Target(TargetType.ConstructorArgument, null, serviceIdentifier, metadata);
+        let target = new Target(null, null, serviceIdentifier, metadata);
         return this._get<T>({
             contextInterceptor: (context: interfaces.Context) => { return context; },
             multiInject: false,
@@ -203,7 +202,6 @@ class Kernel implements interfaces.Kernel {
         let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
 
         // Filter bindings using the target and the binding constraints
-        console.log("#######", target); // TODO We need always a target even if unknown??????
         if (target !== null) {
 
             let request = new Request(
@@ -217,7 +215,7 @@ class Kernel implements interfaces.Kernel {
             bindings = this._planner.getActiveBindings(request, target);
         }
 
-        this._planner.validateActiveBindingCount(serviceIdentifier, multiInject, bindings, target, this);
+        bindings = this._planner.validateActiveBindingCount(serviceIdentifier, multiInject, bindings, target, this);
 
         let contexts = bindings.map((binding: interfaces.Binding<any>) => {
             return this._createContext(binding, target);
