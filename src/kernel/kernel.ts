@@ -203,6 +203,7 @@ class Kernel implements interfaces.Kernel {
         let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
 
         // Filter bindings using the target and the binding constraints
+        console.log("#######", target); // TODO We need always a target even if unknown??????
         if (target !== null) {
 
             let request = new Request(

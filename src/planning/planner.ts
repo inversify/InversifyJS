@@ -51,6 +51,7 @@ class Planner implements interfaces.Planner {
         let bindings: interfaces.Binding<T>[] = [];
         let _kernel: any = kernel;
         let _bindingDictionary = _kernel._bindingDictionary;
+
         if (_bindingDictionary.hasKey(serviceIdentifier)) {
             bindings = _bindingDictionary.get(serviceIdentifier);
 
@@ -111,7 +112,8 @@ class Planner implements interfaces.Planner {
                     msg = ERROR_MSGS.NOT_REGISTERED;
 
                 if (target !== null) {
-                    msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
+                    let m = target.metadata[0].toString();
+                    msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${m}`;
                     msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString);
                 } else {
                     msg = `${msg} ${serviceIdentifierString}`;
@@ -270,7 +272,11 @@ class Planner implements interfaces.Planner {
         let constructorArgsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
         let targets = [
-            ...(this._constructorArgsTargets(isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length)),
+            ...(
+                this._constructorArgsTargets(
+                    isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length
+                )
+            ),
             ...(this._getClassPropsTargets(func))
         ];
 
@@ -297,11 +303,15 @@ class Planner implements interfaces.Planner {
             // Take types to be injected from user-generated metadata
             // if not available use compiler-generated metadata
             let serviceIndentifier = serviceIdentifiers[i];
-            serviceIndentifier = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : serviceIndentifier;
+            let hasInjectAnnotations = (metadata.inject || metadata.multiInject);
+            serviceIndentifier = (hasInjectAnnotations) ? (hasInjectAnnotations) : serviceIndentifier;
 
             // Types Object and Function are too ambiguous to be resolved
             // user needs to generate metadata manually for those
-            let isUnknownType = (serviceIndentifier === Object || serviceIndentifier === Function || serviceIndentifier === undefined);
+            let isObject = serviceIndentifier === Object;
+            let isFunction = serviceIndentifier === Function;
+            let isUndefined = serviceIndentifier === undefined;
+            let isUnknownType = (isObject || isFunction || isUndefined);
 
             if (isBaseClass === false && isUnknownType) {
                 let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
@@ -374,7 +384,8 @@ class Planner implements interfaces.Planner {
         // and one of the derived classes (children) has no dependencies
         let baseClassDepencencyCount = this._baseClassDepencencyCount(func);
         if (targets.length < baseClassDepencencyCount) {
-            let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+            let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
+                        constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
             throw new Error(error);
         }
 

@@ -8,7 +8,10 @@ import {
     named,
     inject,
     interfaces,
-    unmanaged
+    unmanaged,
+    targetName,
+    tagged,
+    multiInject
 } from "../../src/inversify";
 
 describe("Bugs", () => {
@@ -274,6 +277,136 @@ describe("Bugs", () => {
         let jungle = kernel.get(Jungle);
         expect(jungle.animal.makeSound("zzz")).to.eql("ssssszzz");
         expect(jungle.animal.move(5)).to.eql("Slithering... Snake moved 5m");
+
+    });
+
+    it("Should be able to identify is a target is tagged", () => {
+
+        let TYPES = {
+            Dependency1: Symbol("Dependency1"),
+            Dependency2: Symbol("Dependency2"),
+            Dependency3: Symbol("Dependency3"),
+            Dependency4: Symbol("Dependency4"),
+            Dependency5: Symbol("Dependency5"),
+            Test: Symbol("Test")
+        };
+
+        let TAGS = {
+            somename: "somename",
+            sometag: "sometag"
+        };
+
+        @injectable()
+        class Dependency1 {
+            public name: string = "Dependency1";
+        }
+
+        @injectable()
+        class Dependency2 {
+            public name: string = "Dependency1";
+        }
+
+        @injectable()
+        class Dependency3 {
+            public name: string = "Dependency1";
+        }
+
+        @injectable()
+        class Dependency4 {
+            public name: string = "Dependency1";
+        }
+
+        @injectable()
+        class Dependency5 {
+            public name: string = "Dependency1";
+        }
+
+        @injectable()
+        class Base {
+            public baseProp: string;
+            public constructor(
+                @unmanaged() baseProp: string
+            ) {
+                this.baseProp = baseProp;
+            }
+        }
+
+        @injectable()
+        class Test extends Base {
+
+            private _prop1: Dependency1;
+            private _prop2: Dependency2[];
+            private _prop3: Dependency3;
+            private _prop4: Dependency4;
+            private _prop5: Dependency5;
+
+            public constructor(
+                @inject(TYPES.Dependency1) prop1: Dependency1, // inject
+                @multiInject(TYPES.Dependency2) prop2: Dependency2[], // multi inject
+                @inject(TYPES.Dependency3) @named(TAGS.somename) prop3: Dependency3, // named
+                @inject(TYPES.Dependency4) @tagged(TAGS.sometag, true) prop4: Dependency4, // tagged
+                @inject(TYPES.Dependency5) @targetName("prop6") prop5: Dependency5 // targetName
+            ) {
+                super("unmanaged!");
+                this._prop1 = prop1;
+                this._prop2 = prop2;
+                this._prop3 = prop3;
+                this._prop4 = prop4;
+                this._prop5 = prop5;
+            }
+        }
+
+        let kernel = new Kernel();
+        kernel.bind<Test>(TYPES.Test).to(Test);
+        kernel.bind<Dependency1>(TYPES.Dependency1).to(Dependency1);
+        kernel.bind<Dependency2>(TYPES.Dependency2).to(Dependency2);
+        kernel.bind<Dependency3>(TYPES.Dependency3).to(Dependency3);
+        kernel.bind<Dependency4>(TYPES.Dependency4).to(Dependency4);
+        kernel.bind<Dependency5>(TYPES.Dependency5).to(Dependency5);
+
+        function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
+            return (args: interfaces.PlanAndResolveArgs) => {
+
+                let nextContextInterceptor = args.contextInterceptor;
+
+                args.contextInterceptor = (context: interfaces.Context) => {
+
+                    context.plan.rootRequest.childRequests.forEach((request, index) => {
+                        switch (index) {
+                            case 0:
+                                expect(request.target.isNamed()).to.eql(false);
+                                expect(request.target.isTagged()).to.eql(false);
+                                break;
+                            case 1:
+                                expect(request.target.isNamed()).to.eql(false);
+                                expect(request.target.isTagged()).to.eql(false);
+                                break;
+                            case 2:
+                                expect(request.target.isNamed()).to.eql(true);
+                                expect(request.target.isTagged()).to.eql(false);
+                                break;
+                            case 3:
+                                expect(request.target.isNamed()).to.eql(false);
+                                expect(request.target.isTagged()).to.eql(true);
+                                break;
+                            case 4:
+                                expect(request.target.isNamed()).to.eql(false);
+                                expect(request.target.isTagged()).to.eql(false);
+                                break;
+                        }
+                    });
+
+                    return nextContextInterceptor(context);
+                };
+
+                let result = planAndResolve(args);
+
+                return result;
+            };
+        }
+
+        kernel.applyMiddleware(logger);
+        kernel.get<Test>(TYPES.Test);
 
     });
 

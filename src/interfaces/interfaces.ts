@@ -23,7 +23,6 @@ namespace interfaces {
         cache: T;
         dynamicValue: (context: Context) => T;
         scope: number; // BindingScope
-        isDefault: boolean;
         type: number; // BindingType
     }
 
@@ -83,7 +82,12 @@ namespace interfaces {
         createContext(kernel: Kernel): Context;
         createPlan(parentContext: Context, binding: Binding<any>, target: Target): Plan;
         getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
-        getActiveBindings(parentRequest: Request, target: Target): Binding<any>[];
+
+        getActiveBindings(
+            parentRequest: interfaces.Request,
+            target: interfaces.Target
+        ): Binding<any>[];
+
         validateActiveBindingCount(
             serviceIdentifier: interfaces.ServiceIdentifier<any>,
             multiInject: boolean,
@@ -91,6 +95,7 @@ namespace interfaces {
             target: interfaces.Target,
             kernel: interfaces.Kernel
         ): interfaces.Binding<any>[];
+
     }
 
     export interface QueryableString {
