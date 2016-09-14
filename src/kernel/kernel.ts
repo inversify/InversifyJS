@@ -14,7 +14,6 @@
 // with each service type (interfaces).
 
 import interfaces from "../interfaces/interfaces";
-import BindingCount from "../bindings/binding_count";
 import Binding from "../bindings/binding";
 import Lookup from "./lookup";
 import Planner from "../planning/planner";
@@ -25,10 +24,10 @@ import BindingToSyntax from "../syntax/binding_to_syntax";
 import Metadata from "../planning/metadata";
 import Target from "../planning/target";
 import TargetType from "../planning/target_type";
-import Request from "../planning/request";
+import { getServiceIdentifierAsString } from "../utils/serialization";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
-import { getFunctionName } from "../utils/utils";
+// import Request from "../planning/request";
 
 class Kernel implements interfaces.Kernel {
 
@@ -83,7 +82,7 @@ class Kernel implements interfaces.Kernel {
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
-            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${this.getServiceIdentifierAsString(serviceIdentifier)}`);
+            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
         }
     }
 
@@ -138,19 +137,6 @@ class Kernel implements interfaces.Kernel {
         this._middleware = snapshot.middleware;
     }
 
-    public getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
-        let type = typeof serviceIdentifier;
-        if (type === "function") {
-            let _serviceIdentifier: any = serviceIdentifier;
-            return _serviceIdentifier.name;
-        } else if (type === "symbol") {
-            return serviceIdentifier.toString();
-        } else { // string
-            let _serviceIdentifier: any = serviceIdentifier;
-            return _serviceIdentifier;
-        }
-    }
-
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
         let previous: interfaces.PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
         this._middleware = middlewares.reduce((prev, curr) => {
@@ -202,77 +188,20 @@ class Kernel implements interfaces.Kernel {
     }
 
     private _planAndResolve<T>(args: interfaces.PlanAndResolveArgs): T[] {
-        let contexts = this._plan<T>(args.multiInject, args.serviceIdentifier, args.target);
+        let contexts = this._plan(args.multiInject, args.serviceIdentifier, args.target);
         let results = this._resolve<T>(contexts, args.contextInterceptor);
         return results;
     }
 
-    private _getActiveBindings<T>(
+    private _plan(
         multiInject: boolean,
-        serviceIdentifier: interfaces.ServiceIdentifier<T>,
-        target: interfaces.Target
-    ): interfaces.Binding<T>[] {
-
-        let bindings = this._planner.getBindings<T>(this, serviceIdentifier);
-
-        // Filter bindings using the target and the binding constraints
-        if (target !== null) {
-
-            let request = new Request(
-                serviceIdentifier,
-                this._planner.createContext(this),
-                null,
-                bindings,
-                target
-            );
-
-            bindings = this._planner.getActiveBindings(request, target);
-        }
-
-        switch (bindings.length) {
-
-            case BindingCount.NoBindingsAvailable:
-
-                let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
-                    msg = ERROR_MSGS.NOT_REGISTERED;
-
-                if (target !== null) {
-                    msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
-                    msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
-                } else {
-                    msg = `${msg} ${serviceIdentifierString}`;
-                }
-
-                throw new Error(msg);
-
-            case BindingCount.OnlyOneBindingAvailable:
-                if (multiInject === false) {
-                    return bindings;
-                }
-
-            case BindingCount.MultipleBindingsAvailable:
-            default:
-                if (multiInject === false) {
-                    let serviceIdentifierString = this.getServiceIdentifierAsString(serviceIdentifier),
-                    msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
-                    msg += this._listRegisteredBindingsForServiceIdentifier(serviceIdentifierString);
-                    throw new Error(msg);
-                } else {
-                    return bindings;
-                }
-        }
-
-    }
-
-    private _plan<T>(
-        multiInject: boolean,
-        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
         target: interfaces.Target
     ): interfaces.Context[] {
 
-        let bindings = this._getActiveBindings(multiInject, serviceIdentifier, target);
+        let bindings = this._planner.getActiveBindings2(this, multiInject, serviceIdentifier, target);
 
-        let contexts = bindings.map((binding) => {
+        let contexts = bindings.map((binding: interfaces.Binding<any>) => {
             return this._createContext(binding, target);
         });
 
@@ -294,38 +223,6 @@ class Kernel implements interfaces.Kernel {
             return this._resolver.resolve<T>(contextInterceptor(context));
         });
         return results;
-    }
-
-    private _listRegisteredBindingsForServiceIdentifier(serviceIdentifier: string): string {
-
-        let registeredBindingsList = "",
-            registeredBindings = this._planner.getBindings(this, serviceIdentifier);
-
-        if (registeredBindings.length !== 0) {
-
-            registeredBindingsList = `\nRegistered bindings:`;
-
-            registeredBindings.forEach((binding) => {
-
-                // Use "Object as name of constant value injections"
-                let name = "Object";
-
-                // Use function name if available
-                if (binding.implementationType !== null) {
-                    name = getFunctionName(binding.implementationType);
-                }
-
-                registeredBindingsList = `${registeredBindingsList}\n ${name}`;
-
-                if (binding.constraint.metaData) {
-                    registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
-                }
-
-            });
-
-        }
-
-        return registeredBindingsList;
     }
 
 }

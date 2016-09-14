@@ -5,6 +5,7 @@ import Kernel from "../../src/kernel/kernel";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import injectable from "../../src/annotation/injectable";
 import KernelModule from "../../src/kernel/kernel_module";
+import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 
 describe("Kernel", () => {
 
@@ -127,7 +128,7 @@ describe("Kernel", () => {
       let serviceIdentifier = "Ninja";
       let kernel = new Kernel();
       let throwFunction = () => { kernel.unbind("Ninja"); };
-      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${kernel.getServiceIdentifierAsString(serviceIdentifier)}`);
+      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
 
   });
 
@@ -418,22 +419,19 @@ describe("Kernel", () => {
 
     it("Should be able to get a string literal identifier as a string", () => {
         let Katana = "Katana";
-        let kernel = new Kernel();
-        let KatanaStr = kernel.getServiceIdentifierAsString(Katana);
+        let KatanaStr = getServiceIdentifierAsString(Katana);
         expect(KatanaStr).to.eql("Katana");
     });
 
     it("Should be able to get a symbol identifier as a string", () => {
         let KatanaSymbol = Symbol("Katana");
-        let kernel = new Kernel();
-        let KatanaStr = kernel.getServiceIdentifierAsString(KatanaSymbol);
+        let KatanaStr = getServiceIdentifierAsString(KatanaSymbol);
         expect(KatanaStr).to.eql("Symbol(Katana)");
     });
 
     it("Should be able to get a class identifier as a string", () => {
         class Katana {}
-        let kernel = new Kernel();
-        let KatanaStr = kernel.getServiceIdentifierAsString(Katana);
+        let KatanaStr = getServiceIdentifierAsString(Katana);
         expect(KatanaStr).to.eql("Katana");
     });
 

@@ -15,6 +15,7 @@ import targetName from "./annotation/target_name";
 import { decorate } from "./annotation/decorator_utils";
 import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 import guid from "./utils/guid";
+import { getServiceIdentifierAsString } from "./utils/serialization";
 import interfaces from "./interfaces/interfaces";
 
 export { Kernel };
@@ -32,4 +33,5 @@ export { taggedConstraint };
 export { namedConstraint };
 export { typeConstraint };
 export { guid };
+export { getServiceIdentifierAsString };
 export { interfaces };

@@ -142,7 +142,6 @@ namespace interfaces {
         load(...modules: KernelModule[]): void;
         unload(...modules: KernelModule[]): void;
         applyMiddleware(...middleware: Middleware[]): void;
-        getServiceIdentifierAsString(serviceIdentifier: ServiceIdentifier<any>): string;
         snapshot(): void;
         restore(): void;
     }

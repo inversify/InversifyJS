@@ -3,6 +3,7 @@ import BindingScope from "../bindings/binding_scope";
 import BindingType from "../bindings/binding_type";
 import TargetType from "../planning/target_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import { getServiceIdentifierAsString } from "../utils/serialization";
 
 class Resolver implements interfaces.Resolver {
 
@@ -87,7 +88,7 @@ class Resolver implements interfaces.Resolver {
                 default:
                     // The user probably created a binding but didn't finish it
                     // e.g. kernel.bind<T>("Something"); missing BindingToSyntax
-                    let serviceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+                    let serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
                     throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
             }
 

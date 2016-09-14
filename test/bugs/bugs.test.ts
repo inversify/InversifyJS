@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 
 import {
     Kernel,
@@ -160,7 +161,7 @@ describe("Bugs", () => {
 
         let kernel = new Kernel();
         let throwF = () => { kernel.get<Weapon>(TYPES.Weapon); };
-        expect(throwF).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${kernel.getServiceIdentifierAsString(TYPES.Weapon)}`);
+        expect(throwF).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${getServiceIdentifierAsString(TYPES.Weapon)}`);
 
     });
 

@@ -8,6 +8,8 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
 import { getFunctionName } from "../utils/utils";
 import TargetType from "./target_type";
+import BindingCount from "../bindings/binding_count";
+import { getServiceIdentifierAsString, listRegisteredBindingsForServiceIdentifier} from "../utils/serialization";
 
 class Planner implements interfaces.Planner {
 
@@ -93,6 +95,64 @@ class Planner implements interfaces.Planner {
         return activeBindings;
     }
 
+    public getActiveBindings2<T>(
+        kernel: interfaces.Kernel,
+        multiInject: boolean,
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        target: interfaces.Target
+    ): interfaces.Binding<T>[] {
+
+        let bindings = this.getBindings<T>(kernel, serviceIdentifier);
+
+        // Filter bindings using the target and the binding constraints
+        if (target !== null) {
+
+            let request = new Request(
+                serviceIdentifier,
+                this.createContext(kernel),
+                null,
+                bindings,
+                target
+            );
+
+            bindings = this.getActiveBindings(request, target);
+        }
+
+        switch (bindings.length) {
+
+            case BindingCount.NoBindingsAvailable:
+
+                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
+                    msg = ERROR_MSGS.NOT_REGISTERED;
+
+                if (target !== null) {
+                    msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${target.metadata[0].toString()}`;
+                    msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString);
+                } else {
+                    msg = `${msg} ${serviceIdentifierString}`;
+                }
+
+                throw new Error(msg);
+
+            case BindingCount.OnlyOneBindingAvailable:
+                if (multiInject === false) {
+                    return bindings;
+                }
+
+            case BindingCount.MultipleBindingsAvailable:
+            default:
+                if (multiInject === false) {
+                    let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
+                    msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                    msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString);
+                    throw new Error(msg);
+                } else {
+                    return bindings;
+                }
+        }
+
+    }
+
     private _createSubRequest(parentRequest: interfaces.Request, target: interfaces.Target) {
 
         try {
@@ -101,13 +161,13 @@ class Planner implements interfaces.Planner {
             if (activeBindings.length === 0) {
 
                 // no matching bindings found
-                let serviceIdentifier = parentRequest.parentContext.kernel.getServiceIdentifierAsString(target.serviceIdentifier);
+                let serviceIdentifier = getServiceIdentifierAsString(target.serviceIdentifier);
                 throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
 
             } else if (activeBindings.length > 1 && target.isArray() === false) {
 
                 // more than one matching binding found but target is not an array
-                let serviceIdentifier = parentRequest.parentContext.kernel.getServiceIdentifierAsString(target.serviceIdentifier);
+                let serviceIdentifier = getServiceIdentifierAsString(target.serviceIdentifier);
                 throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
 
             } else {
@@ -162,14 +222,14 @@ class Planner implements interfaces.Planner {
     ) {
 
         // Add to list so we know that we have already visit this node in the request tree
-        let parentServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
+        let parentServiceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
         previousServiceIdentifiers.push(parentServiceIdentifier);
 
         // iterate child requests
         request.childRequests.forEach((childRequest) => {
 
             // the service identifier of a child request
-            let childServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
+            let childServiceIdentifier = getServiceIdentifierAsString(childRequest.serviceIdentifier);
 
             // check if the child request has been already visited
             if (previousServiceIdentifiers.indexOf(childServiceIdentifier) === -1) {
