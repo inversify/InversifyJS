@@ -19,16 +19,19 @@ to identify problems during the development process.
 ## Basic middleware
 
 ```ts
-function logger(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-    return (args: PlanAndResolveArgs) => {
+import { interfaces, Kernel } from "inversify";
+
+function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
+    return (args: interfaces.PlanAndResolveArgs) => {
         let start = new Date().getTime();
         let result = planAndResolve(args);
         let end = new Date().getTime();
-        console.log(end-start);
+        console.log(end - start);
         return result;
     };
 }
 
+let kernel = new Kernel();
 kernel.applyMiddleware(logger);
 ```
 
