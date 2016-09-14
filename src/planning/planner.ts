@@ -118,6 +118,18 @@ class Planner implements interfaces.Planner {
             bindings = this.getActiveBindings(request, target);
         }
 
+        return this._validateActiveBindingCount(serviceIdentifier, multiInject, bindings, target, kernel);
+
+    }
+
+    private _validateActiveBindingCount(
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        multiInject: boolean,
+        bindings: interfaces.Binding<any>[],
+        target: interfaces.Target,
+        kernel: interfaces.Kernel
+    ): interfaces.Binding<any>[] {
+
         switch (bindings.length) {
 
             case BindingCount.NoBindingsAvailable:
@@ -158,25 +170,15 @@ class Planner implements interfaces.Planner {
         try {
             let activeBindings = this.getActiveBindings(parentRequest, target);
 
-            if (activeBindings.length === 0) {
+            activeBindings = this._validateActiveBindingCount(
+                target.serviceIdentifier,
+                target.isArray(),
+                activeBindings,
+                target,
+                parentRequest.parentContext.kernel
+            );
 
-                // no matching bindings found
-                let serviceIdentifier = getServiceIdentifierAsString(target.serviceIdentifier);
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
-
-            } else if (activeBindings.length > 1 && target.isArray() === false) {
-
-                // more than one matching binding found but target is not an array
-                let serviceIdentifier = getServiceIdentifierAsString(target.serviceIdentifier);
-                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
-
-            } else {
-
-                // one ore more than one matching bindings found
-                // when more than 1 matching bindings found target is an array
-                this._createChildRequest(parentRequest, target, activeBindings);
-
-            }
+            this._createChildRequest(parentRequest, target, activeBindings);
 
         } catch (error) {
             if (error instanceof RangeError) {
