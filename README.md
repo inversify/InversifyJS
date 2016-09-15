@@ -194,12 +194,12 @@ import { Kernel } from "inversify";
 import TYPES from "./types";
 import { Ninja, Katana, Shuriken } from "./entities";
 
-var kernel = new Kernel();
-kernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
-kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
-kernel.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
+var myKernel = new Kernel();
+myKernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
+myKernel.bind<Weapon>(TYPES.Weapon).to(Katana);
+myKernel.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 
-export default kernel;
+export default myKernel;
 ```
 
 ### Step 4: Resolve dependencies
@@ -208,9 +208,9 @@ Remember that you should do this only in your [composition root](http://blog.plo
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```ts
-import kernel = from "./inversify.config";
+import myKernel = from "./inversify.config";
 
-var ninja = kernel.get<Warrior>(TYPES.Warrior);
+var ninja = myKernel.get<Warrior>(TYPES.Warrior);
 
 expect(ninja.fight()).eql("cut!"); // true
 expect(ninja.sneak()).eql("hit!"); // true
