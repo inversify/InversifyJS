@@ -2,11 +2,10 @@ import interfaces from "../interfaces/interfaces";
 import { getFunctionName } from "./utils";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
-    let type = typeof serviceIdentifier;
-    if (type === "function") {
+    if (typeof serviceIdentifier === "function") {
         let _serviceIdentifier: any = serviceIdentifier;
         return _serviceIdentifier.name;
-    } else if (type === "symbol") {
+    } else if (typeof serviceIdentifier === "symbol") {
         return serviceIdentifier.toString();
     } else { // string
         let _serviceIdentifier: any = serviceIdentifier;

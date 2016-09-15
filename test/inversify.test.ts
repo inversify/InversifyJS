@@ -2839,10 +2839,12 @@ describe("InversifyJS", () => {
             try {
                 kernel.get("Weapon");
             } catch (error) {
+                console.log(error.message);
                 expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
                 expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
                 expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
             }
+
         });
 
     });

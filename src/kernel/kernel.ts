@@ -23,6 +23,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import BindingToSyntax from "../syntax/binding_to_syntax";
 import Metadata from "../planning/metadata";
 import Target from "../planning/target";
+import TargetType from "../planning/target_type";
 import Request from "../planning/request";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import KernelSnapshot from "./kernel_snapshot";
@@ -101,11 +102,12 @@ class Kernel implements interfaces.Kernel {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
+        let injectMetadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
+        let target = new Target(TargetType.Variable, "", serviceIdentifier, injectMetadata);
         return this._get<T>({
             contextInterceptor: (context: interfaces.Context) => { return context; },
-            multiInject: false,
             serviceIdentifier: serviceIdentifier,
-            target: null
+            target: target
         })[0];
     }
 
@@ -114,14 +116,43 @@ class Kernel implements interfaces.Kernel {
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
-        let metadata = new Metadata(key, value);
-        let target = new Target(null, null, serviceIdentifier, metadata);
+        let tagMetadata = new Metadata(key, value);
+        let injectMetadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
+        let target = new Target(TargetType.Variable, "", serviceIdentifier, tagMetadata);
+        target.metadata.push(injectMetadata);
         return this._get<T>({
             contextInterceptor: (context: interfaces.Context) => { return context; },
-            multiInject: false,
             serviceIdentifier: serviceIdentifier,
             target: target
         })[0];
+    }
+
+    // Resolves a dependency by its runtime identifier
+    // The runtime identifier can be associated with one or multiple bindings
+    public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
+        let multiInjectMetadata = new Metadata(METADATA_KEY.MULTI_INJECT_TAG, serviceIdentifier);
+        let target = new Target(TargetType.Variable, "", serviceIdentifier, multiInjectMetadata);
+        return this._get<T>({
+            contextInterceptor: (context: interfaces.Context) => { return context; },
+            serviceIdentifier: serviceIdentifier,
+            target: target
+        });
+    }
+
+    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
+        return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
+        let tagMetadata = new Metadata(key, value);
+        let multiInjectMetadata = new Metadata(METADATA_KEY.MULTI_INJECT_TAG, serviceIdentifier);
+        let target = new Target(TargetType.Variable, "", serviceIdentifier, tagMetadata);
+        target.metadata.push(multiInjectMetadata);
+        return this._get<T>({
+            contextInterceptor: (context: interfaces.Context) => { return context; },
+            serviceIdentifier: serviceIdentifier,
+            target: target
+        });
     }
 
     public snapshot(): void {
@@ -144,32 +175,6 @@ class Kernel implements interfaces.Kernel {
         }, previous);
     }
 
-    // Resolves a dependency by its runtime identifier
-    // The runtime identifier can be associated with one or multiple bindings
-    public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) => { return context; },
-            multiInject: true,
-            serviceIdentifier: serviceIdentifier,
-            target: null
-        });
-    }
-
-    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
-        return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
-    }
-
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
-        let metadata = new Metadata(key, value);
-        let target = new Target(null, null, serviceIdentifier, metadata);
-        return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) => { return context; },
-            multiInject: true,
-            serviceIdentifier: serviceIdentifier,
-            target: target
-        });
-    }
-
     public set parent (kernel: interfaces.Kernel) {
         this._parentKernel = kernel;
     }
@@ -188,13 +193,12 @@ class Kernel implements interfaces.Kernel {
     }
 
     private _planAndResolve<T>(args: interfaces.PlanAndResolveArgs): T[] {
-        let contexts = this._plan(args.multiInject, args.serviceIdentifier, args.target);
+        let contexts = this._plan(args.serviceIdentifier, args.target);
         let results = this._resolve<T>(contexts, args.contextInterceptor);
         return results;
     }
 
     private _plan(
-        multiInject: boolean,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         target: interfaces.Target
     ): interfaces.Context[] {
@@ -212,10 +216,10 @@ class Kernel implements interfaces.Kernel {
                 target
             );
 
-            bindings = this._planner.getActiveBindings(request, target);
+            bindings = this._planner.getActiveBindings(this, request, target);
         }
 
-        bindings = this._planner.validateActiveBindingCount(serviceIdentifier, multiInject, bindings, target, this);
+        bindings = this._planner.validateActiveBindingCount(serviceIdentifier, bindings, target, this);
 
         let contexts = bindings.map((binding: interfaces.Binding<any>) => {
             return this._createContext(binding, target);

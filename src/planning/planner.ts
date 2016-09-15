@@ -37,7 +37,7 @@ class Planner implements interfaces.Planner {
 
         if (binding.type === BindingType.Instance) {
             let dependencies = this._getDependencies(binding.implementationType);
-            dependencies.forEach((dependency) => { this._createSubRequest(rootRequest, dependency); });
+            dependencies.forEach((dependency) => { this._createSubRequest(context.kernel, rootRequest, dependency); });
         }
 
         return plan;
@@ -50,26 +50,26 @@ class Planner implements interfaces.Planner {
 
         let bindings: interfaces.Binding<T>[] = [];
         let _kernel: any = kernel;
+
         let _bindingDictionary = _kernel._bindingDictionary;
 
         if (_bindingDictionary.hasKey(serviceIdentifier)) {
             bindings = _bindingDictionary.get(serviceIdentifier);
-
         } else if (_kernel._parentKernel !== undefined) {
             // recursively try to get bindings from parent kernel
             bindings = this.getBindings<T>(_kernel._parentKernel, serviceIdentifier);
-
         }
 
         return bindings;
     }
 
     public getActiveBindings(
+        kernel: interfaces.Kernel,
         parentRequest: interfaces.Request,
         target: interfaces.Target
     ): interfaces.Binding<any>[] {
 
-        let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.serviceIdentifier);
+        let bindings = this.getBindings<any>(kernel, target.serviceIdentifier);
         let activeBindings: interfaces.Binding<any>[] = [];
 
         if (bindings.length > 1 && target.isArray() === false) {
@@ -98,7 +98,6 @@ class Planner implements interfaces.Planner {
 
     public validateActiveBindingCount(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        multiInject: boolean,
         bindings: interfaces.Binding<any>[],
         target: interfaces.Target,
         kernel: interfaces.Kernel
@@ -111,24 +110,25 @@ class Planner implements interfaces.Planner {
                 let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
                     msg = ERROR_MSGS.NOT_REGISTERED;
 
-                if (target !== null) {
+                if (target.isTagged() || target.isNamed()) {
                     let m = target.metadata[0].toString();
                     msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${m}`;
-                    msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString);
                 } else {
                     msg = `${msg} ${serviceIdentifierString}`;
                 }
 
+                msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString);
+
                 throw new Error(msg);
 
             case BindingCount.OnlyOneBindingAvailable:
-                if (multiInject === false) {
+                if (target.isArray() === false) {
                     return bindings;
                 }
 
             case BindingCount.MultipleBindingsAvailable:
             default:
-                if (multiInject === false) {
+                if (target.isArray() === false) {
                     let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
                     msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
                     msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString);
@@ -140,20 +140,19 @@ class Planner implements interfaces.Planner {
 
     }
 
-    private _createSubRequest(parentRequest: interfaces.Request, target: interfaces.Target) {
+    private _createSubRequest(kernel: interfaces.Kernel, parentRequest: interfaces.Request, target: interfaces.Target) {
 
         try {
-            let activeBindings = this.getActiveBindings(parentRequest, target);
+            let activeBindings = this.getActiveBindings(kernel, parentRequest, target);
 
             activeBindings = this.validateActiveBindingCount(
                 target.serviceIdentifier,
-                target.isArray(),
                 activeBindings,
                 target,
                 parentRequest.parentContext.kernel
             );
 
-            this._createChildRequest(parentRequest, target, activeBindings);
+            this._createChildRequest(kernel, parentRequest, target, activeBindings);
 
         } catch (error) {
             if (error instanceof RangeError) {
@@ -165,6 +164,7 @@ class Planner implements interfaces.Planner {
     }
 
     private _createChildRequest(
+        kernel: interfaces.Kernel,
         parentRequest: interfaces.Request,
         target: interfaces.Target,
         bindings: interfaces.Binding<any>[]
@@ -186,7 +186,7 @@ class Planner implements interfaces.Planner {
                 // Create child requests for sub-dependencies if any
                 let subDependencies = this._getDependencies(binding.implementationType);
                 subDependencies.forEach((d, index) => {
-                    this._createSubRequest(subChildRequest, d);
+                    this._createSubRequest(kernel, subChildRequest, d);
                 });
             }
 

@@ -47,7 +47,6 @@ namespace interfaces {
     }
 
     export interface PlanAndResolveArgs {
-        multiInject: boolean;
         serviceIdentifier: ServiceIdentifier<any>;
         target: Target;
         contextInterceptor: (contexts: Context) => Context;
@@ -84,13 +83,13 @@ namespace interfaces {
         getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
 
         getActiveBindings(
+            kernel: interfaces.Kernel,
             parentRequest: interfaces.Request,
             target: interfaces.Target
         ): Binding<any>[];
 
         validateActiveBindingCount(
             serviceIdentifier: interfaces.ServiceIdentifier<any>,
-            multiInject: boolean,
             bindings: interfaces.Binding<any>[],
             target: interfaces.Target,
             kernel: interfaces.Kernel
