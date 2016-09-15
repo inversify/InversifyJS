@@ -208,7 +208,7 @@ Remember that you should do this only in your [composition root](http://blog.plo
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```ts
-import myKernel = from "./inversify.config";
+import myKernel from "./inversify.config";
 
 var ninja = myKernel.get<Warrior>(TYPES.Warrior);
 
