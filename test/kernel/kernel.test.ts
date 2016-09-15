@@ -383,20 +383,50 @@ describe("Kernel", () => {
         expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(DivineRapier);
     });
 
-    it("Should be able to resolve named multi-injection", () => {
+/* TEMP! */
+        function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
+            return (args: interfaces.PlanAndResolveArgs) => {
 
-        let kernel = new Kernel();
+                let nextContextInterceptor = args.contextInterceptor;
+
+                args.contextInterceptor = (context: interfaces.Context) => {
+
+                    console.log(">>>>>>>>>>>>>>>>>>");
+                    console.log("serviceIdentifier: ", context.plan.rootRequest.serviceIdentifier.toString());
+                    console.log("target.metadata: ", context.plan.rootRequest.target.metadata.toString());
+                    console.log("childRequests: ", context.plan.rootRequest.childRequests);
+                    console.log("bindings: ");
+                    context.plan.rootRequest.bindings.forEach((b) => {
+                        console.log("\timplementationType: ", b.implementationType);
+                        console.log("\tcache: ", b.cache);
+                    });
+
+                    return nextContextInterceptor(context);
+                };
+
+                let result = planAndResolve(args);
+
+                return result;
+            };
+        }
+/* END TEMP! */
+
+    it("Should be able to resolve named multi-injection", () => {
 
         interface Intl {
             hello?: string;
             goodbye?: string;
         }
 
+        let kernel = new Kernel();
         kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
-
         kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
+
+/* TEMP! */
+        kernel.applyMiddleware(logger);
+/* END TEMP! */
 
         let fr = kernel.getAllNamed<Intl>("Intl", "fr");
         expect(fr.length).to.eql(2);
@@ -412,20 +442,23 @@ describe("Kernel", () => {
 
     it("Should be able to resolve tagged multi-injection", () => {
 
-        let kernel = new Kernel();
-
         interface Intl {
             hello?: string;
             goodbye?: string;
         }
 
+        let kernel = new Kernel();
         kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
-
         kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
+/* TEMP! */
+        kernel.applyMiddleware(logger);
+/* END TEMP! */
+
         let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
+        console.log(fr);
         expect(fr.length).to.eql(2);
         expect(fr[0].hello).to.eql("bonjour");
         expect(fr[1].goodbye).to.eql("au revoir");

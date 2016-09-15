@@ -206,19 +206,15 @@ class Kernel implements interfaces.Kernel {
         let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
 
         // Filter bindings using the target and the binding constraints
-        if (target !== null) {
+        let request = new Request(
+            serviceIdentifier,
+            this._planner.createContext(this),
+            null,
+            bindings,
+            target
+        );
 
-            let request = new Request(
-                serviceIdentifier,
-                this._planner.createContext(this),
-                null,
-                bindings,
-                target
-            );
-
-            bindings = this._planner.getActiveBindings(this, request, target);
-        }
-
+        bindings = this._planner.getActiveBindings(this, request, target);
         bindings = this._planner.validateActiveBindingCount(serviceIdentifier, bindings, target, this);
 
         let contexts = bindings.map((binding: interfaces.Binding<any>) => {
