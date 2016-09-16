@@ -98,6 +98,30 @@ class Kernel implements interfaces.Kernel {
         return bindings.length > 0;
     }
 
+    public snapshot(): void {
+        this._snapshots.push(KernelSnapshot.of(this._bindingDictionary.clone(), this._middleware));
+    }
+
+    public restore(): void {
+        if (this._snapshots.length === 0) {
+            throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
+        }
+        let snapshot = this._snapshots.pop();
+        this._bindingDictionary = snapshot.bindings;
+        this._middleware = snapshot.middleware;
+    }
+
+    public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
+        let previous: interfaces.PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
+        this._middleware = middlewares.reduce((prev, curr) => {
+            return curr(prev);
+        }, previous);
+    }
+
+    public set parent (kernel: interfaces.Kernel) {
+        this._parentKernel = kernel;
+    }
+
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
@@ -153,30 +177,6 @@ class Kernel implements interfaces.Kernel {
             serviceIdentifier: serviceIdentifier,
             target: target
         });
-    }
-
-    public snapshot(): void {
-        this._snapshots.push(KernelSnapshot.of(this._bindingDictionary.clone(), this._middleware));
-    }
-
-    public restore(): void {
-        if (this._snapshots.length === 0) {
-            throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
-        }
-        let snapshot = this._snapshots.pop();
-        this._bindingDictionary = snapshot.bindings;
-        this._middleware = snapshot.middleware;
-    }
-
-    public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
-        let previous: interfaces.PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
-        this._middleware = middlewares.reduce((prev, curr) => {
-            return curr(prev);
-        }, previous);
-    }
-
-    public set parent (kernel: interfaces.Kernel) {
-        this._parentKernel = kernel;
     }
 
     private _get<T>(args: interfaces.PlanAndResolveArgs): T[] {
