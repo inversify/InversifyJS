@@ -57,7 +57,7 @@ InversifyJS has been developed with 4 main goals:
 You can get the latest release and the type definitions using npm:
 
 ```
-npm install inversify reflect-metadata --save
+$ npm install inversify reflect-metadata --save
 ```
 
 The InversifyJS type definitions are included in the inversify npm package. 
