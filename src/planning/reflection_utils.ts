@@ -5,6 +5,24 @@ import TargetType from "./target_type";
 import Target from "./target";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
+function getDependencies(func: Function): interfaces.Target[] {
+
+    let constructorName = getFunctionName(func);
+    let targets: interfaces.Target[] = getTargets(func, false);
+
+    // Throw if a derived class does not implement its constructor explicitly
+    // We do this to prevent errors when a base class (parent) has dependencies
+    // and one of the derived classes (children) has no dependencies
+    let baseClassDepencencyCount = getBaseClassDepencencyCount(func);
+    if (targets.length < baseClassDepencencyCount) {
+        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
+                    constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        throw new Error(error);
+    }
+
+    return targets;
+}
+
 function getTargets(func: Function, isBaseClass: boolean): interfaces.Target[] {
 
     let constructorName = getFunctionName(func);
@@ -23,18 +41,18 @@ function getTargets(func: Function, isBaseClass: boolean): interfaces.Target[] {
 
     let targets = [
         ...(
-            constructorArgsTargets(
+            getConstructorArgsAsTargets(
                 isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length
             )
         ),
-        ...(getClassPropsTargets(func))
+        ...(getClassPropsAsTargets(func))
     ];
 
     return targets;
 
 }
 
-function constructorArgsTargets(
+function getConstructorArgsAsTargets(
     isBaseClass: boolean,
     constructorName: string,
     serviceIdentifiers: any,
@@ -78,7 +96,7 @@ function constructorArgsTargets(
     return targets;
 }
 
-function getClassPropsTargets(func: Function) {
+function getClassPropsAsTargets(func: Function) {
 
     let classPropsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, func) || [];
     let targets: interfaces.Target[] = [];
@@ -112,7 +130,7 @@ function getClassPropsTargets(func: Function) {
 
     if (baseConstructor !== Object) {
 
-        let baseTargets = getClassPropsTargets(baseConstructor);
+        let baseTargets = getClassPropsAsTargets(baseConstructor);
 
         targets = [
             ...targets,
@@ -124,38 +142,24 @@ function getClassPropsTargets(func: Function) {
     return targets;
 }
 
-function getDependencies(func: Function): interfaces.Target[] {
-
-    let constructorName = getFunctionName(func);
-    let targets: interfaces.Target[] = getTargets(func, false);
-
-    // Throw if a derived class does not implement its constructor explicitly
-    // We do this to prevent errors when a base class (parent) has dependencies
-    // and one of the derived classes (children) has no dependencies
-    let baseClassDepencencyCount = getBaseClassDepencencyCount(func);
-    if (targets.length < baseClassDepencencyCount) {
-        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
-                    constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
-        throw new Error(error);
-    }
-
-    return targets;
-}
-
 function getBaseClassDepencencyCount(func: Function): number {
 
     let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
 
     if (baseConstructor !== Object) {
 
+        // get targets for base class
         let targets = getTargets(baseConstructor, true);
 
+        // get unmanaged metadata 
         let metadata: any[] = targets.map((t: interfaces.Target) => {
             return t.metadata.filter((m: interfaces.Metadata) => {
                 return m.key === METADATA_KEY.UNMANAGED_TAG;
             });
         });
 
+        // Compare the number of constructor arguments with the number of 
+        // unmanaged dependencies unmanaged dependencies are not required
         let unmanagedCount = [].concat.apply([], metadata).length;
         let dependencyCount = targets.length - unmanagedCount;
 

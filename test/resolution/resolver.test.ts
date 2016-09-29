@@ -1,7 +1,7 @@
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import Resolver from "../../src/resolution/resolver";
+import resolve from "../../src/resolution/resolver";
 import Planner from "../../src/planning/planner";
 import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
@@ -18,7 +18,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import BindingType from "../../src/bindings/binding_type";
 import * as Proxy from "harmony-proxy";
 
-describe("Resolver", () => {
+describe("Resolve", () => {
 
   let sandbox: sinon.SinonSandbox;
 
@@ -136,8 +136,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -253,22 +252,13 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let createInstanceSpy = sandbox.spy(resolver, "_createInstance");
 
       expect(_kernel._bindingDictionary.get("Katana")[0].cache === null).eql(true);
-
-      expect(createInstanceSpy.callCount).eql(0);
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
       expect(ninja instanceof Ninja).eql(true);
-      expect(createInstanceSpy.callCount).eql(2);
-      expect(createInstanceSpy.getCall(0).args[0].name === "Katana").eql(true);
-      expect(createInstanceSpy.getCall(1).args[0].name === "Ninja").eql(true);
 
-      let ninja2 = resolver.resolve<Ninja>(context);
+      let ninja2 = resolve<Ninja>(context);
       expect(ninja2 instanceof Ninja).eql(true);
-      expect(createInstanceSpy.callCount).eql(3);
-      expect(createInstanceSpy.getCall(1).args[0].name === "Ninja").eql(true);
 
       expect(_kernel._bindingDictionary.get("Katana")[0].cache instanceof Katana).eql(true);
 
@@ -318,13 +308,8 @@ describe("Resolver", () => {
       let plan = new Plan(context, ninjaRequest);
       context.addPlan(plan);
 
-      // resolver
-      let resolver = new Resolver();
-      let _resolver: any = resolver;
-      let _resolve = _resolver._resolve;
-
       let throwFunction = () => {
-          _resolve(ninjaRequest);
+          resolve(context);
       };
 
       expect(ninjaRequest.bindings[0].type).eql(BindingType.Invalid);
@@ -416,8 +401,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -542,8 +526,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -651,8 +634,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -756,8 +738,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -867,8 +848,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Warrior>(context);
+      let ninja = resolve<Warrior>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
@@ -925,8 +905,7 @@ describe("Resolver", () => {
       let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -977,8 +956,7 @@ describe("Resolver", () => {
       let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -1035,8 +1013,7 @@ describe("Resolver", () => {
       let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -1091,8 +1068,7 @@ describe("Resolver", () => {
       let plan = planner.createPlan(context, ninjaBinding, null);
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -1110,8 +1086,7 @@ describe("Resolver", () => {
       let plan2 = planner2.createPlan(context2, ninjaBinding2, null);
       context2.addPlan(plan2);
 
-      let resolver2 = new Resolver();
-      let ninja2 = resolver2.resolve<Ninja>(context2);
+      let ninja2 = resolve<Ninja>(context2);
 
       expect(ninja2 instanceof Ninja).eql(true);
       expect(ninja2.katana instanceof Katana).eql(true);
@@ -1176,8 +1151,7 @@ describe("Resolver", () => {
         let plan = planner.createPlan(context, ninjaBinding, null);
         context.addPlan(plan);
 
-        let resolver = new Resolver();
-        let ninja = resolver.resolve<Ninja>(context);
+        let ninja = resolve<Ninja>(context);
 
         expect(ninja.katana.use()).eql("Used Katana!");
         expect(Array.isArray(timeTracker)).eql(true);
@@ -1278,8 +1252,7 @@ describe("Resolver", () => {
 
       context.addPlan(plan);
 
-      let resolver = new Resolver();
-      let ninja = resolver.resolve<Ninja>(context);
+      let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(typeof ninja.katanaFactory === "function").eql(true);

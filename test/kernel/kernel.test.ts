@@ -384,8 +384,8 @@ describe("Kernel", () => {
     });
 
 /* TEMP! */
-        function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function logger(next: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
 
                 let nextContextInterceptor = args.contextInterceptor;
 
@@ -404,7 +404,7 @@ describe("Kernel", () => {
                     return nextContextInterceptor(context);
                 };
 
-                let result = planAndResolve(args);
+                let result = next(args);
 
                 return result;
             };

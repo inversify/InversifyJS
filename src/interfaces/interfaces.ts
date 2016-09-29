@@ -42,18 +42,22 @@ namespace interfaces {
         (context: Context): Provider<T>;
     }
 
-    export interface PlanAndResolve<T> {
-        (args: PlanAndResolveArgs): T[];
-    }
-
-    export interface PlanAndResolveArgs {
+    export interface NextArgs {
         serviceIdentifier: ServiceIdentifier<any>;
         target: Target;
-        contextInterceptor: (contexts: Context) => Context;
+        contextInterceptor?: (contexts: Context) => Context;
+    }
+
+    export interface Next {
+        (args: NextArgs): any[];
     }
 
     export interface Middleware extends Function {
-        (next: PlanAndResolve<any>): PlanAndResolve<any>;
+        (next: Next): Next;
+    }
+
+    export interface ContextInterceptor extends Function {
+        (context: interfaces.Context): interfaces.Context;
     }
 
     export interface Context {
@@ -78,9 +82,24 @@ namespace interfaces {
     }
 
     export interface Planner {
+
+        plan(
+            kernel: interfaces.Kernel,
+            target: interfaces.Target
+        ): interfaces.Context;
+
         createContext(kernel: Kernel): Context;
         createPlan(parentContext: Context, binding: Binding<any>, target: Target): Plan;
         getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
+
+        createTarget(
+            isMultiInject: boolean,
+            targetType: number,
+            serviceIdentifier: interfaces.ServiceIdentifier<any>,
+            key?: string,
+            value?: any,
+            name?: string
+        ): interfaces.Target;
 
         getActiveBindings(
             kernel: interfaces.Kernel,
@@ -168,7 +187,7 @@ namespace interfaces {
 
     export interface KernelSnapshot {
         bindings: Lookup<Binding<any>>;
-        middleware: PlanAndResolve<any>;
+        middleware: Next;
     }
 
     export interface Clonable<T> {

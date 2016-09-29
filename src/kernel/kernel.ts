@@ -1,50 +1,33 @@
-// Kernel
-// ------
-
-// Inversify is a lightweight pico container for TypeScript
-// and JavaScript apps.
-
-// A pico container uses a class constructor to identify and
-// inject its dependencies. For this to work, the class needs
-// to declare a constructor that includes everything it
-// needs injected.
-
-// In order to resolve a dependency, the pico container needs
-// to be told which implementation type (classes) to associate
-// with each service type (interfaces).
-
 import interfaces from "../interfaces/interfaces";
 import Binding from "../bindings/binding";
 import Lookup from "./lookup";
 import Planner from "../planning/planner";
-import Resolver from "../resolution/resolver";
+import resolve from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import BindingToSyntax from "../syntax/binding_to_syntax";
-import Metadata from "../planning/metadata";
-import Target from "../planning/target";
 import TargetType from "../planning/target_type";
-import Request from "../planning/request";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
-// import Request from "../planning/request";
+
+import Request from "../planning/request";
 
 class Kernel implements interfaces.Kernel {
 
     public guid: string;
-    private _planner: Planner;
-    private _resolver: Resolver;
-    private _middleware: interfaces.PlanAndResolve<any>;
+    private _planner: interfaces.Planner;
+    private _resolve: <T>(context: interfaces.Context) => T;
+    private _middleware: interfaces.Next;
     private _bindingDictionary: interfaces.Lookup<Binding<any>>;
-    private _snapshots: Array<KernelSnapshot>;
+    private _snapshots: Array<interfaces.KernelSnapshot>;
     private _parentKernel: interfaces.Kernel;
 
     // Initialize private properties
     public constructor() {
         this.guid = guid();
         this._planner = new Planner();
-        this._resolver = new Resolver();
+        this._resolve = resolve;
         this._bindingDictionary = new Lookup<Binding<any>>();
         this._middleware = null;
         this._snapshots = [];
@@ -112,10 +95,10 @@ class Kernel implements interfaces.Kernel {
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
-        let previous: interfaces.PlanAndResolve<any> = (this._middleware) ? this._middleware : this._planAndResolve.bind(this);
+        let initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
         this._middleware = middlewares.reduce((prev, curr) => {
             return curr(prev);
-        }, previous);
+        }, initial);
     }
 
     public set parent (kernel: interfaces.Kernel) {
@@ -126,77 +109,74 @@ class Kernel implements interfaces.Kernel {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        let injectMetadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
-        let target = new Target(TargetType.Variable, "", serviceIdentifier, injectMetadata);
-        return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) => { return context; },
-            serviceIdentifier: serviceIdentifier,
-            target: target
-        })[0];
+        let target = this._planner.createTarget(false, TargetType.Variable, serviceIdentifier);
+        return this._get<T>(serviceIdentifier, target)[0]; // TODO no need for index 0
+    }
+
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
+        let target = this._planner.createTarget(false, TargetType.Variable, serviceIdentifier, key, value);
+        return this._get<T>(serviceIdentifier, target)[0]; // TODO no need for index 0
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
-        let tagMetadata = new Metadata(key, value);
-        let injectMetadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
-        let target = new Target(TargetType.Variable, "", serviceIdentifier, tagMetadata);
-        target.metadata.push(injectMetadata);
-        return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) => { return context; },
-            serviceIdentifier: serviceIdentifier,
-            target: target
-        })[0];
-    }
-
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        let multiInjectMetadata = new Metadata(METADATA_KEY.MULTI_INJECT_TAG, serviceIdentifier);
-        let target = new Target(TargetType.Variable, "", serviceIdentifier, multiInjectMetadata);
-        return this._get<T>({
-            contextInterceptor: (context: interfaces.Context) => { return context; },
-            serviceIdentifier: serviceIdentifier,
-            target: target
-        });
+        let target = this._planner.createTarget(true, TargetType.Variable, serviceIdentifier);
+        return this._get<T>(serviceIdentifier, target);
+    }
+
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
+        let target = this._planner.createTarget(true, TargetType.Variable, serviceIdentifier, key, value);
+        return this._get<T>(serviceIdentifier, target);
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
-        let tagMetadata = new Metadata(key, value);
-        let multiInjectMetadata = new Metadata(METADATA_KEY.MULTI_INJECT_TAG, serviceIdentifier);
-        let target = new Target(TargetType.Variable, "", serviceIdentifier, tagMetadata);
-        target.metadata.push(multiInjectMetadata);
-        return this._get<T>({
+    private _get<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        target: interfaces.Target
+    ): T[] { // TODO support for array and non-array return
+
+        let result: T[] = null;
+        let args: interfaces.NextArgs = {
             contextInterceptor: (context: interfaces.Context) => { return context; },
             serviceIdentifier: serviceIdentifier,
             target: target
-        });
-    }
+        };
 
-    private _get<T>(args: interfaces.PlanAndResolveArgs): T[] {
-        let result: T[] = null;
         if (this._middleware) {
             result = this._middleware(args);
         } else {
-            result = this._planAndResolve<T>(args);
+            result = this._planAndResolve<T>()(args);
         }
+
         if (Array.isArray(result) === false) {
             throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
         }
+
         return result;
     }
 
-    private _planAndResolve<T>(args: interfaces.PlanAndResolveArgs): T[] {
-        let contexts = this._plan(args.serviceIdentifier, args.target);
-        let results = this._resolve<T>(contexts, args.contextInterceptor);
-        return results;
+    private _planAndResolve<T>(): (args: interfaces.NextArgs) => T[] {
+        return (args: interfaces.NextArgs) => {
+
+            let contexts = this._plan(args.serviceIdentifier, args.target);
+            let results = this._resolveContexts<T>(contexts, args.contextInterceptor);
+
+            // TODO 
+            // let context = this._planner.plan(args.serviceIdentifier, args.target);
+            // let results = this._resolver.resolve<T>(args.contextInterceptor(context));
+            return results;
+        };
     }
+
+    // !!!!! TODO below will be refactored into the Planner!!!!!
 
     private _plan(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
@@ -230,13 +210,13 @@ class Kernel implements interfaces.Kernel {
         return context;
     }
 
-    private _resolve<T>(
+    private _resolveContexts<T>(
         contexts: interfaces.Context[],
         contextInterceptor: (context: interfaces.Context) => interfaces.Context
     ): T[] {
 
         let results = contexts.map((context) => {
-            return this._resolver.resolve<T>(contextInterceptor(context));
+            return this._resolve<T>(contextInterceptor(context));
         });
         return results;
     }

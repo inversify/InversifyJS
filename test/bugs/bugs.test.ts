@@ -364,8 +364,8 @@ describe("Bugs", () => {
         kernel.bind<Dependency4>(TYPES.Dependency4).to(Dependency4);
         kernel.bind<Dependency5>(TYPES.Dependency5).to(Dependency5);
 
-        function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function logger(next: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
 
                 let nextContextInterceptor = args.contextInterceptor;
 
@@ -399,7 +399,7 @@ describe("Bugs", () => {
                     return nextContextInterceptor(context);
                 };
 
-                let result = planAndResolve(args);
+                let result = next(args);
 
                 return result;
             };

@@ -3,10 +3,13 @@ import Plan from "./plan";
 import Context from "./context";
 import Request from "./request";
 import Target from "./target";
+import TargetType from "./target_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
 import BindingCount from "../bindings/binding_count";
 import getDependencies from "./reflection_utils";
+import Metadata from "../planning/metadata";
+import * as METADATA_KEY from "../constants/metadata_keys";
 import {
     circularDependencyToException,
     getServiceIdentifierAsString,
@@ -15,8 +18,67 @@ import {
 
 class Planner implements interfaces.Planner {
 
+    public plan(
+        kernel: interfaces.Kernel,
+        target: interfaces.Target
+    ): interfaces.Context {
+
+        let context = new Context(kernel);
+        let bindings: any = null;
+        let plan = this.createPlan(context, bindings, target);
+
+        plan.rootRequest = null;
+
+        return context;
+    }
+
     public createContext(kernel: interfaces.Kernel): interfaces.Context {
         return new Context(kernel);
+    }
+
+    public createTarget(
+        isMultiInject: boolean,
+        targetType: TargetType,
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        key?: string,
+        value?: any,
+        name = ""
+    ): interfaces.Target {
+
+        let metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
+        let injectMetadata = new Metadata(metadataKey, serviceIdentifier);
+        let target = new Target(targetType, name, serviceIdentifier, injectMetadata);
+
+        if (key !== undefined) {
+            let tagMetadata = new Metadata(key, value);
+            target.metadata.push(tagMetadata);
+        }
+
+        return target;
+
+    }
+
+    public createRootRequest(
+        kernel: interfaces.Kernel,
+        context: interfaces.Context,
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        target: interfaces.Target
+    ): interfaces.Request {
+
+        // let bindings = this.getBindings<any>(kernel, serviceIdentifier);
+
+        let request = new Request(
+            serviceIdentifier,
+            context,
+            null,
+            null, // bindings,
+            target
+        );
+
+        // bindings = this.getActiveBindings(kernel, request, target);
+        // bindings = this.validateActiveBindingCount(serviceIdentifier, bindings, target, kernel);
+
+        return request;
     }
 
     public createPlan(
