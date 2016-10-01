@@ -104,7 +104,9 @@ function createPlan(
 
     if (binding.type === BindingType.Instance) {
         let dependencies = getDependencies(binding.implementationType);
-        dependencies.forEach((dependency) => { createSubRequest(context.kernel, rootRequest, dependency); });
+        dependencies.forEach((dependency) => {
+            _createSubRequest(context.kernel, rootRequest, dependency);
+        });
     }
 
     return plan;
@@ -212,7 +214,7 @@ function validateActiveBindingCount(
 
 }
 
-function createSubRequest(kernel: interfaces.Kernel, parentRequest: interfaces.Request, target: interfaces.Target) {
+function _createSubRequest(kernel: interfaces.Kernel, parentRequest: interfaces.Request, target: interfaces.Target) {
 
     try {
         let activeBindings = getActiveBindings(kernel, parentRequest, target);
@@ -224,7 +226,7 @@ function createSubRequest(kernel: interfaces.Kernel, parentRequest: interfaces.R
             parentRequest.parentContext.kernel
         );
 
-        createChildRequest(kernel, parentRequest, target, activeBindings);
+        _createChildRequest(kernel, parentRequest, target, activeBindings);
 
     } catch (error) {
         if (error instanceof RangeError) {
@@ -235,7 +237,7 @@ function createSubRequest(kernel: interfaces.Kernel, parentRequest: interfaces.R
     }
 }
 
-function createChildRequest(
+function _createChildRequest(
     kernel: interfaces.Kernel,
     parentRequest: interfaces.Request,
     target: interfaces.Target,
@@ -258,7 +260,7 @@ function createChildRequest(
             // Create child requests for sub-dependencies if any
             let subDependencies = getDependencies(binding.implementationType);
             subDependencies.forEach((d, index) => {
-                createSubRequest(kernel, subChildRequest, d);
+                _createSubRequest(kernel, subChildRequest, d);
             });
         }
 

@@ -24,8 +24,36 @@ function _injectProperties(instance: any, childRequests: interfaces.Request[]): 
 
 }
 
-function _createInstance(Func: { new(...args: any[]) : any }, injections: Object[]): any {
+function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): any {
     return new Func(...injections);
+}
+
+
+function _resolveInstance(
+    constr: interfaces.Newable<any>,
+    childRequests: interfaces.Request[]
+): any {
+
+    let result: any = null;
+
+    if (childRequests.length > 0) {
+
+        let constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
+            return childRequest.target.type === TargetType.ConstructorArgument;
+        });
+
+        let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {
+            return _resolveRequest(childRequest);
+        });
+
+        result = _createInstance(constr, constructorInjections);
+        result = _injectProperties(result, childRequests);
+
+    } else {
+        result = new constr();
+    }
+
+    return result;
 }
 
 function _resolveRequest(request: interfaces.Request): any {
@@ -80,26 +108,7 @@ function _resolveRequest(request: interfaces.Request): any {
                 break;
 
             case BindingType.Instance:
-
-                let constr = binding.implementationType;
-
-                if (childRequests.length > 0) {
-
-                    let constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-                        return childRequest.target.type === TargetType.ConstructorArgument;
-                    });
-
-                    let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {
-                        return _resolveRequest(childRequest);
-                    });
-
-                    result = _createInstance(constr, constructorInjections);
-                    result = _injectProperties(result, childRequests);
-
-                } else {
-                    result = new constr();
-                }
-
+                result = _resolveInstance(binding.implementationType, childRequests);
                 break;
 
             case BindingType.Invalid:
@@ -126,13 +135,8 @@ function _resolveRequest(request: interfaces.Request): any {
 
 }
 
-function makeResolve(resolveRequest: (request: interfaces.Request) => any) {
-    return <T>(context: interfaces.Context): T => {
-        let rootRequest = context.plan.rootRequest;
-        return resolveRequest(rootRequest);
-    };
+function resolve<T>(context: interfaces.Context): T {
+    return _resolveRequest(context.plan.rootRequest);
 }
-
-let resolve = makeResolve(_resolveRequest);
 
 export default resolve;
