@@ -43,9 +43,13 @@ namespace interfaces {
     }
 
     export interface NextArgs {
-        serviceIdentifier: ServiceIdentifier<any>;
-        target: Target;
         contextInterceptor?: (contexts: Context) => Context;
+        isMultiInject: boolean;
+        target: Target; // temp
+        targetType: number;
+        serviceIdentifier: interfaces.ServiceIdentifier<any>;
+        key?: string;
+        value?: any;
     }
 
     export interface Next {
@@ -79,41 +83,6 @@ namespace interfaces {
     export interface Plan {
         parentContext: Context;
         rootRequest: Request;
-    }
-
-    export interface Planner {
-
-        plan(
-            kernel: interfaces.Kernel,
-            target: interfaces.Target
-        ): interfaces.Context;
-
-        createContext(kernel: Kernel): Context;
-        createPlan(parentContext: Context, binding: Binding<any>, target: Target): Plan;
-        getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
-
-        createTarget(
-            isMultiInject: boolean,
-            targetType: number,
-            serviceIdentifier: interfaces.ServiceIdentifier<any>,
-            key?: string,
-            value?: any,
-            name?: string
-        ): interfaces.Target;
-
-        getActiveBindings(
-            kernel: interfaces.Kernel,
-            parentRequest: interfaces.Request,
-            target: interfaces.Target
-        ): Binding<any>[];
-
-        validateActiveBindingCount(
-            serviceIdentifier: interfaces.ServiceIdentifier<any>,
-            bindings: interfaces.Binding<any>[],
-            target: interfaces.Target,
-            kernel: interfaces.Kernel
-        ): interfaces.Binding<any>[];
-
     }
 
     export interface QueryableString {
@@ -152,10 +121,6 @@ namespace interfaces {
         isTagged(): boolean;
         matchesNamedTag(name: string): boolean;
         matchesTag(key: string): (value: any) => boolean;
-    }
-
-    export interface Resolver {
-        resolve<T>(context: Context): T;
     }
 
     export interface Kernel {

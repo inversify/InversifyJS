@@ -5,30 +5,30 @@ import TargetType from "../planning/target_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 
-function resolveRequest(request: interfaces.Request): any {
+function _injectProperties(instance: any, childRequests: interfaces.Request[]): any {
 
-    let injectProperties = (instance: any, childRequests: interfaces.Request[]): any => {
+    let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
+        return childRequest.target.type === TargetType.ClassProperty;
+    });
 
-        let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-            return childRequest.target.type === TargetType.ClassProperty;
-        });
+    let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
+        return _resolveRequest(childRequest);
+    });
 
-        let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
-            return resolveRequest(childRequest);
-        });
+    propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
+        let injection = propertyInjections[index];
+        instance[r.target.name.value()] = injection;
+    });
 
-        propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
-            let injection = propertyInjections[index];
-            instance[r.target.name.value()] = injection;
-        });
+    return instance;
 
-        return instance;
+}
 
-    };
+function _createInstance(Func: { new(...args: any[]) : any }, injections: Object[]): any {
+    return new Func(...injections);
+}
 
-    let createInstance = (Func: { new(...args: any[]) : any }, injections: Object[]): any => {
-        return new Func(...injections);
-    };
+function _resolveRequest(request: interfaces.Request): any {
 
     let bindings = request.bindings;
     let childRequests = request.childRequests;
@@ -40,7 +40,7 @@ function resolveRequest(request: interfaces.Request): any {
 
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {
-            return resolveRequest(childRequest);
+            return _resolveRequest(childRequest);
         });
 
     } else {
@@ -90,11 +90,11 @@ function resolveRequest(request: interfaces.Request): any {
                     });
 
                     let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {
-                        return resolveRequest(childRequest);
+                        return _resolveRequest(childRequest);
                     });
 
-                    result = createInstance(constr, constructorInjections);
-                    result = injectProperties(result, childRequests);
+                    result = _createInstance(constr, constructorInjections);
+                    result = _injectProperties(result, childRequests);
 
                 } else {
                     result = new constr();
@@ -126,15 +126,13 @@ function resolveRequest(request: interfaces.Request): any {
 
 }
 
-function makeResolve(
-    resolveRequest: Function
-) {
+function makeResolve(resolveRequest: (request: interfaces.Request) => any) {
     return <T>(context: interfaces.Context): T => {
         let rootRequest = context.plan.rootRequest;
         return resolveRequest(rootRequest);
     };
 }
 
-let resolve = makeResolve(resolveRequest);
+let resolve = makeResolve(_resolveRequest);
 
 export default resolve;

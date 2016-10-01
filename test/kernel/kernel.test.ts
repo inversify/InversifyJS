@@ -46,24 +46,26 @@ describe("Kernel", () => {
       let kernel = new Kernel();
       kernel.load(warriors, weapons);
 
-      let _kernel: any = kernel;
-      expect(_kernel._bindingDictionary._dictionary[0].serviceIdentifier).eql("Ninja");
-      expect(_kernel._bindingDictionary._dictionary[1].serviceIdentifier).eql("Katana");
-      expect(_kernel._bindingDictionary._dictionary[2].serviceIdentifier).eql("Shuriken");
-      expect(_kernel._bindingDictionary._dictionary.length).eql(3);
+      let dictionary: Array<interfaces.KeyValuePair<interfaces.Binding<any>>> = (<any>kernel)._bindingDictionary._dictionary;
+      expect(dictionary[0].serviceIdentifier).eql("Ninja");
+      expect(dictionary[1].serviceIdentifier).eql("Katana");
+      expect(dictionary[2].serviceIdentifier).eql("Shuriken");
+      expect(dictionary.length).eql(3);
 
-      let tryGetNinja = () => { _kernel.get("Ninja"); };
-      let tryGetKatana = () => { _kernel.get("Katana"); };
-      let tryGetShuruken = () => { _kernel.get("Shuriken"); };
+      let tryGetNinja = () => { kernel.get("Ninja"); };
+      let tryGetKatana = () => { kernel.get("Katana"); };
+      let tryGetShuruken = () => { kernel.get("Shuriken"); };
 
       kernel.unload(warriors);
-      expect(_kernel._bindingDictionary._dictionary.length).eql(2);
+      dictionary = (<any>kernel)._bindingDictionary._dictionary;
+      expect(dictionary.length).eql(2);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).not.to.throw();
       expect(tryGetShuruken).not.to.throw();
 
       kernel.unload(weapons);
-      expect(_kernel._bindingDictionary._dictionary.length).eql(0);
+      dictionary = (<any>kernel)._bindingDictionary._dictionary;
+      expect(dictionary.length).eql(0);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
@@ -81,8 +83,8 @@ describe("Kernel", () => {
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId).to(Ninja);
 
-      let _kernel: any = kernel;
-      let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
+      let dictionary: Array<interfaces.KeyValuePair<interfaces.Binding<any>>> = (<any>kernel)._bindingDictionary._dictionary;
+      let serviceIdentifier = dictionary[0].serviceIdentifier;
       expect(serviceIdentifier).eql(ninjaId);
 
   });
@@ -108,12 +110,12 @@ describe("Kernel", () => {
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId).to(Ninja);
 
-      let _kernel: any = kernel;
-      let serviceIdentifier = _kernel._bindingDictionary._dictionary[0].serviceIdentifier;
+      let dictionary: Array<interfaces.KeyValuePair<interfaces.Binding<any>>> = (<any>kernel)._bindingDictionary._dictionary;
+      let serviceIdentifier = dictionary[0].serviceIdentifier;
       expect(serviceIdentifier).eql(ninjaId);
 
       kernel.unbind(ninjaId);
-      let length = _kernel._bindingDictionary._dictionary.length;
+      let length = dictionary.length;
       expect(length).eql(0);
 
   });
@@ -150,15 +152,14 @@ describe("Kernel", () => {
       kernel.bind<Ninja>(ninjaId).to(Ninja);
       kernel.bind<Samurai>(samuraiId).to(Samurai);
 
-      let _kernel: any = kernel;
-      let dictionary = _kernel._bindingDictionary._dictionary;
+      let dictionary: Array<interfaces.KeyValuePair<interfaces.Binding<any>>> = (<any>kernel)._bindingDictionary._dictionary;
 
       expect(dictionary.length).eql(2);
       expect(dictionary[0].serviceIdentifier).eql(ninjaId);
       expect(dictionary[1].serviceIdentifier).eql(samuraiId);
 
       kernel.unbind(ninjaId);
-      dictionary = _kernel._bindingDictionary._dictionary;
+      dictionary = (<any>kernel)._bindingDictionary._dictionary;
       expect(dictionary.length).eql(1);
 
   });
@@ -182,15 +183,14 @@ describe("Kernel", () => {
       kernel.bind<Ninja>(ninjaId).to(Ninja);
       kernel.bind<Samurai>(samuraiId).to(Samurai);
 
-      let _kernel: any = kernel;
-      let dictionary = _kernel._bindingDictionary._dictionary;
+      let dictionary: Array<interfaces.KeyValuePair<interfaces.Binding<any>>> = (<any>kernel)._bindingDictionary._dictionary;
 
       expect(dictionary.length).eql(2);
       expect(dictionary[0].serviceIdentifier).eql(ninjaId);
       expect(dictionary[1].serviceIdentifier).eql(samuraiId);
 
       kernel.unbindAll();
-      dictionary = _kernel._bindingDictionary._dictionary;
+      dictionary = (<any>kernel)._bindingDictionary._dictionary;
       expect(dictionary.length).eql(0);
 
   });
@@ -225,8 +225,7 @@ describe("Kernel", () => {
       kernel.bind<Warrior>(warriorId).to(Ninja);
       kernel.bind<Warrior>(warriorId).to(Samurai);
 
-      let _kernel: any = kernel;
-      let dictionary = _kernel._bindingDictionary._dictionary;
+      let dictionary: Array<interfaces.KeyValuePair<interfaces.Binding<any>>> = (<any>kernel)._bindingDictionary._dictionary;
 
       expect(dictionary.length).eql(1);
       expect(dictionary[0].serviceIdentifier).eql(warriorId);

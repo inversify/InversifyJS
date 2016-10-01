@@ -1,7 +1,10 @@
 import interfaces from "../interfaces/interfaces";
 import Binding from "../bindings/binding";
 import Lookup from "./lookup";
-import Planner from "../planning/planner";
+import {
+    validateActiveBindingCount, createTarget, createContext, getBindings, getActiveBindings, createPlan
+} from "../planning/planner"; // temp
+// import plan from "../planning/planner";
 import resolve from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
@@ -16,21 +19,18 @@ import Request from "../planning/request";
 class Kernel implements interfaces.Kernel {
 
     public guid: string;
-    private _planner: interfaces.Planner;
-    private _resolve: <T>(context: interfaces.Context) => T;
     private _middleware: interfaces.Next;
-    private _bindingDictionary: interfaces.Lookup<Binding<any>>;
+    private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _snapshots: Array<interfaces.KernelSnapshot>;
     private _parentKernel: interfaces.Kernel;
 
     // Initialize private properties
     public constructor() {
         this.guid = guid();
-        this._planner = new Planner();
-        this._resolve = resolve;
-        this._bindingDictionary = new Lookup<Binding<any>>();
-        this._middleware = null;
+        this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._snapshots = [];
+        this._middleware = null;
+        this._parentKernel = null;
     }
 
     public load(...modules: interfaces.KernelModule[]): void {
@@ -77,7 +77,7 @@ class Kernel implements interfaces.Kernel {
 
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
-        let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
+        let bindings = getBindings<any>(this, serviceIdentifier);
         return bindings.length > 0;
     }
 
@@ -94,6 +94,14 @@ class Kernel implements interfaces.Kernel {
         this._middleware = snapshot.middleware;
     }
 
+    public set parent (kernel: interfaces.Kernel) {
+        this._parentKernel = kernel;
+    }
+
+    public get parent() {
+        return this._parentKernel;
+    }
+
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
         let initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
         this._middleware = middlewares.reduce((prev, curr) => {
@@ -101,21 +109,15 @@ class Kernel implements interfaces.Kernel {
         }, initial);
     }
 
-    public set parent (kernel: interfaces.Kernel) {
-        this._parentKernel = kernel;
-    }
-
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        let target = this._planner.createTarget(false, TargetType.Variable, serviceIdentifier);
-        return this._get<T>(serviceIdentifier, target)[0]; // TODO no need for index 0
+        return this._get<T>(false, TargetType.Variable, serviceIdentifier)[0]; // TODO no need for index 0
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
-        let target = this._planner.createTarget(false, TargetType.Variable, serviceIdentifier, key, value);
-        return this._get<T>(serviceIdentifier, target)[0]; // TODO no need for index 0
+        return this._get<T>(false, TargetType.Variable, serviceIdentifier, key, value)[0]; // TODO no need for index 0
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
@@ -125,13 +127,11 @@ class Kernel implements interfaces.Kernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        let target = this._planner.createTarget(true, TargetType.Variable, serviceIdentifier);
-        return this._get<T>(serviceIdentifier, target);
+        return this._get<T>(true, TargetType.Variable, serviceIdentifier);
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
-        let target = this._planner.createTarget(true, TargetType.Variable, serviceIdentifier, key, value);
-        return this._get<T>(serviceIdentifier, target);
+        return this._get<T>(true, TargetType.Variable, serviceIdentifier, key, value);
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
@@ -139,15 +139,24 @@ class Kernel implements interfaces.Kernel {
     }
 
     private _get<T>(
+        isMultiInject: boolean,
+        targetType: TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        target: interfaces.Target
+        key?: string,
+        value?: any
     ): T[] { // TODO support for array and non-array return
 
         let result: T[] = null;
+        let target = createTarget(isMultiInject, targetType, serviceIdentifier, key, value); // temp
+
         let args: interfaces.NextArgs = {
             contextInterceptor: (context: interfaces.Context) => { return context; },
+            isMultiInject: isMultiInject,
+            key: key,
             serviceIdentifier: serviceIdentifier,
-            target: target
+            target: target, // temp
+            targetType: targetType,
+            value: value
         };
 
         if (this._middleware) {
@@ -169,9 +178,9 @@ class Kernel implements interfaces.Kernel {
             let contexts = this._plan(args.serviceIdentifier, args.target);
             let results = this._resolveContexts<T>(contexts, args.contextInterceptor);
 
-            // TODO 
-            // let context = this._planner.plan(args.serviceIdentifier, args.target);
-            // let results = this._resolver.resolve<T>(args.contextInterceptor(context));
+            // TODO
+            // let context = this.plan(args.serviceIdentifier, args.target);
+            // let results = this.resolve<T>(args.contextInterceptor(context));
             return results;
         };
     }
@@ -183,31 +192,27 @@ class Kernel implements interfaces.Kernel {
         target: interfaces.Target
     ): interfaces.Context[] {
 
-        let bindings = this._planner.getBindings<any>(this, serviceIdentifier);
+        let bindings = getBindings<any>(this, serviceIdentifier);
 
         // Filter bindings using the target and the binding constraints
         let request = new Request(
             serviceIdentifier,
-            this._planner.createContext(this),
+            createContext(this),
             null,
             bindings,
             target
         );
 
-        bindings = this._planner.getActiveBindings(this, request, target);
-        bindings = this._planner.validateActiveBindingCount(serviceIdentifier, bindings, target, this);
+        bindings = getActiveBindings(this, request, target);
+        bindings = validateActiveBindingCount(serviceIdentifier, bindings, target, this);
 
         let contexts = bindings.map((binding: interfaces.Binding<any>) => {
-            return this._createContext(binding, target);
+            let context = createContext(this);
+            createPlan(context, binding, target);
+            return context;
         });
 
         return contexts;
-    }
-
-    private _createContext<T>(binding: interfaces.Binding<T>, target: interfaces.Target): interfaces.Context {
-        let context = this._planner.createContext(this);
-        this._planner.createPlan(context, binding, target);
-        return context;
     }
 
     private _resolveContexts<T>(
@@ -216,7 +221,7 @@ class Kernel implements interfaces.Kernel {
     ): T[] {
 
         let results = contexts.map((context) => {
-            return this._resolve<T>(contextInterceptor(context));
+            return resolve<T>(contextInterceptor(context));
         });
         return results;
     }
