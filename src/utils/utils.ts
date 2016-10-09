@@ -1,3 +1,9 @@
 export function getFunctionName(v: any): string {
-    return v.name ? v.name : v.toString().match(/^function\s*([^\s(]+)/)[1];
+    if (v.name) {
+        return v.name;
+    } else {
+        let name = v.toString();
+        let match = name.match(/^function\s*([^\s(]+)/);
+        return match ? match[1] : `Anonymous function: ${name}`;
+    }
 }

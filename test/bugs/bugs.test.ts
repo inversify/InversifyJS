@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { getFunctionName } from "../../src/utils/utils";
 
 import {
     Kernel,
@@ -273,6 +274,18 @@ describe("Bugs", () => {
         let jungle = kernel.get(Jungle);
         expect(jungle.animal.makeSound("zzz")).to.eql("ssssszzz");
         expect(jungle.animal.move(5)).to.eql("Slithering... Snake moved 5m");
+
+    });
+
+    it("Helper getFunctionName should not throw when using an anonymous function", () => {
+
+        let name = getFunctionName(function (options: any) {
+            this.configure(options);
+        });
+
+        expect(name).to.eql("Anonymous function: " + (function (options: any) {
+            this.configure(options);
+        }).toString());
 
     });
 
