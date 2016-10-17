@@ -92,11 +92,13 @@ gulp.task("build-src", function() {
     return gulp.src([
         "src/**/*.ts"
     ])
+    .pipe(sourcemaps.init())
     .pipe(tsc(tstProject))
     .on("error", function (err) {
         process.exit(1);
     })
-    .js.pipe(gulp.dest("src/"));
+    .js.pipe(sourcemaps.write())
+    .pipe(gulp.dest("src/"));
 });
 
 var tsTestProject = tsc.createProject("tsconfig.json", { typescript: require("typescript") });
@@ -105,11 +107,13 @@ gulp.task("build-test", function() {
     return gulp.src([
         "test/**/*.ts"
     ])
+    .pipe(sourcemaps.init())
     .pipe(tsc(tsTestProject))
     .on("error", function (err) {
         process.exit(1);
     })
-    .js.pipe(gulp.dest("test/"));
+    .js.pipe(sourcemaps.write())
+    .pipe(gulp.dest("test/"));
 });
 
 gulp.task("mocha", [ "istanbul:hook" ], function() {

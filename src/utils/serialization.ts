@@ -97,4 +97,30 @@ function circularDependencyToException(
 
 }
 
-export { getServiceIdentifierAsString, listRegisteredBindingsForServiceIdentifier, circularDependencyToException };
+function listMetadataForTarget(serviceIdentifierString: string, target: interfaces.Target): string {
+    if (target.isTagged() || target.isNamed()) {
+
+        let m = "";
+
+        if (target.isNamed()) {
+            m = target.getNamedTag().toString();
+        }
+
+        if (target.isTagged()) {
+            target.getCustomTags().forEach((tag) => {
+                m += tag.toString() + "\n";
+            });
+        }
+
+        return ` ${serviceIdentifierString}\n ${serviceIdentifierString} - ${m}`;
+    } else {
+        return ` ${serviceIdentifierString}`;
+    }
+}
+
+export {
+    getServiceIdentifierAsString,
+    listRegisteredBindingsForServiceIdentifier,
+    listMetadataForTarget,
+    circularDependencyToException
+};

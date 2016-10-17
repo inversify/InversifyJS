@@ -1,8 +1,9 @@
+/*
+
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { createContext, createPlan } from "../../src/planning/planner"; // temp
-import Context from "../../src/planning/context";
+import { plan } from "../../src/planning/planner";
 import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
@@ -25,16 +26,6 @@ describe("Planner", () => {
 
     afterEach(() => {
         sandbox.restore();
-    });
-
-    it("Should be able to create instances of Context", () => {
-
-        let kernel = new Kernel();
-        let context = createContext(kernel);
-
-        expect(context instanceof Context).eql(true);
-        expect(context.kernel instanceof Kernel).eql(true);
-
     });
 
     it("Should be able to create a basic plan", () => {
@@ -97,17 +88,15 @@ describe("Planner", () => {
         kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
         kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-        let context = createContext(kernel);
-
-        /*
-        *  Expected Plan (request tree):
-        *
-        *  Ninja (target "null", no metadata)
-        *   -- Katana (target "katama", no metadata)
-        *       -- KatanaHandler (target "blade", no metadata)
-        *       -- KatanaBlade (target "blade", no metadata)
-        *   -- Shuriken (target "shuriken", no metadata)
-        */
+        //
+        //  Expected Plan (request tree):
+        //
+        //  Ninja (target "null", no metadata)
+        //   -- Katana (target "katama", no metadata)
+        //       -- KatanaHandler (target "blade", no metadata)
+        //       -- KatanaBlade (target "blade", no metadata)
+        //   -- Shuriken (target "shuriken", no metadata)
+        //
         let ninjaRequest = new Request(ninjaId, context, null, null, null);
         let expectedPlan = new Plan(context, ninjaRequest);
 
@@ -333,7 +322,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-        let context = createContext(kernel);
         let actualPlan = createPlan(context, ninjaBinding, null);
 
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -379,7 +367,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-        let context = createContext(kernel);
         let actualPlan = createPlan(context, ninjaBinding, null);
 
         // root request has no target
@@ -450,7 +437,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-        let context = createContext(kernel);
 
         let throwFunction = () => { createPlan(context, ninjaBinding, null); };
         expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Katana`);
@@ -497,7 +483,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-        let context = createContext(kernel);
 
         let throwFunction = () => { createPlan(context, ninjaBinding, null); };
         expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} Katana`);
@@ -539,7 +524,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-        let context = createContext(kernel);
         let actualPlan = createPlan(context, ninjaBinding, null);
 
         // root request has no target
@@ -570,7 +554,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get("Weapon")[0];
-        let context = createContext(kernel);
 
         let throwFunction = () => {
             createPlan(context, ninjaBinding, null);
@@ -607,7 +590,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get("Warrior")[0];
-        let context = createContext(kernel);
 
         let throwFunction = () => {
             createPlan(context, ninjaBinding, null);
@@ -645,7 +627,6 @@ describe("Planner", () => {
 
         let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
         let ninjaBinding = bindingDictionary.get("Ninja")[0];
-        let context = createContext(kernel);
 
         let throwFunction = () => {
             createPlan(context, ninjaBinding, null);
@@ -654,3 +635,5 @@ describe("Planner", () => {
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
     });
 });
+
+*/

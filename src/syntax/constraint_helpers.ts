@@ -18,8 +18,6 @@ let traverseAncerstors = (
 // This helpers use currying to help you to generate constraints
 
 let taggedConstraint = (key: string) => (value: any) => {
-    // TODO: This can be refactor with TypeScript 2.x 
-    // `(this: interfaces.ContstraintFunction, request: interfaces.Request) =>`
 
     let constraint: interfaces.ConstraintFunction =  (request: interfaces.Request) =>  {
         return request.target.matchesTag(key)(value);

@@ -13,56 +13,11 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import {
     circularDependencyToException,
     getServiceIdentifierAsString,
-    listRegisteredBindingsForServiceIdentifier
+    listRegisteredBindingsForServiceIdentifier,
+    listMetadataForTarget
 } from "../utils/serialization";
 
-function plan(
-    kernel: interfaces.Kernel,
-    isMultiInject: boolean,
-    targetType: TargetType,
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    key?: string,
-    value?: any
-): interfaces.Context {
-
-    let context = new Context(kernel);
-    let bindings: any = null;
-    let target = createTarget(isMultiInject, targetType, serviceIdentifier, key, value);
-
-    let plan = createPlan(context, bindings, target);
-    plan.rootRequest = createRootRequest(kernel, context, serviceIdentifier, target);
-
-    return context;
-}
-
-function createRootRequest(
-    kernel: interfaces.Kernel,
-    context: interfaces.Context,
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    target: interfaces.Target
-): interfaces.Request {
-
-    // let bindings = getBindings<any>(kernel, serviceIdentifier);
-
-    let request = new Request(
-        serviceIdentifier,
-        context,
-        null,
-        null, // bindings,
-        target
-    );
-
-    // bindings = getActiveBindings(kernel, request, target);
-    // bindings = validateActiveBindingCount(serviceIdentifier, bindings, target, kernel);
-
-    return request;
-}
-
-function createContext(kernel: interfaces.Kernel): interfaces.Context {
-    return new Context(kernel);
-}
-
-function createTarget(
+function _createTarget(
     isMultiInject: boolean,
     targetType: TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
@@ -84,32 +39,140 @@ function createTarget(
 
 }
 
-function createPlan(
+function _getActiveBindings(
     context: interfaces.Context,
-    binding: interfaces.Binding<any>,
+    parentRequest: interfaces.Request,
     target: interfaces.Target
-): interfaces.Plan {
+): interfaces.Binding<any>[] {
 
-    let rootRequest = new Request(
-        binding.serviceIdentifier,
-        context,
-        null,
-        binding,
-        target);
+    let bindings = getBindings<any>(context.kernel, target.serviceIdentifier);
+    let activeBindings: interfaces.Binding<any>[] = [];
 
-    let plan = new Plan(context, rootRequest);
+    // multiple bindings available but not a multi-injection
+    if (bindings.length > 1) {
 
-    // Plan and Context are duable linked
-    context.addPlan(plan);
+        // apply constraints if available to reduce the number of active bindings
+        activeBindings = bindings.filter((binding) => {
 
-    if (binding.type === BindingType.Instance) {
-        let dependencies = getDependencies(binding.implementationType);
-        dependencies.forEach((dependency) => {
-            _createSubRequest(context.kernel, rootRequest, dependency);
+            let request = new Request(
+                binding.serviceIdentifier,
+                context,
+                parentRequest,
+                binding,
+                target
+            );
+
+            return binding.constraint(request);
+
         });
+
+    } else {
+        // simple injection or multi-injection without constraints
+        activeBindings = bindings;
     }
 
-    return plan;
+    // validate active bindings
+    _validateActiveBindingCount(target.serviceIdentifier, activeBindings, target, context.kernel);
+
+    return activeBindings;
+}
+
+function _validateActiveBindingCount(
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    bindings: interfaces.Binding<any>[],
+    target: interfaces.Target,
+    kernel: interfaces.Kernel
+): interfaces.Binding<any>[] {
+
+    switch (bindings.length) {
+
+        case BindingCount.NoBindingsAvailable:
+            let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
+            let msg = ERROR_MSGS.NOT_REGISTERED;
+            msg += listMetadataForTarget(serviceIdentifierString, target);
+            msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
+            throw new Error(msg);
+
+        case BindingCount.OnlyOneBindingAvailable:
+            if (target.isArray() === false) {
+                return bindings;
+            }
+
+        case BindingCount.MultipleBindingsAvailable:
+        default:
+            if (target.isArray() === false) {
+                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
+                msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
+                throw new Error(msg);
+            } else {
+                return bindings;
+            }
+    }
+
+}
+
+function _createSubRequests(
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    context: interfaces.Context,
+    parentRequest: interfaces.Request,
+    target: interfaces.Target
+) {
+
+    try {
+
+        let activeBindings: interfaces.Binding<any>[];
+        let childRequest: interfaces.Request;
+
+        if (parentRequest === null) {
+
+            activeBindings = _getActiveBindings(context, null, target);
+
+            childRequest = new Request(
+                serviceIdentifier,
+                context,
+                null,
+                activeBindings,
+                target
+            );
+
+            let plan = new Plan(context, childRequest);
+            context.addPlan(plan);
+
+        } else {
+            activeBindings = _getActiveBindings(context, parentRequest, target);
+            childRequest = parentRequest.addChildRequest(target.serviceIdentifier, activeBindings, target);
+        }
+
+        activeBindings.forEach((binding) => {
+
+            let subChildRequest: interfaces.Request = null;
+
+            if (target.isArray()) {
+                subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
+            } else {
+                subChildRequest = childRequest;
+            }
+
+            if (binding.type === BindingType.Instance) {
+
+                let dependencies = getDependencies(binding.implementationType);
+
+                dependencies.forEach((dependency: interfaces.Target) => {
+                    _createSubRequests(dependency.serviceIdentifier, context, subChildRequest, dependency);
+                });
+
+            }
+
+        });
+
+    } catch (error) {
+        if (error instanceof RangeError) {
+            circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
+        } else {
+            throw new Error(error.message);
+        }
+    }
 }
 
 function getBindings<T>(
@@ -134,141 +197,20 @@ function getBindings<T>(
     return bindings;
 }
 
-function getActiveBindings(
+function plan(
     kernel: interfaces.Kernel,
-    parentRequest: interfaces.Request,
-    target: interfaces.Target
-): interfaces.Binding<any>[] {
-
-    let bindings = getBindings<any>(kernel, target.serviceIdentifier);
-    let activeBindings: interfaces.Binding<any>[] = [];
-
-    let multipleBindingsAvaiableButNotMultiInjection = (bindings.length > 1 && target.isArray() === false);
-
-    if (multipleBindingsAvaiableButNotMultiInjection) {
-
-        // apply constraints if available to reduce the number of active bindings
-        activeBindings = bindings.filter((binding) => {
-
-            let request = new Request(
-                binding.serviceIdentifier,
-                parentRequest.parentContext,
-                parentRequest,
-                binding,
-                target
-            );
-
-            return binding.constraint(request);
-
-        });
-
-    } else {
-        // simple injection or multi-injection without constraints
-        activeBindings = bindings;
-    }
-
-    return activeBindings;
-}
-
-function validateActiveBindingCount(
+    isMultiInject: boolean,
+    targetType: TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    bindings: interfaces.Binding<any>[],
-    target: interfaces.Target,
-    kernel: interfaces.Kernel
-): interfaces.Binding<any>[] {
+    key?: string,
+    value?: any
+): interfaces.Context {
 
-    switch (bindings.length) {
-
-        case BindingCount.NoBindingsAvailable:
-
-            let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
-                msg = ERROR_MSGS.NOT_REGISTERED;
-
-            if (target.isTagged() || target.isNamed()) {
-                let m = target.metadata[0].toString();
-                msg = `${msg} ${serviceIdentifierString}\n ${serviceIdentifierString} - ${m}`;
-            } else {
-                msg = `${msg} ${serviceIdentifierString}`;
-            }
-
-            msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
-
-            throw new Error(msg);
-
-        case BindingCount.OnlyOneBindingAvailable:
-            if (target.isArray() === false) {
-                return bindings;
-            }
-
-        case BindingCount.MultipleBindingsAvailable:
-        default:
-            if (target.isArray() === false) {
-                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
-                msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
-                msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
-                throw new Error(msg);
-            } else {
-                return bindings;
-            }
-    }
+    let context = new Context(kernel);
+    let target = _createTarget(isMultiInject, targetType, serviceIdentifier, key, value);
+    _createSubRequests(serviceIdentifier, context, null, target);
+    return context;
 
 }
 
-function _createSubRequest(kernel: interfaces.Kernel, parentRequest: interfaces.Request, target: interfaces.Target) {
-
-    try {
-        let activeBindings = getActiveBindings(kernel, parentRequest, target);
-
-        activeBindings = validateActiveBindingCount(
-            target.serviceIdentifier,
-            activeBindings,
-            target,
-            parentRequest.parentContext.kernel
-        );
-
-        _createChildRequest(kernel, parentRequest, target, activeBindings);
-
-    } catch (error) {
-        if (error instanceof RangeError) {
-            circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
-        } else {
-            throw new Error(error.message);
-        }
-    }
-}
-
-function _createChildRequest(
-    kernel: interfaces.Kernel,
-    parentRequest: interfaces.Request,
-    target: interfaces.Target,
-    bindings: interfaces.Binding<any>[]
-) {
-
-    // Use the only active binding to create a child request
-    let childRequest = parentRequest.addChildRequest(target.serviceIdentifier, bindings, target);
-    let subChildRequest = childRequest;
-
-    bindings.forEach((binding) => {
-
-        if (target.isArray()) {
-            subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
-        }
-
-        // Only try to plan sub-dependencies when binding type is BindingType.Instance
-        if (binding.type === BindingType.Instance) {
-
-            // Create child requests for sub-dependencies if any
-            let subDependencies = getDependencies(binding.implementationType);
-            subDependencies.forEach((d, index) => {
-                _createSubRequest(kernel, subChildRequest, d);
-            });
-        }
-
-    });
-}
-
-export {
-    plan, createPlan, createTarget, createContext, getBindings, getActiveBindings, validateActiveBindingCount
-}; // temp
-
-// export { plan, getBindings };
+export { plan, getBindings };

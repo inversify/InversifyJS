@@ -45,7 +45,6 @@ namespace interfaces {
     export interface NextArgs {
         contextInterceptor?: (contexts: Context) => Context;
         isMultiInject: boolean;
-        target: Target; // temp
         targetType: number;
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
         key?: string;
@@ -53,7 +52,7 @@ namespace interfaces {
     }
 
     export interface Next {
-        (args: NextArgs): any[];
+        (args: NextArgs): (any|any[]);
     }
 
     export interface Middleware extends Function {
@@ -114,6 +113,8 @@ namespace interfaces {
         type: number; // TargetType
         name: QueryableString;
         metadata: Array<Metadata>;
+        getNamedTag(): interfaces.Metadata;
+        getCustomTags(): interfaces.Metadata[];
         hasTag(key: string): boolean;
         isArray(): boolean;
         matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;

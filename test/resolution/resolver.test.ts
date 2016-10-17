@@ -1,11 +1,11 @@
+/*
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import resolve from "../../src/resolution/resolver";
-import { createContext, createPlan } from "../../src/planning/planner"; // temp
+import { plan } from "../../src/planning/planner";
 import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
-import Plan from "../../src/planning/plan";
 import Target from "../../src/planning/target";
 import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
@@ -97,27 +97,24 @@ describe("Resolve", () => {
       kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
       let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
       let katanaBinding = bindingDictionary.get(katanaId)[0];
       let katanaHandlerBinding = bindingDictionary.get(katanaHandlerId)[0];
       let katanaBladeBinding = bindingDictionary.get(katanaBladeId)[0];
       let shurikenBinding = bindingDictionary.get(shurikenId)[0];
 
-      let context = createContext(kernel);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
-      /*
-      *  Plan (request tree):
-      *
-      *  Ninja (target "null", no metadata)
-      *   -- Katana (target "katama", no metadata)
-      *       -- KatanaHandler (target "blade", no metadata)
-      *       -- KatanaBlade (target "blade", no metadata)
-      *   -- Shuriken (target "shuriken", no metadata)
-      */
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
+      //
+      //  Plan (request tree):
+      //
+      //  Ninja (target "null", no metadata)
+      //   -- Katana (target "katama", no metadata)
+      //       -- KatanaHandler (target "blade", no metadata)
+      //       -- KatanaBlade (target "blade", no metadata)
+      //   -- Shuriken (target "shuriken", no metadata)
+      //
 
-      let katanaRequest = plan.rootRequest.addChildRequest(
+      let katanaRequest = context.plan.rootRequest.addChildRequest(
           katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
       );
 
@@ -129,11 +126,11 @@ describe("Resolve", () => {
           katanaBladeId, katanaBladeBinding, new Target(TargetType.ConstructorArgument, "blade", katanaBladeId)
       );
 
-      plan.rootRequest.addChildRequest(
+      context.plan.rootRequest.addChildRequest(
           shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
       );
 
-      context.addPlan(plan);
+      context.addPlan(context.plan);
 
       let ninja = resolve<Ninja>(context);
 
@@ -212,44 +209,17 @@ describe("Resolve", () => {
       kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
 
       let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let katanaBinding = bindingDictionary.get(katanaId)[0];
-      let katanaHandlerBinding = bindingDictionary.get(katanaHandlerId)[0];
-      let katanaBladeBinding = bindingDictionary.get(katanaBladeId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
-      let context = createContext(kernel);
-
-      /*
-      *  Plan (request tree):
-      *
-      *  Ninja (target "null", no metadata)
-      *   -- Katana (target "katama", no metadata)
-      *       -- KatanaHandler (target "blade", no metadata)
-      *       -- KatanaBlade (target "blade", no metadata)
-      *   -- Shuriken (target "shuriken", no metadata)
-      */
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      let katanaRequest = plan.rootRequest.addChildRequest(
-          katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
-      );
-
-      katanaRequest.addChildRequest(
-          katanaHandlerId, katanaHandlerBinding, new Target(TargetType.ConstructorArgument, "handler", katanaHandlerId)
-      );
-
-      katanaRequest.addChildRequest(
-          katanaBladeId, katanaBladeBinding, new Target(TargetType.ConstructorArgument, "blade", katanaBladeId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
-
+      //
+      //  Plan (request tree):
+      //
+      //  Ninja (target "null", no metadata)
+      //   -- Katana (target "katama", no metadata)
+      //       -- KatanaHandler (target "blade", no metadata)
+      //       -- KatanaBlade (target "blade", no metadata)
+      //   -- Shuriken (target "shuriken", no metadata)
+      //
 
       expect(bindingDictionary.get("Katana")[0].cache === null).eql(true);
       let ninja = resolve<Ninja>(context);
@@ -296,20 +266,15 @@ describe("Resolve", () => {
       let ninjaId = "Ninja";
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
 
       // context and plan
-      let context = createContext(kernel);
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let throwFunction = () => {
           resolve(context);
       };
 
-      expect(ninjaRequest.bindings[0].type).eql(BindingType.Invalid);
+      expect(context.plan.rootRequest.bindings[0].type).eql(BindingType.Invalid);
       expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
 
   });
@@ -370,31 +335,15 @@ describe("Resolve", () => {
       kernel.bind<Shuriken>(shurikenId).to(Shuriken);
       kernel.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let katanaBinding = bindingDictionary.get(katanaId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-      let context = createContext(kernel);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
-      /*
-      *  Plan (request tree):
-      *
-      *  Ninja (target "null", no metadata)
-      *   -- Katana (target "katama", no metadata)
-      *   -- Shuriken (target "shuriken", no metadata)
-      */
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      plan.rootRequest.addChildRequest(
-          katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
+      //
+      //  Plan (request tree):
+      //
+      //  Ninja (target "null", no metadata)
+      //   -- Katana (target "katama", no metadata)
+      //   -- Shuriken (target "shuriken", no metadata)
+      //
 
       let ninja = resolve<Ninja>(context);
 
@@ -500,24 +449,7 @@ describe("Resolve", () => {
       kernel.bind<Shuriken>(shurikenId).to(Shuriken);
       kernel.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let newableKatanaBinding = bindingDictionary.get(newableKatanaId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-      let context = createContext(kernel);
-
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      plan.rootRequest.addChildRequest(
-          newableKatanaId, newableKatanaBinding, new Target(TargetType.ConstructorArgument, "Katana", newableKatanaId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -606,24 +538,7 @@ describe("Resolve", () => {
           };
       });
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let katanaFactoryBinding = bindingDictionary.get(swordFactoryId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-      let context = createContext(kernel);
-
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      plan.rootRequest.addChildRequest(
-          swordFactoryId, katanaFactoryBinding, new Target(TargetType.ConstructorArgument, "makeKatana", swordFactoryId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -708,24 +623,7 @@ describe("Resolve", () => {
 
       kernel.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let katanaFactoryBinding = bindingDictionary.get(katanaFactoryId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-      let context = createContext(kernel);
-
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      plan.rootRequest.addChildRequest(
-          katanaFactoryId, katanaFactoryBinding, new Target(TargetType.ConstructorArgument, "makeKatana", katanaFactoryId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -816,24 +714,7 @@ describe("Resolve", () => {
           };
       });
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let katanaFactoryBinding = bindingDictionary.get(swordProviderId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-      let context = createContext(kernel);
-
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      plan.rootRequest.addChildRequest(
-          swordProviderId, katanaFactoryBinding, new Target(TargetType.ConstructorArgument, "katanaProvider", swordProviderId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Warrior>(context);
 
@@ -885,11 +766,7 @@ describe("Resolve", () => {
       kernel.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
       kernel.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let context = createContext(kernel);
-      let plan = createPlan(context, ninjaBinding, null);
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -935,11 +812,7 @@ describe("Resolve", () => {
       kernel.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
       kernel.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let context = createContext(kernel);
-      let plan = createPlan(context, ninjaBinding, null);
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -991,11 +864,7 @@ describe("Resolve", () => {
           return request.target.name.equals("shuriken");
       });
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let context = createContext(kernel);
-      let plan = createPlan(context, ninjaBinding, null);
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -1045,11 +914,7 @@ describe("Resolve", () => {
       kernel.bind<Weapon>(weaponId).to(Katana);
       kernel.bind<Weapon>(weaponId).to(Shuriken);
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let context = createContext(kernel);
-      let plan = createPlan(context, ninjaBinding, null);
-      context.addPlan(plan);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -1062,11 +927,7 @@ describe("Resolve", () => {
       kernel2.bind<Ninja>(ninjaId).to(Ninja);
       kernel2.bind<Weapon>(weaponId).to(Katana);
 
-      let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel2)._bindingDictionary;
-      let ninjaBinding2 = bindingDictionary2.get(ninjaId)[0];
-      let context2 = createContext(kernel2);
-      let plan2 = createPlan(context2, ninjaBinding2, null);
-      context2.addPlan(plan2);
+      let context2 = plan(kernel2, false, TargetType.Variable, ninjaId);
 
       let ninja2 = resolve<Ninja>(context2);
 
@@ -1126,11 +987,7 @@ describe("Resolve", () => {
             return katana;
         });
 
-        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-        let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-        let context = createContext(kernel);
-        let plan = createPlan(context, ninjaBinding, null);
-        context.addPlan(plan);
+        let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
         let ninja = resolve<Ninja>(context);
 
@@ -1205,31 +1062,15 @@ describe("Resolve", () => {
 
       kernel.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let ninjaBinding = bindingDictionary.get(ninjaId)[0];
-      let katanaBinding = bindingDictionary.get(katanaFactoryId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-      let context = createContext(kernel);
+      let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
-      /*
-      *  Plan (request tree):
-      *
-      *  Ninja (target "null", no metadata)
-      *   -- Katana (target "katama", no metadata)
-      *   -- Shuriken (target "shuriken", no metadata)
-      */
-      let ninjaRequest = new Request(ninjaId, context, null, ninjaBinding, null);
-      let plan = new Plan(context, ninjaRequest);
-
-      plan.rootRequest.addChildRequest(
-          katanaFactoryId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaFactoryId)
-      );
-
-      plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(plan);
+      //
+      //  Plan (request tree):
+      //
+      //  Ninja (target "null", no metadata)
+      //   -- Katana (target "katama", no metadata)
+      //   -- Shuriken (target "shuriken", no metadata)
+      //
 
       let ninja = resolve<Ninja>(context);
 
@@ -1243,3 +1084,4 @@ describe("Resolve", () => {
   });
 
 });
+*/

@@ -382,34 +382,6 @@ describe("Kernel", () => {
         expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(DivineRapier);
     });
 
-/* TEMP! */
-        function logger(next: interfaces.Next): interfaces.Next {
-            return (args: interfaces.NextArgs) => {
-
-                let nextContextInterceptor = args.contextInterceptor;
-
-                args.contextInterceptor = (context: interfaces.Context) => {
-
-                    console.log(">>>>>>>>>>>>>>>>>>");
-                    console.log("serviceIdentifier: ", context.plan.rootRequest.serviceIdentifier.toString());
-                    console.log("target.metadata: ", context.plan.rootRequest.target.metadata.toString());
-                    console.log("childRequests: ", context.plan.rootRequest.childRequests);
-                    console.log("bindings: ");
-                    context.plan.rootRequest.bindings.forEach((b) => {
-                        console.log("\timplementationType: ", b.implementationType);
-                        console.log("\tcache: ", b.cache);
-                    });
-
-                    return nextContextInterceptor(context);
-                };
-
-                let result = next(args);
-
-                return result;
-            };
-        }
-/* END TEMP! */
-
     it("Should be able to resolve named multi-injection", () => {
 
         interface Intl {
@@ -422,10 +394,6 @@ describe("Kernel", () => {
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
         kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
-
-/* TEMP! */
-        kernel.applyMiddleware(logger);
-/* END TEMP! */
 
         let fr = kernel.getAllNamed<Intl>("Intl", "fr");
         expect(fr.length).to.eql(2);
@@ -451,10 +419,6 @@ describe("Kernel", () => {
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
         kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
-
-/* TEMP! */
-        kernel.applyMiddleware(logger);
-/* END TEMP! */
 
         let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
         console.log(fr);

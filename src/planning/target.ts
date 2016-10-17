@@ -74,6 +74,25 @@ class Target implements interfaces.Target {
         });
     }
 
+    public getNamedTag(): interfaces.Metadata {
+        if (this.isNamed()) {
+            return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
+        }
+    }
+
+    public getCustomTags(): interfaces.Metadata[] {
+        if (this.isTagged()) {
+            return this.metadata.filter((m) => {
+                return (m.key !== METADATA_KEY.INJECT_TAG) &&
+                    (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
+                    (m.key !== METADATA_KEY.NAME_TAG) &&
+                    (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
+                    (m.key !== METADATA_KEY.NAMED_TAG);
+            });
+        }
+        return [];
+    }
+
     public matchesNamedTag(name: string): boolean {
         return this.matchesTag(METADATA_KEY.NAMED_TAG)(name);
     }

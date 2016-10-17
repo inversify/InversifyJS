@@ -1,10 +1,7 @@
 import interfaces from "../interfaces/interfaces";
 import Binding from "../bindings/binding";
 import Lookup from "./lookup";
-import {
-    validateActiveBindingCount, createTarget, createContext, getBindings, getActiveBindings, createPlan
-} from "../planning/planner"; // temp
-// import plan from "../planning/planner";
+import { plan, getBindings } from "../planning/planner";
 import resolve from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
@@ -13,8 +10,6 @@ import TargetType from "../planning/target_type";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import KernelSnapshot from "./kernel_snapshot";
 import guid from "../utils/guid";
-
-import Request from "../planning/request";
 
 class Kernel implements interfaces.Kernel {
 
@@ -113,11 +108,11 @@ class Kernel implements interfaces.Kernel {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, TargetType.Variable, serviceIdentifier)[0]; // TODO no need for index 0
+        return this._get<T>(false, TargetType.Variable, serviceIdentifier) as T;
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
-        return this._get<T>(false, TargetType.Variable, serviceIdentifier, key, value)[0]; // TODO no need for index 0
+        return this._get<T>(false, TargetType.Variable, serviceIdentifier, key, value) as T;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
@@ -127,105 +122,63 @@ class Kernel implements interfaces.Kernel {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(true, TargetType.Variable, serviceIdentifier);
+        return this._get<T>(true, TargetType.Variable, serviceIdentifier) as T[];
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
-        return this._get<T>(true, TargetType.Variable, serviceIdentifier, key, value);
+        return this._get<T>(true, TargetType.Variable, serviceIdentifier, key, value) as T[];
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
+    // Prepares arguments required for resolution and 
+    // delegates resolution to _middleware if available
+    // otherwise it delegates resoltion to _planAndResolve
     private _get<T>(
         isMultiInject: boolean,
         targetType: TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         key?: string,
         value?: any
-    ): T[] { // TODO support for array and non-array return
+    ): (T|T[]) {
 
-        let result: T[] = null;
-        let target = createTarget(isMultiInject, targetType, serviceIdentifier, key, value); // temp
+        let result: (T|T[]) = null;
 
         let args: interfaces.NextArgs = {
             contextInterceptor: (context: interfaces.Context) => { return context; },
             isMultiInject: isMultiInject,
             key: key,
             serviceIdentifier: serviceIdentifier,
-            target: target, // temp
             targetType: targetType,
             value: value
         };
 
         if (this._middleware) {
             result = this._middleware(args);
+            if (result === undefined || result === null) {
+                throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
+            }
         } else {
             result = this._planAndResolve<T>()(args);
-        }
-
-        if (Array.isArray(result) === false) {
-            throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
         }
 
         return result;
     }
 
-    private _planAndResolve<T>(): (args: interfaces.NextArgs) => T[] {
+    // Planner creates a plan and Resolver resolves a plan
+    // one of the jobs of the Kernel is to links the Planner
+    // with the Resolver and that is what this function is about
+    private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T|T[]) {
         return (args: interfaces.NextArgs) => {
-
-            let contexts = this._plan(args.serviceIdentifier, args.target);
-            let results = this._resolveContexts<T>(contexts, args.contextInterceptor);
-
-            // TODO
-            // let context = this.plan(args.serviceIdentifier, args.target);
-            // let results = this.resolve<T>(args.contextInterceptor(context));
-            return results;
+            let context = plan(
+                this, args.isMultiInject, args.targetType, args.serviceIdentifier, args.key, args.value
+            );
+            let result = resolve<T>(args.contextInterceptor(context));
+            return result;
         };
     }
-
-    // !!!!! TODO below will be refactored into the Planner!!!!!
-
-    private _plan(
-        serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        target: interfaces.Target
-    ): interfaces.Context[] {
-
-        let bindings = getBindings<any>(this, serviceIdentifier);
-
-        // Filter bindings using the target and the binding constraints
-        let request = new Request(
-            serviceIdentifier,
-            createContext(this),
-            null,
-            bindings,
-            target
-        );
-
-        bindings = getActiveBindings(this, request, target);
-        bindings = validateActiveBindingCount(serviceIdentifier, bindings, target, this);
-
-        let contexts = bindings.map((binding: interfaces.Binding<any>) => {
-            let context = createContext(this);
-            createPlan(context, binding, target);
-            return context;
-        });
-
-        return contexts;
-    }
-
-    private _resolveContexts<T>(
-        contexts: interfaces.Context[],
-        contextInterceptor: (context: interfaces.Context) => interfaces.Context
-    ): T[] {
-
-        let results = contexts.map((context) => {
-            return resolve<T>(contextInterceptor(context));
-        });
-        return results;
-    }
-
 }
 
 export default Kernel;

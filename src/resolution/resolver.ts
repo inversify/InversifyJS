@@ -61,10 +61,13 @@ function _resolveRequest(request: interfaces.Request): any {
     let bindings = request.bindings;
     let childRequests = request.childRequests;
 
-    if (
-        request.target && request.target.isArray() &&
-        (!request.parentRequest.target || !request.parentRequest.target.matchesArray(request.target.serviceIdentifier))
-    ) {
+    let targetIsAnAray = request.target && request.target.isArray();
+
+    let targetParentIsNotAnArray = !request.parentRequest ||
+                                   !request.parentRequest.target ||
+                                   !request.parentRequest.target.matchesArray(request.target.serviceIdentifier);
+
+    if (targetIsAnAray && targetParentIsNotAnArray) {
 
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {

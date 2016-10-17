@@ -30,8 +30,8 @@ class Request implements interfaces.Request {
     }
 
     public addChildRequest(
-        serviceIdentifier: string,
-        bindings: (interfaces.Binding<any>|interfaces.Binding<any>[]),
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        bindings: (interfaces.Binding<any>|Array<interfaces.Binding<any>>),
         target: interfaces.Target
     ): interfaces.Request {
 
