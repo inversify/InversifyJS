@@ -1,4 +1,3 @@
-/*
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
@@ -1084,4 +1083,3 @@ describe("Resolve", () => {
   });
 
 });
-*/
