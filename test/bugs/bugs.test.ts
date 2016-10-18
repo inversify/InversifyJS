@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
+import { getFunctionName } from "../../src/utils/utils";
 
 import {
     Kernel,
@@ -407,6 +408,18 @@ describe("Bugs", () => {
 
         kernel.applyMiddleware(logger);
         kernel.get<Test>(TYPES.Test);
+
+    });
+
+    it("Helper getFunctionName should not throw when using an anonymous function", () => {
+
+        let name = getFunctionName(function (options: any) {
+            this.configure(options);
+        });
+
+        expect(name).to.eql("Anonymous function: " + (function (options: any) {
+            this.configure(options);
+        }).toString());
 
     });
 

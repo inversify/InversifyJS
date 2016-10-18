@@ -10,8 +10,9 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - Allows developers to declare InversifyJS bindings using decorators.
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 - [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
+- [inversify-vanillajs-helpers](https://github.com/inversify/inversify-vanillajs-helpers) - Some helpers for the development of InversifyJS applications with VanillaJS or Babel.
 
-### Extensions
+### Middleware
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
 
 ### Development tools
@@ -23,13 +24,10 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Express](https://github.com/inversify/inversify-express-example)
 - [Hapi](https://github.com/inversify/inversify-hapi-example)
 - [InversifyJS Binding Decorators](https://github.com/inversify/inversify-express-example/tree/master/BindingDecorators)
-- [Marionette](https://github.com/inversify/inversify-marionette-example)
 
 ### Open Source Projects using InversifyJS
+- [RobotlegsJS](https://github.com/GoodgameStudios/RobotlegsJS) - An architecture-based framework for JavaScript/TypeScript canvas applications.
 - [Dwatch](https://github.com/Mercateo/dwatch) - Manage your docker containers, images and networks in a nice and clean way.
 - [Retax](https://github.com/retaxJS) - Universal React Redux Framework.
-- [Demgel-mvc](https://github.com/DemgelOpenSource/demgel-mvc) - MVC framework using express and inversify.
 - [Prettygoat](https://www.npmjs.com/package/prettygoat) - The not so baaaaaaad Event Sourcing Projection Engine.
 - [Ninjagoat](https://www.npmjs.com/package/ninjagoat) - The not so baaaaaaad MVVM framework.
-- [Rokot](https://github.com/Rocketmakers/rokot) Rocketmakers Node-Typescript Platform.
-- [Homenet Core](https://github.com/denwilliams/homenet-core) - Homenet home automation.

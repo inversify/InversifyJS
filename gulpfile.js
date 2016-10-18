@@ -45,7 +45,7 @@ gulp.task("build-lib", function() {
     return gulp.src([
         "src/**/*.ts"
     ])
-    .pipe(tsc(tsLibProject))
+    .pipe(tsLibProject())
     .on("error", function (err) {
         process.exit(1);
     })
@@ -58,7 +58,7 @@ gulp.task("build-es", function() {
     return gulp.src([
         "src/**/*.ts"
     ])
-    .pipe(tsc(tsEsProject))
+    .pipe(tsEsProject())
     .on("error", function (err) {
         process.exit(1);
     })
@@ -67,7 +67,7 @@ gulp.task("build-es", function() {
 
 var tsDtsProject = tsc.createProject("tsconfig.json", {
     declaration: true,
-    noExternalResolve: false,
+    noResolve: false,
     typescript: require("typescript") 
 });
 
@@ -75,7 +75,7 @@ gulp.task("build-dts", function() {
     return gulp.src([
         "src/**/*.ts"
     ])
-    .pipe(tsc(tsDtsProject))
+    .pipe(tsDtsProject())
     .on("error", function (err) {
         process.exit(1);
     })
@@ -93,7 +93,7 @@ gulp.task("build-src", function() {
         "src/**/*.ts"
     ])
     .pipe(sourcemaps.init())
-    .pipe(tsc(tstProject))
+    .pipe(tstProject())
     .on("error", function (err) {
         process.exit(1);
     })
@@ -108,7 +108,7 @@ gulp.task("build-test", function() {
         "test/**/*.ts"
     ])
     .pipe(sourcemaps.init())
-    .pipe(tsc(tsTestProject))
+    .pipe(tsTestProject())
     .on("error", function (err) {
         process.exit(1);
     })

@@ -3,35 +3,17 @@
 
 // The Inversify main file, the library entry point.
 
-import Kernel from "./kernel/kernel";
-import KernelModule from "./kernel/kernel_module";
-import injectable from "./annotation/injectable";
-import tagged from "./annotation/tagged";
-import named from "./annotation/named";
-import inject from "./annotation/inject";
-import unmanaged from "./annotation/unmanaged";
-import multiInject from "./annotation/multi_inject";
-import targetName from "./annotation/target_name";
-import { decorate } from "./annotation/decorator_utils";
-import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
-import guid from "./utils/guid";
-import { getServiceIdentifierAsString } from "./utils/serialization";
-import interfaces from "./interfaces/interfaces";
-
-export { Kernel };
-export { KernelModule };
-export { decorate };
-export { injectable };
-export { tagged };
-export { named };
-export { inject };
-export { unmanaged };
-export { multiInject };
-export { targetName };
-export { traverseAncerstors };
-export { taggedConstraint };
-export { namedConstraint };
-export { typeConstraint };
-export { guid };
-export { getServiceIdentifierAsString };
-export { interfaces };
+export { default as Kernel } from "./kernel/kernel";
+export { default as KernelModule } from "./kernel/kernel_module";
+export { default as injectable } from "./annotation/injectable";
+export { default as tagged } from "./annotation/tagged";
+export { default as named } from "./annotation/named";
+export { default as inject } from "./annotation/inject";
+export { default as unmanaged } from "./annotation/unmanaged";
+export { default as multiInject } from "./annotation/multi_inject";
+export { default as targetName } from "./annotation/target_name";
+export { default as guid } from "./utils/guid";
+export { default as interfaces } from "./interfaces/interfaces";
+export { decorate } from "./annotation/decorator_utils";
+export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
+export { getServiceIdentifierAsString } from "./utils/serialization";

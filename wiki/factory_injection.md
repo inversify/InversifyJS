@@ -62,12 +62,12 @@ kernel.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((co
 class DieselCarFactory implements CarFactory {
     private _dieselFactory: (displacement: number) => Engine ;
     constructor(
-        @inject("Factory<Engine>") factory: (category: string) => (displacement: number) => Engine
+        @inject("Factory<Engine>") factory: (category: string) => (displacement: number) => Engine // Injecting an engine factory
     ) {
-        this._dieselFactory = factory("diesel");
+        this._dieselFactory = factory("diesel"); // Creating a diesel engine facotry
     }
     public createEngine(displacement: number): Engine {
-        return this._dieselFactory(displacement);
+        return this._dieselFactory(displacement); // Creating a concrete diesel engine
     }
 }
 ```
