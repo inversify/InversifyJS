@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
-import { getFunctionName } from "../../src/utils/utils";
+import { getFunctionName } from "../../src/utils/serialization";
 
 import {
     Kernel,

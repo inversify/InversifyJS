@@ -83,18 +83,8 @@ describe("Planner", () => {
         kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
         kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-        //
-        //  Expected Plan (request tree):
-        //
-        //  Ninja (target "null", no metadata)
-        //   -- Katana (target "katama", no metadata)
-        //       -- KatanaHandler (target "blade", no metadata)
-        //       -- KatanaBlade (target "blade", no metadata)
-        //   -- Shuriken (target "shuriken", no metadata)
-        //
-
         // Actual
-        let actualPlan = plan(kernel, false, TargetType.Variable, context, ninjaId).plan;
+        let actualPlan = plan(kernel, false, TargetType.Variable, ninjaId).plan;
         let actualNinjaRequest = actualPlan.rootRequest;
         let actualKatanaRequest = actualNinjaRequest.childRequests[0];
         let actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
@@ -302,7 +292,8 @@ describe("Planner", () => {
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
-        expect(actualPlan.rootRequest.target).eql(null);
+        expect(actualPlan.rootRequest.target.serviceIdentifier).eql(ninjaId);
+        expect(actualPlan.rootRequest.target.isArray()).eql(false);
 
         // root request should only have one child request with target weapons/Weapon[]
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql("Weapon");
@@ -451,7 +442,8 @@ describe("Planner", () => {
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
-        expect(actualPlan.rootRequest.target).eql(null);
+        expect(actualPlan.rootRequest.target.serviceIdentifier).eql(ninjaId);
+        expect(actualPlan.rootRequest.target.isArray()).eql(false);
 
         // root request should have 2 child requests
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(weaponId);

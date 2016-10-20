@@ -1,60 +1,9 @@
 import interfaces from "../interfaces/interfaces";
 import BindingScope from "../bindings/binding_scope";
 import BindingType from "../bindings/binding_type";
-import TargetType from "../planning/target_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { getServiceIdentifierAsString } from "../utils/serialization";
-
-function _injectProperties(instance: any, childRequests: interfaces.Request[]): any {
-
-    let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-        return childRequest.target.type === TargetType.ClassProperty;
-    });
-
-    let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
-        return _resolveRequest(childRequest);
-    });
-
-    propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
-        let injection = propertyInjections[index];
-        instance[r.target.name.value()] = injection;
-    });
-
-    return instance;
-
-}
-
-function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): any {
-    return new Func(...injections);
-}
-
-
-function _resolveInstance(
-    constr: interfaces.Newable<any>,
-    childRequests: interfaces.Request[]
-): any {
-
-    let result: any = null;
-
-    if (childRequests.length > 0) {
-
-        let constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-            return childRequest.target.type === TargetType.ConstructorArgument;
-        });
-
-        let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {
-            return _resolveRequest(childRequest);
-        });
-
-        result = _createInstance(constr, constructorInjections);
-        result = _injectProperties(result, childRequests);
-
-    } else {
-        result = new constr();
-    }
-
-    return result;
-}
+import resolveInstance from "./instantiation";
 
 function _resolveRequest(request: interfaces.Request): any {
 
@@ -111,7 +60,7 @@ function _resolveRequest(request: interfaces.Request): any {
                 break;
 
             case BindingType.Instance:
-                result = _resolveInstance(binding.implementationType, childRequests);
+                result = resolveInstance(binding.implementationType, childRequests, _resolveRequest);
                 break;
 
             case BindingType.Invalid:

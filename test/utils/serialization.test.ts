@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { getFunctionName } from "../../src/utils/utils";
+import { getFunctionName } from "../../src/utils/serialization";
 
-describe("Utils", () => {
+describe("serialization", () => {
 
     it("Should return a good function name", () => {
 

@@ -1,6 +1,6 @@
 import interfaces from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
-import { getFunctionName } from "../utils/utils";
+import { getFunctionName } from "../utils/serialization";
 import TargetType from "./target_type";
 import Target from "./target";
 import * as ERROR_MSGS from "../constants/error_msgs";

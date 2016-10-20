@@ -5,7 +5,6 @@ import resolve from "../../src/resolution/resolver";
 import { plan } from "../../src/planning/planner";
 import Kernel from "../../src/kernel/kernel";
 import Request from "../../src/planning/request";
-import Target from "../../src/planning/target";
 import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
 import inject from "../../src/annotation/inject";
@@ -31,6 +30,12 @@ describe("Resolve", () => {
 
   it("Should be able to resolve BindingType.Instance bindings", () => {
 
+      let ninjaId = "Ninja";
+      let shurikenId = "Shuriken";
+      let katanaId = "Katana";
+      let katanaHandlerId = "KatanaHandler";
+      let katanaBladeId = "KatanaBlade";
+
       interface Blade {}
 
       @injectable()
@@ -51,8 +56,8 @@ describe("Resolve", () => {
           public handler: Handler;
           public blade: Blade;
           public constructor(
-              @inject("Handler") @targetName("handler") handler: Handler,
-              @inject("Blade") @targetName("blade") blade: Blade
+              @inject(katanaHandlerId) @targetName("handler") handler: Handler,
+              @inject(katanaBladeId) @targetName("blade") blade: Blade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -74,19 +79,13 @@ describe("Resolve", () => {
           public katana: Katana;
           public shuriken: Shuriken;
           public constructor(
-              @inject("Katana") @targetName("katana") katana: Katana,
-              @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+              @inject(katanaId) @targetName("katana") katana: Katana,
+              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
           }
       }
-
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaId = "Katana";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
 
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId).to(Ninja);
@@ -95,42 +94,7 @@ describe("Resolve", () => {
       kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let katanaBinding = bindingDictionary.get(katanaId)[0];
-      let katanaHandlerBinding = bindingDictionary.get(katanaHandlerId)[0];
-      let katanaBladeBinding = bindingDictionary.get(katanaBladeId)[0];
-      let shurikenBinding = bindingDictionary.get(shurikenId)[0];
-
       let context = plan(kernel, false, TargetType.Variable, ninjaId);
-
-      //
-      //  Plan (request tree):
-      //
-      //  Ninja (target "null", no metadata)
-      //   -- Katana (target "katama", no metadata)
-      //       -- KatanaHandler (target "blade", no metadata)
-      //       -- KatanaBlade (target "blade", no metadata)
-      //   -- Shuriken (target "shuriken", no metadata)
-      //
-
-      let katanaRequest = context.plan.rootRequest.addChildRequest(
-          katanaId, katanaBinding, new Target(TargetType.ConstructorArgument, "katana", katanaId)
-      );
-
-      katanaRequest.addChildRequest(
-          katanaHandlerId, katanaHandlerBinding, new Target(TargetType.ConstructorArgument, "handler", katanaHandlerId)
-      );
-
-      katanaRequest.addChildRequest(
-          katanaBladeId, katanaBladeBinding, new Target(TargetType.ConstructorArgument, "blade", katanaBladeId)
-      );
-
-      context.plan.rootRequest.addChildRequest(
-          shurikenId, shurikenBinding, new Target(TargetType.ConstructorArgument, "shuriken", shurikenId)
-      );
-
-      context.addPlan(context.plan);
-
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -143,6 +107,12 @@ describe("Resolve", () => {
 
   it("Should store singleton type bindings in cache", () => {
 
+      let ninjaId = "Ninja";
+      let shurikenId = "Shuriken";
+      let katanaId = "Katana";
+      let katanaHandlerId = "KatanaHandler";
+      let katanaBladeId = "KatanaBlade";
+
       interface Blade {}
 
       @injectable()
@@ -163,8 +133,8 @@ describe("Resolve", () => {
           public handler: Handler;
           public blade: Blade;
           public constructor(
-              @inject("Handler") @targetName("handler") handler: Handler,
-              @inject("Blade") @targetName("blade") blade: Blade
+              @inject(katanaHandlerId) @targetName("handler") handler: Handler,
+              @inject(katanaBladeId) @targetName("blade") blade: Blade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -186,19 +156,13 @@ describe("Resolve", () => {
           public katana: Katana;
           public shuriken: Shuriken;
           public constructor(
-              @inject("Katana") @targetName("katana") katana: Katana,
-              @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+              @inject(katanaId) @targetName("katana") katana: Katana,
+              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
           ) {
               this.katana = katana;
               this.shuriken = shuriken;
           }
       }
-
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaId = "Katana";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
 
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId).to(Ninja);
@@ -210,24 +174,14 @@ describe("Resolve", () => {
       let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
       let context = plan(kernel, false, TargetType.Variable, ninjaId);
 
-      //
-      //  Plan (request tree):
-      //
-      //  Ninja (target "null", no metadata)
-      //   -- Katana (target "katama", no metadata)
-      //       -- KatanaHandler (target "blade", no metadata)
-      //       -- KatanaBlade (target "blade", no metadata)
-      //   -- Shuriken (target "shuriken", no metadata)
-      //
-
-      expect(bindingDictionary.get("Katana")[0].cache === null).eql(true);
+      expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
       let ninja = resolve<Ninja>(context);
       expect(ninja instanceof Ninja).eql(true);
 
       let ninja2 = resolve<Ninja>(context);
       expect(ninja2 instanceof Ninja).eql(true);
 
-      expect(bindingDictionary.get("Katana")[0].cache instanceof Katana).eql(true);
+      expect(bindingDictionary.get(katanaId)[0].cache instanceof Katana).eql(true);
 
   });
 
@@ -295,6 +249,7 @@ describe("Resolve", () => {
           blade: KatanaBlade;
       }
 
+      @injectable()
       class Katana implements Sword {
           public handler: KatanaHandler;
           public blade: KatanaBlade;
@@ -305,6 +260,8 @@ describe("Resolve", () => {
       }
 
       interface Shuriken {}
+
+      @injectable()
       class Shuriken implements Shuriken {}
 
       interface Warrior {
@@ -335,14 +292,6 @@ describe("Resolve", () => {
       kernel.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
       let context = plan(kernel, false, TargetType.Variable, ninjaId);
-
-      //
-      //  Plan (request tree):
-      //
-      //  Ninja (target "null", no metadata)
-      //   -- Katana (target "katama", no metadata)
-      //   -- Shuriken (target "shuriken", no metadata)
-      //
 
       let ninja = resolve<Ninja>(context);
 
@@ -390,6 +339,13 @@ describe("Resolve", () => {
 
   it("Should be able to resolve BindingType.Constructor bindings", () => {
 
+      let ninjaId = "Ninja";
+      let shurikenId = "Shuriken";
+      let katanaId = "Katana";
+      let newableKatanaId = "Newable<Katana>";
+      let katanaHandlerId = "KatanaHandler";
+      let katanaBladeId = "KatanaBlade";
+
       interface KatanaBlade {}
 
       @injectable()
@@ -410,8 +366,8 @@ describe("Resolve", () => {
           public handler: KatanaHandler;
           public blade: KatanaBlade;
           public constructor(
-              @inject("KatanaHandler") @targetName("handler") handler: KatanaHandler,
-              @inject("KatanaBlade") @targetName("blade") blade: KatanaBlade
+              @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
+              @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -419,6 +375,8 @@ describe("Resolve", () => {
       }
 
       interface Shuriken {}
+
+      @injectable()
       class Shuriken implements Shuriken {}
 
       interface Warrior {
@@ -431,25 +389,21 @@ describe("Resolve", () => {
           public katana: Katana;
           public shuriken: Shuriken;
           public constructor(
-              @inject("Katana") @targetName("katana") katana: Katana,
-              @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+              @inject(newableKatanaId) @targetName("katana") katana: Katana,
+              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
           ) {
               this.katana = new Katana(new KatanaHandler(), new KatanaBlade());  // IMPORTANT!
               this.shuriken = shuriken;
           }
       }
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let newableKatanaId = "Newable<Katana>";
-
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId).to(Ninja);
       kernel.bind<Shuriken>(shurikenId).to(Shuriken);
+      kernel.bind<Katana>(katanaId).to(Katana);
       kernel.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
       let context = plan(kernel, false, TargetType.Variable, ninjaId);
-
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -551,6 +505,13 @@ describe("Resolve", () => {
 
   it("Should be able to resolve bindings with auto factory", () => {
 
+      let ninjaId = "Ninja";
+      let shurikenId = "Shuriken";
+      let katanaFactoryId = "Factory<Sword>";
+      let katanaId = "Katana";
+      let katanaHandlerId = "KatanaHandler";
+      let katanaBladeId = "KatanaBlade";
+
       interface KatanaBlade {}
 
       @injectable()
@@ -575,8 +536,8 @@ describe("Resolve", () => {
           public handler: KatanaHandler;
           public blade: KatanaBlade;
           public constructor(
-              @inject("KatanaHandler") @targetName("handler") handler: KatanaHandler,
-              @inject("KatanaBlade") @targetName("blade") blade: KatanaBlade
+              @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
+              @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
           ) {
               this.handler = handler;
               this.blade = blade;
@@ -598,20 +559,13 @@ describe("Resolve", () => {
           public katana: Katana;
           public shuriken: Shuriken;
           public constructor(
-              @inject("SwordFactory") @targetName("makeKatana") makeKatana: SwordFactory,
-              @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+              @inject(katanaFactoryId) @targetName("makeKatana") makeKatana: SwordFactory,
+              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
           ) {
               this.katana = makeKatana(); // IMPORTANT!
               this.shuriken = shuriken;
           }
       }
-
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaFactoryId = "Factory<Sword>";
-      let katanaId = "Katana";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
 
       let kernel = new Kernel();
       kernel.bind<Ninja>(ninjaId).to(Ninja);
@@ -619,11 +573,9 @@ describe("Resolve", () => {
       kernel.bind<Katana>(katanaId).to(Katana);
       kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
-
       kernel.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
 
       let context = plan(kernel, false, TargetType.Variable, ninjaId);
-
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -1021,6 +973,7 @@ describe("Resolve", () => {
           blade: KatanaBlade;
       }
 
+      @injectable()
       class Katana implements Sword {
           public handler: KatanaHandler;
           public blade: KatanaBlade;
@@ -1031,6 +984,8 @@ describe("Resolve", () => {
       }
 
       interface Shuriken {}
+
+      @injectable()
       class Shuriken implements Shuriken {}
 
       interface Warrior {
@@ -1062,14 +1017,6 @@ describe("Resolve", () => {
       kernel.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
 
       let context = plan(kernel, false, TargetType.Variable, ninjaId);
-
-      //
-      //  Plan (request tree):
-      //
-      //  Ninja (target "null", no metadata)
-      //   -- Katana (target "katama", no metadata)
-      //   -- Shuriken (target "shuriken", no metadata)
-      //
 
       let ninja = resolve<Ninja>(context);
 

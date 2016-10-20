@@ -1,5 +1,4 @@
 import interfaces from "../interfaces/interfaces";
-import { getFunctionName } from "./utils";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
@@ -118,7 +117,18 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
     }
 }
 
+function getFunctionName(v: any): string {
+    if (v.name) {
+        return v.name;
+    } else {
+        let name = v.toString();
+        let match = name.match(/^function\s*([^\s(]+)/);
+        return match ? match[1] : `Anonymous function: ${name}`;
+    }
+}
+
 export {
+    getFunctionName,
     getServiceIdentifierAsString,
     listRegisteredBindingsForServiceIdentifier,
     listMetadataForTarget,
