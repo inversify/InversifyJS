@@ -3,377 +3,214 @@ import Plan from "./plan";
 import Context from "./context";
 import Request from "./request";
 import Target from "./target";
-import * as METADATA_KEY from "../constants/metadata_keys";
+import TargetType from "./target_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import BindingType from "../bindings/binding_type";
-import { getFunctionName } from "../utils/utils";
-import TargetType from "./target_type";
+import BindingCount from "../bindings/binding_count";
+import getDependencies from "./reflection_utils";
+import Metadata from "../planning/metadata";
+import * as METADATA_KEY from "../constants/metadata_keys";
+import {
+    circularDependencyToException,
+    getServiceIdentifierAsString,
+    listRegisteredBindingsForServiceIdentifier,
+    listMetadataForTarget
+} from "../utils/serialization";
 
-class Planner implements interfaces.Planner {
+function _createTarget(
+    isMultiInject: boolean,
+    targetType: TargetType,
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    name: string,
+    key?: string,
+    value?: any
+): interfaces.Target {
 
-    public createContext(kernel: interfaces.Kernel): interfaces.Context {
-        return new Context(kernel);
+    let metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
+    let injectMetadata = new Metadata(metadataKey, serviceIdentifier);
+    let target = new Target(targetType, name, serviceIdentifier, injectMetadata);
+
+    if (key !== undefined) {
+        let tagMetadata = new Metadata(key, value);
+        target.metadata.push(tagMetadata);
     }
 
-    public createPlan(
-        context: interfaces.Context,
-        binding: interfaces.Binding<any>,
-        target: interfaces.Target
-    ): interfaces.Plan {
+    return target;
 
-        let rootRequest = new Request(
-            binding.serviceIdentifier,
-            context,
-            null,
-            binding,
-            target);
+}
 
-        let plan = new Plan(context, rootRequest);
+function _getActiveBindings(
+    context: interfaces.Context,
+    parentRequest: interfaces.Request,
+    target: interfaces.Target
+): interfaces.Binding<any>[] {
 
-        // Plan and Context are duable linked
-        context.addPlan(plan);
+    let bindings = getBindings<any>(context.kernel, target.serviceIdentifier);
+    let activeBindings: interfaces.Binding<any>[] = [];
 
-        if (binding.type === BindingType.Instance) {
-            let dependencies = this._getDependencies(binding.implementationType);
-            dependencies.forEach((dependency) => { this._createSubRequest(rootRequest, dependency); });
-        }
+    // multiple bindings available but not a multi-injection
+    if (bindings.length > 1) {
 
-        return plan;
+        // apply constraints if available to reduce the number of active bindings
+        activeBindings = bindings.filter((binding) => {
+
+            let request = new Request(
+                binding.serviceIdentifier,
+                context,
+                parentRequest,
+                binding,
+                target
+            );
+
+            return binding.constraint(request);
+
+        });
+
+    } else {
+        // simple injection or multi-injection without constraints
+        activeBindings = bindings;
     }
 
-    public getBindings<T>(
-        kernel: interfaces.Kernel,
-        serviceIdentifier: interfaces.ServiceIdentifier<T>
-    ): interfaces.Binding<T>[] {
+    // validate active bindings
+    _validateActiveBindingCount(target.serviceIdentifier, activeBindings, target, context.kernel);
 
-        let bindings: interfaces.Binding<T>[] = [];
-        let _kernel: any = kernel;
-        let _bindingDictionary = _kernel._bindingDictionary;
-        if (_bindingDictionary.hasKey(serviceIdentifier)) {
-            bindings = _bindingDictionary.get(serviceIdentifier);
+    return activeBindings;
+}
 
-        } else if (_kernel._parentKernel !== undefined) {
-            // recursively try to get bindings from parent kernel
-            bindings = this.getBindings<T>(_kernel._parentKernel, serviceIdentifier);
+function _validateActiveBindingCount(
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    bindings: interfaces.Binding<any>[],
+    target: interfaces.Target,
+    kernel: interfaces.Kernel
+): interfaces.Binding<any>[] {
 
-        }
+    switch (bindings.length) {
 
-        return bindings;
+        case BindingCount.NoBindingsAvailable:
+            let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
+            let msg = ERROR_MSGS.NOT_REGISTERED;
+            msg += listMetadataForTarget(serviceIdentifierString, target);
+            msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
+            throw new Error(msg);
+
+        case BindingCount.OnlyOneBindingAvailable:
+            if (target.isArray() === false) {
+                return bindings;
+            }
+
+        case BindingCount.MultipleBindingsAvailable:
+        default:
+            if (target.isArray() === false) {
+                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
+                msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+                msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
+                throw new Error(msg);
+            } else {
+                return bindings;
+            }
     }
 
-    public getActiveBindings(
-        parentRequest: interfaces.Request,
-        target: interfaces.Target
-    ): interfaces.Binding<any>[] {
+}
 
-        let bindings = this.getBindings<any>(parentRequest.parentContext.kernel, target.serviceIdentifier);
-        let activeBindings: interfaces.Binding<any>[] = [];
+function _createSubRequests(
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    context: interfaces.Context,
+    parentRequest: interfaces.Request,
+    target: interfaces.Target
+) {
 
-        if (bindings.length > 1 && target.isArray() === false) {
+    try {
 
-            // apply constraints if available to reduce the number of active bindings
-            activeBindings = bindings.filter((binding) => {
+        let activeBindings: interfaces.Binding<any>[];
+        let childRequest: interfaces.Request;
 
-                let request = new Request(
-                    binding.serviceIdentifier,
-                    parentRequest.parentContext,
-                    parentRequest,
-                    binding,
-                    target
-                );
+        if (parentRequest === null) {
 
-                return binding.constraint(request);
+            activeBindings = _getActiveBindings(context, null, target);
 
-            });
+            childRequest = new Request(
+                serviceIdentifier,
+                context,
+                null,
+                activeBindings,
+                target
+            );
+
+            let plan = new Plan(context, childRequest);
+            context.addPlan(plan);
 
         } else {
-            activeBindings = bindings;
+            activeBindings = _getActiveBindings(context, parentRequest, target);
+            childRequest = parentRequest.addChildRequest(target.serviceIdentifier, activeBindings, target);
         }
 
-        return activeBindings;
-    }
+        activeBindings.forEach((binding) => {
 
-    private _createSubRequest(parentRequest: interfaces.Request, target: interfaces.Target) {
-
-        try {
-            let activeBindings = this.getActiveBindings(parentRequest, target);
-
-            if (activeBindings.length === 0) {
-
-                // no matching bindings found
-                let serviceIdentifier = parentRequest.parentContext.kernel.getServiceIdentifierAsString(target.serviceIdentifier);
-                throw new Error(`${ERROR_MSGS.NOT_REGISTERED} ${serviceIdentifier}`);
-
-            } else if (activeBindings.length > 1 && target.isArray() === false) {
-
-                // more than one matching binding found but target is not an array
-                let serviceIdentifier = parentRequest.parentContext.kernel.getServiceIdentifierAsString(target.serviceIdentifier);
-                throw new Error(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifier}`);
-
-            } else {
-
-                // one ore more than one matching bindings found
-                // when more than 1 matching bindings found target is an array
-                this._createChildRequest(parentRequest, target, activeBindings);
-
-            }
-
-        } catch (error) {
-            if (error instanceof RangeError) {
-                this._throwWhenCircularDependenciesFound(parentRequest.parentContext.plan.rootRequest);
-            } else {
-                throw new Error(error.message);
-            }
-        }
-    }
-
-    private _createChildRequest(
-        parentRequest: interfaces.Request,
-        target: interfaces.Target,
-        bindings: interfaces.Binding<any>[]
-    ) {
-
-        // Use the only active binding to create a child request
-        let childRequest = parentRequest.addChildRequest(target.serviceIdentifier, bindings, target);
-        let subChildRequest = childRequest;
-
-        bindings.forEach((binding) => {
+            let subChildRequest: interfaces.Request = null;
 
             if (target.isArray()) {
                 subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
+            } else {
+                subChildRequest = childRequest;
             }
 
-            // Only try to plan sub-dependencies when binding type is BindingType.Instance
             if (binding.type === BindingType.Instance) {
 
-                // Create child requests for sub-dependencies if any
-                let subDependencies = this._getDependencies(binding.implementationType);
-                subDependencies.forEach((d, index) => {
-                    this._createSubRequest(subChildRequest, d);
+                let dependencies = getDependencies(binding.implementationType);
+
+                dependencies.forEach((dependency: interfaces.Target) => {
+                    _createSubRequests(dependency.serviceIdentifier, context, subChildRequest, dependency);
                 });
-            }
-
-        });
-    }
-
-    private _throwWhenCircularDependenciesFound(
-        request: interfaces.Request,
-        previousServiceIdentifiers: interfaces.ServiceIdentifier<any>[] = []
-    ) {
-
-        // Add to list so we know that we have already visit this node in the request tree
-        let parentServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(request.serviceIdentifier);
-        previousServiceIdentifiers.push(parentServiceIdentifier);
-
-        // iterate child requests
-        request.childRequests.forEach((childRequest) => {
-
-            // the service identifier of a child request
-            let childServiceIdentifier = request.parentContext.kernel.getServiceIdentifierAsString(childRequest.serviceIdentifier);
-
-            // check if the child request has been already visited
-            if (previousServiceIdentifiers.indexOf(childServiceIdentifier) === -1) {
-
-                if (childRequest.childRequests.length > 0) {
-                    // use recursion to continue traversing the request tree
-                    this._throwWhenCircularDependenciesFound(childRequest, previousServiceIdentifiers);
-                } else {
-                    // the node has no child so we add it to list to know that we have already visit this node
-                    previousServiceIdentifiers.push(childServiceIdentifier);
-                }
-
-            } else {
-
-                // create description of circular dependency
-                previousServiceIdentifiers.push(childServiceIdentifier);
-
-                let services = previousServiceIdentifiers.reduce((prev, curr) => {
-                    return (prev !== "") ? `${prev} -> ${curr}` : `${curr}`;
-                }, "");
-
-                // throw when we have already visit this node in the request tree
-                throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
 
             }
 
         });
 
-    }
-
-    private _formatTargetMetadata(targetMetadata: any[]) {
-
-        // Create map from array of metadata for faster access to metadata
-        let targetMetadataMap: any = {};
-        targetMetadata.forEach((m: interfaces.Metadata) => {
-            targetMetadataMap[m.key.toString()] = m.value;
-        });
-
-        // user generated metadata
-        return {
-            inject : targetMetadataMap[METADATA_KEY.INJECT_TAG],
-            multiInject: targetMetadataMap[METADATA_KEY.MULTI_INJECT_TAG],
-            targetName: targetMetadataMap[METADATA_KEY.NAME_TAG],
-            unmanaged: targetMetadataMap[METADATA_KEY.UNMANAGED_TAG]
-        };
-
-    }
-
-    private _getTargets(func: Function, isBaseClass: boolean): interfaces.Target[] {
-
-        let constructorName = getFunctionName(func);
-
-        // TypeScript compiler generated annotations
-        let serviceIdentifiers = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
-
-        // All types resolved bust be annotated with @injectable
-        if (serviceIdentifiers === undefined) {
-            let msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} ${constructorName}.`;
-            throw new Error(msg);
-        }
-
-        // User generated annotations
-        let constructorArgsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
-
-        let targets = [
-            ...(this._constructorArgsTargets(isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length)),
-            ...(this._getClassPropsTargets(func))
-        ];
-
-        return targets;
-
-    }
-
-    private _constructorArgsTargets(
-        isBaseClass: boolean,
-        constructorName: string,
-        serviceIdentifiers: any,
-        constructorArgsMetadata: any,
-        constructorLength: number
-    ) {
-
-        let targets: interfaces.Target[] = [];
-
-        for (let i = 0; i < constructorLength; i++) {
-
-            // Create map from array of metadata for faster access to metadata
-            let targetMetadata = constructorArgsMetadata[i.toString()] || [];
-            let metadata = this._formatTargetMetadata(targetMetadata);
-
-            // Take types to be injected from user-generated metadata
-            // if not available use compiler-generated metadata
-            let serviceIndentifier = serviceIdentifiers[i];
-            serviceIndentifier = (metadata.inject || metadata.multiInject) ? (metadata.inject || metadata.multiInject) : serviceIndentifier;
-
-            // Types Object and Function are too ambiguous to be resolved
-            // user needs to generate metadata manually for those
-            let isUnknownType = (serviceIndentifier === Object || serviceIndentifier === Function || serviceIndentifier === undefined);
-
-            if (isBaseClass === false && isUnknownType) {
-                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
-                throw new Error(msg);
-            }
-
-            // Create target
-            let target = new Target(TargetType.ConstructorArgument, metadata.targetName, serviceIndentifier);
-            target.metadata = targetMetadata;
-            targets.push(target);
-
-        }
-
-        return targets;
-    }
-
-    private _getClassPropsTargets(func: Function) {
-
-        let classPropsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, func) || [];
-        let targets: interfaces.Target[] = [];
-        let keys = Object.keys(classPropsMetadata);
-
-        for (let i = 0; i < keys.length; i++) {
-
-            // the key of the property being injected
-            let key = keys[i];
-
-            // the metadata for the property being injected
-            let targetMetadata = classPropsMetadata[key];
-
-            // the metadata formatted for easier access
-            let metadata = this._formatTargetMetadata(classPropsMetadata[key]);
-
-            // the name of the property being injected
-            let targetName = metadata.targetName || key;
-
-            // Take types to be injected from user-generated metadata
-            let serviceIndentifier = (metadata.inject || metadata.multiInject);
-
-            // The property target
-            let target = new Target(TargetType.ClassProperty, targetName, serviceIndentifier);
-            target.metadata = targetMetadata;
-            targets.push(target);
-        }
-
-        // Check if base class has injected properties
-        let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
-
-        if (baseConstructor !== Object) {
-
-            let baseTargets = this._getClassPropsTargets(baseConstructor);
-
-            targets = [
-                ...targets,
-                ...baseTargets
-            ];
-
-        }
-
-        return targets;
-    }
-
-    private _getDependencies(func: Function): interfaces.Target[] {
-
-        let constructorName = getFunctionName(func);
-        let targets: interfaces.Target[] = this._getTargets(func, false);
-
-        // Throw if a derived class does not implement its constructor explicitly
-        // We do this to prevent errors when a base class (parent) has dependencies
-        // and one of the derived classes (children) has no dependencies
-        let baseClassDepencencyCount = this._baseClassDepencencyCount(func);
-        if (targets.length < baseClassDepencencyCount) {
-            let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
-            throw new Error(error);
-        }
-
-        return targets;
-    }
-
-    private _baseClassDepencencyCount(func: Function): number {
-
-        let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
-
-        if (baseConstructor !== Object) {
-
-            let targets = this._getTargets(baseConstructor, true);
-
-            let metadata: any[] = targets.map((t: interfaces.Target) => {
-                return t.metadata.filter((m: interfaces.Metadata) => {
-                    return m.key === METADATA_KEY.UNMANAGED_TAG;
-                });
-            });
-
-            let unmanagedCount = [].concat.apply([], metadata).length;
-            let dependencyCount = targets.length - unmanagedCount;
-
-            if (dependencyCount > 0 ) {
-                return dependencyCount;
-            } else {
-                return this._baseClassDepencencyCount(baseConstructor);
-            }
-
+    } catch (error) {
+        if (error instanceof RangeError) {
+            circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
         } else {
-            return 0;
+            throw new Error(error.message);
         }
-
     }
 }
 
-export default Planner;
+function getBindings<T>(
+    kernel: interfaces.Kernel,
+    serviceIdentifier: interfaces.ServiceIdentifier<T>
+): interfaces.Binding<T>[] {
+
+    let bindings: interfaces.Binding<T>[] = [];
+    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
+
+    if (bindingDictionary.hasKey(serviceIdentifier)) {
+
+        bindings = bindingDictionary.get(serviceIdentifier);
+
+    } else if (kernel.parent !== null) {
+
+        // recursively try to get bindings from parent kernel
+        bindings = getBindings<T>(kernel.parent, serviceIdentifier);
+
+    }
+
+    return bindings;
+}
+
+function plan(
+    kernel: interfaces.Kernel,
+    isMultiInject: boolean,
+    targetType: TargetType,
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    key?: string,
+    value?: any
+): interfaces.Context {
+
+    let context = new Context(kernel);
+    let target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
+    _createSubRequests(serviceIdentifier, context, null, target);
+    return context;
+
+}
+
+export { plan, getBindings };

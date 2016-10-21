@@ -722,13 +722,10 @@ describe("InversifyJS", () => {
         kernel.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
         kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("throwable", true);
         kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
         kernel.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context) => {
             return (throwable: boolean) => {
-                if (throwable) {
-                    return context.kernel.getTagged<Weapon>("Weapon", "throwable", true);
-                } else {
-                    return context.kernel.getTagged<Weapon>("Weapon", "throwable", false);
-                }
+                return context.kernel.getTagged<Weapon>("Weapon", "throwable", throwable);
             };
         });
 
@@ -2798,6 +2795,7 @@ describe("InversifyJS", () => {
         });
 
         it("Should contain the provided name in error message when target is named", () => {
+
             let kernel = new Kernel();
             let tryGetNamedWeapon = () => { kernel.getNamed("Weapon", "superior"); };
 
@@ -2806,6 +2804,7 @@ describe("InversifyJS", () => {
         });
 
         it("Should contain the provided tag in error message when target is tagged", () => {
+
             let kernel = new Kernel();
             let tryGetTaggedWeapon = () => { kernel.getTagged("Weapon", "canShoot", true); };
 
@@ -2843,6 +2842,7 @@ describe("InversifyJS", () => {
                 expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
                 expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
             }
+
         });
 
     });

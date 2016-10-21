@@ -42,19 +42,25 @@ namespace interfaces {
         (context: Context): Provider<T>;
     }
 
-    export interface PlanAndResolve<T> {
-        (args: PlanAndResolveArgs): T[];
+    export interface NextArgs {
+        contextInterceptor?: (contexts: Context) => Context;
+        isMultiInject: boolean;
+        targetType: number;
+        serviceIdentifier: interfaces.ServiceIdentifier<any>;
+        key?: string;
+        value?: any;
     }
 
-    export interface PlanAndResolveArgs {
-        multiInject: boolean;
-        serviceIdentifier: ServiceIdentifier<any>;
-        target: Target;
-        contextInterceptor: (contexts: Context) => Context;
+    export interface Next {
+        (args: NextArgs): (any|any[]);
     }
 
     export interface Middleware extends Function {
-        (next: PlanAndResolve<any>): PlanAndResolve<any>;
+        (next: Next): Next;
+    }
+
+    export interface ContextInterceptor extends Function {
+        (context: interfaces.Context): interfaces.Context;
     }
 
     export interface Context {
@@ -76,13 +82,6 @@ namespace interfaces {
     export interface Plan {
         parentContext: Context;
         rootRequest: Request;
-    }
-
-    export interface Planner {
-        createContext(kernel: Kernel): Context;
-        createPlan(parentContext: Context, binding: Binding<any>, target: Target): Plan;
-        getBindings<T>(kernel: Kernel, serviceIdentifier: ServiceIdentifier<T>): Binding<T>[];
-        getActiveBindings(parentRequest: Request, target: Target): Binding<any>[];
     }
 
     export interface QueryableString {
@@ -114,6 +113,8 @@ namespace interfaces {
         type: number; // TargetType
         name: QueryableString;
         metadata: Array<Metadata>;
+        getNamedTag(): interfaces.Metadata;
+        getCustomTags(): interfaces.Metadata[];
         hasTag(key: string): boolean;
         isArray(): boolean;
         matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;
@@ -121,10 +122,6 @@ namespace interfaces {
         isTagged(): boolean;
         matchesNamedTag(name: string): boolean;
         matchesTag(key: string): (value: any) => boolean;
-    }
-
-    export interface Resolver {
-        resolve<T>(context: Context): T;
     }
 
     export interface Kernel {
@@ -141,7 +138,6 @@ namespace interfaces {
         load(...modules: KernelModule[]): void;
         unload(...modules: KernelModule[]): void;
         applyMiddleware(...middleware: Middleware[]): void;
-        getServiceIdentifierAsString(serviceIdentifier: ServiceIdentifier<any>): string;
         snapshot(): void;
         restore(): void;
     }
@@ -157,7 +153,7 @@ namespace interfaces {
 
     export interface KernelSnapshot {
         bindings: Lookup<Binding<any>>;
-        middleware: PlanAndResolve<any>;
+        middleware: Next;
     }
 
     export interface Clonable<T> {
@@ -206,6 +202,7 @@ namespace interfaces {
     export interface BindingWhenSyntax<T> {
         when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
         whenTargetNamed(name: string): BindingOnSyntax<T>;
+        whenTargetIsDefault(): BindingOnSyntax<T>;
         whenTargetTagged(tag: string, value: any): BindingOnSyntax<T>;
         whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
         whenParentNamed(name: string): BindingOnSyntax<T>;

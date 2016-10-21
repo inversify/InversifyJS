@@ -12,5 +12,6 @@
         "**/dist": true,
         "**/docs": true,
 		"type_definitions/**/*.js": true
-	}
+	},
+	"typescript.tsdk": "./node_modules/typescript/lib"
 }

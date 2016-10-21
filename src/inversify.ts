@@ -16,3 +16,4 @@ export { default as guid } from "./utils/guid";
 export { default as interfaces } from "./interfaces/interfaces";
 export { decorate } from "./annotation/decorator_utils";
 export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
+export { getServiceIdentifierAsString } from "./utils/serialization";

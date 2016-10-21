@@ -23,8 +23,8 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware1(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware1: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
@@ -47,15 +47,15 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware1(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware1: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
         }
 
-        function middleware2(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware2: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
@@ -86,15 +86,15 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware1(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware1: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
         }
 
-        function middleware2(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware2: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
@@ -124,15 +124,15 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware1(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware1: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
         }
 
-        function middleware2(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 log.push(`Middleware2: ${args.serviceIdentifier}`);
                 return planAndResolve(args);
             };
@@ -161,8 +161,8 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 try {
                     return planAndResolve(args);
                 } catch (e) {
@@ -194,8 +194,8 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 try {
                     return planAndResolve(args);
                 } catch (e) {
@@ -229,8 +229,8 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 try {
                     return planAndResolve(args);
                 } catch (e) {
@@ -261,8 +261,8 @@ describe("Middleware", () => {
 
         let kernel = new Kernel();
 
-        function middleware(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 try {
                     return planAndResolve(args);
                 } catch (e) {
@@ -288,8 +288,8 @@ describe("Middleware", () => {
 
         let log: string[] = [];
 
-        function middleware1(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 let nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
                     log.push(`contextInterceptor1: ${args.serviceIdentifier}`);
@@ -299,8 +299,8 @@ describe("Middleware", () => {
             };
         }
 
-        function middleware2(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-            return (args: interfaces.PlanAndResolveArgs) => {
+        function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
                 let nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
                     log.push(`contextInterceptor2: ${args.serviceIdentifier}`);

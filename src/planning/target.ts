@@ -65,14 +65,33 @@ class Target implements interfaces.Target {
     }
 
     public isTagged(): boolean {
-        if (this.metadata.length > 1) {
-            return true;
-        } else if (this.metadata.length === 1) {
-            // NAMED_TAG is not considered a tagged binding
-            return !this.hasTag(METADATA_KEY.NAMED_TAG);
-        } else {
-            return false;
+        return this.metadata.some((m) => {
+            return (m.key !== METADATA_KEY.INJECT_TAG) &&
+                   (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
+                   (m.key !== METADATA_KEY.NAME_TAG) &&
+                   (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
+                   (m.key !== METADATA_KEY.NAMED_TAG);
+        });
+    }
+
+    public getNamedTag(): interfaces.Metadata {
+        if (this.isNamed()) {
+            return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
         }
+        return null;
+    }
+
+    public getCustomTags(): interfaces.Metadata[] {
+        if (this.isTagged()) {
+            return this.metadata.filter((m) => {
+                return (m.key !== METADATA_KEY.INJECT_TAG) &&
+                    (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
+                    (m.key !== METADATA_KEY.NAME_TAG) &&
+                    (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
+                    (m.key !== METADATA_KEY.NAMED_TAG);
+            });
+        }
+        return null;
     }
 
     public matchesNamedTag(name: string): boolean {

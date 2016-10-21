@@ -26,6 +26,7 @@ Welcome to the InversifyJS wiki!
 - [Tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md)
 - [Create your own tag decorators](https://github.com/inversify/InversifyJS/blob/master/wiki/custom_tag_decorators.md)
 - [Named bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/named_bindings.md)
+- [Default target](https://github.com/inversify/InversifyJS/blob/master/wiki/default_targets.md)
 - [Kernel.getAll<T>(), Kernel.getNamed<T>() & Kernel.getTagged<T>()](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
 - [Support for hierarchical DI systems](https://github.com/inversify/InversifyJS/blob/master/wiki/hierarchical_di.md)
 - [Contextual bindings & @targetName](https://github.com/inversify/InversifyJS/blob/master/wiki/contextual_bindings.md)

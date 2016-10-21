@@ -273,12 +273,6 @@ describe("Property Injection", () => {
             Weapon: "Weapon"
         };
 
-        let TAGS = {
-            Primary: "Primary",
-            Priority: "Priority",
-            Secondary: "Secondary"
-        };
-
         interface Weapon {
             name: string;
         }
@@ -319,8 +313,8 @@ describe("Property Injection", () => {
 
         let kernel = new Kernel();
         kernel.bind<Warrior>(TYPES.Warrior).to(Samurai);
-        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetTagged(TAGS.Priority, TAGS.Primary);
-        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetTagged(TAGS.Priority, TAGS.Secondary);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken);
 
         let warrior = kernel.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
