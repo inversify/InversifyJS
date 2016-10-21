@@ -21,9 +21,9 @@ function _createTarget(
     isMultiInject: boolean,
     targetType: TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    name: string,
     key?: string,
-    value?: any,
-    name = ""
+    value?: any
 ): interfaces.Target {
 
     let metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
@@ -207,7 +207,7 @@ function plan(
 ): interfaces.Context {
 
     let context = new Context(kernel);
-    let target = _createTarget(isMultiInject, targetType, serviceIdentifier, key, value);
+    let target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
     _createSubRequests(serviceIdentifier, context, null, target);
     return context;
 

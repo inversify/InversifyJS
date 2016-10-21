@@ -78,6 +78,7 @@ class Target implements interfaces.Target {
         if (this.isNamed()) {
             return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
         }
+        return null;
     }
 
     public getCustomTags(): interfaces.Metadata[] {
@@ -90,7 +91,7 @@ class Target implements interfaces.Target {
                     (m.key !== METADATA_KEY.NAMED_TAG);
             });
         }
-        return [];
+        return null;
     }
 
     public matchesNamedTag(name: string): boolean {

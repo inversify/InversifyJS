@@ -101,17 +101,21 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
 
         let m = "";
 
-        if (target.isNamed()) {
+        let namedTag = target.getNamedTag();
+        let otherTags = target.getCustomTags();
+
+        if (namedTag !== null) {
             m = target.getNamedTag().toString();
         }
 
-        if (target.isTagged()) {
-            target.getCustomTags().forEach((tag) => {
+        if (otherTags !== null) {
+            otherTags.forEach((tag) => {
                 m += tag.toString() + "\n";
             });
         }
 
         return ` ${serviceIdentifierString}\n ${serviceIdentifierString} - ${m}`;
+
     } else {
         return ` ${serviceIdentifierString}`;
     }

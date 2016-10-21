@@ -116,7 +116,7 @@ describe("Named default", () => {
 
         let kernel = new Kernel();
         kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
+        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).inSingletonScope().whenTargetIsDefault();
 
         let defaultWeapon = kernel.get<Weapon>(TYPES.Weapon);
         let throwableWeapon = kernel.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
