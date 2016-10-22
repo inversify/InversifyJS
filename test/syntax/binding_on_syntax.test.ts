@@ -3,6 +3,7 @@ import { expect } from "chai";
 import Binding from "../../src/bindings/binding";
 import BindingOnSyntax from "../../src/syntax/binding_on_syntax";
 import * as Proxy from "harmony-proxy";
+import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingOnSyntax", () => {
 
@@ -11,7 +12,7 @@ describe("BindingOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingOnSyntax = new BindingOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -26,7 +27,7 @@ describe("BindingOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingOnSyntax = new BindingOnSyntax<Ninja>(binding);
 
         bindingOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) => {

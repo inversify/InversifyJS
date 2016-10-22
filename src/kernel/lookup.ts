@@ -91,6 +91,12 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         return l;
     }
 
+    public traverse(f: (item: interfaces.KeyValuePair<T>) => void): void {
+        this._dictionary.forEach((i) => {
+            f(i);
+        });
+    };
+
 	// finds the location of a KeyValuePair pair in _dictionary by its serviceIdentifier
     private getIndexByKey(serviceIdentifier: interfaces.ServiceIdentifier<any>): number {
         let index = -1;
@@ -102,6 +108,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         }
         return index;
     }
+
 }
 
 export default Lookup;

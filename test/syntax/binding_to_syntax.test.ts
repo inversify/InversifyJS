@@ -5,6 +5,7 @@ import BindingType from "../../src/bindings/binding_type";
 import BindingToSyntax from "../../src/syntax/binding_to_syntax";
 import injectable from "../../src/annotation/injectable";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingToSyntax", () => {
 
@@ -13,7 +14,7 @@ describe("BindingToSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -31,7 +32,7 @@ describe("BindingToSyntax", () => {
         class Ninja implements Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         expect(binding.type).eql(BindingType.Invalid);
@@ -97,7 +98,7 @@ describe("BindingToSyntax", () => {
         class Ninja implements Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         let f = function () {

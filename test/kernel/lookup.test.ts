@@ -3,6 +3,7 @@ import { expect } from "chai";
 import Lookup from "../../src/kernel/lookup";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import Binding from "../../src/bindings/binding";
+import BindingScope from "../../src/bindings/binding_scope";
 
 describe("Lookup", () => {
 
@@ -85,24 +86,24 @@ describe("Lookup", () => {
       interface Warrior {}
 
       class Ninja implements Warrior {}
-      let ninjaBinding = new Binding(warriorId);
+      let ninjaBinding = new Binding(warriorId, BindingScope.Transient);
       ninjaBinding.implementationType = Ninja;
       ninjaBinding.moduleId = moduleId1;
 
       class Samurai implements Warrior {}
-      let samuraiBinding = new Binding(warriorId);
+      let samuraiBinding = new Binding(warriorId, BindingScope.Transient);
       samuraiBinding.implementationType = Samurai;
       samuraiBinding.moduleId = moduleId2;
 
       interface Weapon {}
 
       class Shuriken implements Weapon {}
-      let shurikenBinding = new Binding(weaponId);
+      let shurikenBinding = new Binding(weaponId, BindingScope.Transient);
       shurikenBinding.implementationType = Shuriken;
       shurikenBinding.moduleId = moduleId1;
 
       class Katana implements Weapon {}
-      let katanaBinding = new Binding(weaponId);
+      let katanaBinding = new Binding(weaponId, BindingScope.Transient);
       katanaBinding.implementationType = Katana;
       katanaBinding.moduleId = moduleId2;
 
