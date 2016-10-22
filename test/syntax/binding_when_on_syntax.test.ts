@@ -4,6 +4,7 @@ import * as sinon from "sinon";
 import Binding from "../../src/bindings/binding";
 import BindingWhenOnSyntax from "../../src/syntax/binding_when_on_syntax";
 import injectable from "../../src/annotation/injectable";
+import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingWhenOnSyntax", () => {
 
@@ -22,7 +23,7 @@ describe("BindingWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -47,7 +48,7 @@ describe("BindingWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -125,7 +126,7 @@ describe("BindingWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props

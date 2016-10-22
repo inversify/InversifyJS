@@ -433,4 +433,71 @@ describe("Kernel", () => {
 
     });
 
+    it("Should be able configure the default scope at a global level", () => {
+
+        interface Warrior {
+            health: number;
+            takeHit: (damage: number) => void;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public health: number;
+            public constructor() {
+                this.health = 100;
+            }
+            public takeHit(damage: number) {
+                this.health = this.health - damage;
+            }
+        }
+
+        let TYPES = {
+            Warrior: "Warrior"
+        };
+
+        let kernel1 = new Kernel();
+        kernel1.bind<Warrior>(TYPES.Warrior).to(Ninja);
+
+        let transientNinja1 = kernel1.get<Warrior>(TYPES.Warrior);
+        expect(transientNinja1.health).to.eql(100);
+        transientNinja1.takeHit(10);
+        expect(transientNinja1.health).to.eql(90);
+
+        let transientNinja2 = kernel1.get<Warrior>(TYPES.Warrior);
+        expect(transientNinja2.health).to.eql(100);
+        transientNinja2.takeHit(10);
+        expect(transientNinja2.health).to.eql(90);
+
+        let kernel2 = new Kernel({ defaultScope: "singleton" });
+        kernel2.bind<Warrior>(TYPES.Warrior).to(Ninja);
+
+        let singletonNinja1 = kernel2.get<Warrior>(TYPES.Warrior);
+        expect(singletonNinja1.health).to.eql(100);
+        singletonNinja1.takeHit(10);
+        expect(singletonNinja1.health).to.eql(90);
+
+        let singletonNinja2 = kernel2.get<Warrior>(TYPES.Warrior);
+        expect(singletonNinja2.health).to.eql(90);
+        singletonNinja2.takeHit(10);
+        expect(singletonNinja2.health).to.eql(80);
+
+    });
+
+    it("Should be throw an exception if incorrect options is provided", () => {
+
+        let f = () => 0;
+        let wrong1 = () => new Kernel(<any>f);
+        expect(wrong1).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_MUST_BE_AN_OBJECT}`);
+
+        let options1 = { wrongKey: "singleton" };
+        let wrong2 = () => new Kernel(<any>options1);
+        expect(wrong2).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+
+        let options2 = { defaultScope: "wrongValue" };
+        let wrong3 = () => new Kernel(<any>options2);
+        expect(wrong3).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+
+    });
+
+
 });

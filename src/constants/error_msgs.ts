@@ -19,3 +19,6 @@ export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and
 
 export const ARGUMENTS_LENGTH_MISMATCH_1 = "The number of constructor arguments in the derived class ";
 export const ARGUMENTS_LENGTH_MISMATCH_2 = " must be >= than the number of constructor arguments of its base class.";
+
+export const KERNEL_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Kernel constructor argument. Kernel options must be an object.";
+export const KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Kernel option. Default scope must be a string ('singleton' or 'transient').";

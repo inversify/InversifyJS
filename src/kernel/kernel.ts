@@ -1,5 +1,6 @@
 import interfaces from "../interfaces/interfaces";
 import Binding from "../bindings/binding";
+import BindingScope from "../bindings/binding_scope";
 import Lookup from "./lookup";
 import { plan, getBindings } from "../planning/planner";
 import resolve from "../resolution/resolver";
@@ -14,13 +15,35 @@ import guid from "../utils/guid";
 class Kernel implements interfaces.Kernel {
 
     public guid: string;
+    public readonly options: interfaces.KernelOptions;
     private _middleware: interfaces.Next;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _snapshots: Array<interfaces.KernelSnapshot>;
     private _parentKernel: interfaces.Kernel;
 
     // Initialize private properties
-    public constructor() {
+    public constructor(kernelOptions?: interfaces.KernelOptions) {
+
+        if (kernelOptions !== undefined) {
+
+            if (typeof kernelOptions !== "object") {
+                throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_MUST_BE_AN_OBJECT}`);
+            } else if (kernelOptions.defaultScope === undefined) {
+                throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+            } else if (kernelOptions.defaultScope !== "singleton" && kernelOptions.defaultScope !== "transient") {
+                throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+            }
+
+            this.options = {
+                defaultScope: kernelOptions.defaultScope
+            };
+
+        } else {
+            this.options = {
+                defaultScope: "transient"
+            };
+        }
+
         this.guid = guid();
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._snapshots = [];
@@ -51,7 +74,8 @@ class Kernel implements interfaces.Kernel {
 
     // Regiters a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
-        let binding = new Binding<T>(serviceIdentifier);
+        let defaultScope = (this.options.defaultScope === "transient") ? BindingScope.Transient : BindingScope.Singleton;
+        let binding = new Binding<T>(serviceIdentifier, defaultScope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }
