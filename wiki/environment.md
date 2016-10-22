@@ -7,15 +7,21 @@ InversifyJS requires a modern JavaScript engine with support for the
 If your environment don't support one of these you will need to import a shim or polypill.
 
 ## Metadata Reflection API
+> :warning: **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
+
 Required always. Use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) as polypill.
+
 ```
 $ npm install reflect-metadata
 ```
+
 The type definitions for reflect-metadata are included in the npm package. You need to add the following 
 reference to the types field in your `tsconfig.json`:
+
 ```
 "types": ["reflect-metadata"]
 ```
+
 Finally, import reflect-metadata. If you are working in Node.js you can use:
 
 ```
@@ -29,8 +35,6 @@ If you are working in a web browser you can use a script tag:
 ```
 
 This will create the Reflect object as a global.
-
-> **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
 ## Promise
 Promises are only required only if you use want to 
