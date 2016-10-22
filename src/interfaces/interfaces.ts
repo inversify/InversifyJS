@@ -173,6 +173,7 @@ namespace interfaces {
         remove(serviceIdentifier: ServiceIdentifier<any>): void;
         removeByModuleId(moduleId: string): void;
         hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
+        traverse(f: (item: KeyValuePair<T>) => void): void;
     }
 
     export interface KeyValuePair<T> {

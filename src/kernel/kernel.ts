@@ -21,7 +21,33 @@ class Kernel implements interfaces.Kernel {
     private _snapshots: Array<interfaces.KernelSnapshot>;
     private _parentKernel: interfaces.Kernel;
 
-    // Initialize private properties
+    public static merge(kernel1: interfaces.Kernel, kernel2: interfaces.Kernel): interfaces.Kernel {
+
+        let kernel = new Kernel();
+        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
+        let bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel1)._bindingDictionary;
+        let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel2)._bindingDictionary;
+
+        function copyDictionary(
+            origing: interfaces.Lookup<interfaces.Binding<any>>,
+            destination: interfaces.Lookup<interfaces.Binding<any>>
+        ) {
+
+            origing.traverse((keyValuePair) => {
+                keyValuePair.value.forEach((binding) => {
+                    destination.add(binding.serviceIdentifier, binding.clone());
+                });
+            });
+
+        }
+
+        copyDictionary(bindingDictionary1, bindingDictionary);
+        copyDictionary(bindingDictionary2, bindingDictionary);
+
+        return kernel;
+
+    }
+
     public constructor(kernelOptions?: interfaces.KernelOptions) {
 
         if (kernelOptions !== undefined) {

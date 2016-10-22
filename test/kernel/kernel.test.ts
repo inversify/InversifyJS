@@ -421,7 +421,6 @@ describe("Kernel", () => {
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
         let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
-        console.log(fr);
         expect(fr.length).to.eql(2);
         expect(fr[0].hello).to.eql("bonjour");
         expect(fr[1].goodbye).to.eql("au revoir");
@@ -496,6 +495,54 @@ describe("Kernel", () => {
         let options2 = { defaultScope: "wrongValue" };
         let wrong3 = () => new Kernel(<any>options2);
         expect(wrong3).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+
+    });
+
+    it("Should be able to merge multiple kernels", () => {
+
+        @injectable()
+        class Ninja {
+            public name = "Ninja";
+        }
+
+        @injectable()
+        class Shuriken {
+            public name = "Shuriken";
+        }
+
+        let CHINA_EXPANSION_TYPES = {
+            Ninja: "Ninja",
+            Shuriken: "Shuriken"
+        };
+
+        let chinaExpansionKernel = new Kernel();
+        chinaExpansionKernel.bind<Ninja>(CHINA_EXPANSION_TYPES.Ninja).to(Ninja);
+        chinaExpansionKernel.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shuriken);
+
+        @injectable()
+        class Samurai {
+            public name = "Samurai";
+        }
+
+        @injectable()
+        class Katana {
+            public name = "Katana";
+        }
+
+        let JAPAN_EXPANSION_TYPES = {
+            Katana: "Katana",
+            Samurai: "Samurai"
+        };
+
+        let japanExpansionKernel = new Kernel();
+        japanExpansionKernel.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai);
+        japanExpansionKernel.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
+
+        let gameKernel = Kernel.merge(chinaExpansionKernel, japanExpansionKernel);
+        expect(gameKernel.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
+        expect(gameKernel.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
+        expect(gameKernel.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
+        expect(gameKernel.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
 
     });
 
