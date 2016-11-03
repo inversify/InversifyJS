@@ -10,7 +10,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         this._map = new Map<interfaces.ServiceIdentifier<any>, T[]>();
     }
 
-	// adds a new KeyValuePair to _dictionary
+	// adds a new entry to _map
     public add(serviceIdentifier: interfaces.ServiceIdentifier<any>, value: T): void {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); };
@@ -25,7 +25,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         }
     }
 
-    // gets the value of a KeyValuePair by its serviceIdentifier
+    // gets the value of a entry by its key (serviceIdentifier)
     public get(serviceIdentifier: interfaces.ServiceIdentifier<any>): T[] {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
@@ -38,7 +38,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         }
     }
 
-	// removes a KeyValuePair from _dictionary by its serviceIdentifier
+	// removes a entry from _map by its key (serviceIdentifier)
     public remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
@@ -60,7 +60,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         });
     }
 
-    // returns true if _dictionary contains serviceIdentifier
+    // returns true if _map contains a key (serviceIdentifier)
     public hasKey(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
         return this._map.has(serviceIdentifier);
@@ -78,6 +78,12 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
 
         return copy;
     }
+
+    public traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void {
+        this._map.forEach((value, key) => {
+            func(key, value);
+        });
+    };
 
 }
 

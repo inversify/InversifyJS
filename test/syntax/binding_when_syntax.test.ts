@@ -7,6 +7,7 @@ import TargetType from "../../src/planning/target_type";
 import Metadata from "../../src/planning/metadata";
 import BindingWhenSyntax from "../../src/syntax/binding_when_syntax";
 import { typeConstraint } from "../../src/syntax/constraint_helpers";
+import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingWhenSyntax", () => {
 
@@ -15,7 +16,7 @@ describe("BindingWhenSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -30,7 +31,7 @@ describe("BindingWhenSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         bindingWhenSyntax.when((request: interfaces.Request) => {
@@ -48,7 +49,7 @@ describe("BindingWhenSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         let named = "primary";
@@ -71,7 +72,7 @@ describe("BindingWhenSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         bindingWhenSyntax.whenTargetTagged("canSwim", true);
@@ -123,20 +124,20 @@ describe("BindingWhenSyntax", () => {
             }
         }
 
-        let samuraiBinding = new Binding<Samurai>("Samurai");
+        let samuraiBinding = new Binding<Samurai>("Samurai", BindingScope.Transient);
         samuraiBinding.implementationType = Samurai;
         let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, null);
 
-        let ninjaBinding = new Binding<Ninja>("Ninja");
+        let ninjaBinding = new Binding<Ninja>("Ninja", BindingScope.Transient);
         ninjaBinding.implementationType = Ninja;
         let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, null);
 
-        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetType.ConstructorArgument, "katana", "Weapon");
         let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
-        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetType.ConstructorArgument, "shuriken", "Weapon");
         let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
@@ -211,26 +212,26 @@ describe("BindingWhenSyntax", () => {
             }
         }
 
-        let samuraiBinding = new Binding<Samurai>("Samurai");
+        let samuraiBinding = new Binding<Samurai>("Samurai", BindingScope.Transient);
         samuraiBinding.implementationType = Samurai;
 
         let samuraiRequest = new Request(
             "Samurai", null, null, samuraiBinding, new Target(TargetType.ConstructorArgument, null, "Samurai", "japonese")
         );
 
-        let ninjaBinding = new Binding<Ninja>("Ninja");
+        let ninjaBinding = new Binding<Ninja>("Ninja", BindingScope.Transient);
         ninjaBinding.implementationType = Ninja;
 
         let ninjaRequest = new Request(
             "Ninja", null, null, ninjaBinding, new Target(TargetType.ConstructorArgument, null, "Ninja", "chinese")
         );
 
-        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetType.ConstructorArgument, "katana", "Weapon");
         let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
-        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetType.ConstructorArgument, "shuriken", "Weapon");
         let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
@@ -283,22 +284,22 @@ describe("BindingWhenSyntax", () => {
             }
         }
 
-        let samuraiBinding = new Binding<Samurai>("Samurai");
+        let samuraiBinding = new Binding<Samurai>("Samurai", BindingScope.Transient);
         samuraiBinding.implementationType = Samurai;
         let samuraiTarget = new Target(TargetType.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
         let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, samuraiTarget);
 
-        let ninjaBinding = new Binding<Ninja>("Ninja");
+        let ninjaBinding = new Binding<Ninja>("Ninja", BindingScope.Transient);
         ninjaBinding.implementationType = Ninja;
         let ninjaTarget = new Target(TargetType.ConstructorArgument, null, "Ninja", new Metadata("sneaky", true));
         let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, ninjaTarget);
 
-        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetType.ConstructorArgument, "katana", "Weapon");
         let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
-        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetType.ConstructorArgument, "shuriken", "Weapon");
         let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
@@ -387,10 +388,10 @@ describe("BindingWhenSyntax", () => {
         }
 
         // Samurai
-        let samuraiMasterBinding = new Binding<Samurai>("Samurai");
+        let samuraiMasterBinding = new Binding<Samurai>("Samurai", BindingScope.Transient);
         samuraiMasterBinding.implementationType = SamuraiMaster;
 
-        let samuraiStudentBinding = new Binding<Samurai>("Samurai");
+        let samuraiStudentBinding = new Binding<Samurai>("Samurai", BindingScope.Transient);
         samuraiStudentBinding.implementationType = SamuraiStudent;
 
         let samuraiTarget = new Target(TargetType.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
@@ -398,10 +399,10 @@ describe("BindingWhenSyntax", () => {
         let samuraiStudentRequest = new Request("Samurai", null, null, samuraiStudentBinding, samuraiTarget);
 
         // Ninja
-        let ninjaMasterBinding = new Binding<Ninja>("Ninja");
+        let ninjaMasterBinding = new Binding<Ninja>("Ninja", BindingScope.Transient);
         ninjaMasterBinding.implementationType = NinjaMaster;
 
-        let ninjaStudentBinding = new Binding<Ninja>("Ninja");
+        let ninjaStudentBinding = new Binding<Ninja>("Ninja", BindingScope.Transient);
         ninjaStudentBinding.implementationType = NinjaStudent;
 
         let ninjaTarget = new Target(TargetType.ConstructorArgument, null, "Ninja", new Metadata("sneaky", true));
@@ -409,7 +410,7 @@ describe("BindingWhenSyntax", () => {
         let ninjaStudentRequest = new Request("Ninja", null, null, ninjaStudentBinding, ninjaTarget);
 
         // Katana
-        let katanaBinding = new Binding<Weapon>("Weapon");
+        let katanaBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         katanaBinding.implementationType = Katana;
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetType.ConstructorArgument, "katana", "Weapon");
@@ -417,7 +418,7 @@ describe("BindingWhenSyntax", () => {
         let woodKatanaRequest = new Request("Weapon", null, samuraiStudentRequest, katanaBinding, katanaTarget);
 
         // Shuriken
-        let shurikenBinding = new Binding<Weapon>("Weapon");
+        let shurikenBinding = new Binding<Weapon>("Weapon", BindingScope.Transient);
         shurikenBinding.implementationType = Shuriken;
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetType.ConstructorArgument, "shuriken", "Weapon");

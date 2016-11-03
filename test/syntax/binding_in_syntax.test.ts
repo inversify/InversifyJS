@@ -10,7 +10,7 @@ describe("BindingInSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -25,7 +25,7 @@ describe("BindingInSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
         let bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
         // default scope is transient

@@ -3,7 +3,70 @@
 The InversifyJS kernel provides some helpers to resolve multi-injections 
 and ambiguous bindings.
 
-## Kernel.getNamed<T>()
+## Kernel Options
+The default scope is `transient` and you can change the scope of a type when declaring a binding:
+
+```ts
+kernel.bind<Warrior>(TYPES.Warrior).to(Ninja).inSingletonScope();
+kernel.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
+```
+
+You can use kernel options to change the default scope used at application level:
+
+```ts
+let kernel = new Kernel({ defaultScope: "singleton" });
+```
+
+## Kernel.merge(a: Kernel, b: Kernel);
+Merges to kernels into one:
+
+```ts
+@injectable()
+class Ninja {
+    public name = "Ninja";
+}
+
+@injectable()
+class Shuriken {
+    public name = "Shuriken";
+}
+
+let CHINA_EXPANSION_TYPES = {
+    Ninja: "Ninja",
+    Shuriken: "Shuriken"
+};
+
+let chinaExpansionKernel = new Kernel();
+chinaExpansionKernel.bind<Ninja>(CHINA_EXPANSION_TYPES.Ninja).to(Ninja);
+chinaExpansionKernel.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shuriken);
+
+@injectable()
+class Samurai {
+    public name = "Samurai";
+}
+
+@injectable()
+class Katana {
+    public name = "Katana";
+}
+
+let JAPAN_EXPANSION_TYPES = {
+    Katana: "Katana",
+    Samurai: "Samurai"
+};
+
+let japanExpansionKernel = new Kernel();
+japanExpansionKernel.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai);
+japanExpansionKernel.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
+
+let gameKernel = Kernel.merge(chinaExpansionKernel, japanExpansionKernel);
+expect(gameKernel.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
+expect(gameKernel.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
+expect(gameKernel.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
+expect(gameKernel.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
+```
+
+## kernel.getNamed<T>()
 Named bindings:
 
 ```ts
@@ -15,7 +78,7 @@ let katana = kernel.getNamed<Weapon>("Weapon", "japonese");
 let shuriken = kernel.getNamed<Weapon>("Weapon", "chinese");
 ```
 
-## Kernel.getTagged<T>()
+## kernel.getTagged<T>()
 Tagged bindings:
 
 ```ts
@@ -27,8 +90,9 @@ let katana = kernel.getTagged<Weapon>("Weapon", "faction", "samurai");
 let shuriken = kernel.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## Kernel.getAll<T>()
+## kernel.getAll<T>()
 Get all available bindings for a given identifier:
+
 ```ts
 let kernel = new Kernel();
 kernel.bind<Weapon>("Weapon").to(Katana);
@@ -37,9 +101,10 @@ kernel.bind<Weapon>("Weapon").to(Shuriken);
 let weapons = kernel.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## Kernel.getAllNamed<T>()
+## kernel.getAllNamed<T>()
 Get all available bindings for a given identifier that match the given 
 named constraint:
+
 ```ts
 let kernel = new Kernel();
 
@@ -66,9 +131,10 @@ expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## Kernel.getAllTagged<T>()
+## kernel.getAllTagged<T>()
 Get all available bindings for a given identifier that match the given 
 named constraint:
+
 ```ts
 let kernel = new Kernel();
 
@@ -94,8 +160,9 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## Kernel.isBound()
+## kernel.isBound()
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
+
 ```ts
 interface Warrior {}
 let warriorId = "Warrior";

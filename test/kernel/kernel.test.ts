@@ -425,7 +425,6 @@ describe("Kernel", () => {
         kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
         let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
-        console.log(fr);
         expect(fr.length).to.eql(2);
         expect(fr[0].hello).to.eql("bonjour");
         expect(fr[1].goodbye).to.eql("au revoir");
@@ -436,5 +435,120 @@ describe("Kernel", () => {
         expect(es[1].goodbye).to.eql("adios");
 
     });
+
+    it("Should be able configure the default scope at a global level", () => {
+
+        interface Warrior {
+            health: number;
+            takeHit: (damage: number) => void;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public health: number;
+            public constructor() {
+                this.health = 100;
+            }
+            public takeHit(damage: number) {
+                this.health = this.health - damage;
+            }
+        }
+
+        let TYPES = {
+            Warrior: "Warrior"
+        };
+
+        let kernel1 = new Kernel();
+        kernel1.bind<Warrior>(TYPES.Warrior).to(Ninja);
+
+        let transientNinja1 = kernel1.get<Warrior>(TYPES.Warrior);
+        expect(transientNinja1.health).to.eql(100);
+        transientNinja1.takeHit(10);
+        expect(transientNinja1.health).to.eql(90);
+
+        let transientNinja2 = kernel1.get<Warrior>(TYPES.Warrior);
+        expect(transientNinja2.health).to.eql(100);
+        transientNinja2.takeHit(10);
+        expect(transientNinja2.health).to.eql(90);
+
+        let kernel2 = new Kernel({ defaultScope: "singleton" });
+        kernel2.bind<Warrior>(TYPES.Warrior).to(Ninja);
+
+        let singletonNinja1 = kernel2.get<Warrior>(TYPES.Warrior);
+        expect(singletonNinja1.health).to.eql(100);
+        singletonNinja1.takeHit(10);
+        expect(singletonNinja1.health).to.eql(90);
+
+        let singletonNinja2 = kernel2.get<Warrior>(TYPES.Warrior);
+        expect(singletonNinja2.health).to.eql(90);
+        singletonNinja2.takeHit(10);
+        expect(singletonNinja2.health).to.eql(80);
+
+    });
+
+    it("Should be throw an exception if incorrect options is provided", () => {
+
+        let f = () => 0;
+        let wrong1 = () => new Kernel(<any>f);
+        expect(wrong1).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_MUST_BE_AN_OBJECT}`);
+
+        let options1 = { wrongKey: "singleton" };
+        let wrong2 = () => new Kernel(<any>options1);
+        expect(wrong2).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+
+        let options2 = { defaultScope: "wrongValue" };
+        let wrong3 = () => new Kernel(<any>options2);
+        expect(wrong3).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+
+    });
+
+    it("Should be able to merge multiple kernels", () => {
+
+        @injectable()
+        class Ninja {
+            public name = "Ninja";
+        }
+
+        @injectable()
+        class Shuriken {
+            public name = "Shuriken";
+        }
+
+        let CHINA_EXPANSION_TYPES = {
+            Ninja: "Ninja",
+            Shuriken: "Shuriken"
+        };
+
+        let chinaExpansionKernel = new Kernel();
+        chinaExpansionKernel.bind<Ninja>(CHINA_EXPANSION_TYPES.Ninja).to(Ninja);
+        chinaExpansionKernel.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shuriken);
+
+        @injectable()
+        class Samurai {
+            public name = "Samurai";
+        }
+
+        @injectable()
+        class Katana {
+            public name = "Katana";
+        }
+
+        let JAPAN_EXPANSION_TYPES = {
+            Katana: "Katana",
+            Samurai: "Samurai"
+        };
+
+        let japanExpansionKernel = new Kernel();
+        japanExpansionKernel.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai);
+        japanExpansionKernel.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
+
+        let gameKernel = Kernel.merge(chinaExpansionKernel, japanExpansionKernel);
+        expect(gameKernel.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
+        expect(gameKernel.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
+        expect(gameKernel.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
+        expect(gameKernel.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
+
+    });
+
 
 });

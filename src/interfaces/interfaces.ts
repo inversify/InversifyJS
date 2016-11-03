@@ -124,9 +124,16 @@ namespace interfaces {
         matchesTag(key: string): (value: any) => boolean;
     }
 
+    export type KernelOptionsScope = "singleton" | "transient";
+
+    export interface KernelOptions {
+        defaultScope: KernelOptionsScope;
+    }
+
     export interface Kernel {
         guid: string;
         parent: Kernel;
+        options: KernelOptions;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
@@ -167,6 +174,7 @@ namespace interfaces {
         removeByCondition(condition: (item: T) => boolean): void;
         hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
         clone(): Lookup<T>;
+        traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;
     }
 
     export interface BindingInSyntax<T> {
