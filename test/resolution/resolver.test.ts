@@ -3,7 +3,7 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import resolve from "../../src/resolution/resolver";
 import plan from "../../src/planning/planner";
-import Kernel from "../../src/kernel/kernel";
+import Container from "../../src/container/container";
 import Request from "../../src/planning/request";
 import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
@@ -87,14 +87,14 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Katana>(katanaId).to(Katana);
-      kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Katana>(katanaId).to(Katana);
+      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -164,15 +164,15 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Katana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
-      kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Katana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
+      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
       let ninja = resolve<Ninja>(context);
@@ -215,13 +215,13 @@ describe("Resolve", () => {
           }
       }
 
-      // kernel and bindings
+      // container and bindings
       let ninjaId = "Ninja";
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
+      let container = new Container();
+      container.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
 
       // context and plan
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let throwFunction = () => {
           resolve(context);
@@ -286,12 +286,12 @@ describe("Resolve", () => {
       let shurikenId = "Shuriken";
       let katanaId = "Katana";
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -320,19 +320,19 @@ describe("Resolve", () => {
         }
     }
 
-    let kernel = new Kernel();
-    kernel.bind<UseDate>("UseDate").to(UseDate);
-    kernel.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => { return new Date(); });
+    let container = new Container();
+    container.bind<UseDate>("UseDate").to(UseDate);
+    container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => { return new Date(); });
 
-    let subject1 = kernel.get<UseDate>("UseDate");
-    let subject2 = kernel.get<UseDate>("UseDate");
+    let subject1 = container.get<UseDate>("UseDate");
+    let subject2 = container.get<UseDate>("UseDate");
     expect(subject1.doSomething() === subject2.doSomething()).eql(false);
 
-    kernel.unbind("Date");
-    kernel.bind<Date>("Date").toConstantValue(new Date());
+    container.unbind("Date");
+    container.bind<Date>("Date").toConstantValue(new Date());
 
-    let subject3 = kernel.get<UseDate>("UseDate");
-    let subject4 = kernel.get<UseDate>("UseDate");
+    let subject3 = container.get<UseDate>("UseDate");
+    let subject4 = container.get<UseDate>("UseDate");
     expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
   });
@@ -397,13 +397,13 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Katana>(katanaId).to(Katana);
-      kernel.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Katana>(katanaId).to(Katana);
+      container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -478,20 +478,20 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Katana>(katanaId).to(Katana);
-      kernel.bind<KatanaBlade>(bladeId).to(KatanaBlade);
-      kernel.bind<KatanaHandler>(handlerId).to(KatanaHandler);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Katana>(katanaId).to(Katana);
+      container.bind<KatanaBlade>(bladeId).to(KatanaBlade);
+      container.bind<KatanaHandler>(handlerId).to(KatanaHandler);
 
-      kernel.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((context: interfaces.Context) => {
+      container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((context: interfaces.Context) => {
           return () => {
-              return context.kernel.get<Katana>(katanaId);
+              return context.container.get<Katana>(katanaId);
           };
       });
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -567,15 +567,15 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Katana>(katanaId).to(Katana);
-      kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
-      kernel.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Katana>(katanaId).to(Katana);
+      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
+      container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -649,23 +649,23 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Warrior>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-      kernel.bind<Sword>(swordId).to(Katana);
-      kernel.bind<Blade>(bladeId).to(KatanaBlade);
-      kernel.bind<Handler>(handlerId).to(KatanaHandler);
+      let container = new Container();
+      container.bind<Warrior>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
+      container.bind<Sword>(swordId).to(Katana);
+      container.bind<Blade>(bladeId).to(KatanaBlade);
+      container.bind<Handler>(handlerId).to(KatanaHandler);
 
-      kernel.bind<interfaces.Provider<Sword>>(swordProviderId).toProvider<Sword>((context: interfaces.Context) => {
+      container.bind<interfaces.Provider<Sword>>(swordProviderId).toProvider<Sword>((context: interfaces.Context) => {
           return () => {
               return new Promise<Sword>((resolve) => {
                   // Using setTimeout to simulate complex initialization
-                  setTimeout(() => { resolve(context.kernel.get<Sword>(swordId)); }, 100);
+                  setTimeout(() => { resolve(context.container.get<Sword>(swordId)); }, 100);
               });
           };
       });
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Warrior>(context);
 
@@ -712,12 +712,12 @@ describe("Resolve", () => {
       let ninjaId = "Ninja";
       let weaponId = "Weapon";
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
-      kernel.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+      container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -758,12 +758,12 @@ describe("Resolve", () => {
       let ninjaId = "Ninja";
       let weaponId = "Weapon";
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
-      kernel.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
+      container.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -804,18 +804,18 @@ describe("Resolve", () => {
       let ninjaId = "Ninja";
       let weaponId = "Weapon";
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
 
-      kernel.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) => {
+      container.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) => {
           return request.target.name.equals("katana");
       });
 
-      kernel.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) => {
+      container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) => {
           return request.target.name.equals("shuriken");
       });
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -860,12 +860,12 @@ describe("Resolve", () => {
       let ninjaId = "Ninja";
       let weaponId = "Weapon";
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Weapon>(weaponId).to(Katana);
-      kernel.bind<Weapon>(weaponId).to(Shuriken);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Weapon>(weaponId).to(Katana);
+      container.bind<Weapon>(weaponId).to(Shuriken);
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -874,11 +874,11 @@ describe("Resolve", () => {
       expect(ninja.shuriken instanceof Shuriken).eql(true);
 
       // if only one value is bound to weaponId
-      let kernel2 = new Kernel();
-      kernel2.bind<Ninja>(ninjaId).to(Ninja);
-      kernel2.bind<Weapon>(weaponId).to(Katana);
+      let container2 = new Container();
+      container2.bind<Ninja>(ninjaId).to(Ninja);
+      container2.bind<Weapon>(weaponId).to(Katana);
 
-      let context2 = plan(kernel2, false, TargetType.Variable, ninjaId);
+      let context2 = plan(container2, false, TargetType.Variable, ninjaId);
 
       let ninja2 = resolve<Ninja>(context2);
 
@@ -917,14 +917,14 @@ describe("Resolve", () => {
         let ninjaId = "Ninja";
         let katanaId = "Katana";
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
 
         // This is a global for unit testing but remember
         // that it is not a good idea to use globals
         let timeTracker: string[] = [];
 
-        kernel.bind<Katana>(katanaId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
+        container.bind<Katana>(katanaId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);
@@ -938,7 +938,7 @@ describe("Resolve", () => {
             return katana;
         });
 
-        let context = plan(kernel, false, TargetType.Variable, ninjaId);
+        let context = plan(container, false, TargetType.Variable, ninjaId);
 
         let ninja = resolve<Ninja>(context);
 
@@ -1006,17 +1006,17 @@ describe("Resolve", () => {
           }
       }
 
-      let kernel = new Kernel();
-      kernel.bind<Ninja>(ninjaId).to(Ninja);
-      kernel.bind<Shuriken>(shurikenId).to(Shuriken);
+      let container = new Container();
+      container.bind<Ninja>(ninjaId).to(Ninja);
+      container.bind<Shuriken>(shurikenId).to(Shuriken);
 
       let katanaFactory = function() {
           return new Katana(new KatanaHandler(), new KatanaBlade());
       };
 
-      kernel.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
+      container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
 
-      let context = plan(kernel, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetType.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 

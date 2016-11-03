@@ -3,8 +3,8 @@
 InversifyJS uses transient scope by default but you can also use singleton scope:
 
 ```ts
-kernel.bind<Shuriken>("Shuriken").to(Shuriken).inTransientScope(); // Default
-kernel.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
+container.bind<Shuriken>("Shuriken").to(Shuriken).inTransientScope(); // Default
+container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
 ```
 
 ## About `inSingletonScope`
@@ -39,7 +39,7 @@ interface BindingToSyntax<T> {
 ```
 The `inTransientScope` is used by default and we can select the scope of this types of binding, except for `toConstantValue` which will always use `inSingletonScope`.
 
-When we invoke `kernel.get` for the first time and we are using `to`, `toSelf` or `toDynamicValue` the InversifyJS kernel will try to generate an object instance or value using a constructor or the dynamic value factory. If the scope has been set to `inSingletonScope` the value is cached. The second time we invoke `kernel.get` for the same resource ID, and if `inSingletonScope` has been selected, InversifyJS will try to get the value from the cache.
+When we invoke `container.get` for the first time and we are using `to`, `toSelf` or `toDynamicValue` the InversifyJS container will try to generate an object instance or value using a constructor or the dynamic value factory. If the scope has been set to `inSingletonScope` the value is cached. The second time we invoke `container.get` for the same resource ID, and if `inSingletonScope` has been selected, InversifyJS will try to get the value from the cache.
 
 Note that a class can have some dependencies and a dynamic value can access other types via the current context. These dependencies may or many not be a singleton independently of the selected scope of their parent object in their respective composition tree,
 
@@ -59,14 +59,14 @@ We cannot select the scope of this types of binding because the value to be inje
 For example, the following binding will inject a factory which will always be a singleton.
 
 ```ts
-kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>")
+container.bind<interfaces.Factory<Katana>>("Factory<Katana>")
 	  .toAutoFactory<Katana>("Katana");
 ```
 
 However, the value returned by the factory may or not be a singleton:
 
 ```ts
-kernel.bind<Katana>("Katana").to(Katana).inTransientScope();
+container.bind<Katana>("Katana").to(Katana).inTransientScope();
 // or
-kernel.bind<Katana>("Katana").to(Katana).inSingletonScope();
+container.bind<Katana>("Katana").to(Katana).inSingletonScope();
 ```

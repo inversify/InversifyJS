@@ -36,7 +36,7 @@ We are binding `Katana` and `Shuriken` to `Weapon` but a `whenTargetTagged`
 constraint is added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```ts
-kernel.bind<Ninja>(ninjaId).to(Ninja);
-kernel.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
-kernel.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+container.bind<Ninja>(ninjaId).to(Ninja);
+container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 ```

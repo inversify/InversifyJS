@@ -26,16 +26,16 @@ class Ninja implements Ninja {
 ```
 
 ```ts
-kernel.bind<interfaces.Provider<Katana>>("Provider<Katana>").toProvider<Katana>((context) => {
+container.bind<interfaces.Provider<Katana>>("Provider<Katana>").toProvider<Katana>((context) => {
     return () => {
         return new Promise<Katana>((resolve) => {
-            let katana = context.kernel.get<Katana>("Katana");
+            let katana = context.container.get<Katana>("Katana");
             resolve(katana);
         });
     };
 });
 
-var ninja = kernel.get<Ninja>("Ninja");
+var ninja = container.get<Ninja>("Ninja");
 
 ninja.katanaProvider()
      .then((katana) => { ninja.katana = katana; })

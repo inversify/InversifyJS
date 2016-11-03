@@ -8,16 +8,16 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import BindingToSyntax from "../syntax/binding_to_syntax";
 import TargetType from "../planning/target_type";
 import { getServiceIdentifierAsString } from "../utils/serialization";
-import KernelSnapshot from "./kernel_snapshot";
+import ContainerSnapshot from "./container_snapshot";
 import guid from "../utils/guid";
 
-class Kernel implements interfaces.Kernel {
+class Container implements interfaces.Container {
 
     public guid: string;
     private _middleware: interfaces.Next;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
-    private _snapshots: Array<interfaces.KernelSnapshot>;
-    private _parentKernel: interfaces.Kernel;
+    private _snapshots: Array<interfaces.ContainerSnapshot>;
+    private _parentContainer: interfaces.Container;
 
     // Initialize private properties
     public constructor() {
@@ -25,10 +25,10 @@ class Kernel implements interfaces.Kernel {
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._snapshots = [];
         this._middleware = null;
-        this._parentKernel = null;
+        this._parentContainer = null;
     }
 
-    public load(...modules: interfaces.KernelModule[]): void {
+    public load(...modules: interfaces.ContainerModule[]): void {
         let getBindFunction = (moduleId: string) => {
             return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 let _bind = this.bind.bind(this);
@@ -43,7 +43,7 @@ class Kernel implements interfaces.Kernel {
         });
     }
 
-    public unload(...modules: interfaces.KernelModule[]): void {
+    public unload(...modules: interfaces.ContainerModule[]): void {
 
         let conditionFactory = (expected: any) => (item: interfaces.Binding<any>): boolean => {
             return item.moduleId === expected;
@@ -83,7 +83,7 @@ class Kernel implements interfaces.Kernel {
     }
 
     public snapshot(): void {
-        this._snapshots.push(KernelSnapshot.of(this._bindingDictionary.clone(), this._middleware));
+        this._snapshots.push(ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware));
     }
 
     public restore(): void {
@@ -95,12 +95,12 @@ class Kernel implements interfaces.Kernel {
         this._middleware = snapshot.middleware;
     }
 
-    public set parent (kernel: interfaces.Kernel) {
-        this._parentKernel = kernel;
+    public set parent (container: interfaces.Container) {
+        this._parentContainer = container;
     }
 
     public get parent() {
-        return this._parentKernel;
+        return this._parentContainer;
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
@@ -174,7 +174,7 @@ class Kernel implements interfaces.Kernel {
     }
 
     // Planner creates a plan and Resolver resolves a plan
-    // one of the jobs of the Kernel is to links the Planner
+    // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
     private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T|T[]) {
         return (args: interfaces.NextArgs) => {
@@ -187,4 +187,4 @@ class Kernel implements interfaces.Kernel {
     }
 }
 
-export default Kernel;
+export default Container;

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import Request from "../../src/planning/request";
 import Context from "../../src/planning/context";
-import Kernel from "../../src/kernel/kernel";
+import Container from "../../src/container/container";
 import Target from "../../src/planning/target";
 import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
@@ -18,8 +18,8 @@ describe("Request", () => {
 
   it("Should set its own properties correctly", () => {
 
-      let kernel = new Kernel();
-      let context = new Context(kernel);
+      let container = new Container();
+      let context = new Context(container);
 
       let request1 = new Request(
           identifiers.Ninja,
@@ -85,8 +85,8 @@ describe("Request", () => {
           }
       }
 
-      let kernel = new Kernel();
-      let context = new Context(kernel);
+      let container = new Container();
+      let context = new Context(container);
 
       let ninjaRequest = new Request(
           identifiers.Ninja,

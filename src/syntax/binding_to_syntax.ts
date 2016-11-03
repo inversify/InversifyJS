@@ -62,7 +62,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         this._binding.type = BindingType.Factory;
         this._binding.factory = (context) => {
             return () => {
-                return context.kernel.get<T2>(serviceIdentifier);
+                return context.container.get<T2>(serviceIdentifier);
             };
         };
         return new BindingWhenOnSyntax<T>(this._binding);

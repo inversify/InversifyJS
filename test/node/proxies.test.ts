@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as Proxy from "harmony-proxy";
 import interfaces from "../../src/interfaces/interfaces";
-import { Kernel, injectable, inject } from "../../src/inversify";
+import { Container, injectable, inject } from "../../src/inversify";
 
 describe("InversifyJS", () => {
 
@@ -33,11 +33,11 @@ describe("InversifyJS", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Warrior>(warriorId).to(Ninja);
+        let container = new Container();
+        container.bind<Warrior>(warriorId).to(Ninja);
         let log: string[] = [];
 
-        kernel.bind<Weapon>(weaponId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
+        container.bind<Weapon>(weaponId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     log.push(`Starting: ${new Date().getTime()}`);
@@ -50,7 +50,7 @@ describe("InversifyJS", () => {
             return katana;
         });
 
-        let ninja = kernel.get<Warrior>(warriorId);
+        let ninja = container.get<Warrior>(warriorId);
         ninja.weapon.use();
 
         expect(log.length).eql(2);
