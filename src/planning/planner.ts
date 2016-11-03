@@ -213,4 +213,4 @@ function plan(
 
 }
 
-export { plan, getBindings };
+export default plan;

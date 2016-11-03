@@ -1,7 +1,7 @@
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { plan } from "../../src/planning/planner";
+import plan from "../../src/planning/planner";
 import Kernel from "../../src/kernel/kernel";
 import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";

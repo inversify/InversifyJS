@@ -162,16 +162,11 @@ namespace interfaces {
 
     export interface Lookup<T> extends Clonable<Lookup<T>> {
         add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
-        get(serviceIdentifier: ServiceIdentifier<any>): Array<T>;
-        remove(serviceIdentifier: ServiceIdentifier<any>): void;
-        removeByModuleId(moduleId: string): void;
+        get(serviceIdentifier: ServiceIdentifier<any>): T[];
+        remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void;
+        removeByCondition(condition: (item: T) => boolean): void;
         hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
-    }
-
-    export interface KeyValuePair<T> {
-        serviceIdentifier: ServiceIdentifier<any>;
-        value: Array<T>;
-        guid: string;
+        clone(): Lookup<T>;
     }
 
     export interface BindingInSyntax<T> {

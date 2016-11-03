@@ -35,16 +35,19 @@ describe("Performance", () => {
         let i = 0;
 
         for (i = 0; i < times; i++) {
+
             let start = now();
             kernel.get(`SOME_ID_${times}`);
             let end = now();
             let total = end - start;
+
             if (total < result.min) {
                 result.min = total;
             }
             if (total > result.max) {
                 result.max = total;
             }
+
             items.push(total);
         }
 
@@ -55,6 +58,7 @@ describe("Performance", () => {
 
     it("Registring 1 binding should be doen in less than 1 ms", () => {
         let result1 = registerN(1);
+        expect(result1.register).to.below(1);
         expect(result1.register).to.below(1);
     });
 
@@ -95,6 +99,12 @@ describe("Performance", () => {
         let kernel5K = registerN(5000).kernel;
         let result5K = resolveN(kernel5K, 5);
         expect(result5K.avg).to.below(1);
+    });
+
+    it("Resolving 10K bindings should be done in less than 1 ms", () => {
+        let kernel10K = registerN(10000).kernel;
+        let result10K = resolveN(kernel10K, 5);
+        expect(result10K.avg).to.below(1);
     });
 
 });
