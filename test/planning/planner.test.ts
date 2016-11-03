@@ -2,7 +2,7 @@ import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
 import plan from "../../src/planning/planner";
-import Kernel from "../../src/kernel/kernel";
+import Container from "../../src/container/container";
 import TargetType from "../../src/planning/target_type";
 import injectable from "../../src/annotation/injectable";
 import targetName from "../../src/annotation/target_name";
@@ -76,15 +76,15 @@ describe("Planner", () => {
         let katanaHandlerId = "KatanaHandler";
         let katanaBladeId = "KatanaBlade";
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
-        kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-        kernel.bind<Katana>(katanaId).to(Katana);
-        kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-        kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).to(Katana);
+        container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+        container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
         // Actual
-        let actualPlan = plan(kernel, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
         let actualNinjaRequest = actualPlan.rootRequest;
         let actualKatanaRequest = actualNinjaRequest.childRequests[0];
         let actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
@@ -165,14 +165,14 @@ describe("Planner", () => {
         let cId = "C";
         let dId = "D";
 
-        let kernel = new Kernel();
-        kernel.bind<A>(aId).to(A);
-        kernel.bind<B>(bId).to(B);
-        kernel.bind<C>(cId).to(C);
-        kernel.bind<D>(dId).to(D);
+        let container = new Container();
+        container.bind<A>(aId).to(A);
+        container.bind<B>(bId).to(B);
+        container.bind<C>(cId).to(C);
+        container.bind<D>(dId).to(D);
 
         let throwErroFunction = () => {
-            kernel.get(aId);
+            container.get(aId);
         };
 
         expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B -> C -> D -> A`);
@@ -233,19 +233,19 @@ describe("Planner", () => {
         let katanaBladeId = "KatanaBlade";
         let katanaFactoryId = "Factory<Katana>";
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
-        kernel.bind<Shuriken>(shurikenId).to(Shuriken);
-        kernel.bind<Katana>(katanaBladeId).to(Katana);
-        kernel.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-        kernel.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
-        kernel.bind<interfaces.Factory<Katana>>(katanaFactoryId).toFactory<Katana>((context: interfaces.Context) => {
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaBladeId).to(Katana);
+        container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+        container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
+        container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toFactory<Katana>((context: interfaces.Context) => {
             return () => {
-                return context.kernel.get<Katana>(katanaId);
+                return context.container.get<Katana>(katanaId);
             };
         });
 
-        let actualPlan = plan(kernel, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
 
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(katanaFactoryId);
@@ -283,12 +283,12 @@ describe("Planner", () => {
         let ninjaId = "Ninja";
         let weaponId = "Weapon";
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
-        kernel.bind<Weapon>(weaponId).to(Shuriken);
-        kernel.bind<Weapon>(weaponId).to(Katana);
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Weapon>(weaponId).to(Shuriken);
+        container.bind<Weapon>(weaponId).to(Katana);
 
-        let actualPlan = plan(kernel, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -353,11 +353,11 @@ describe("Planner", () => {
         let ninjaId = "Ninja";
         let shurikenId = "Shuriken";
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
-        kernel.bind<Shuriken>(shurikenId).to(Shuriken);
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-        let throwFunction = () => { plan(kernel, false, TargetType.Variable, ninjaId); };
+        let throwFunction = () => { plan(container, false, TargetType.Variable, ninjaId); };
         expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Katana`);
 
     });
@@ -394,13 +394,13 @@ describe("Planner", () => {
         let katanaId = "Katana";
         let shurikenId = "Shuriken";
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
-        kernel.bind<Katana>(katanaId).to(Katana);
-        kernel.bind<Katana>(katanaId).to(SharpKatana);
-        kernel.bind<Shuriken>(shurikenId).to(Shuriken);
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Katana>(katanaId).to(Katana);
+        container.bind<Katana>(katanaId).to(SharpKatana);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-        let throwFunction = () => { plan(kernel, false, TargetType.Variable, ninjaId); };
+        let throwFunction = () => { plan(container, false, TargetType.Variable, ninjaId); };
         expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} Katana`);
 
     });
@@ -433,12 +433,12 @@ describe("Planner", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>(ninjaId).to(Ninja);
-        kernel.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
-        kernel.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+        container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-        let actualPlan = plan(kernel, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -464,11 +464,11 @@ describe("Planner", () => {
 
         class Katana implements Weapon { }
 
-        let kernel = new Kernel();
-        kernel.bind<Weapon>("Weapon").to(Katana);
+        let container = new Container();
+        container.bind<Weapon>("Weapon").to(Katana);
 
         let throwFunction = () => {
-            plan(kernel, false, TargetType.Variable, "Weapon");
+            plan(container, false, TargetType.Variable, "Weapon");
         };
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
@@ -496,12 +496,12 @@ describe("Planner", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Warrior>("Warrior").to(Ninja);
-        kernel.bind<Sword>("Sword").to(Katana);
+        let container = new Container();
+        container.bind<Warrior>("Warrior").to(Ninja);
+        container.bind<Sword>("Sword").to(Katana);
 
         let throwFunction = () => {
-            plan(kernel, false, TargetType.Variable, "Warrior");
+            plan(container, false, TargetType.Variable, "Warrior");
         };
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
@@ -529,13 +529,13 @@ describe("Planner", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Ninja>("Ninja").to(Ninja);
-        kernel.bind<Katana>("Katana").to(Katana);
-        kernel.bind<Katana>("Factory<Katana>").to(Katana);
+        let container = new Container();
+        container.bind<Ninja>("Ninja").to(Ninja);
+        container.bind<Katana>("Katana").to(Katana);
+        container.bind<Katana>("Factory<Katana>").to(Katana);
 
         let throwFunction = () => {
-            plan(kernel, false, TargetType.Variable, "Ninja");
+            plan(container, false, TargetType.Variable, "Ninja");
         };
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);

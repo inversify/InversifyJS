@@ -1,7 +1,7 @@
 import interfaces from "../interfaces/interfaces";
 import guid from "../utils/guid";
 
-class KernelModule implements interfaces.KernelModule {
+class ContainerModule implements interfaces.ContainerModule {
 
     public guid: string;
     public registry: (bind: interfaces.Bind) => void;
@@ -13,4 +13,4 @@ class KernelModule implements interfaces.KernelModule {
 
 }
 
-export default KernelModule;
+export default ContainerModule;

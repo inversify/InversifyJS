@@ -1,12 +1,12 @@
 import interfaces from "../interfaces/interfaces";
 
-class KernelSnapshot implements interfaces.KernelSnapshot {
+class ContainerSnapshot implements interfaces.ContainerSnapshot {
 
     public bindings: interfaces.Lookup<interfaces.Binding<any>>;
     public middleware: interfaces.Next;
 
     public static of(bindings: interfaces.Lookup<interfaces.Binding<any>>, middleware: interfaces.Next) {
-        let snapshot = new KernelSnapshot();
+        let snapshot = new ContainerSnapshot();
         snapshot.bindings = bindings;
         snapshot.middleware = middleware;
         return snapshot;
@@ -14,4 +14,4 @@ class KernelSnapshot implements interfaces.KernelSnapshot {
 
 }
 
-export default KernelSnapshot;
+export default ContainerSnapshot;

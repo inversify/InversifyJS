@@ -187,31 +187,31 @@ class Ninja implements Warrior {
 }
 ```
 
-### Step 3: Create and configure a Kernel
+### Step 3: Create and configure a Container
 We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
 In the rest of your application your classes should be free of references to other classes.
 ```ts
-import { Kernel } from "inversify";
+import { Container } from "inversify";
 import TYPES from "./types";
 import { Ninja, Katana, Shuriken } from "./entities";
 
-var myKernel = new Kernel();
-myKernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
-myKernel.bind<Weapon>(TYPES.Weapon).to(Katana);
-myKernel.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
+var myContainer = new Container();
+myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
+myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
+myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 
-export default myKernel;
+export default myContainer;
 ```
 
 ### Step 4: Resolve dependencies
-You can use the method `get<T>` from the `Kernel` class to resolve a dependency.
+You can use the method `get<T>` from the `Container` class to resolve a dependency.
 Remember that you should do this only in your [composition root](http://blog.ploeh.dk/2011/07/28/CompositionRoot/)
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```ts
-import myKernel from "./inversify.config";
+import myContainer from "./inversify.config";
 
-var ninja = myKernel.get<Warrior>(TYPES.Warrior);
+var ninja = myContainer.get<Warrior>(TYPES.Warrior);
 
 expect(ninja.fight()).eql("cut!"); // true
 expect(ninja.sneak()).eql("hit!"); // true
@@ -227,8 +227,8 @@ Let's take a look to the InversifyJS features!
 
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
 - [Support for Symbols](https://github.com/inversify/InversifyJS/blob/master/wiki/symbols_as_id.md)
-- [Declaring kernel modules](https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_modules.md)
-- [Kernel snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_snapshots.md)
+- [Declaring container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
+- [Container snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/container_snapshots.md)
 - [Controlling the scope of the dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)
 - [Injecting a constant or dynamic value](https://github.com/inversify/InversifyJS/blob/master/wiki/value_injection.md)
 - [Injecting a class constructor](https://github.com/inversify/InversifyJS/blob/master/wiki/constructor_injection.md)
@@ -241,7 +241,7 @@ Let's take a look to the InversifyJS features!
 - [Tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md)
 - [Create your own tag decorators](https://github.com/inversify/InversifyJS/blob/master/wiki/custom_tag_decorators.md)
 - [Named bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/named_bindings.md)
-- [Kernel.getAll<T>(), Kernel.getNamed<T>() & Kernel.getTagged<T>()](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
+- [Container.getAll<T>(), Container.getNamed<T>() & Container.getTagged<T>()](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
 - [Support for hierarchical DI systems](https://github.com/inversify/InversifyJS/blob/master/wiki/hierarchical_di.md)
 - [Contextual bindings & @targetName](https://github.com/inversify/InversifyJS/blob/master/wiki/contextual_bindings.md)
 - [Property injection](https://github.com/inversify/InversifyJS/blob/master/wiki/property_injection.md)

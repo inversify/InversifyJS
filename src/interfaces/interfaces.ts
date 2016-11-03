@@ -65,7 +65,7 @@ namespace interfaces {
 
     export interface Context {
         guid: string;
-        kernel: Kernel;
+        container: Container;
         plan: Plan;
         addPlan(plan: Plan): void;
     }
@@ -124,16 +124,16 @@ namespace interfaces {
         matchesTag(key: string): (value: any) => boolean;
     }
 
-    export type KernelOptionsScope = "singleton" | "transient";
+    export type ContainerOptionsScope = "singleton" | "transient";
 
-    export interface KernelOptions {
-        defaultScope: KernelOptionsScope;
+    export interface ContainerOptions {
+        defaultScope: ContainerOptionsScope;
     }
 
-    export interface Kernel {
+    export interface Container {
         guid: string;
-        parent: Kernel;
-        options: KernelOptions;
+        parent: Container;
+        options: ContainerOptions;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
@@ -142,8 +142,8 @@ namespace interfaces {
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string): T;
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-        load(...modules: KernelModule[]): void;
-        unload(...modules: KernelModule[]): void;
+        load(...modules: ContainerModule[]): void;
+        unload(...modules: ContainerModule[]): void;
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
@@ -153,12 +153,12 @@ namespace interfaces {
         <T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
     }
 
-    export interface KernelModule {
+    export interface ContainerModule {
         guid: string;
         registry: (bind: Bind) => void;
     }
 
-    export interface KernelSnapshot {
+    export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
         middleware: Next;
     }

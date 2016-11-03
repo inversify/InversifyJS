@@ -19,7 +19,7 @@ to identify problems during the development process.
 ## Basic middleware
 
 ```ts
-import { interfaces, Kernel } from "inversify";
+import { interfaces, Container } from "inversify";
 
 function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
     return (args: interfaces.PlanAndResolveArgs) => {
@@ -31,11 +31,11 @@ function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.Plan
     };
 }
 
-let kernel = new Kernel();
-kernel.applyMiddleware(logger);
+let container = new Container();
+container.applyMiddleware(logger);
 ```
 
-Now that we have declared a middleware we can create a new Kernel and use its applyMiddleware 
+Now that we have declared a middleware we can create a new Container and use its applyMiddleware 
 method to apply it:
 
 ```ts
@@ -44,16 +44,16 @@ interface Ninja {}
 @injectable()
 class Ninja implements Ninja {}
 
-let kernel = new Kernel();
-kernel.bind<Ninja>("Ninja").to(Ninja);
+let container = new Container();
+container.bind<Ninja>("Ninja").to(Ninja);
 
-kernel.applyMiddleware(logger);
+container.applyMiddleware(logger);
 ```
 
 The logger middleware will log in console the execution time:
 
 ```ts
-let ninja = kernel.get<Ninja>("Ninja");
+let ninja = container.get<Ninja>("Ninja");
 
 > 21
 ```
@@ -63,7 +63,7 @@ let ninja = kernel.get<Ninja>("Ninja");
 When multiple middleware functions are applied:
 
 ```ts
-kernel.applyMiddleware(middleware1, middleware2);
+container.applyMiddleware(middleware1, middleware2);
 ```
 
 The middleware will be invoked from right to left. 

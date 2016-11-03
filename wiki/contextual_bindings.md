@@ -35,13 +35,13 @@ class Ninja implements Ninja {
 We are binding `Katana` and `Shuriken` to `Weapon` but a custom `when` constraint is added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```ts
-kernel.bind<Ninja>(ninjaId).to(Ninja);
+container.bind<Ninja>(ninjaId).to(Ninja);
 
-kernel.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
+container.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
     return request.target.name.equals("katana");
 });
 
-kernel.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
+container.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
     return request.target.name.equals("shuriken");
 });
 ```
@@ -60,7 +60,7 @@ interface QueryableString {
 We have included some helpers to facilitate the creation of custom constraints:
 
 ```ts
-import { Kernel, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
+import { Container, traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "inversify";
 
 let whenParentNamedCanThrowConstraint = (request: interfaces.Request) => {
     return namedConstraint("canThrow")(request.parentRequest);

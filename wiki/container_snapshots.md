@@ -1,13 +1,13 @@
-# Kernel snapshots
+# Container snapshots
 
-Declaring kernel snapshots is a feature that helps you to write unit tests with ease:
+Declaring container snapshots is a feature that helps you to write unit tests with ease:
 
 ```ts
 import { expect } from "chai";
 import * as sinon from "sinon";
 
-// application kernel is shared by all unit tests
-import kernel from "../../src/ioc/kernel";
+// application container is shared by all unit tests
+import container from "../../src/ioc/container";
 
 describe("Ninja", () => {
 
@@ -15,19 +15,19 @@ describe("Ninja", () => {
 
         // create a snapshot so each unit test can modify 
         // it without breaking other unit tests
-        kernel.snapshot();
+        container.snapshot();
 
     });
 
     afterEach(() => {
 
         // Restore to last snapshot so each unit test 
-        // takes a clean copy of the application kernel
-        kernel.restore();
+        // takes a clean copy of the application container
+        container.restore();
 
     });
     
-    // each test is executed with a snapshot of the kernel
+    // each test is executed with a snapshot of the container
 
     it("Ninja can fight", () => {
 
@@ -35,9 +35,9 @@ describe("Ninja", () => {
             hit: () => { return "hit with mock"; } 
         };
 
-        kernel.unbind("Katana");
-        kernel.bind<Something>("Katana").toConstantValue(katanaMock);
-        let ninja = kernel.get<Ninja>("Ninja");
+        container.unbind("Katana");
+        container.bind<Something>("Katana").toConstantValue(katanaMock);
+        let ninja = container.get<Ninja>("Ninja");
         expect(ninja.fight()).eql("hit with mock");
 
     });
@@ -48,9 +48,9 @@ describe("Ninja", () => {
             throw: () => { return "hit with mock"; } 
         };
 
-        kernel.unbind("Shuriken");
-        kernel.bind<Something>("Shuriken").toConstantValue(shurikenMock);
-        let ninja = kernel.get<Ninja>("Shuriken");
+        container.unbind("Shuriken");
+        container.bind<Something>("Shuriken").toConstantValue(shurikenMock);
+        let ninja = container.get<Ninja>("Shuriken");
         expect(ninja.sneak()).eql("hit with mock");
 
     });

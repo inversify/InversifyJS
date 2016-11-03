@@ -12,9 +12,9 @@ Welcome to the InversifyJS wiki!
 ### The InversifyJS Features and API
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
 - [Support for Symbols](https://github.com/inversify/InversifyJS/blob/master/wiki/symbols_as_id.md)
-- [Kernel API](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
-- [Declaring kernel modules](https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_modules.md)
-- [Kernel snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_snapshots.md)
+- [Container API](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
+- [Declaring container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
+- [Container snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/container_snapshots.md)
 - [Controlling the scope of the dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)
 - [Injecting a constant or dynamic value](https://github.com/inversify/InversifyJS/blob/master/wiki/value_injection.md)
 - [Injecting a class constructor](https://github.com/inversify/InversifyJS/blob/master/wiki/constructor_injection.md)

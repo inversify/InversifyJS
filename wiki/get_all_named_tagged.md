@@ -1,24 +1,24 @@
-# The Kernel API
+# The Container API
 
-The InversifyJS kernel provides some helpers to resolve multi-injections 
+The InversifyJS container provides some helpers to resolve multi-injections 
 and ambiguous bindings.
 
-## Kernel Options
+## Container Options
 The default scope is `transient` and you can change the scope of a type when declaring a binding:
 
 ```ts
-kernel.bind<Warrior>(TYPES.Warrior).to(Ninja).inSingletonScope();
-kernel.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
+container.bind<Warrior>(TYPES.Warrior).to(Ninja).inSingletonScope();
+container.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
 ```
 
-You can use kernel options to change the default scope used at application level:
+You can use container options to change the default scope used at application level:
 
 ```ts
-let kernel = new Kernel({ defaultScope: "singleton" });
+let container = new Container({ defaultScope: "singleton" });
 ```
 
-## Kernel.merge(a: Kernel, b: Kernel);
-Merges to kernels into one:
+## Container.merge(a: Container, b: Container);
+Merges to containers into one:
 
 ```ts
 @injectable()
@@ -36,9 +36,9 @@ let CHINA_EXPANSION_TYPES = {
     Shuriken: "Shuriken"
 };
 
-let chinaExpansionKernel = new Kernel();
-chinaExpansionKernel.bind<Ninja>(CHINA_EXPANSION_TYPES.Ninja).to(Ninja);
-chinaExpansionKernel.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shuriken);
+let chinaExpansionContainer = new Container();
+chinaExpansionContainer.bind<Ninja>(CHINA_EXPANSION_TYPES.Ninja).to(Ninja);
+chinaExpansionContainer.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shuriken);
 
 @injectable()
 class Samurai {
@@ -55,112 +55,112 @@ let JAPAN_EXPANSION_TYPES = {
     Samurai: "Samurai"
 };
 
-let japanExpansionKernel = new Kernel();
-japanExpansionKernel.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai);
-japanExpansionKernel.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
+let japanExpansionContainer = new Container();
+japanExpansionContainer.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai);
+japanExpansionContainer.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
 
-let gameKernel = Kernel.merge(chinaExpansionKernel, japanExpansionKernel);
-expect(gameKernel.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
-expect(gameKernel.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
-expect(gameKernel.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
-expect(gameKernel.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
+let gameContainer = Container.merge(chinaExpansionContainer, japanExpansionContainer);
+expect(gameContainer.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
+expect(gameContainer.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
+expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
+expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
 ```
 
-## kernel.getNamed<T>()
+## container.getNamed<T>()
 Named bindings:
 
 ```ts
-let kernel = new Kernel();
-kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
-kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
+container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
 
-let katana = kernel.getNamed<Weapon>("Weapon", "japonese");
-let shuriken = kernel.getNamed<Weapon>("Weapon", "chinese");
+let katana = container.getNamed<Weapon>("Weapon", "japonese");
+let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 
-## kernel.getTagged<T>()
+## container.getTagged<T>()
 Tagged bindings:
 
 ```ts
-let kernel = new Kernel();
-kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
-kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
+container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
 
-let katana = kernel.getTagged<Weapon>("Weapon", "faction", "samurai");
-let shuriken = kernel.getTagged<Weapon>("Weapon", "faction", "ninja");
+let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
+let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## kernel.getAll<T>()
+## container.getAll<T>()
 Get all available bindings for a given identifier:
 
 ```ts
-let kernel = new Kernel();
-kernel.bind<Weapon>("Weapon").to(Katana);
-kernel.bind<Weapon>("Weapon").to(Shuriken);
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana);
+container.bind<Weapon>("Weapon").to(Shuriken);
 
-let weapons = kernel.getAll<Weapon>("Weapon");  // returns Weapon[]
+let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## kernel.getAllNamed<T>()
+## container.getAllNamed<T>()
 Get all available bindings for a given identifier that match the given 
 named constraint:
 
 ```ts
-let kernel = new Kernel();
+let container = new Container();
 
 interface Intl {
     hello?: string;
     goodbye?: string;
 }
 
-kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
-kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
+container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
+container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
 
-kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
-kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
+container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
+container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
 
-let fr = kernel.getAllNamed<Intl>("Intl", "fr");
+let fr = container.getAllNamed<Intl>("Intl", "fr");
 expect(fr.length).to.eql(2);
 expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
-let es = kernel.getAllNamed<Intl>("Intl", "es");
+let es = container.getAllNamed<Intl>("Intl", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## kernel.getAllTagged<T>()
+## container.getAllTagged<T>()
 Get all available bindings for a given identifier that match the given 
 named constraint:
 
 ```ts
-let kernel = new Kernel();
+let container = new Container();
 
 interface Intl {
     hello?: string;
     goodbye?: string;
 }
 
-kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
-kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
+container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
 
-kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
-kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
+container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
+container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
-let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
+let fr = container.getAllTagged<Intl>("Intl", "lang", "fr");
 expect(fr.length).to.eql(2);
 expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
-let es = kernel.getAllTagged<Intl>("Intl", "lang", "es");
+let es = container.getAllTagged<Intl>("Intl", "lang", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## kernel.isBound()
+## container.isBound()
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
 
 ```ts
@@ -178,15 +178,15 @@ let katanaSymbol = Symbol("Katana");
 @injectable()
 class Katana implements Katana {}
 
-let kernel = new Kernel();
-kernel.bind<Warrior>(Ninja).to(Ninja);
-kernel.bind<Warrior>(warriorId).to(Ninja);
-kernel.bind<Warrior>(warriorSymbol).to(Ninja);
+let container = new Container();
+container.bind<Warrior>(Ninja).to(Ninja);
+container.bind<Warrior>(warriorId).to(Ninja);
+container.bind<Warrior>(warriorSymbol).to(Ninja);
 
-kernel.isBound(Ninja)).eql(true);
-kernel.isBound(warriorId)).eql(true);
-kernel.isBound(warriorSymbol)).eql(true);
-kernel.isBound(Katana)).eql(false);
-kernel.isBound(katanaId)).eql(false);
-kernel.isBound(katanaSymbol)).eql(false);
+container.isBound(Ninja)).eql(true);
+container.isBound(warriorId)).eql(true);
+container.isBound(warriorSymbol)).eql(true);
+container.isBound(Katana)).eql(false);
+container.isBound(katanaId)).eql(false);
+container.isBound(katanaSymbol)).eql(false);
 ```

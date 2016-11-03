@@ -49,7 +49,7 @@ The following code snippet showcases how to apply this decorator:
 
 ```ts
 import { 
-    Kernel, injectable, unmanaged 
+    Container, injectable, unmanaged 
 } from "../src/inversify";
 
 const BaseId = "Base";
@@ -69,8 +69,8 @@ class Derived extends Base {
     }
 }
 
-kernel.bind<Base>(BaseId).to(Derived);
-let derived = kernel.get<Base>(BaseId);
+container.bind<Base>(BaseId).to(Derived);
+let derived = container.get<Base>(BaseId);
 
 derived instanceof Derived2; // true
 derived.prop; // "unmanaged-injected-value"
@@ -124,7 +124,7 @@ class SamuraiMaster extends Warrior  {
     }
 }
 
-kernel.bind<string>(TYPES.Rank)
+container.bind<string>(TYPES.Rank)
       .toConstantValue("master")
 	  .whenTargetNamed("master");
 ```
@@ -155,7 +155,7 @@ class SamuraiMaster extends Warrior  {
     }
 }
 
-kernel.bind<string>(TYPES.Rank)
+container.bind<string>(TYPES.Rank)
       .toConstantValue("master")
 	  .whenTargetNamed("master");
 ```
@@ -200,9 +200,9 @@ class SamuraiMaster extends Warrior  {
     }
 }
 
-kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
+container.bind<Weapon>(TYPES.Weapon).to(Katana);
 
-kernel.bind<string>(TYPES.Rank)
+container.bind<string>(TYPES.Rank)
       .toConstantValue("master")
       .whenTargetNamed("master");
 

@@ -35,7 +35,7 @@ We are binding `Katana` and `Shuriken` to `Weapon` but a `whenTargetNamed` const
 added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```ts
-kernel.bind<Ninja>("Ninja").to(Ninja);
-kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
+container.bind<Ninja>("Ninja").to(Ninja);
+container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
 ```
