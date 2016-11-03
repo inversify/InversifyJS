@@ -58,13 +58,13 @@ var Ninja = (function () {
 }());
 
 // Declare bindings
-var kernel = new inversify.Kernel();
-kernel.bind(TYPES.Ninja).to(Ninja);
-kernel.bind(TYPES.Katana).to(Katana);
-kernel.bind(TYPES.Shuriken).to(Shuriken);
+var container = new inversify.Container();
+container.bind(TYPES.Ninja).to(Ninja);
+container.bind(TYPES.Katana).to(Katana);
+container.bind(TYPES.Shuriken).to(Shuriken);
 
 // Resolve dependencies
-var ninja = kernel.get(TYPES.Ninja);
+var ninja = container.get(TYPES.Ninja);
 return ninja;
 ```
 
@@ -110,12 +110,12 @@ inversify.decorate(inversify.inject(TYPES.Katana), Ninja, 0);
 inversify.decorate(inversify.inject(TYPES.Shuriken), Ninja, 1);
 
 // Declare bindings
-var kernel = new inversify.Kernel();
-kernel.bind(TYPES.Ninja).to(Ninja);
-kernel.bind(TYPES.Katana).to(Katana);
-kernel.bind(TYPES.Shuriken).to(Shuriken);
+var container = new inversify.Container();
+container.bind(TYPES.Ninja).to(Ninja);
+container.bind(TYPES.Katana).to(Katana);
+container.bind(TYPES.Shuriken).to(Shuriken);
 
 // Resolve dependencies
-var ninja = kernel.get(TYPES.Ninja);
+var ninja = container.get(TYPES.Ninja);
 return ninja;
 ```

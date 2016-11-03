@@ -23,9 +23,9 @@ class Ninja implements Ninja {
 ```
 
 ```ts
-kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context: interfaces.Context) => {
+container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context: interfaces.Context) => {
     return () => {
-        return context.kernel.get<Katana>("Katana");
+        return context.container.get<Katana>("Katana");
     };
 });
 ```
@@ -33,12 +33,12 @@ kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((co
 You can also define a Factory with args:
 
 ```ts
-kernel.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context: interfaces.Context) => {
+container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context: interfaces.Context) => {
     return (throwable: boolean) => {
         if (throwable) {
-            return context.kernel.getTagged<Weapon>("Weapon", "throwable", true);
+            return context.container.getTagged<Weapon>("Weapon", "throwable", true);
         } else {
-            return context.kernel.getTagged<Weapon>("Weapon", "throwable", false);
+            return context.container.getTagged<Weapon>("Weapon", "throwable", false);
         }
     };
 });
@@ -47,12 +47,12 @@ kernel.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((co
 Sometimes you might need to pass arguments to a factory in different moments during the execution:
 
 ```ts
-kernel.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
-kernel.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
+container.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
+container.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
 
-kernel.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context) => {
+container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context) => {
     return (named: string) => (displacement: number) => {
-        let engine = context.kernel.getNamed<Engine>("Engine", named);
+        let engine = context.container.getNamed<Engine>("Engine", named);
         engine.displacement = displacement;
         return engine;
     };

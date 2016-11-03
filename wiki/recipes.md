@@ -17,22 +17,22 @@ export default TYPES;
 let inversify = require("inversify");
 import TYPES from "./constants/types";
 
-// declare your kernel
-let kernel = new inversify.Kernel();
-kernel.bind(TYPES.something).toConstantValue(1);
-kernel.bind(TYPES.somethingElse).toConstantValue(2);
+// declare your container
+let container = new inversify.Container();
+container.bind(TYPES.something).toConstantValue(1);
+container.bind(TYPES.somethingElse).toConstantValue(2);
 
-export default kernel;
+export default container;
 ```
 
 Continue by declaring the following helper function:
 
 ```ts
-import kernel from "./inversify.config"
+import container from "./inversify.config"
 
 function bindDependencies(func, dependencies) {
     let injections = dependencies.map((dependency) => {
-        return kernel.get(dependency);
+        return container.get(dependency);
     });
     return func.bind(func, ...injections);
 }
@@ -69,14 +69,14 @@ testFunc();
 
 ## Overriding bindings on unit tests
 
-Sometimes you want to use your binding declarations in your unit test but you need to override some of them. We recommend you to declare your bindings as kernel modules inside your application:
+Sometimes you want to use your binding declarations in your unit test but you need to override some of them. We recommend you to declare your bindings as container modules inside your application:
 
 ```ts
-let warriors = new KernelModule((bind: Bind) => {
+let warriors = new ContainerModule((bind: Bind) => {
     bind<Ninja>("Ninja").to(Ninja);
 });
 
-let weapons = new KernelModule((bind: Bind) => {
+let weapons = new ContainerModule((bind: Bind) => {
     bind<Katana>("Katana").to(Katana);
     bind<Shuriken>("Shuriken").to(Shuriken);
 });
@@ -84,28 +84,28 @@ let weapons = new KernelModule((bind: Bind) => {
 export { warriors, weapons };
 ```
 
-You will then be able to create a new kernel using the bindings from your application:
+You will then be able to create a new container using the bindings from your application:
 
 ```ts
-import { warriors, weapons} from './shared/kernel_modules';
-import { Kernel } from "inversify";
+import { warriors, weapons} from './shared/container_modules';
+import { Container } from "inversify";
 
 describe("something", () => {
 
-  let kernel: inversify.Kernel;
+  let container: inversify.Container;
 
   beforeEach(() => {
-      kernel = new Kernel();
-      kernel.load(warriors, weapons);
+      container = new Container();
+      container.load(warriors, weapons);
   });
 
   afterEach(() => {
-      kernel = null;
+      container = null;
   });
 
   it("Should...", () => {
-      kernel.unbind(MyService);
-      kernel.bind(MyService).to(MyServiceMock);
+      container.unbind(MyService);
+      container.bind(MyService).to(MyServiceMock);
       // do something
   });
 

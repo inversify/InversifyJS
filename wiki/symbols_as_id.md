@@ -4,7 +4,7 @@ In very large applications using strings as the identifiers of the types to be i
 > A symbol is a unique and immutable data type and may be used as an identifier for object properties. The symbol object is an implicit object wrapper for the symbol primitive data type.
 
 ```ts
-import { Kernel, injectable, inject } from "inversify";
+import { Container, injectable, inject } from "inversify";
 
 let Symbols = {
 	Ninja : Symbol("Ninja"),
@@ -45,8 +45,8 @@ class Ninja implements Ninja {
 
 }
 
-var kernel = new Kernel();
-kernel.bind<Ninja>(Symbols.Ninja).to(Ninja);
-kernel.bind<Katana>(Symbols.Katana).to(Katana);
-kernel.bind<Shuriken>(Symbols.Shuriken).to(Shuriken);
+var container = new Container();
+container.bind<Ninja>(Symbols.Ninja).to(Ninja);
+container.bind<Katana>(Symbols.Katana).to(Katana);
+container.bind<Shuriken>(Symbols.Shuriken).to(Shuriken);
 ```

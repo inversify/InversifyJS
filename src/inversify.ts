@@ -3,8 +3,8 @@
 
 // The Inversify main file, the library entry point.
 
-export { default as Kernel } from "./kernel/kernel";
-export { default as KernelModule } from "./kernel/kernel_module";
+export { default as Container } from "./container/container";
+export { default as ContainerModule } from "./container/container_module";
 export { default as injectable } from "./annotation/injectable";
 export { default as tagged } from "./annotation/tagged";
 export { default as named } from "./annotation/named";

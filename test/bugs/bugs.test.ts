@@ -4,7 +4,7 @@ import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 import { getFunctionName } from "../../src/utils/serialization";
 
 import {
-    Kernel,
+    Container,
     injectable,
     named,
     inject,
@@ -34,11 +34,11 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
+        let container = new Container();
+        container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
 
         let shouldThrow = function () {
-            kernel.get<SamuraiMaster>(SamuraiMaster);
+            container.get<SamuraiMaster>(SamuraiMaster);
         };
 
         let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
@@ -64,9 +64,9 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-        let master: any = kernel.get<SamuraiMaster>(SamuraiMaster);
+        let container = new Container();
+        container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
+        let master: any = container.get<SamuraiMaster>(SamuraiMaster);
         expect(master.rank).eql("master");
 
     });
@@ -92,13 +92,13 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-        kernel.bind<string>(TYPES.Rank)
+        let container = new Container();
+        container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
+        container.bind<string>(TYPES.Rank)
             .toConstantValue("master")
             .whenTargetNamed("master");
 
-        let master: any = kernel.get<SamuraiMaster>(SamuraiMaster);
+        let master: any = container.get<SamuraiMaster>(SamuraiMaster);
         expect(master.rank).eql("master");
 
     });
@@ -142,14 +142,14 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
-        kernel.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-        kernel.bind<string>(TYPES.Rank)
+        let container = new Container();
+        container.bind<Weapon>(TYPES.Weapon).to(Katana);
+        container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
+        container.bind<string>(TYPES.Rank)
             .toConstantValue("master")
             .whenTargetNamed("master");
 
-        let master: any = kernel.get<SamuraiMaster>(SamuraiMaster);
+        let master: any = container.get<SamuraiMaster>(SamuraiMaster);
         expect(master.rank).eql("master");
         expect(master.weapon.name).eql("Katana");
 
@@ -163,8 +163,8 @@ describe("Bugs", () => {
             Weapon: Symbol("Weapon")
         };
 
-        let kernel = new Kernel();
-        let throwF = () => { kernel.get<Weapon>(TYPES.Weapon); };
+        let container = new Container();
+        let throwF = () => { container.get<Weapon>(TYPES.Weapon); };
         expect(throwF).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${getServiceIdentifierAsString(TYPES.Weapon)}`);
 
     });
@@ -191,46 +191,46 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<interfaces.Newable<Category>>("Newable<Category>").toConstructor(Category);
-        let expected = kernel.get<interfaces.Newable<Category>>("Newable<Category>");
+        let container = new Container();
+        container.bind<interfaces.Newable<Category>>("Newable<Category>").toConstructor(Category);
+        let expected = container.get<interfaces.Newable<Category>>("Newable<Category>");
         expect(expected).eql(Category);
 
     });
 
     it("Should be able to combine tagged injection and constant value bindings", () => {
 
-        let kernel = new Kernel();
+        let container = new Container();
 
         interface Intl {}
 
-        kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
-        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
 
-        let f = function() { kernel.getTagged<Intl>("Intl", "lang", "fr"); };
+        let f = function() { container.getTagged<Intl>("Intl", "lang", "fr"); };
         expect(f).to.throw();
 
     });
 
     it("Should be able to combine dynamic value with singleton scope", () => {
 
-        let kernel = new Kernel();
+        let container = new Container();
 
-        kernel.bind<number>("transient_random").toDynamicValue((context: interfaces.Context) => {
+        container.bind<number>("transient_random").toDynamicValue((context: interfaces.Context) => {
             return Math.random();
         }).inTransientScope();
 
-        kernel.bind<number>("singleton_random").toDynamicValue((context: interfaces.Context) => {
+        container.bind<number>("singleton_random").toDynamicValue((context: interfaces.Context) => {
             return Math.random();
         }).inSingletonScope();
 
-        let a = kernel.get<number>("transient_random");
-        let b = kernel.get<number>("transient_random");
+        let a = container.get<number>("transient_random");
+        let b = container.get<number>("transient_random");
 
         expect(a).not.to.eql(b);
 
-        let c = kernel.get<number>("singleton_random");
-        let d = kernel.get<number>("singleton_random");
+        let c = container.get<number>("singleton_random");
+        let d = container.get<number>("singleton_random");
 
         expect(c).to.eql(d);
 
@@ -271,11 +271,11 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Animal>(Animal).to(Snake);
-        kernel.bind<Jungle>(Jungle).to(Jungle);
+        let container = new Container();
+        container.bind<Animal>(Animal).to(Snake);
+        container.bind<Jungle>(Jungle).to(Jungle);
 
-        let jungle = kernel.get(Jungle);
+        let jungle = container.get(Jungle);
         expect(jungle.animal.makeSound("zzz")).to.eql("ssssszzz");
         expect(jungle.animal.move(5)).to.eql("Slithering... Snake moved 5m");
 
@@ -357,13 +357,13 @@ describe("Bugs", () => {
             }
         }
 
-        let kernel = new Kernel();
-        kernel.bind<Test>(TYPES.Test).to(Test);
-        kernel.bind<Dependency1>(TYPES.Dependency1).to(Dependency1);
-        kernel.bind<Dependency2>(TYPES.Dependency2).to(Dependency2);
-        kernel.bind<Dependency3>(TYPES.Dependency3).to(Dependency3);
-        kernel.bind<Dependency4>(TYPES.Dependency4).to(Dependency4);
-        kernel.bind<Dependency5>(TYPES.Dependency5).to(Dependency5);
+        let container = new Container();
+        container.bind<Test>(TYPES.Test).to(Test);
+        container.bind<Dependency1>(TYPES.Dependency1).to(Dependency1);
+        container.bind<Dependency2>(TYPES.Dependency2).to(Dependency2);
+        container.bind<Dependency3>(TYPES.Dependency3).to(Dependency3);
+        container.bind<Dependency4>(TYPES.Dependency4).to(Dependency4);
+        container.bind<Dependency5>(TYPES.Dependency5).to(Dependency5);
 
         function logger(next: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -406,8 +406,8 @@ describe("Bugs", () => {
             };
         }
 
-        kernel.applyMiddleware(logger);
-        kernel.get<Test>(TYPES.Test);
+        container.applyMiddleware(logger);
+        container.get<Test>(TYPES.Test);
 
     });
 

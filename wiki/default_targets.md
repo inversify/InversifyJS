@@ -12,15 +12,15 @@ In this section we will explain how to use default targets.
 We can resolve an `AMBIGUOUS_MATCH` exception using a named constraint:
 
 ```ts
-kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
+container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
 ```
 
 Or a tagged constraint:
 
 ```ts
-kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("strong", true);
-kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("strong", false);
+container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("strong", true);
+container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("strong", false);
 ```
 
 The problem with this solution is that we will have to annotate using
@@ -30,8 +30,8 @@ every single injection.
 A betetr solution is to use a default target:
 
 ```ts
-kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
+container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 ```
 
 We can use the `whenTargetIsDefault` to indicate which binding shoul be used as default
@@ -67,12 +67,12 @@ class Shuriken implements Weapon {
     }
 }
 
-let kernel = new Kernel();
-kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
+let container = new Container();
+container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 
-let defaultWeapon = kernel.get<Weapon>(TYPES.Weapon);
-let throwableWeapon = kernel.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
+let defaultWeapon = container.get<Weapon>(TYPES.Weapon);
+let throwableWeapon = container.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
 
 expect(defaultWeapon.name).eql("Katana");
 expect(throwableWeapon.name).eql("Shuriken");

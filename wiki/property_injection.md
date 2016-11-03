@@ -19,7 +19,7 @@ to create instances of the classes in the application, then you can inject into
 a property using the `@inject` decorator:
 
 ```ts
-import { injectable, inject, kernel } from "inversify";
+import { injectable, inject, container } from "inversify";
 
 @injectable()
 class PrintService {
@@ -59,14 +59,14 @@ class Book {
 
 }
 
-let kernel = new Kernel();
-kernel.bind<PrintService>("PrintService").to(PrintService);
-kernel.bind<Author>("Author").to(Author);
-kernel.bind<Summary>("Summary").to(Summary);
-kernel.bind<Book>("Book").to(Book);
+let container = new Container();
+container.bind<PrintService>("PrintService").to(PrintService);
+container.bind<Author>("Author").to(Author);
+container.bind<Summary>("Summary").to(Summary);
+container.bind<Book>("Book").to(Book);
 
 // Book instance is created by InversifyJS
-let book = kernel.get<Book>("Book");
+let book = container.get<Book>("Book");
 book.print();
 ```
 
@@ -85,16 +85,16 @@ InversifyJS has not created its instances:
 
 ```ts
 import getDecorators from "inversify-inject-decorators";
-import { Kernel, injectable  } from "inversify";
+import { Container, injectable  } from "inversify";
 
 @injectable()
 class PrintService {
     // ...
 }
 
-let kernel = new Kernel();
-kernel.bind<PrintService>("PrintService").to(PrintService);
-let { lazyInject } = getDecorators(kernel);
+let container = new Container();
+container.bind<PrintService>("PrintService").to(PrintService);
+let { lazyInject } = getDecorators(container);
 
 class Book {
 
