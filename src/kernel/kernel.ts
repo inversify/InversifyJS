@@ -2,7 +2,7 @@ import interfaces from "../interfaces/interfaces";
 import Binding from "../bindings/binding";
 import BindingScope from "../bindings/binding_scope";
 import Lookup from "./lookup";
-import { plan, getBindings } from "../planning/planner";
+import plan from "../planning/planner";
 import resolve from "../resolution/resolver";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
@@ -33,8 +33,8 @@ class Kernel implements interfaces.Kernel {
             destination: interfaces.Lookup<interfaces.Binding<any>>
         ) {
 
-            origing.traverse((keyValuePair) => {
-                keyValuePair.value.forEach((binding) => {
+            origing.traverse((key, value) => {
+                value.forEach((binding) => {
                     destination.add(binding.serviceIdentifier, binding.clone());
                 });
             });
@@ -93,9 +93,16 @@ class Kernel implements interfaces.Kernel {
     }
 
     public unload(...modules: interfaces.KernelModule[]): void {
+
+        let conditionFactory = (expected: any) => (item: interfaces.Binding<any>): boolean => {
+            return item.moduleId === expected;
+        };
+
         modules.forEach((module) => {
-            this._bindingDictionary.removeByModuleId(module.guid);
+            let condition = conditionFactory(module.guid);
+            this._bindingDictionary.removeByCondition(condition);
         });
+
     }
 
     // Regiters a type binding
@@ -122,8 +129,7 @@ class Kernel implements interfaces.Kernel {
 
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
-        let bindings = getBindings<any>(this, serviceIdentifier);
-        return bindings.length > 0;
+        return this._bindingDictionary.hasKey(serviceIdentifier);
     }
 
     public snapshot(): void {

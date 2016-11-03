@@ -38,5 +38,3 @@ test_script:
   - node --version && npm --version
   - ps: "npm --version # PowerShell" # Pass comment to PS for easier debugging
   - cmd: npm run test
-
-cache: node_modules
