@@ -53,7 +53,7 @@ src/*.d.ts
 src/annotation/*.d.ts
 src/bindings/*.d.ts
 src/constants/*.d.ts
-src/container/*.d.ts
+src/kernel/*.d.ts
 src/planning/*.d.ts
 src/resolution/*.d.ts
 src/syntax/*.d.ts

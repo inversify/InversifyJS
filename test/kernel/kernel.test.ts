@@ -1,15 +1,15 @@
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import Container from "../../src/container/container";
+import Kernel from "../../src/kernel/kernel";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import injectable from "../../src/annotation/injectable";
-import ContainerModule from "../../src/container/container_module";
+import KernelModule from "../../src/kernel/kernel_module";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 
 type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
 
-describe("Container", () => {
+describe("Kernel", () => {
 
     let sandbox: sinon.SinonSandbox;
 
@@ -36,37 +36,37 @@ describe("Container", () => {
       @injectable()
       class Ninja implements Ninja {}
 
-      let warriors = new ContainerModule((bind: interfaces.Bind) => {
+      let warriors = new KernelModule((bind: interfaces.Bind) => {
           bind<Ninja>("Ninja").to(Ninja);
       });
 
-      let weapons = new ContainerModule((bind: interfaces.Bind) => {
+      let weapons = new KernelModule((bind: interfaces.Bind) => {
           bind<Katana>("Katana").to(Katana);
           bind<Shuriken>("Shuriken").to(Shuriken);
       });
 
-      let container = new Container();
-      container.load(warriors, weapons);
+      let kernel = new Kernel();
+      kernel.load(warriors, weapons);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = (<any>kernel)._bindingDictionary._map;
       expect(map.has("Ninja")).eql(true);
       expect(map.has("Katana")).eql(true);
       expect(map.has("Shuriken")).eql(true);
       expect(map.size).eql(3);
 
-      let tryGetNinja = () => { container.get("Ninja"); };
-      let tryGetKatana = () => { container.get("Katana"); };
-      let tryGetShuruken = () => { container.get("Shuriken"); };
+      let tryGetNinja = () => { kernel.get("Ninja"); };
+      let tryGetKatana = () => { kernel.get("Katana"); };
+      let tryGetShuruken = () => { kernel.get("Shuriken"); };
 
-      container.unload(warriors);
-      map = (<any>container)._bindingDictionary._map;
+      kernel.unload(warriors);
+      map = (<any>kernel)._bindingDictionary._map;
       expect(map.size).eql(2);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).not.to.throw();
       expect(tryGetShuruken).not.to.throw();
 
-      container.unload(weapons);
-      map = (<any>container)._bindingDictionary._map;
+      kernel.unload(weapons);
+      map = (<any>kernel)._bindingDictionary._map;
       expect(map.size).eql(0);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
@@ -82,10 +82,10 @@ describe("Container", () => {
       class Ninja implements Ninja {}
       let ninjaId = "Ninja";
 
-      let container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = (<any>kernel)._bindingDictionary._map;
       expect(map.size).eql(1);
       expect(map.has(ninjaId)).eql(true);
 
@@ -93,11 +93,11 @@ describe("Container", () => {
 
   it("Should have an unique identifier", () => {
 
-      let container1 = new Container();
-      let container2 = new Container();
-      expect(container1.guid.length).eql(36);
-      expect(container2.guid.length).eql(36);
-      expect(container1.guid).not.eql(container2.guid);
+      let kernel1 = new Kernel();
+      let kernel2 = new Kernel();
+      expect(kernel1.guid.length).eql(36);
+      expect(kernel2.guid.length).eql(36);
+      expect(kernel1.guid).not.eql(kernel2.guid);
 
   });
 
@@ -109,13 +109,13 @@ describe("Container", () => {
       class Ninja implements Ninja {}
       let ninjaId = "Ninja";
 
-      let container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = (<any>kernel)._bindingDictionary._map;
       expect(map.has(ninjaId)).eql(true);
 
-      container.unbind(ninjaId);
+      kernel.unbind(ninjaId);
       expect(map.has(ninjaId)).eql(false);
       expect(map.size).eql(0);
 
@@ -129,8 +129,8 @@ describe("Container", () => {
       class Ninja implements Ninja {}
 
       let serviceIdentifier = "Ninja";
-      let container = new Container();
-      let throwFunction = () => { container.unbind("Ninja"); };
+      let kernel = new Kernel();
+      let throwFunction = () => { kernel.unbind("Ninja"); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
 
   });
@@ -149,18 +149,18 @@ describe("Container", () => {
       let ninjaId = "Ninja";
       let samuraiId = "Samurai";
 
-      let container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Samurai>(samuraiId).to(Samurai);
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
+      kernel.bind<Samurai>(samuraiId).to(Samurai);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = (<any>kernel)._bindingDictionary._map;
 
       expect(map.size).eql(2);
       expect(map.has(ninjaId)).eql(true);
       expect(map.has(samuraiId)).eql(true);
 
-      container.unbind(ninjaId);
-      map = (<any>container)._bindingDictionary._map;
+      kernel.unbind(ninjaId);
+      map = (<any>kernel)._bindingDictionary._map;
       expect(map.size).eql(1);
 
   });
@@ -180,18 +180,18 @@ describe("Container", () => {
       let ninjaId = "Ninja";
       let samuraiId = "Samurai";
 
-      let container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Samurai>(samuraiId).to(Samurai);
+      let kernel = new Kernel();
+      kernel.bind<Ninja>(ninjaId).to(Ninja);
+      kernel.bind<Samurai>(samuraiId).to(Samurai);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = (<any>kernel)._bindingDictionary._map;
 
       expect(map.size).eql(2);
       expect(map.has(ninjaId)).eql(true);
       expect(map.has(samuraiId)).eql(true);
 
-      container.unbindAll();
-      map = (<any>container)._bindingDictionary._map;
+      kernel.unbindAll();
+      map = (<any>kernel)._bindingDictionary._map;
       expect(map.size).eql(0);
 
   });
@@ -204,8 +204,8 @@ describe("Container", () => {
       class Ninja implements Ninja {}
       let ninjaId = "Ninja";
 
-      let container = new Container();
-      let throwFunction = () => { container.get<Ninja>(ninjaId); };
+      let kernel = new Kernel();
+      let throwFunction = () => { kernel.get<Ninja>(ninjaId); };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
   });
@@ -222,12 +222,12 @@ describe("Container", () => {
 
       let warriorId = "Warrior";
 
-      let container = new Container();
-      container.bind<Warrior>(warriorId).to(Ninja);
-      container.bind<Warrior>(warriorId).to(Samurai);
+      let kernel = new Kernel();
+      kernel.bind<Warrior>(warriorId).to(Ninja);
+      kernel.bind<Warrior>(warriorId).to(Samurai);
 
       type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
-      let dictionary: Dictionary = (<any>container)._bindingDictionary._map;
+      let dictionary: Dictionary = (<any>kernel)._bindingDictionary._map;
 
       expect(dictionary.size).eql(1);
       dictionary.forEach((value, key) => {
@@ -235,7 +235,7 @@ describe("Container", () => {
           expect(value.length).eql(2);
       });
 
-      let throwFunction = () => { container.get<Warrior>(warriorId); };
+      let throwFunction = () => { kernel.get<Warrior>(warriorId); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${warriorId}`);
 
   });
@@ -248,8 +248,8 @@ describe("Container", () => {
       class Ninja implements Ninja {}
       let ninjaId = "Ninja";
 
-      let container = new Container();
-      let throwFunction = () => { container.getAll<Ninja>(ninjaId); };
+      let kernel = new Kernel();
+      let throwFunction = () => { kernel.getAll<Ninja>(ninjaId); };
 
       expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
 
@@ -273,7 +273,7 @@ describe("Container", () => {
         expect(KatanaStr).to.eql("Katana");
     });
 
-    it("Should be able to snapshot and restore container", () => {
+    it("Should be able to snapshot and restore kernel", () => {
 
         interface Warrior {
         }
@@ -284,35 +284,35 @@ describe("Container", () => {
         @injectable()
         class Samurai implements Warrior {}
 
-        let container = new Container();
-        container.bind<Warrior>(Ninja).to(Ninja);
-        container.bind<Warrior>(Samurai).to(Samurai);
+        let kernel = new Kernel();
+        kernel.bind<Warrior>(Ninja).to(Ninja);
+        kernel.bind<Warrior>(Samurai).to(Samurai);
 
-        expect(container.get(Samurai)).to.be.instanceOf(Samurai);
-        expect(container.get(Ninja)).to.be.instanceOf(Ninja);
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
 
-        container.snapshot(); // snapshot container = v1
+        kernel.snapshot(); // snapshot kernel = v1
 
-        container.unbind(Ninja);
-        expect(container.get(Samurai)).to.be.instanceOf(Samurai);
-        expect(() => container.get(Ninja)).to.throw();
+        kernel.unbind(Ninja);
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(() => kernel.get(Ninja)).to.throw();
 
-        container.snapshot(); // snapshot container = v2
-        expect(() => container.get(Ninja )).to.throw();
+        kernel.snapshot(); // snapshot kernel = v2
+        expect(() => kernel.get(Ninja )).to.throw();
 
-        container.bind<Warrior>(Ninja).to(Ninja);
-        expect(container.get(Samurai)).to.be.instanceOf(Samurai);
-        expect(container.get(Ninja)).to.be.instanceOf(Ninja);
+        kernel.bind<Warrior>(Ninja).to(Ninja);
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
 
-        container.restore(); // restore container to v2
-        expect(container.get(Samurai)).to.be.instanceOf(Samurai);
-        expect(() => container.get(Ninja)).to.throw();
+        kernel.restore(); // restore kernel to v2
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(() => kernel.get(Ninja)).to.throw();
 
-        container.restore(); // restore container to v1
-        expect(container.get(Samurai)).to.be.instanceOf(Samurai);
-        expect(container.get(Ninja)).to.be.instanceOf(Ninja);
+        kernel.restore(); // restore kernel to v1
+        expect(kernel.get(Samurai)).to.be.instanceOf(Samurai);
+        expect(kernel.get(Ninja)).to.be.instanceOf(Ninja);
 
-        expect(() => container.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
+        expect(() => kernel.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
     });
 
     it("Should be able to check is there are bindings available for a given identifier", () => {
@@ -324,14 +324,14 @@ describe("Container", () => {
         @injectable()
         class Ninja implements Warrior {}
 
-        let container = new Container();
-        container.bind<Warrior>(Ninja).to(Ninja);
-        container.bind<Warrior>(warriorId).to(Ninja);
-        container.bind<Warrior>(warriorSymbol).to(Ninja);
+        let kernel = new Kernel();
+        kernel.bind<Warrior>(Ninja).to(Ninja);
+        kernel.bind<Warrior>(warriorId).to(Ninja);
+        kernel.bind<Warrior>(warriorSymbol).to(Ninja);
 
-        expect(container.isBound(Ninja)).eql(true);
-        expect(container.isBound(warriorId)).eql(true);
-        expect(container.isBound(warriorSymbol)).eql(true);
+        expect(kernel.isBound(Ninja)).eql(true);
+        expect(kernel.isBound(warriorId)).eql(true);
+        expect(kernel.isBound(warriorSymbol)).eql(true);
 
         interface Katana {}
         let katanaId = "Katana";
@@ -340,31 +340,31 @@ describe("Container", () => {
         @injectable()
         class Katana implements Katana {}
 
-        expect(container.isBound(Katana)).eql(false);
-        expect(container.isBound(katanaId)).eql(false);
-        expect(container.isBound(katanaSymbol)).eql(false);
+        expect(kernel.isBound(Katana)).eql(false);
+        expect(kernel.isBound(katanaId)).eql(false);
+        expect(kernel.isBound(katanaSymbol)).eql(false);
 
     });
 
-    it("Should be able to get services from parent container", () => {
+    it("Should be able to get services from parent kernel", () => {
         let weaponIdentifier = "Weapon";
 
         @injectable()
         class Katana {}
 
-        let container = new Container();
-        container.bind(weaponIdentifier).to(Katana);
+        let kernel = new Kernel();
+        kernel.bind(weaponIdentifier).to(Katana);
 
-        let childContainer = new Container();
-        childContainer.parent = container;
+        let childKernel = new Kernel();
+        childKernel.parent = kernel;
 
-        let secondChildContainer = new Container();
-        secondChildContainer.parent = childContainer;
+        let secondChildKernel = new Kernel();
+        secondChildKernel.parent = childKernel;
 
-        expect(secondChildContainer.get(weaponIdentifier)).to.be.instanceOf(Katana);
+        expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(Katana);
     });
 
-    it("Should prioritize requested container to resolve a service identifier", () => {
+    it("Should prioritize requested kernel to resolve a service identifier", () => {
         let weaponIdentifier = "Weapon";
 
         @injectable()
@@ -373,17 +373,17 @@ describe("Container", () => {
         @injectable()
         class DivineRapier {}
 
-        let container = new Container();
-        container.bind(weaponIdentifier).to(Katana);
+        let kernel = new Kernel();
+        kernel.bind(weaponIdentifier).to(Katana);
 
-        let childContainer = new Container();
-        childContainer.parent = container;
+        let childKernel = new Kernel();
+        childKernel.parent = kernel;
 
-        let secondChildContainer = new Container();
-        secondChildContainer.parent = childContainer;
-        secondChildContainer.bind(weaponIdentifier).to(DivineRapier);
+        let secondChildKernel = new Kernel();
+        secondChildKernel.parent = childKernel;
+        secondChildKernel.bind(weaponIdentifier).to(DivineRapier);
 
-        expect(secondChildContainer.get(weaponIdentifier)).to.be.instanceOf(DivineRapier);
+        expect(secondChildKernel.get(weaponIdentifier)).to.be.instanceOf(DivineRapier);
     });
 
     it("Should be able to resolve named multi-injection", () => {
@@ -393,18 +393,18 @@ describe("Container", () => {
             goodbye?: string;
         }
 
-        let container = new Container();
-        container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
-        container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
-        container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
-        container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
+        let kernel = new Kernel();
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
 
-        let fr = container.getAllNamed<Intl>("Intl", "fr");
+        let fr = kernel.getAllNamed<Intl>("Intl", "fr");
         expect(fr.length).to.eql(2);
         expect(fr[0].hello).to.eql("bonjour");
         expect(fr[1].goodbye).to.eql("au revoir");
 
-        let es = container.getAllNamed<Intl>("Intl", "es");
+        let es = kernel.getAllNamed<Intl>("Intl", "es");
         expect(es.length).to.eql(2);
         expect(es[0].hello).to.eql("hola");
         expect(es[1].goodbye).to.eql("adios");
@@ -418,19 +418,19 @@ describe("Container", () => {
             goodbye?: string;
         }
 
-        let container = new Container();
-        container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
-        container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
-        container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
-        container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
+        let kernel = new Kernel();
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+        kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
+        kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
-        let fr = container.getAllTagged<Intl>("Intl", "lang", "fr");
+        let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
         console.log(fr);
         expect(fr.length).to.eql(2);
         expect(fr[0].hello).to.eql("bonjour");
         expect(fr[1].goodbye).to.eql("au revoir");
 
-        let es = container.getAllTagged<Intl>("Intl", "lang", "es");
+        let es = kernel.getAllTagged<Intl>("Intl", "lang", "es");
         expect(es.length).to.eql(2);
         expect(es[0].hello).to.eql("hola");
         expect(es[1].goodbye).to.eql("adios");

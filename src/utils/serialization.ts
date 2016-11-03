@@ -14,16 +14,16 @@ function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdent
 }
 
 function listRegisteredBindingsForServiceIdentifier(
-    container: interfaces.Container,
+    kernel: interfaces.Kernel,
     serviceIdentifier: string,
     getBindings: <T>(
-        container: interfaces.Container,
+        kernel: interfaces.Kernel,
         serviceIdentifier: interfaces.ServiceIdentifier<T>
     ) => interfaces.Binding<T>[]
 ): string {
 
     let registeredBindingsList = "";
-    let registeredBindings = getBindings(container, serviceIdentifier);
+    let registeredBindings = getBindings(kernel, serviceIdentifier);
 
     if (registeredBindings.length !== 0) {
 

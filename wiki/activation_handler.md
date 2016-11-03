@@ -33,9 +33,9 @@ class Ninja implements Ninja {
 ```
 
 ```ts
-container.bind<Ninja>("Ninja").to(Ninja);
+kernel.bind<Ninja>("Ninja").to(Ninja);
 
-container.bind<Katana>("Katana").to(Katana).onActivation((context, katana) => {
+kernel.bind<Katana>("Katana").to(Katana).onActivation((context, katana) => {
     let handler = {
         apply: function(target, thisArgument, argumentsList) {
             console.log(`Starting: ${new Date().getTime()}`);
@@ -50,7 +50,7 @@ container.bind<Katana>("Katana").to(Katana).onActivation((context, katana) => {
 ```
 
 ```ts
-let ninja = container.get<Ninja>();
+let ninja = kernel.get<Ninja>();
 ninja.katana.use();
 > Starting: 1457895135761
 > Used Katana!

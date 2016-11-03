@@ -45,7 +45,7 @@ function _getActiveBindings(
     target: interfaces.Target
 ): interfaces.Binding<any>[] {
 
-    let bindings = getBindings<any>(context.container, target.serviceIdentifier);
+    let bindings = getBindings<any>(context.kernel, target.serviceIdentifier);
     let activeBindings: interfaces.Binding<any>[] = [];
 
     // multiple bindings available but not a multi-injection
@@ -72,7 +72,7 @@ function _getActiveBindings(
     }
 
     // validate active bindings
-    _validateActiveBindingCount(target.serviceIdentifier, activeBindings, target, context.container);
+    _validateActiveBindingCount(target.serviceIdentifier, activeBindings, target, context.kernel);
 
     return activeBindings;
 }
@@ -81,7 +81,7 @@ function _validateActiveBindingCount(
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     bindings: interfaces.Binding<any>[],
     target: interfaces.Target,
-    container: interfaces.Container
+    kernel: interfaces.Kernel
 ): interfaces.Binding<any>[] {
 
     switch (bindings.length) {
@@ -90,7 +90,7 @@ function _validateActiveBindingCount(
             let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
             let msg = ERROR_MSGS.NOT_REGISTERED;
             msg += listMetadataForTarget(serviceIdentifierString, target);
-            msg += listRegisteredBindingsForServiceIdentifier(container, serviceIdentifierString, getBindings);
+            msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
             throw new Error(msg);
 
         case BindingCount.OnlyOneBindingAvailable:
@@ -103,7 +103,7 @@ function _validateActiveBindingCount(
             if (target.isArray() === false) {
                 let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
                 msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
-                msg += listRegisteredBindingsForServiceIdentifier(container, serviceIdentifierString, getBindings);
+                msg += listRegisteredBindingsForServiceIdentifier(kernel, serviceIdentifierString, getBindings);
                 throw new Error(msg);
             } else {
                 return bindings;
@@ -176,21 +176,21 @@ function _createSubRequests(
 }
 
 function getBindings<T>(
-    container: interfaces.Container,
+    kernel: interfaces.Kernel,
     serviceIdentifier: interfaces.ServiceIdentifier<T>
 ): interfaces.Binding<T>[] {
 
     let bindings: interfaces.Binding<T>[] = [];
-    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
+    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>kernel)._bindingDictionary;
 
     if (bindingDictionary.hasKey(serviceIdentifier)) {
 
         bindings = bindingDictionary.get(serviceIdentifier);
 
-    } else if (container.parent !== null) {
+    } else if (kernel.parent !== null) {
 
-        // recursively try to get bindings from parent container
-        bindings = getBindings<T>(container.parent, serviceIdentifier);
+        // recursively try to get bindings from parent kernel
+        bindings = getBindings<T>(kernel.parent, serviceIdentifier);
 
     }
 
@@ -198,7 +198,7 @@ function getBindings<T>(
 }
 
 function plan(
-    container: interfaces.Container,
+    kernel: interfaces.Kernel,
     isMultiInject: boolean,
     targetType: TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
@@ -206,7 +206,7 @@ function plan(
     value?: any
 ): interfaces.Context {
 
-    let context = new Context(container);
+    let context = new Context(kernel);
     let target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
     _createSubRequests(serviceIdentifier, context, null, target);
     return context;

@@ -24,5 +24,5 @@ class Ninja implements Ninja {
 ```
 
 ```ts
-container.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
+kernel.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
 ```

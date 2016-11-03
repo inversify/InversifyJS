@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { Container, injectable, inject } from "../../src/inversify";
+import { Kernel, injectable, inject } from "../../src/inversify";
 
 describe("Node", () => {
 
@@ -43,14 +43,14 @@ describe("Node", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<A>("A").to(A);
-        container.bind<B>("B").to(B);
-        container.bind<C>("C").to(C);
-        container.bind<D>("D").to(D);
+        let kernel = new Kernel();
+        kernel.bind<A>("A").to(A);
+        kernel.bind<B>("B").to(B);
+        kernel.bind<C>("C").to(C);
+        kernel.bind<D>("D").to(D);
 
         function willThrow() {
-            let a = container.get<A>("A");
+            let a = kernel.get<A>("A");
             return a;
         }
 

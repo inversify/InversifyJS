@@ -6,9 +6,9 @@ import "es6-symbol/implement";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import * as Stubs from "./utils/stubs";
 import {
-    Container, injectable, inject, multiInject,
+    Kernel, injectable, inject, multiInject,
     tagged, named, targetName, decorate, typeConstraint,
-    ContainerModule, unmanaged
+    KernelModule, unmanaged
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -61,12 +61,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(Ninja);
+        kernel.bind<Katana>("Katana").to(Katana);
+        kernel.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -112,12 +112,12 @@ describe("InversifyJS", () => {
         decorate(inject(TYPES.Katana), Ninja, 0);
         decorate(inject(TYPES.Shuriken), Ninja, 1);
 
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-        container.bind<Katana>(TYPES.Katana).to(Katana);
-        container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+        kernel.bind<Katana>(TYPES.Katana).to(Katana);
+        kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
 
-        let ninja = container.get<Ninja>(TYPES.Ninja);
+        let ninja = kernel.get<Ninja>(TYPES.Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -156,12 +156,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>(Ninja).to(Ninja);
-        container.bind<Katana>(Katana).to(Katana);
-        container.bind<Shuriken>(Shuriken).to(Shuriken);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(Ninja).to(Ninja);
+        kernel.bind<Katana>(Katana).to(Katana);
+        kernel.bind<Shuriken>(Shuriken).to(Shuriken);
 
-        let ninja = container.get<Ninja>(Ninja);
+        let ninja = kernel.get<Ninja>(Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -222,19 +222,19 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-        container.bind<Katana>(TYPES.Katana).to(Katana);
-        container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+        kernel.bind<Katana>(TYPES.Katana).to(Katana);
+        kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
 
-        let ninja = container.get<Ninja>(TYPES.Ninja);
+        let ninja = kernel.get<Ninja>(TYPES.Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
 
     });
 
-    it("Should support Container modules", () => {
+    it("Should support Kernel modules", () => {
 
         interface Ninja {
             fight(): string;
@@ -279,36 +279,36 @@ describe("InversifyJS", () => {
 
         }
 
-        let warriors = new ContainerModule((bind: interfaces.Bind) => {
+        let warriors = new KernelModule((bind: interfaces.Bind) => {
             bind<Ninja>("Ninja").to(Ninja);
         });
 
-        let weapons = new ContainerModule((bind: interfaces.Bind) => {
+        let weapons = new KernelModule((bind: interfaces.Bind) => {
             bind<Katana>("Katana").to(Katana);
             bind<Shuriken>("Shuriken").to(Shuriken);
         });
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         // load
-        container.load(warriors, weapons);
+        kernel.load(warriors, weapons);
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
 
-        let tryGetNinja = () => { container.get("Ninja"); };
-        let tryGetKatana = () => { container.get("Katana"); };
-        let tryGetShuruken = () => { container.get("Shuriken"); };
+        let tryGetNinja = () => { kernel.get("Ninja"); };
+        let tryGetKatana = () => { kernel.get("Katana"); };
+        let tryGetShuruken = () => { kernel.get("Shuriken"); };
 
         // unload
-        container.unload(warriors);
+        kernel.unload(warriors);
         expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
         expect(tryGetKatana).not.to.throw();
         expect(tryGetShuruken).not.to.throw();
 
-        container.unload(weapons);
+        kernel.unload(weapons);
         expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
         expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
         expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
@@ -373,18 +373,18 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.bind<Katana>("Katana").to(Katana).inSingletonScope();
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(Ninja);
+        kernel.bind<Katana>("Katana").to(Katana).inSingletonScope();
+        kernel.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja1 = container.get<Ninja>("Ninja");
+        let ninja1 = kernel.get<Ninja>("Ninja");
         expect(ninja1.fight()).eql(`This katana was used 1 times!`);
         expect(ninja1.fight()).eql(`This katana was used 2 times!`);
         expect(ninja1.sneak()).eql(`Only 9 items left!`);
         expect(ninja1.sneak()).eql(`Only 8 items left!`);
 
-        let ninja2 = container.get<Ninja>("Ninja");
+        let ninja2 = kernel.get<Ninja>("Ninja");
         expect(ninja2.fight()).eql(`This katana was used 3 times!`);
         expect(ninja2.sneak()).eql(`Only 9 items left!`);
 
@@ -402,9 +402,9 @@ describe("InversifyJS", () => {
             }
         }
 
-        const container = new Container();
-        container.bind(Hero).toSelf();
-        let hero = container.get<Hero>(Hero);
+        const kernel = new Kernel();
+        kernel.bind(Hero).toSelf();
+        let hero = kernel.get<Hero>(Hero);
 
         expect(hero.name).eql(heroName);
 
@@ -430,9 +430,9 @@ describe("InversifyJS", () => {
             }
         }
 
-        const container = new Container();
-        container.bind<Warrior>(TYPES.Warrior).toConstantValue(new Hero());
-        let hero = container.get<Warrior>(TYPES.Warrior);
+        const kernel = new Kernel();
+        kernel.bind<Warrior>(TYPES.Warrior).toConstantValue(new Hero());
+        let hero = kernel.get<Warrior>(TYPES.Warrior);
 
         expect(hero.name).eql(heroName);
 
@@ -455,19 +455,19 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<UseDate>("UseDate").to(UseDate);
-        container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => { return new Date(); });
+        let kernel = new Kernel();
+        kernel.bind<UseDate>("UseDate").to(UseDate);
+        kernel.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => { return new Date(); });
 
-        let subject1 = container.get<UseDate>("UseDate");
-        let subject2 = container.get<UseDate>("UseDate");
+        let subject1 = kernel.get<UseDate>("UseDate");
+        let subject2 = kernel.get<UseDate>("UseDate");
         expect(subject1.doSomething() === subject2.doSomething()).eql(false);
 
-        container.unbind("Date");
-        container.bind<Date>("Date").toConstantValue(new Date());
+        kernel.unbind("Date");
+        kernel.bind<Date>("Date").toConstantValue(new Date());
 
-        let subject3 = container.get<UseDate>("UseDate");
-        let subject4 = container.get<UseDate>("UseDate");
+        let subject3 = kernel.get<UseDate>("UseDate");
+        let subject4 = kernel.get<UseDate>("UseDate");
         expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
     });
@@ -530,16 +530,16 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Ninja>(ninjaId).to(Ninja);
-        container.bind<LongDistanceWeapon>(longDistanceWeaponId).to(Shuriken);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(ninjaId).to(Ninja);
+        kernel.bind<LongDistanceWeapon>(longDistanceWeaponId).to(Shuriken);
 
         let katanaFactory = function () {
             return new Katana(new KatanaHandler(), new KatanaBlade());
         };
 
-        container.bind<ShortDistanceWeaponFactory>(shortDistanceWeaponFactoryId).toFunction(katanaFactory); // IMPORTANT!
-        let ninja = container.get<Ninja>(ninjaId);
+        kernel.bind<ShortDistanceWeaponFactory>(shortDistanceWeaponFactoryId).toFunction(katanaFactory); // IMPORTANT!
+        let ninja = kernel.get<Ninja>(ninjaId);
 
         expect(ninja instanceof Ninja).eql(true);
         expect(typeof ninja.shortDistanceWeaponFactory === "function").eql(true);
@@ -598,12 +598,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(Ninja);
+        kernel.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
+        kernel.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -658,17 +658,17 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context) => {
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
+        kernel.bind<Shuriken>("Shuriken").to(Shuriken);
+        kernel.bind<Katana>("Katana").to(Katana);
+        kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context) => {
             return () => {
-                return context.container.get<Katana>("Katana");
+                return context.kernel.get<Katana>("Katana");
             };
         });
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -718,18 +718,18 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
-        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("throwable", true);
-        container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
+        kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("throwable", true);
+        kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
 
-        container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context) => {
+        kernel.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context) => {
             return (throwable: boolean) => {
-                return context.container.getTagged<Weapon>("Weapon", "throwable", throwable);
+                return context.kernel.getTagged<Weapon>("Weapon", "throwable", throwable);
             };
         });
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("katana!");
         expect(ninja.sneak()).eql("shuriken!");
@@ -793,23 +793,23 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<SparkPlugs>("SparkPlugs").to(SparkPlugs);
-        container.bind<InjectorPump>("InjectorPump").to(InjectorPump);
-        container.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
-        container.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
+        let kernel = new Kernel();
+        kernel.bind<SparkPlugs>("SparkPlugs").to(SparkPlugs);
+        kernel.bind<InjectorPump>("InjectorPump").to(InjectorPump);
+        kernel.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
+        kernel.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
 
-        container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context: interfaces.Context) => {
+        kernel.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context: interfaces.Context) => {
             return (named: string) => (displacement: number) => {
-                let engine = context.container.getNamed<Engine>("Engine", named);
+                let engine = context.kernel.getNamed<Engine>("Engine", named);
                 engine.displacement = displacement;
                 return engine;
             };
         });
 
-        container.bind<CarFactory>("DieselCarFactory").to(DieselCarFactory);
+        kernel.bind<CarFactory>("DieselCarFactory").to(DieselCarFactory);
 
-        let dieselCarFactory = container.get<CarFactory>("DieselCarFactory");
+        let dieselCarFactory = kernel.get<CarFactory>("DieselCarFactory");
         let engine = dieselCarFactory.createEngine(300);
 
         expect(engine.displacement).eql(300);
@@ -865,13 +865,13 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(NinjaWithAutoFactory);
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toAutoFactory<Katana>("Katana");
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(NinjaWithAutoFactory);
+        kernel.bind<Shuriken>("Shuriken").to(Shuriken);
+        kernel.bind<Katana>("Katana").to(Katana);
+        kernel.bind<interfaces.Factory<Katana>>("Factory<Katana>").toAutoFactory<Katana>("Katana");
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -911,19 +911,19 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
-        container.bind<Ninja>("Ninja").to(NinjaWithProvider);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<interfaces.Provider<Katana>>("Provider<Katana>").toProvider<Katana>((context: interfaces.Context) => {
+        let kernel = new Kernel();
+        kernel.bind<Ninja>("Ninja").to(NinjaWithProvider);
+        kernel.bind<Katana>("Katana").to(Katana);
+        kernel.bind<interfaces.Provider<Katana>>("Provider<Katana>").toProvider<Katana>((context: interfaces.Context) => {
             return () => {
                 return new Promise<Katana>((resolve) => {
-                    let katana = context.container.get<Katana>("Katana");
+                    let katana = context.kernel.get<Katana>("Katana");
                     resolve(katana);
                 });
             };
         });
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         ninja.katanaProvider()
             .then((katana) => {
@@ -971,21 +971,21 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Warrior>(warriorId).to(Ninja);
-            container.bind<Weapon>(weaponId).to(Katana);
-            container.bind<Weapon>(weaponId).to(Shuriken);
+            let kernel = new Kernel();
+            kernel.bind<Warrior>(warriorId).to(Ninja);
+            kernel.bind<Weapon>(weaponId).to(Katana);
+            kernel.bind<Weapon>(weaponId).to(Shuriken);
 
-            let ninja = container.get<Warrior>(warriorId);
+            let ninja = kernel.get<Warrior>(warriorId);
             expect(ninja.katana.name).eql("Katana");
             expect(ninja.shuriken.name).eql("Shuriken");
 
             // if only one value is bound to Weapon
-            let container2 = new Container();
-            container2.bind<Warrior>(warriorId).to(Ninja);
-            container2.bind<Weapon>(weaponId).to(Katana);
+            let kernel2 = new Kernel();
+            kernel2.bind<Warrior>(warriorId).to(Ninja);
+            kernel2.bind<Weapon>(weaponId).to(Katana);
 
-            let ninja2 = container2.get<Warrior>(warriorId);
+            let ninja2 = kernel2.get<Warrior>(warriorId);
             expect(ninja2.katana.name).eql("Katana");
 
         });
@@ -1056,14 +1056,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Katana>("Katana").to(Katana);
-            container.bind<Shuriken>("Shuriken").to(Shuriken);
-            container.bind<Ninja>("Ninja").to(Ninja);
-            container.bind<Ninja>("Ninja").to(Ninja);
-            container.bind<School>("School").to(NinjaSchool);
+            let kernel = new Kernel();
+            kernel.bind<Katana>("Katana").to(Katana);
+            kernel.bind<Shuriken>("Shuriken").to(Shuriken);
+            kernel.bind<Ninja>("Ninja").to(Ninja);
+            kernel.bind<Ninja>("Ninja").to(Ninja);
+            kernel.bind<School>("School").to(NinjaSchool);
 
-            let ninjaSchool = container.get<School>("School");
+            let ninjaSchool = kernel.get<School>("School");
             expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
             expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
 
@@ -1160,16 +1160,16 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Sword>(swordId).to(Katana);
-            container.bind<Shuriken>(shurikenId).to(Shuriken);
-            container.bind<Warrior>(warriorId).to(Ninja);
-            container.bind<Warrior>(warriorId).to(Ninja);
-            container.bind<School>(schoolId).to(NinjaSchool);
-            container.bind<School>(schoolId).to(NinjaSchool);
-            container.bind<Organisation>(organisationId).to(NinjaOrganisation);
+            let kernel = new Kernel();
+            kernel.bind<Sword>(swordId).to(Katana);
+            kernel.bind<Shuriken>(shurikenId).to(Shuriken);
+            kernel.bind<Warrior>(warriorId).to(Ninja);
+            kernel.bind<Warrior>(warriorId).to(Ninja);
+            kernel.bind<School>(schoolId).to(NinjaSchool);
+            kernel.bind<School>(schoolId).to(NinjaSchool);
+            kernel.bind<Organisation>(organisationId).to(NinjaOrganisation);
 
-            let ninjaOrganisation = container.get<Organisation>(organisationId);
+            let ninjaOrganisation = kernel.get<Organisation>(organisationId);
 
             for (let i = 0; i < 2; i++) {
                 expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
@@ -1215,21 +1215,21 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Ninja>(Ninja).to(Ninja);
-            container.bind<Weapon>(Weapon).to(Katana);
-            container.bind<Weapon>(Weapon).to(Shuriken);
+            let kernel = new Kernel();
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<Weapon>(Weapon).to(Katana);
+            kernel.bind<Weapon>(Weapon).to(Shuriken);
 
-            let ninja = container.get<Ninja>(Ninja);
+            let ninja = kernel.get<Ninja>(Ninja);
             expect(ninja.katana.name).eql("Katana");
             expect(ninja.shuriken.name).eql("Shuriken");
 
             // if only one value is bound to Weapon
-            let container2 = new Container();
-            container2.bind<Ninja>(Ninja).to(Ninja);
-            container2.bind<Weapon>(Weapon).to(Katana);
+            let kernel2 = new Kernel();
+            kernel2.bind<Ninja>(Ninja).to(Ninja);
+            kernel2.bind<Weapon>(Weapon).to(Katana);
 
-            let ninja2 = container2.get<Ninja>(Ninja);
+            let ninja2 = kernel2.get<Ninja>(Ninja);
             expect(ninja2.katana.name).eql("Katana");
 
         });
@@ -1282,14 +1282,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Katana>(Katana).to(Katana);
-            container.bind<Shuriken>(Shuriken).to(Shuriken);
-            container.bind<Ninja>(Ninja).to(Ninja);
-            container.bind<Ninja>(Ninja).to(Ninja);
-            container.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
+            let kernel = new Kernel();
+            kernel.bind<Katana>(Katana).to(Katana);
+            kernel.bind<Shuriken>(Shuriken).to(Shuriken);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
 
-            let ninjaSchool = container.get<NinjaSchool>(NinjaSchool);
+            let ninjaSchool = kernel.get<NinjaSchool>(NinjaSchool);
             expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
             expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
 
@@ -1357,16 +1357,16 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Katana>(Katana).to(Katana);
-            container.bind<Shuriken>(Shuriken).to(Shuriken);
-            container.bind<Ninja>(Ninja).to(Ninja);
-            container.bind<Ninja>(Ninja).to(Ninja);
-            container.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
-            container.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
-            container.bind<NinjaOrganisation>(NinjaOrganisation).to(NinjaOrganisation);
+            let kernel = new Kernel();
+            kernel.bind<Katana>(Katana).to(Katana);
+            kernel.bind<Shuriken>(Shuriken).to(Shuriken);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<Ninja>(Ninja).to(Ninja);
+            kernel.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
+            kernel.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
+            kernel.bind<NinjaOrganisation>(NinjaOrganisation).to(NinjaOrganisation);
 
-            let ninjaOrganisation = container.get<NinjaOrganisation>(NinjaOrganisation);
+            let ninjaOrganisation = kernel.get<NinjaOrganisation>(NinjaOrganisation);
 
             for (let i = 0; i < 2; i++) {
                 expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
@@ -1416,21 +1416,21 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Warrior>(TYPES.Warrior).to(Ninja);
-            container.bind<Weapon>(TYPES.Weapon).to(Katana);
-            container.bind<Weapon>(TYPES.Weapon).to(Shuriken);
+            let kernel = new Kernel();
+            kernel.bind<Warrior>(TYPES.Warrior).to(Ninja);
+            kernel.bind<Weapon>(TYPES.Weapon).to(Katana);
+            kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken);
 
-            let ninja = container.get<Warrior>(TYPES.Warrior);
+            let ninja = kernel.get<Warrior>(TYPES.Warrior);
             expect(ninja.katana.name).eql("Katana");
             expect(ninja.shuriken.name).eql("Shuriken");
 
             // if only one value is bound to Weapon
-            let container2 = new Container();
-            container2.bind<Warrior>(TYPES.Warrior).to(Ninja);
-            container2.bind<Weapon>(TYPES.Weapon).to(Katana);
+            let kernel2 = new Kernel();
+            kernel2.bind<Warrior>(TYPES.Warrior).to(Ninja);
+            kernel2.bind<Weapon>(TYPES.Weapon).to(Katana);
 
-            let ninja2 = container2.get<Warrior>(TYPES.Warrior);
+            let ninja2 = kernel2.get<Warrior>(TYPES.Warrior);
             expect(ninja2.katana.name).eql("Katana");
 
         });
@@ -1508,14 +1508,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Katana>(TYPES.Katana).to(Katana);
-            container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
-            container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-            container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-            container.bind<School>(TYPES.School).to(NinjaSchool);
+            let kernel = new Kernel();
+            kernel.bind<Katana>(TYPES.Katana).to(Katana);
+            kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+            kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+            kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+            kernel.bind<School>(TYPES.School).to(NinjaSchool);
 
-            let ninjaSchool = container.get<School>(TYPES.School);
+            let ninjaSchool = kernel.get<School>(TYPES.School);
             expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
             expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
 
@@ -1613,16 +1613,16 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
-            container.bind<Katana>(TYPES.Katana).to(Katana);
-            container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
-            container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-            container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-            container.bind<School>(TYPES.School).to(NinjaSchool);
-            container.bind<School>(TYPES.School).to(NinjaSchool);
-            container.bind<Organisation>(TYPES.Organisation).to(NinjaOrganisation);
+            let kernel = new Kernel();
+            kernel.bind<Katana>(TYPES.Katana).to(Katana);
+            kernel.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+            kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+            kernel.bind<Ninja>(TYPES.Ninja).to(Ninja);
+            kernel.bind<School>(TYPES.School).to(NinjaSchool);
+            kernel.bind<School>(TYPES.School).to(NinjaSchool);
+            kernel.bind<Organisation>(TYPES.Organisation).to(NinjaOrganisation);
 
-            let ninjaOrganisation = container.get<Organisation>(TYPES.Organisation);
+            let ninjaOrganisation = kernel.get<Organisation>(TYPES.Organisation);
 
             for (let i = 0; i < 2; i++) {
                 expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
@@ -1662,12 +1662,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Warrior>("Warrior").to(Ninja);
-        container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
-        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
+        let kernel = new Kernel();
+        kernel.bind<Warrior>("Warrior").to(Ninja);
+        kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
+        kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
 
-        let ninja = container.get<Warrior>("Warrior");
+        let ninja = kernel.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1704,12 +1704,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Warrior>("Warrior").to(Ninja);
-        container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
-        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
+        let kernel = new Kernel();
+        kernel.bind<Warrior>("Warrior").to(Ninja);
+        kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
+        kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
 
-        let ninja = container.get<Warrior>("Warrior");
+        let ninja = kernel.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1743,12 +1743,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Warrior>("Warrior").to(Ninja);
-        container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
+        let kernel = new Kernel();
+        kernel.bind<Warrior>("Warrior").to(Ninja);
+        kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+        kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
 
-        let ninja = container.get<Warrior>("Warrior");
+        let ninja = kernel.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1782,18 +1782,18 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Warrior>("Warrior").to(Ninja);
+        let kernel = new Kernel();
+        kernel.bind<Warrior>("Warrior").to(Ninja);
 
-        container.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
+        kernel.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
             return request.target.name.equals("katana");
         });
 
-        container.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
+        kernel.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
             return request.target.name.equals("shuriken");
         });
 
-        let ninja = container.get<Warrior>("Warrior");
+        let ninja = kernel.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1821,12 +1821,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
-        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
+        let kernel = new Kernel();
+        kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
+        kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
 
-        let katana = container.getNamed<Weapon>("Weapon", "japonese");
-        let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
+        let katana = kernel.getNamed<Weapon>("Weapon", "japonese");
+        let shuriken = kernel.getNamed<Weapon>("Weapon", "chinese");
 
         expect(katana.name).eql("katana");
         expect(shuriken.name).eql("shuriken");
@@ -1855,12 +1855,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
-        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
+        let kernel = new Kernel();
+        kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
+        kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
 
-        let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
-        let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
+        let katana = kernel.getTagged<Weapon>("Weapon", "faction", "samurai");
+        let shuriken = kernel.getTagged<Weapon>("Weapon", "faction", "ninja");
 
         expect(katana.name).eql("katana");
         expect(shuriken.name).eql("shuriken");
@@ -1919,17 +1919,17 @@ describe("InversifyJS", () => {
             }
         }
 
-        const container = new Container();
-        container.bind<Weapon>(SYMBOLS.Weapon).to(Katana);
-        container.bind<Warrior>(SYMBOLS.Samurai).to(Samurai);
-        container.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
-        container.bind<Warrior>(SYMBOLS.SamuraiMaster2).to(SamuraiMaster2);
+        const kernel = new Kernel();
+        kernel.bind<Weapon>(SYMBOLS.Weapon).to(Katana);
+        kernel.bind<Warrior>(SYMBOLS.Samurai).to(Samurai);
+        kernel.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
+        kernel.bind<Warrior>(SYMBOLS.SamuraiMaster2).to(SamuraiMaster2);
 
-        let errorFunction = () => { container.get<Warrior>(SYMBOLS.SamuraiMaster); };
+        let errorFunction = () => { kernel.get<Warrior>(SYMBOLS.SamuraiMaster); };
         let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
         expect(errorFunction).to.throw(error);
 
-        let samuraiMaster2 = container.get<Warrior>(SYMBOLS.SamuraiMaster2);
+        let samuraiMaster2 = kernel.get<Warrior>(SYMBOLS.SamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
         expect(typeof (<any>samuraiMaster2).isMaster).eql("boolean");
 
@@ -1937,7 +1937,7 @@ describe("InversifyJS", () => {
 
     it("Should allow to flag arguments as unmanaged", () => {
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         // CASE 1: should throw
 
@@ -1958,8 +1958,8 @@ describe("InversifyJS", () => {
             }
         }
 
-        container.bind<Base1>(Base1Id).to(Derived1);
-        let tryGet = () => { container.get(Base1Id); };
+        kernel.bind<Base1>(Base1Id).to(Derived1);
+        let tryGet = () => { kernel.get(Base1Id); };
         let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "Derived1" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
         expect(tryGet).to.throw(error);
 
@@ -1982,8 +1982,8 @@ describe("InversifyJS", () => {
             }
         }
 
-        container.bind<Base2>(Base2Id).to(Derived2);
-        let derived1 = container.get<Base2>(Base2Id);
+        kernel.bind<Base2>(Base2Id).to(Derived2);
+        let derived1 = kernel.get<Base2>(Base2Id);
         expect(derived1 instanceof Derived2).to.eql(true);
         expect(derived1.prop1).to.eql("unmanaged-injected-value");
 
@@ -2008,9 +2008,9 @@ describe("InversifyJS", () => {
             }
         }
 
-        container.bind<Base3>(Base3Id).to(Derived3);
-        container.bind<string>("SomeId").toConstantValue("managed-injected-value");
-        let derived2 = container.get<Base3>(Base3Id);
+        kernel.bind<Base3>(Base3Id).to(Derived3);
+        kernel.bind<string>("SomeId").toConstantValue("managed-injected-value");
+        let derived2 = kernel.get<Base3>(Base3Id);
         expect(derived2 instanceof Base3).to.eql(true);
         expect(derived2.prop1).to.eql("unmanaged-injected-value");
         expect(derived2.prop2).to.eql("managed-injected-value");
@@ -2072,14 +2072,14 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container.bind<Weapon>(TYPES.Weapon).to(Katana).whenInjectedInto(NinjaMaster);
-        container.bind<Weapon>(TYPES.Weapon).to(Bokken).whenInjectedInto(NinjaStudent);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenInjectedInto(NinjaMaster);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Bokken).whenInjectedInto(NinjaStudent);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master = kernel.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student = kernel.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master instanceof NinjaMaster).eql(true);
         expect(student instanceof NinjaStudent).eql(true);
@@ -2157,15 +2157,15 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container.bind<Material>(TYPES.Material).to(Iron).whenParentNamed("lethal");
-        container.bind<Material>(TYPES.Material).to(Wood).whenParentNamed("non-lethal");
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel.bind<Material>(TYPES.Material).to(Iron).whenParentNamed("lethal");
+        kernel.bind<Material>(TYPES.Material).to(Wood).whenParentNamed("non-lethal");
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master = kernel.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student = kernel.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
@@ -2240,15 +2240,15 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container.bind<Material>(TYPES.Material).to(Iron).whenParentTagged("lethal", true);
-        container.bind<Material>(TYPES.Material).to(Wood).whenParentTagged("lethal", false);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel.bind<Material>(TYPES.Material).to(Iron).whenParentTagged("lethal", true);
+        kernel.bind<Material>(TYPES.Material).to(Wood).whenParentTagged("lethal", false);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master = kernel.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student = kernel.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
@@ -2324,29 +2324,29 @@ describe("InversifyJS", () => {
         }
 
         // whenAnyAncestorIs
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorIs(NinjaMaster);
-        container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorIs(NinjaStudent);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorIs(NinjaMaster);
+        kernel.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorIs(NinjaStudent);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master = kernel.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student = kernel.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorIs
-        let container2 = new Container();
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container2.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorIs(NinjaStudent);
-        container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorIs(NinjaMaster);
+        let kernel2 = new Kernel();
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel2.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorIs(NinjaStudent);
+        kernel2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorIs(NinjaMaster);
 
-        let master2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master2 = kernel2.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student2 = kernel2.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2422,29 +2422,29 @@ describe("InversifyJS", () => {
         }
 
         // whenAnyAncestorNamed
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetNamed("non-lethal");
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetNamed("lethal");
-        container.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorNamed("lethal");
-        container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorNamed("non-lethal");
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetNamed("non-lethal");
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetNamed("lethal");
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorNamed("lethal");
+        kernel.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorNamed("non-lethal");
 
-        let master = container.getNamed<Ninja>(TYPES.Ninja, "lethal");
-        let student = container.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
+        let master = kernel.getNamed<Ninja>(TYPES.Ninja, "lethal");
+        let student = kernel.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorNamed
-        let container2 = new Container();
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetNamed("non-lethal");
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetNamed("lethal");
-        container2.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorNamed("non-lethal");
-        container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorNamed("lethal");
+        let kernel2 = new Kernel();
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetNamed("non-lethal");
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetNamed("lethal");
+        kernel2.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorNamed("non-lethal");
+        kernel2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorNamed("lethal");
 
-        let master2 = container.getNamed<Ninja>(TYPES.Ninja, "lethal");
-        let student2 = container.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
+        let master2 = kernel.getNamed<Ninja>(TYPES.Ninja, "lethal");
+        let student2 = kernel.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2520,29 +2520,29 @@ describe("InversifyJS", () => {
         }
 
         // whenAnyAncestorTagged
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("lethal", false);
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("lethal", true);
-        container.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorTagged("lethal", true);
-        container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorTagged("lethal", false);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("lethal", false);
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("lethal", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorTagged("lethal", true);
+        kernel.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorTagged("lethal", false);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
+        let master = kernel.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
+        let student = kernel.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorTagged
-        let container2 = new Container();
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("lethal", false);
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("lethal", true);
-        container2.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorTagged("lethal", false);
-        container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorTagged("lethal", true);
+        let kernel2 = new Kernel();
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("lethal", false);
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("lethal", true);
+        kernel2.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorTagged("lethal", false);
+        kernel2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorTagged("lethal", true);
 
-        let master2 = container.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
-        let student2 = container.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
+        let master2 = kernel.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
+        let student2 = kernel.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2622,29 +2622,29 @@ describe("InversifyJS", () => {
         let anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
 
         // whenAnyAncestorMatches
-        let container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorMatches(anyAncestorIsNinjaMasterConstraint);
-        container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorMatches(anyAncestorIsNinjaStudentConstraint);
+        let kernel = new Kernel();
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorMatches(anyAncestorIsNinjaMasterConstraint);
+        kernel.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorMatches(anyAncestorIsNinjaStudentConstraint);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master = kernel.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student = kernel.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorMatches
-        let container2 = new Container();
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
-        container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
-        container2.bind<Weapon>(TYPES.Weapon).to(Sword);
-        container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorMatches(anyAncestorIsNinjaStudentConstraint);
-        container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorMatches(anyAncestorIsNinjaMasterConstraint);
+        let kernel2 = new Kernel();
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
+        kernel2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
+        kernel2.bind<Weapon>(TYPES.Weapon).to(Sword);
+        kernel2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorMatches(anyAncestorIsNinjaStudentConstraint);
+        kernel2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorMatches(anyAncestorIsNinjaMasterConstraint);
 
-        let master2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        let master2 = kernel2.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        let student2 = kernel2.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2673,18 +2673,18 @@ describe("InversifyJS", () => {
         @injectable()
         class DefaultWeapon implements Stubs.Weapon { }
 
-        let container = new Container();
+        let kernel = new Kernel();
 
-        container.bind<Stubs.Weapon>("Weapon").to(DefaultWeapon).whenInjectedInto(Soldier);
-        container.bind<Stubs.Weapon>("Weapon").to(Sword).whenInjectedInto(Knight);
-        container.bind<Stubs.Weapon>("Weapon").to(Bow).whenInjectedInto(Archer);
-        container.bind<Stubs.BaseSoldier>("BaseSoldier").to(Soldier).whenTargetNamed("default");
-        container.bind<Stubs.BaseSoldier>("BaseSoldier").to(Knight).whenTargetNamed("knight");
-        container.bind<Stubs.BaseSoldier>("BaseSoldier").to(Archer).whenTargetNamed("archer");
+        kernel.bind<Stubs.Weapon>("Weapon").to(DefaultWeapon).whenInjectedInto(Soldier);
+        kernel.bind<Stubs.Weapon>("Weapon").to(Sword).whenInjectedInto(Knight);
+        kernel.bind<Stubs.Weapon>("Weapon").to(Bow).whenInjectedInto(Archer);
+        kernel.bind<Stubs.BaseSoldier>("BaseSoldier").to(Soldier).whenTargetNamed("default");
+        kernel.bind<Stubs.BaseSoldier>("BaseSoldier").to(Knight).whenTargetNamed("knight");
+        kernel.bind<Stubs.BaseSoldier>("BaseSoldier").to(Archer).whenTargetNamed("archer");
 
-        let throw1 = () => { container.getNamed<Stubs.BaseSoldier>("BaseSoldier", "default"); };
-        let throw2 = () => { container.getNamed<Stubs.BaseSoldier>("BaseSoldier", "knight"); };
-        let throw3 = () => { container.getNamed<Stubs.BaseSoldier>("BaseSoldier", "archer"); };
+        let throw1 = () => { kernel.getNamed<Stubs.BaseSoldier>("BaseSoldier", "default"); };
+        let throw2 = () => { kernel.getNamed<Stubs.BaseSoldier>("BaseSoldier", "knight"); };
+        let throw3 = () => { kernel.getNamed<Stubs.BaseSoldier>("BaseSoldier", "archer"); };
 
         function getError(className: string) {
             return ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + className + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
@@ -2724,11 +2724,11 @@ describe("InversifyJS", () => {
             }
         }
 
-        const container = new Container();
-        container.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
-        container.bind<string>(SYMBOLS.RANK).toConstantValue("Master");
+        const kernel = new Kernel();
+        kernel.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
+        kernel.bind<string>(SYMBOLS.RANK).toConstantValue("Master");
 
-        let samurai = container.get<SamuraiMaster>(SYMBOLS.SamuraiMaster);
+        let samurai = kernel.get<SamuraiMaster>(SYMBOLS.SamuraiMaster);
         expect(samurai.rank).eql("Master");
 
     });
@@ -2760,11 +2760,11 @@ describe("InversifyJS", () => {
             }
         }
 
-        const container = new Container();
-        container.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
+        const kernel = new Kernel();
+        kernel.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
 
         function throws() {
-            return container.get<Warrior>(SYMBOLS.SamuraiMaster);
+            return kernel.get<Warrior>(SYMBOLS.SamuraiMaster);
         }
 
         expect(throws).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Samurai`);
@@ -2784,11 +2784,11 @@ describe("InversifyJS", () => {
         class Bokken implements Weapon { }
 
         it("Should contain correct message and the serviceIdentifier in error message", () => {
-            let container = new Container();
+            let kernel = new Kernel();
 
-            container.bind<Weapon>("Weapon").to(Katana);
+            kernel.bind<Weapon>("Weapon").to(Katana);
 
-            let tryWeapon = () => { container.get("Ninja"); };
+            let tryWeapon = () => { kernel.get("Ninja"); };
 
             expect(tryWeapon).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Ninja`);
 
@@ -2796,8 +2796,8 @@ describe("InversifyJS", () => {
 
         it("Should contain the provided name in error message when target is named", () => {
 
-            let container = new Container();
-            let tryGetNamedWeapon = () => { container.getNamed("Weapon", "superior"); };
+            let kernel = new Kernel();
+            let tryGetNamedWeapon = () => { kernel.getNamed("Weapon", "superior"); };
 
             expect(tryGetNamedWeapon).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
 
@@ -2805,8 +2805,8 @@ describe("InversifyJS", () => {
 
         it("Should contain the provided tag in error message when target is tagged", () => {
 
-            let container = new Container();
-            let tryGetTaggedWeapon = () => { container.getTagged("Weapon", "canShoot", true); };
+            let kernel = new Kernel();
+            let tryGetTaggedWeapon = () => { kernel.getTagged("Weapon", "canShoot", true); };
 
             expect(tryGetTaggedWeapon).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
 
@@ -2814,13 +2814,13 @@ describe("InversifyJS", () => {
 
         it("Should list all possible bindings in error message if no matching binding found", () => {
 
-            let container = new Container();
-            container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-            container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
-            container.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
+            let kernel = new Kernel();
+            kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+            kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
+            kernel.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
 
             try {
-                container.getNamed("Weapon", "superior");
+                kernel.getNamed("Weapon", "superior");
             } catch (error) {
                 expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
                 expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
@@ -2830,13 +2830,13 @@ describe("InversifyJS", () => {
 
         it("Should list all possible bindings in error message if ambiguous matching binding found", () => {
 
-            let container = new Container();
-            container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-            container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
-            container.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
+            let kernel = new Kernel();
+            kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
+            kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
+            kernel.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
 
             try {
-                container.get("Weapon");
+                kernel.get("Weapon");
             } catch (error) {
                 expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
                 expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);

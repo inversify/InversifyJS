@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Container } from "../../src/inversify";
+import { Kernel } from "../../src/inversify";
 import * as now from "performance-now";
 
 describe("Performance", () => {
@@ -7,7 +7,7 @@ describe("Performance", () => {
     function registerN(times: number) {
 
         let result = {
-            container: new Container(),
+            kernel: new Kernel(),
             register: -1
         };
 
@@ -15,7 +15,7 @@ describe("Performance", () => {
 
         for (i = 0; i < times; i++) {
             let start = now();
-            result.container.bind<any>(`SOME_ID_${i}`).toConstantValue({ test: i });
+            result.kernel.bind<any>(`SOME_ID_${i}`).toConstantValue({ test: i });
             let end = now();
             result.register = end - start;
         }
@@ -23,7 +23,7 @@ describe("Performance", () => {
         return result;
     }
 
-    function resolveN(container: Container, times: number) {
+    function resolveN(kernel: Kernel, times: number) {
 
         let result = {
             avg: -1,
@@ -37,7 +37,7 @@ describe("Performance", () => {
         for (i = 0; i < times; i++) {
 
             let start = now();
-            container.get(`SOME_ID_${times}`);
+            kernel.get(`SOME_ID_${times}`);
             let end = now();
             let total = end - start;
 
@@ -78,32 +78,32 @@ describe("Performance", () => {
     });
 
     it("Resolving 1 binding should be done in less than 1 ms", () => {
-        let container1 = registerN(1000).container;
-        let result1 = resolveN(container1, 5);
+        let kernel1 = registerN(1000).kernel;
+        let result1 = resolveN(kernel1, 5);
         expect(result1.avg).to.below(1);
     });
 
     it("Resolving 5 bindings should be done in less than 1 ms", () => {
-        let container5 = registerN(1000).container;
-        let result5 = resolveN(container5, 5);
+        let kernel5 = registerN(1000).kernel;
+        let result5 = resolveN(kernel5, 5);
         expect(result5.avg).to.below(1);
     });
 
     it("Resolving 1K bindings should be done in less than 1 ms", () => {
-        let container1K = registerN(1000).container;
-        let result1K = resolveN(container1K, 5);
+        let kernel1K = registerN(1000).kernel;
+        let result1K = resolveN(kernel1K, 5);
         expect(result1K.avg).to.below(1);
     });
 
     it("Resolving 5K bindings should be done in less than 1 ms", () => {
-        let container5K = registerN(5000).container;
-        let result5K = resolveN(container5K, 5);
+        let kernel5K = registerN(5000).kernel;
+        let result5K = resolveN(kernel5K, 5);
         expect(result5K.avg).to.below(1);
     });
 
     it("Resolving 10K bindings should be done in less than 1 ms", () => {
-        let container10K = registerN(10000).container;
-        let result10K = resolveN(container10K, 5);
+        let kernel10K = registerN(10000).kernel;
+        let result10K = resolveN(kernel10K, 5);
         expect(result10K.avg).to.below(1);
     });
 

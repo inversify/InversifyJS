@@ -65,7 +65,7 @@ namespace interfaces {
 
     export interface Context {
         guid: string;
-        container: Container;
+        kernel: Kernel;
         plan: Plan;
         addPlan(plan: Plan): void;
     }
@@ -124,9 +124,9 @@ namespace interfaces {
         matchesTag(key: string): (value: any) => boolean;
     }
 
-    export interface Container {
+    export interface Kernel {
         guid: string;
-        parent: Container;
+        parent: Kernel;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
@@ -135,8 +135,8 @@ namespace interfaces {
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string): T;
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-        load(...modules: ContainerModule[]): void;
-        unload(...modules: ContainerModule[]): void;
+        load(...modules: KernelModule[]): void;
+        unload(...modules: KernelModule[]): void;
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
@@ -146,12 +146,12 @@ namespace interfaces {
         <T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
     }
 
-    export interface ContainerModule {
+    export interface KernelModule {
         guid: string;
         registry: (bind: Bind) => void;
     }
 
-    export interface ContainerSnapshot {
+    export interface KernelSnapshot {
         bindings: Lookup<Binding<any>>;
         middleware: Next;
     }

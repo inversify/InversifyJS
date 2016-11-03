@@ -2,7 +2,7 @@ import { expect } from "chai";
 import Plan from "../../src/planning/plan";
 import Request from "../../src/planning/request";
 import Context from "../../src/planning/context";
-import Container from "../../src/container/container";
+import Kernel from "../../src/kernel/kernel";
 import injectable from "../../src/annotation/injectable";
 
 describe("Plan", () => {
@@ -12,8 +12,8 @@ describe("Plan", () => {
       @injectable()
       class Something {}
 
-      let container = new Container();
-      let context = new Context(container);
+      let kernel = new Kernel();
+      let context = new Context(kernel);
       let runtimeId = "Something";
 
       let request = new Request(

@@ -1,5 +1,5 @@
 # Glossary for users
-- Container
+- Kernel
 - Binding
 - Service
 - Scope

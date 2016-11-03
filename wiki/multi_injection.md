@@ -39,7 +39,7 @@ class Ninja implements Ninja {
 We are binding `Katana` and `Shuriken` to `Weapon`:
 
 ```ts
-container.bind<Ninja>("Ninja").to(Ninja);
-container.bind<Weapon>("Weapon").to(Katana);
-container.bind<Weapon>("Weapon").to(Shuriken);
+kernel.bind<Ninja>("Ninja").to(Ninja);
+kernel.bind<Weapon>("Weapon").to(Katana);
+kernel.bind<Weapon>("Weapon").to(Shuriken);
 ```

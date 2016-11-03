@@ -1,6 +1,6 @@
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import Lookup from "../../src/container/lookup";
+import Lookup from "../../src/kernel/lookup";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import Binding from "../../src/bindings/binding";
 

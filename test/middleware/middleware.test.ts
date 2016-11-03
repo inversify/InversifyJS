@@ -1,7 +1,7 @@
 import interfaces from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import * as sinon from "sinon";
-import Container from "../../src/container/container";
+import Kernel from "../../src/kernel/kernel";
 import injectable from "../../src/annotation/injectable";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
@@ -17,9 +17,9 @@ describe("Middleware", () => {
         sandbox.restore();
     });
 
-    it("Should be able to use middleware as Container configuration", () => {
+    it("Should be able to use middleware as Kernel configuration", () => {
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -30,9 +30,9 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware1);
-        let _container: any = container;
-        expect(_container._middleware).not.to.eql(null);
+        kernel.applyMiddleware(middleware1);
+        let _kernel: any = kernel;
+        expect(_kernel._middleware).not.to.eql(null);
 
     });
 
@@ -43,7 +43,7 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -62,11 +62,11 @@ describe("Middleware", () => {
         }
 
         // two middlewares applied at one single point in time
-        container.applyMiddleware(middleware1, middleware2);
+        kernel.applyMiddleware(middleware1, middleware2);
 
-        container.bind<Ninja>("Ninja").to(Ninja);
+        kernel.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
@@ -82,7 +82,7 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -100,11 +100,11 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware1); // one point in time 
-        container.applyMiddleware(middleware2);  // another point in time 
-        container.bind<Ninja>("Ninja").to(Ninja);
+        kernel.applyMiddleware(middleware1); // one point in time 
+        kernel.applyMiddleware(middleware2);  // another point in time 
+        kernel.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
@@ -120,7 +120,7 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -138,10 +138,10 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware1, middleware2);
-        container.bind<Ninja>("Ninja").to(Ninja);
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
@@ -157,7 +157,7 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -172,9 +172,9 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware);
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.get<any>("SOME_NOT_REGISTERED_ID");
+        kernel.applyMiddleware(middleware);
+        kernel.bind<Ninja>("Ninja").to(Ninja);
+        kernel.get<any>("SOME_NOT_REGISTERED_ID");
         expect(log.length).eql(1);
         expect(log[0]).eql(`${ERROR_MSGS.NOT_REGISTERED} SOME_NOT_REGISTERED_ID`);
 
@@ -190,7 +190,7 @@ describe("Middleware", () => {
         @injectable()
         class Samurai implements Warrior {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -205,11 +205,11 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware);
-        container.bind<Warrior>("Warrior").to(Ninja);
-        container.bind<Warrior>("Warrior").to(Samurai);
+        kernel.applyMiddleware(middleware);
+        kernel.bind<Warrior>("Warrior").to(Ninja);
+        kernel.bind<Warrior>("Warrior").to(Samurai);
 
-        container.get<any>("Warrior");
+        kernel.get<any>("Warrior");
         expect(log.length).eql(1);
         expect(log[0]).to.contain(`${ERROR_MSGS.AMBIGUOUS_MATCH} Warrior`);
 
@@ -225,7 +225,7 @@ describe("Middleware", () => {
         @injectable()
         class Samurai implements Warrior {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -240,10 +240,10 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware);
-        container.bind<Warrior>("Warrior"); // Invalid binding missing BindingToSyntax
+        kernel.applyMiddleware(middleware);
+        kernel.bind<Warrior>("Warrior"); // Invalid binding missing BindingToSyntax
 
-        container.get<any>("Warrior");
+        kernel.get<any>("Warrior");
         expect(log.length).eql(1);
         expect(log[0]).eql(`${ERROR_MSGS.INVALID_BINDING_TYPE} Warrior`);
 
@@ -259,7 +259,7 @@ describe("Middleware", () => {
         @injectable()
         class Samurai implements Warrior {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         function middleware(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -271,8 +271,8 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware);
-        let throws = () => { container.get<any>("SOME_NOT_REGISTERED_ID"); };
+        kernel.applyMiddleware(middleware);
+        let throws = () => { kernel.get<any>("SOME_NOT_REGISTERED_ID"); };
         expect(throws).to.throw(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
 
     });
@@ -284,7 +284,7 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        let kernel = new Kernel();
 
         let log: string[] = [];
 
@@ -310,10 +310,10 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware1, middleware2);
-        container.bind<Ninja>("Ninja").to(Ninja);
+        kernel.applyMiddleware(middleware1, middleware2);
+        kernel.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        let ninja = kernel.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);

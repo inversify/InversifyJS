@@ -66,7 +66,7 @@ function _resolveRequest(request: interfaces.Request): any {
             case BindingType.Invalid:
             default:
                 // The user probably created a binding but didn't finish it
-                // e.g. container.bind<T>("Something"); missing BindingToSyntax
+                // e.g. kernel.bind<T>("Something"); missing BindingToSyntax
                 let serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
                 throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
         }

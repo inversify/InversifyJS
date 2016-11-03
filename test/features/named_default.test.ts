@@ -2,7 +2,7 @@
 
 import { expect } from "chai";
 import "es6-symbol/implement";
-import { Container, injectable, named, inject } from "../../src/inversify";
+import { Kernel, injectable, named, inject } from "../../src/inversify";
 
 describe("Named default", () => {
 
@@ -68,14 +68,14 @@ describe("Named default", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Warrior>(TYPES.Warrior).to(Ninja).whenTargetNamed(TAG.chinese);
-        container.bind<Warrior>(TYPES.Warrior).to(Samurai).whenTargetNamed(TAG.japanese);
-        container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-        container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
+        let kernel = new Kernel();
+        kernel.bind<Warrior>(TYPES.Warrior).to(Ninja).whenTargetNamed(TAG.chinese);
+        kernel.bind<Warrior>(TYPES.Warrior).to(Samurai).whenTargetNamed(TAG.japanese);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 
-        let ninja = container.getNamed<Warrior>(TYPES.Warrior, TAG.chinese);
-        let samurai = container.getNamed<Warrior>(TYPES.Warrior, TAG.japanese);
+        let ninja = kernel.getNamed<Warrior>(TYPES.Warrior, TAG.chinese);
+        let samurai = kernel.getNamed<Warrior>(TYPES.Warrior, TAG.japanese);
 
         expect(ninja.name).to.eql("Ninja");
         expect(ninja.weapon.name).to.eql("Shuriken");
@@ -114,12 +114,12 @@ describe("Named default", () => {
             }
         }
 
-        let container = new Container();
-        container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-        container.bind<Weapon>(TYPES.Weapon).to(Katana).inSingletonScope().whenTargetIsDefault();
+        let kernel = new Kernel();
+        kernel.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+        kernel.bind<Weapon>(TYPES.Weapon).to(Katana).inSingletonScope().whenTargetIsDefault();
 
-        let defaultWeapon = container.get<Weapon>(TYPES.Weapon);
-        let throwableWeapon = container.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
+        let defaultWeapon = kernel.get<Weapon>(TYPES.Weapon);
+        let throwableWeapon = kernel.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
 
         expect(defaultWeapon.name).eql("Katana");
         expect(throwableWeapon.name).eql("Shuriken");

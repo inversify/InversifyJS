@@ -45,7 +45,7 @@ admissible because these are abstractions and
 [**depending upon abstractions**](https://en.wikipedia.org/wiki/Dependency_inversion_principle) 
 is what DI is all about.
 
-The InversifyJS container is the only element in the application aware of the life-cycle and dependencies. 
+The InversifyJS kernel is the only element in the application aware of the life-cycle and dependencies. 
 We recommend to do this in a file named `inversify.config.ts` and store the file in the root folder 
 that contains the application source code:
 
@@ -56,9 +56,9 @@ import Katana from "./entitites/katana";
 import Shuriken from "./entitites/shuriken";
 import Ninja from "./entitites/ninja";
 
-container.bind<Katana>(TYPES.KATANA).to(Katana);
-container.bind<Shuriken>(TYPES.SHURIKEN).to(Shuriken);
-container.bind<Ninja>(TYPES.NINJA).to(Ninja);
+kernel.bind<Katana>(TYPES.KATANA).to(Katana);
+kernel.bind<Shuriken>(TYPES.SHURIKEN).to(Shuriken);
+kernel.bind<Ninja>(TYPES.NINJA).to(Ninja);
 ```
 
 This means that all the coupling in your application takes place in one unique place: the `inversify.config.ts` file. 
@@ -70,9 +70,9 @@ We just need to go to the `inversify.config.ts` and change the Katana binding:
 import Katana from "./entitites/SharpKatana";
 
 if(difficulty === "hard") {
-    container.bind<Katana>(TYPES.KATANA).to(SharpKatana);
+    kernel.bind<Katana>(TYPES.KATANA).to(SharpKatana);
 } else {
-    container.bind<Katana>(TYPES.KATANA).to(Katana);
+    kernel.bind<Katana>(TYPES.KATANA).to(Katana);
 }
 ```
 

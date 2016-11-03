@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import Container from "../../src/container/container";
+import Kernel from "../../src/kernel/kernel";
 import Context from "../../src/planning/context";
 import Request from "../../src/planning/request";
 import Plan from "../../src/planning/plan";
@@ -8,12 +8,12 @@ describe("Context", () => {
 
   it("Should set its own properties correctly", () => {
 
-      let container = new Container();
-      let context1 = new Context(container);
+      let kernel = new Kernel();
+      let context1 = new Context(kernel);
       let context2 = new Context(null);
 
-      expect(context1.container).not.to.eql(null);
-      expect(context2.container).eql(null);
+      expect(context1.kernel).not.to.eql(null);
+      expect(context2.kernel).eql(null);
       expect(context1.guid.length).eql(36);
       expect(context2.guid.length).eql(36);
       expect(context1.guid).not.eql(context2.guid);
@@ -22,8 +22,8 @@ describe("Context", () => {
 
   it("Should be lickable to a Plan", () => {
 
-      let container = new Container();
-      let context = new Context(container);
+      let kernel = new Kernel();
+      let context = new Context(kernel);
 
       let ninjaRequest = new Request(
           "Ninja",

@@ -13,29 +13,29 @@ The 1.x `BindingScopeEnum` is named `BindingScope` in 2.x
 The 1.x binding syntax looks as follows:
 
 ```ts
-container.bind(new TypeBinding<FooInterface>("FooInterface", Foo, BindingScopeEnum.Transient));
+kernel.bind(new TypeBinding<FooInterface>("FooInterface", Foo, BindingScopeEnum.Transient));
 ```
 
 The 2.x binding syntax looks as follows:
 
 ```ts
-container.bind<FooInterface>("FooInterface").to(Foo).inTransientScope()
+kernel.bind<FooInterface>("FooInterface").to(Foo).inTransientScope()
 ```
 
 ### Resolution syntax
 
-The 1.x `container.resolve<T>(identifier: string)` method is now `container.get<T>(identifier: string)` 2.x.
+The 1.x `kernel.resolve<T>(identifier: string)` method is now `kernel.get<T>(identifier: string)` 2.x.
 
 The 1.x resolution syntax looks as follows:
 
 ```ts
-var foobar = container.resolve<FooBarInterface>("FooBarInterface");
+var foobar = kernel.resolve<FooBarInterface>("FooBarInterface");
 ```
 
 The 2.x resolution syntax looks as follows:
 
 ```ts
-var foobar = container.get<FooBarInterface>("FooBarInterface");
+var foobar = kernel.get<FooBarInterface>("FooBarInterface");
 ```
 
 ### @injectable & @inject

@@ -4,12 +4,12 @@ import guid from "../utils/guid";
 class Context implements interfaces.Context {
 
     public guid: string;
-    public container: interfaces.Container;
+    public kernel: interfaces.Kernel;
     public plan: interfaces.Plan;
 
-    public constructor(container: interfaces.Container) {
+    public constructor(kernel: interfaces.Kernel) {
         this.guid = guid();
-        this.container = container;
+        this.kernel = kernel;
     }
 
     public addPlan(plan: interfaces.Plan) {

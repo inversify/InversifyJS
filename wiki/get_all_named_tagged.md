@@ -1,100 +1,100 @@
-# The Container API
+# The Kernel API
 
-The InversifyJS container provides some helpers to resolve multi-injections 
+The InversifyJS kernel provides some helpers to resolve multi-injections 
 and ambiguous bindings.
 
-## Container.getNamed<T>()
+## Kernel.getNamed<T>()
 Named bindings:
 
 ```ts
-let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
-container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
+let kernel = new Kernel();
+kernel.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
+kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
 
-let katana = container.getNamed<Weapon>("Weapon", "japonese");
-let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
+let katana = kernel.getNamed<Weapon>("Weapon", "japonese");
+let shuriken = kernel.getNamed<Weapon>("Weapon", "chinese");
 ```
 
-## Container.getTagged<T>()
+## Kernel.getTagged<T>()
 Tagged bindings:
 
 ```ts
-let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
-container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
+let kernel = new Kernel();
+kernel.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
+kernel.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
 
-let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
-let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
+let katana = kernel.getTagged<Weapon>("Weapon", "faction", "samurai");
+let shuriken = kernel.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## Container.getAll<T>()
+## Kernel.getAll<T>()
 Get all available bindings for a given identifier:
 ```ts
-let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana);
-container.bind<Weapon>("Weapon").to(Shuriken);
+let kernel = new Kernel();
+kernel.bind<Weapon>("Weapon").to(Katana);
+kernel.bind<Weapon>("Weapon").to(Shuriken);
 
-let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
+let weapons = kernel.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## Container.getAllNamed<T>()
+## Kernel.getAllNamed<T>()
 Get all available bindings for a given identifier that match the given 
 named constraint:
 ```ts
-let container = new Container();
+let kernel = new Kernel();
 
 interface Intl {
     hello?: string;
     goodbye?: string;
 }
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
+kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
+kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
+kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
+kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
 
-let fr = container.getAllNamed<Intl>("Intl", "fr");
+let fr = kernel.getAllNamed<Intl>("Intl", "fr");
 expect(fr.length).to.eql(2);
 expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
-let es = container.getAllNamed<Intl>("Intl", "es");
+let es = kernel.getAllNamed<Intl>("Intl", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## Container.getAllTagged<T>()
+## Kernel.getAllTagged<T>()
 Get all available bindings for a given identifier that match the given 
 named constraint:
 ```ts
-let container = new Container();
+let kernel = new Kernel();
 
 interface Intl {
     hello?: string;
     goodbye?: string;
 }
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+kernel.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
+kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
+kernel.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
+kernel.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
-let fr = container.getAllTagged<Intl>("Intl", "lang", "fr");
+let fr = kernel.getAllTagged<Intl>("Intl", "lang", "fr");
 expect(fr.length).to.eql(2);
 expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
-let es = container.getAllTagged<Intl>("Intl", "lang", "es");
+let es = kernel.getAllTagged<Intl>("Intl", "lang", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## Container.isBound()
+## Kernel.isBound()
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
 ```ts
 interface Warrior {}
@@ -111,15 +111,15 @@ let katanaSymbol = Symbol("Katana");
 @injectable()
 class Katana implements Katana {}
 
-let container = new Container();
-container.bind<Warrior>(Ninja).to(Ninja);
-container.bind<Warrior>(warriorId).to(Ninja);
-container.bind<Warrior>(warriorSymbol).to(Ninja);
+let kernel = new Kernel();
+kernel.bind<Warrior>(Ninja).to(Ninja);
+kernel.bind<Warrior>(warriorId).to(Ninja);
+kernel.bind<Warrior>(warriorSymbol).to(Ninja);
 
-container.isBound(Ninja)).eql(true);
-container.isBound(warriorId)).eql(true);
-container.isBound(warriorSymbol)).eql(true);
-container.isBound(Katana)).eql(false);
-container.isBound(katanaId)).eql(false);
-container.isBound(katanaSymbol)).eql(false);
+kernel.isBound(Ninja)).eql(true);
+kernel.isBound(warriorId)).eql(true);
+kernel.isBound(warriorSymbol)).eql(true);
+kernel.isBound(Katana)).eql(false);
+kernel.isBound(katanaId)).eql(false);
+kernel.isBound(katanaSymbol)).eql(false);
 ```

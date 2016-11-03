@@ -7,7 +7,7 @@ The `@inject` decorator is not required when you use classes. The annotation is 
 - Set `emitDecoratorMetadata` to `true` in `tsconfig.json`.
 
 ```ts
-import { Container, injectable, inject } from "inversify";
+import { Kernel, injectable, inject } from "inversify";
 
 @injectable()
 class Katana {
@@ -39,21 +39,21 @@ class Ninja implements Ninja {
 
 }
 
-var container = new Container();
-container.bind<Ninja>(Ninja).to(Ninja);
-container.bind<Katana>(Katana).to(Katana);
-container.bind<Shuriken>(Shuriken).to(Shuriken);
+var kernel = new Kernel();
+kernel.bind<Ninja>(Ninja).to(Ninja);
+kernel.bind<Katana>(Katana).to(Katana);
+kernel.bind<Shuriken>(Shuriken).to(Shuriken);
 ```
 
 # Self-binding of concrete types
 If the type you’re resolving is a concrete type the registration of a binding can feel a repetitive and verbose:
 
 ```ts
-container.bind<Samurai>(Samurai).to(Samurai);
+kernel.bind<Samurai>(Samurai).to(Samurai);
 ```
 
 A better solution is to use the `toSelf` method:
 
 ```ts
-container.bind<Samurai>(Samurai).toSelf();
+kernel.bind<Samurai>(Samurai).toSelf();
 ```
