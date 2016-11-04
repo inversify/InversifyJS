@@ -4,12 +4,12 @@ InversifyJS requires a modern JavaScript engine with support for the
 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), 
 [Metadata Reflection API](http://rbuckton.github.io/ReflectDecorators/#reflect) and 
 [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) objects. 
-If your environment don't support one of these you will need to import a shim or polypill.
+If your environment don't support one of these you will need to import a shim or polyfill.
 
 ## Metadata Reflection API
 > :warning: **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
-Required always. Use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) as polypill.
+Required always. Use [reflect-metadata](https://www.npmjs.com/package/reflect-metadata) as polyfill.
 
 ```
 $ npm install reflect-metadata
@@ -35,6 +35,11 @@ If you are working in a web browser you can use a script tag:
 ```
 
 This will create the Reflect object as a global.
+
+## Map
+ES6 Maps are required for InversifyJS >= 3.0 
+
+Most modern JavaScript engines support ES6 Map but if you need to support old browsers you will need to use an ES6 Map polyfill (e.g. [es6-map](https://www.npmjs.com/package/es6-map)).
 
 ## Promise
 Promises are only required only if you use want to 
