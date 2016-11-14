@@ -11,6 +11,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 - [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 - [inversify-vanillajs-helpers](https://github.com/inversify/inversify-vanillajs-helpers) - Some helpers for the development of InversifyJS applications with VanillaJS or Babel.
+- [inversify-tracer](https://github.com/tiagomestre/inversify-tracer) - Tool that allows the developer to trace methods of objects created by InversifyJS.
 
 ### Middleware
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
