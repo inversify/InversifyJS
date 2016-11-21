@@ -1,4 +1,4 @@
-import interfaces from "../interfaces/interfaces";
+import { interfaces } from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
 

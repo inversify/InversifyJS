@@ -1,10 +1,10 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
+import { Binding } from "../../src/bindings/binding";
+import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
+import { injectable } from "../../src/annotation/injectable";
+import { BindingScope } from "../../src/bindings/binding_scope";
 import * as sinon from "sinon";
-import Binding from "../../src/bindings/binding";
-import BindingInWhenOnSyntax from "../../src/syntax/binding_in_when_on_syntax";
-import injectable from "../../src/annotation/injectable";
-import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingInWhenOnSyntax", () => {
 

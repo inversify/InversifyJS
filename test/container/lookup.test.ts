@@ -1,9 +1,9 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import Lookup from "../../src/container/lookup";
+import { Lookup } from "../../src/container/lookup";
+import { Binding } from "../../src/bindings/binding";
+import { BindingScope } from "../../src/bindings/binding_scope";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import Binding from "../../src/bindings/binding";
-import BindingScope from "../../src/bindings/binding_scope";
 
 class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
   public readonly val: T;

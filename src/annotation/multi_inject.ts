@@ -1,5 +1,5 @@
-import Metadata from "../planning/metadata";
-import interfaces from "../interfaces/interfaces";
+import { Metadata } from "../planning/metadata";
+import { interfaces } from "../interfaces/interfaces";
 import { tagParameter, tagProperty } from "./decorator_utils";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
@@ -17,4 +17,4 @@ function multiInject(serviceIdentifier: interfaces.ServiceIdentifier<any>) {
   };
 }
 
-export default multiInject;
+export { multiInject };

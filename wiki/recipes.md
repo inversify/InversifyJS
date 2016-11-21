@@ -10,25 +10,25 @@ let TYPES: {
     somethingElse: "somethingElse"
 };
 
-export default TYPES;
+export { TYPES };
 ```
 
 ```ts
 let inversify = require("inversify");
-import TYPES from "./constants/types";
+import { TYPES } from "./constants/types";
 
 // declare your container
 let container = new inversify.Container();
 container.bind(TYPES.something).toConstantValue(1);
 container.bind(TYPES.somethingElse).toConstantValue(2);
 
-export default container;
+export { container };
 ```
 
 Continue by declaring the following helper function:
 
 ```ts
-import container from "./inversify.config"
+import { container } from "./inversify.config"
 
 function bindDependencies(func, dependencies) {
     let injections = dependencies.map((dependency) => {
@@ -37,14 +37,14 @@ function bindDependencies(func, dependencies) {
     return func.bind(func, ...injections);
 }
 
-export default bindDependencies;
+export { bindDependencies };
 ```
 
 Declare your function and bind its dependencies to its arguments using the `bindDependencies` helper:
 
 ```ts
-import bindDependencies from "./utils/bindDependencies";
-import TYPES from "./constants/types";
+import { bindDependencies } from "./utils/bindDependencies";
+import { TYPES } from "./constants/types";
 
 function testFunc(something, somethingElse) {
   console.log(`Injected! ${something}`);
@@ -53,13 +53,13 @@ function testFunc(something, somethingElse) {
 
 testFunc = bindDependencies(testFunc, [TYPES.something, TYPES.somethingElse]);
 
-export default testFunc;
+export { testFunc };
 ```
 
 Use your function :smile:
 
 ```ts
-import testFunc from "./x/test_func";
+import { testFunc } from "./x/test_func";
 
 testFunc();
 

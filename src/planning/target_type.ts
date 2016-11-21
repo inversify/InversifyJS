@@ -4,4 +4,4 @@ enum TargetType {
   Variable = 2
 }
 
-export default TargetType;
+export { TargetType };

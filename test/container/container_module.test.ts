@@ -1,6 +1,6 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import ContainerModule from "../../src/container/container_module";
+import { ContainerModule } from "../../src/container/container_module";
 
 describe("ContainerModule", () => {
 

@@ -124,7 +124,7 @@ let TYPES = {
     ThrowableWeapon: Symbol("ThrowableWeapon")
 };
 
-export default TYPES;
+export { TYPES };
 
 ```
 
@@ -138,7 +138,7 @@ When a class has a  dependency on an interface we also need to use the `@inject`
 ```ts
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
-import TYPES from "./types";
+import { TYPES } from "./types";
 
 @injectable()
 class Katana implements Weapon {
@@ -201,7 +201,7 @@ myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
 myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
 myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 
-export default myContainer;
+export { myContainer };
 ```
 
 ### Step 4: Resolve dependencies
@@ -210,7 +210,7 @@ Remember that you should do this only in your [composition root](http://blog.plo
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```ts
-import myContainer from "./inversify.config";
+import { myContainer } from "./inversify.config";
 
 var ninja = myContainer.get<Warrior>(TYPES.Warrior);
 

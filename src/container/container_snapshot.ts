@@ -1,4 +1,4 @@
-import interfaces from "../interfaces/interfaces";
+import { interfaces } from "../interfaces/interfaces";
 
 class ContainerSnapshot implements interfaces.ContainerSnapshot {
 
@@ -14,4 +14,4 @@ class ContainerSnapshot implements interfaces.ContainerSnapshot {
 
 }
 
-export default ContainerSnapshot;
+export { ContainerSnapshot };

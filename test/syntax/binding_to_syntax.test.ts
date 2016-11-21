@@ -1,11 +1,11 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import Binding from "../../src/bindings/binding";
-import BindingType from "../../src/bindings/binding_type";
-import BindingToSyntax from "../../src/syntax/binding_to_syntax";
-import injectable from "../../src/annotation/injectable";
+import { Binding } from "../../src/bindings/binding";
+import { BindingType } from "../../src/bindings/binding_type";
+import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
+import { injectable } from "../../src/annotation/injectable";
+import { BindingScope } from "../../src/bindings/binding_scope";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingToSyntax", () => {
 

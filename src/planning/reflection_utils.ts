@@ -1,9 +1,9 @@
-import interfaces from "../interfaces/interfaces";
-import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
 import { getFunctionName } from "../utils/serialization";
-import TargetType from "./target_type";
-import Target from "./target";
+import { TargetType } from "./target_type";
+import { Target } from "./target";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import * as METADATA_KEY from "../constants/metadata_keys";
 
 function getDependencies(func: Function): interfaces.Target[] {
 
@@ -193,4 +193,4 @@ function formatTargetMetadata(targetMetadata: any[]) {
 
 }
 
-export default getDependencies;
+export { getDependencies };

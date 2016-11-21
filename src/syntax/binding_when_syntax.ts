@@ -1,5 +1,5 @@
-import interfaces from "../interfaces/interfaces";
-import BindingOnSyntax from "./binding_on_syntax";
+import { interfaces } from "../interfaces/interfaces";
+import { BindingOnSyntax } from "./binding_on_syntax";
 import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./constraint_helpers";
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
@@ -126,4 +126,4 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 
 }
 
-export default BindingWhenSyntax;
+export { BindingWhenSyntax };

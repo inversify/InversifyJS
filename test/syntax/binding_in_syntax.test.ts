@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import Binding from "../../src/bindings/binding";
-import BindingScope from "../../src/bindings/binding_scope";
-import BindingInSyntax from "../../src/syntax/binding_in_syntax";
+import { Binding } from "../../src/bindings/binding";
+import { BindingScope } from "../../src/bindings/binding_scope";
+import { BindingInSyntax } from "../../src/syntax/binding_in_syntax";
 
 describe("BindingInSyntax", () => {
 

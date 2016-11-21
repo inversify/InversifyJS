@@ -34,6 +34,7 @@ gulp.task("lint", function() {
     ])
     .pipe(tslint(config))
     .pipe(tslint.report());
+
 });
 
 //******************************************************************************

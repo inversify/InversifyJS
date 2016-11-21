@@ -1,9 +1,9 @@
-import interfaces from "../interfaces/interfaces";
-import BindingScope from "../bindings/binding_scope";
-import BindingType from "../bindings/binding_type";
-import * as ERROR_MSGS from "../constants/error_msgs";
+import { interfaces } from "../interfaces/interfaces";
+import { BindingScope } from "../bindings/binding_scope";
+import { BindingType } from "../bindings/binding_type";
 import { getServiceIdentifierAsString } from "../utils/serialization";
-import resolveInstance from "./instantiation";
+import { resolveInstance } from "./instantiation";
+import * as ERROR_MSGS from "../constants/error_msgs";
 
 function _resolveRequest(request: interfaces.Request): any {
 
@@ -91,4 +91,4 @@ function resolve<T>(context: interfaces.Context): T {
     return _resolveRequest(context.plan.rootRequest);
 }
 
-export default resolve;
+export { resolve };

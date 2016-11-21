@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import Request from "../../src/planning/request";
-import Context from "../../src/planning/context";
-import Container from "../../src/container/container";
-import Target from "../../src/planning/target";
-import TargetType from "../../src/planning/target_type";
-import injectable from "../../src/annotation/injectable";
+import { Request } from "../../src/planning/request";
+import { Context } from "../../src/planning/context";
+import { Container } from "../../src/container/container";
+import { Target } from "../../src/planning/target";
+import { TargetType } from "../../src/planning/target_type";
+import { injectable } from "../../src/annotation/injectable";
 
 describe("Request", () => {
 

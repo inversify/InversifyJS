@@ -1,6 +1,6 @@
-import interfaces from "../interfaces/interfaces";
+import { interfaces } from "../interfaces/interfaces";
+import { Metadata } from "../planning/metadata";
 import * as METADATA_KEY from "../constants/metadata_keys";
-import Metadata from "../planning/metadata";
 
 let traverseAncerstors = (
     request: interfaces.Request,

@@ -1,4 +1,4 @@
-import Metadata from "../planning/metadata";
+import { Metadata } from "../planning/metadata";
 import { tagParameter, tagProperty } from "./decorator_utils";
 
 // Used to add custom metadata which is used to resolve metadata-based contextual bindings.
@@ -13,4 +13,4 @@ function tagged(metadataKey: string, metadataValue: any) {
     };
 }
 
-export default tagged;
+export { tagged };

@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Container, injectable, inject } from "../../src/inversify";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("Node", () => {
 

@@ -1,9 +1,9 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import Container from "../../src/container/container";
-import injectable from "../../src/annotation/injectable";
+import { Container } from "../../src/container/container";
+import { injectable } from "../../src/annotation/injectable";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import * as sinon from "sinon";
 
 describe("Middleware", () => {
 

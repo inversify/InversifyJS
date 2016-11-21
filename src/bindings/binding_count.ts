@@ -4,4 +4,4 @@ enum BindingCount {
     MultipleBindingsAvailable = 2
 }
 
-export default BindingCount;
+export { BindingCount };

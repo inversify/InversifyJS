@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import Plan from "../../src/planning/plan";
-import Request from "../../src/planning/request";
-import Context from "../../src/planning/context";
-import Container from "../../src/container/container";
-import injectable from "../../src/annotation/injectable";
+import { Plan } from "../../src/planning/plan";
+import { Request } from "../../src/planning/request";
+import { Context } from "../../src/planning/context";
+import { Container } from "../../src/container/container";
+import { injectable } from "../../src/annotation/injectable";
 
 describe("Plan", () => {
 

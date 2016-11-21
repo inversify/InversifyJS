@@ -9,4 +9,4 @@ enum BindingType {
   Provider = 7
 }
 
-export default BindingType;
+export { BindingType };

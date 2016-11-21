@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import Container from "../../src/container/container";
-import Context from "../../src/planning/context";
-import Request from "../../src/planning/request";
-import Plan from "../../src/planning/plan";
+import { Container } from "../../src/container/container";
+import { Context } from "../../src/planning/context";
+import { Request } from "../../src/planning/request";
+import { Plan } from "../../src/planning/plan";
 
 describe("Context", () => {
 

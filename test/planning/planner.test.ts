@@ -1,15 +1,15 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
+import { plan } from "../../src/planning/planner";
+import { Container } from "../../src/container/container";
+import { TargetType } from "../../src/planning/target_type";
+import { injectable } from "../../src/annotation/injectable";
+import { targetName } from "../../src/annotation/target_name";
+import { tagged } from "../../src/annotation/tagged";
+import { inject } from "../../src/annotation/inject";
+import { multiInject } from "../../src/annotation/multi_inject";
 import * as sinon from "sinon";
-import plan from "../../src/planning/planner";
-import Container from "../../src/container/container";
-import TargetType from "../../src/planning/target_type";
-import injectable from "../../src/annotation/injectable";
-import targetName from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import tagged from "../../src/annotation/tagged";
-import inject from "../../src/annotation/inject";
-import multiInject from "../../src/annotation/multi_inject";
 
 describe("Planner", () => {
 

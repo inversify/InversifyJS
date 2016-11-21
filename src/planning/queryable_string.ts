@@ -1,4 +1,4 @@
-import interfaces from "../interfaces/interfaces";
+import { interfaces } from "../interfaces/interfaces";
 
 class QueryableString implements interfaces.QueryableString {
 
@@ -33,4 +33,4 @@ class QueryableString implements interfaces.QueryableString {
 
 }
 
-export default QueryableString;
+export { QueryableString };

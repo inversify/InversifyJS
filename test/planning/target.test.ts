@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import Target from "../../src/planning/target";
-import TargetType from "../../src/planning/target_type";
-import Metadata from "../../src/planning/metadata";
+import { Target } from "../../src/planning/target";
+import { TargetType } from "../../src/planning/target_type";
+import { Metadata } from "../../src/planning/metadata";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 describe("Target", () => {

@@ -1,7 +1,7 @@
-import interfaces from "../interfaces/interfaces";
-import BindingInWhenOnSyntax from "./binding_in_when_on_syntax";
-import BindingWhenOnSyntax from "./binding_when_on_syntax";
-import BindingType from "../bindings/binding_type";
+import { interfaces } from "../interfaces/interfaces";
+import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
+import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
+import { BindingType } from "../bindings/binding_type";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
@@ -76,4 +76,4 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
 }
 
-export default BindingToSyntax;
+export { BindingToSyntax };
