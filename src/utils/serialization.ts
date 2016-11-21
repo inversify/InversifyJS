@@ -1,4 +1,4 @@
-import interfaces from "../interfaces/interfaces";
+import { interfaces } from "../interfaces/interfaces";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {

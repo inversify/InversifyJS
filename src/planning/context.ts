@@ -1,5 +1,5 @@
-import interfaces from "../interfaces/interfaces";
-import guid from "../utils/guid";
+import { interfaces } from "../interfaces/interfaces";
+import { guid } from "../utils/guid";
 
 class Context implements interfaces.Context {
 
@@ -17,4 +17,4 @@ class Context implements interfaces.Context {
     }
 }
 
-export default Context;
+export { Context };

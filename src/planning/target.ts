@@ -1,9 +1,9 @@
-import interfaces from "../interfaces/interfaces";
-import Metadata from "../planning/metadata";
-import QueryableString from "./queryable_string";
+import { interfaces } from "../interfaces/interfaces";
+import { Metadata } from "../planning/metadata";
+import { QueryableString } from "./queryable_string";
+import { TargetType } from "./target_type";
+import { guid } from "../utils/guid";
 import * as METADATA_KEY from "../constants/metadata_keys";
-import TargetType from "./target_type";
-import guid from "../utils/guid";
 
 class Target implements interfaces.Target {
 
@@ -112,4 +112,4 @@ class Target implements interfaces.Target {
 
 }
 
-export default Target;
+export { Target };

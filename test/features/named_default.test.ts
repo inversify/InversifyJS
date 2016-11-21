@@ -1,7 +1,7 @@
 /// <reference path="../globals.d.ts" />
 
-import { expect } from "chai";
 import "es6-symbol/implement";
+import { expect } from "chai";
 import { Container, injectable, named, inject } from "../../src/inversify";
 
 describe("Named default", () => {

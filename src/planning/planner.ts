@@ -1,21 +1,21 @@
-import interfaces from "../interfaces/interfaces";
-import Plan from "./plan";
-import Context from "./context";
-import Request from "./request";
-import Target from "./target";
-import TargetType from "./target_type";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import BindingType from "../bindings/binding_type";
-import BindingCount from "../bindings/binding_count";
-import getDependencies from "./reflection_utils";
-import Metadata from "../planning/metadata";
-import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
+import { Plan } from "./plan";
+import { Context } from "./context";
+import { Request } from "./request";
+import { Target } from "./target";
+import { TargetType } from "./target_type";
+import { BindingType } from "../bindings/binding_type";
+import { BindingCount } from "../bindings/binding_count";
+import { getDependencies } from "./reflection_utils";
+import { Metadata } from "../planning/metadata";
 import {
     circularDependencyToException,
     getServiceIdentifierAsString,
     listRegisteredBindingsForServiceIdentifier,
     listMetadataForTarget
 } from "../utils/serialization";
+import * as ERROR_MSGS from "../constants/error_msgs";
+import * as METADATA_KEY from "../constants/metadata_keys";
 
 function _createTarget(
     isMultiInject: boolean,
@@ -213,4 +213,4 @@ function plan(
 
 }
 
-export default plan;
+export { plan };

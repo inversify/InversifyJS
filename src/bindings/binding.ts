@@ -1,14 +1,7 @@
-// Binding
-// -----------
-
-// A type binding (or just a binding) is a mapping between a service type
-// (an interface), and an implementation type to be used to satisfy such
-// a service requirement.
-
-import interfaces from "../interfaces/interfaces";
-import BindingScope from "./binding_scope";
-import BindingType from "./binding_type";
-import guid from "../utils/guid";
+import { interfaces } from "../interfaces/interfaces";
+import { BindingScope } from "./binding_scope";
+import { BindingType } from "./binding_type";
+import { guid } from "../utils/guid";
 
 class Binding<T> implements interfaces.Binding<T> {
 
@@ -81,4 +74,4 @@ class Binding<T> implements interfaces.Binding<T> {
 
 }
 
-export default Binding;
+export { Binding };

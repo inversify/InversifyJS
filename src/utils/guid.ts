@@ -8,4 +8,4 @@ function guid() {
     s4() + "-" + s4() + s4() + s4();
 }
 
-export default guid;
+export { guid };

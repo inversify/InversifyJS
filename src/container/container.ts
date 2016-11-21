@@ -1,16 +1,16 @@
-import interfaces from "../interfaces/interfaces";
-import Binding from "../bindings/binding";
-import BindingScope from "../bindings/binding_scope";
-import Lookup from "./lookup";
-import plan from "../planning/planner";
-import resolve from "../resolution/resolver";
+import { interfaces } from "../interfaces/interfaces";
+import { Binding } from "../bindings/binding";
+import { BindingScope } from "../bindings/binding_scope";
+import { Lookup } from "./lookup";
+import { plan } from "../planning/planner";
+import { resolve } from "../resolution/resolver";
+import { BindingToSyntax } from "../syntax/binding_to_syntax";
+import { TargetType } from "../planning/target_type";
+import { getServiceIdentifierAsString } from "../utils/serialization";
+import { ContainerSnapshot } from "./container_snapshot";
+import { guid } from "../utils/guid";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
-import BindingToSyntax from "../syntax/binding_to_syntax";
-import TargetType from "../planning/target_type";
-import { getServiceIdentifierAsString } from "../utils/serialization";
-import ContainerSnapshot from "./container_snapshot";
-import guid from "../utils/guid";
 
 class Container implements interfaces.Container {
 
@@ -237,4 +237,4 @@ class Container implements interfaces.Container {
     }
 }
 
-export default Container;
+export { Container };

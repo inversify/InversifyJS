@@ -1,4 +1,4 @@
-import Metadata from "../planning/metadata";
+import { Metadata } from "../planning/metadata";
 import { tagParameter, tagProperty } from "./decorator_utils";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
@@ -14,4 +14,4 @@ function named(name: string) {
     };
 }
 
-export default named;
+export { named };

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import targetName from "../../src/annotation/target_name";
-import injectable from "../../src/annotation/injectable";
+import { targetName } from "../../src/annotation/target_name";
+import { injectable } from "../../src/annotation/injectable";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as Stubs from "../utils/stubs";
 

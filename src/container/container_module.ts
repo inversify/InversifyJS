@@ -1,5 +1,5 @@
-import interfaces from "../interfaces/interfaces";
-import guid from "../utils/guid";
+import { interfaces } from "../interfaces/interfaces";
+import { guid } from "../utils/guid";
 
 class ContainerModule implements interfaces.ContainerModule {
 
@@ -13,4 +13,4 @@ class ContainerModule implements interfaces.ContainerModule {
 
 }
 
-export default ContainerModule;
+export { ContainerModule };

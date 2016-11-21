@@ -1,6 +1,5 @@
-import interfaces from "../interfaces/interfaces";
-
-import guid from "../utils/guid";
+import { interfaces } from "../interfaces/interfaces";
+import { guid } from "../utils/guid";
 
 class Request implements interfaces.Request {
 
@@ -47,4 +46,4 @@ class Request implements interfaces.Request {
     }
 }
 
-export default Request;
+export { Request };

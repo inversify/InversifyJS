@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import guid  from "../../src/utils/guid";
+import { guid } from "../../src/utils/guid";
 
 describe("GUID", () => {
 

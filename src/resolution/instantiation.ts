@@ -1,5 +1,5 @@
-import TargetType from "../planning/target_type";
-import interfaces from "../interfaces/interfaces";
+import { TargetType } from "../planning/target_type";
+import { interfaces } from "../interfaces/interfaces";
 
 function _injectProperties(
     instance: any,
@@ -56,4 +56,4 @@ function resolveInstance(
     return result;
 }
 
-export default resolveInstance;
+export { resolveInstance };

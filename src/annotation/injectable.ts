@@ -15,4 +15,4 @@ function injectable() {
   };
 }
 
-export default injectable;
+export { injectable };

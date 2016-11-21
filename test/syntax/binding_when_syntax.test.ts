@@ -1,13 +1,13 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import Binding from "../../src/bindings/binding";
-import Request from "../../src/planning/request";
-import Target from "../../src/planning/target";
-import TargetType from "../../src/planning/target_type";
-import Metadata from "../../src/planning/metadata";
-import BindingWhenSyntax from "../../src/syntax/binding_when_syntax";
+import { Binding } from "../../src/bindings/binding";
+import { Request } from "../../src/planning/request";
+import { Target } from "../../src/planning/target";
+import { TargetType } from "../../src/planning/target_type";
+import { Metadata } from "../../src/planning/metadata";
+import { BindingWhenSyntax } from "../../src/syntax/binding_when_syntax";
 import { typeConstraint } from "../../src/syntax/constraint_helpers";
-import BindingScope from "../../src/bindings/binding_scope";
+import { BindingScope } from "../../src/bindings/binding_scope";
 
 describe("BindingWhenSyntax", () => {
 

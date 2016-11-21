@@ -1,11 +1,11 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import Container from "../../src/container/container";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import injectable from "../../src/annotation/injectable";
-import ContainerModule from "../../src/container/container_module";
+import { Container } from "../../src/container/container";
+import { injectable } from "../../src/annotation/injectable";
+import { ContainerModule } from "../../src/container/container_module";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import * as sinon from "sinon";
 
 type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
 

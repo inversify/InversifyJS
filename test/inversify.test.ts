@@ -1,6 +1,6 @@
 /// <reference path="./globals.d.ts" />
 
-import interfaces from "../src/interfaces/interfaces";
+import { interfaces } from "../src/interfaces/interfaces";
 import { expect } from "chai";
 import "es6-symbol/implement";
 import * as ERROR_MSGS from "../src/constants/error_msgs";

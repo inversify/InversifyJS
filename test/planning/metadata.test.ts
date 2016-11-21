@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import Metadata from "../../src/planning/metadata";
+import { Metadata } from "../../src/planning/metadata";
 
 describe("Metadata", () => {
 

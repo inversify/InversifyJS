@@ -1,4 +1,4 @@
-import interfaces from "../interfaces/interfaces";
+import { interfaces } from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
 class Metadata implements interfaces.Metadata {
@@ -20,4 +20,4 @@ class Metadata implements interfaces.Metadata {
   }
 }
 
-export default Metadata;
+export { Metadata };

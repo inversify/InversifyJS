@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import QueryableString from "../../src/planning/queryable_string";
+import { QueryableString } from "../../src/planning/queryable_string";
 
 describe("QueryableString", () => {
 

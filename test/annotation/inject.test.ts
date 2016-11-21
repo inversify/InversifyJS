@@ -1,10 +1,10 @@
 declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import inject from "../../src/annotation/inject";
+import { inject } from "../../src/annotation/inject";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 

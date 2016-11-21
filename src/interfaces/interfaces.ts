@@ -226,4 +226,4 @@ namespace interfaces {
     }
 }
 
-export default interfaces;
+export { interfaces };

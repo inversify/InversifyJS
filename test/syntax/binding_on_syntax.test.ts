@@ -1,9 +1,9 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import Binding from "../../src/bindings/binding";
-import BindingOnSyntax from "../../src/syntax/binding_on_syntax";
+import { Binding } from "../../src/bindings/binding";
+import { BindingOnSyntax } from "../../src/syntax/binding_on_syntax";
+import { BindingScope } from "../../src/bindings/binding_scope";
 import * as Proxy from "harmony-proxy";
-import BindingScope from "../../src/bindings/binding_scope";
 
 describe("BindingOnSyntax", () => {
 

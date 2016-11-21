@@ -1,20 +1,20 @@
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import * as sinon from "sinon";
-import resolve from "../../src/resolution/resolver";
-import plan from "../../src/planning/planner";
-import Container from "../../src/container/container";
-import Request from "../../src/planning/request";
-import TargetType from "../../src/planning/target_type";
-import injectable from "../../src/annotation/injectable";
-import inject from "../../src/annotation/inject";
-import multiInject from "../../src/annotation/multi_inject";
-import tagged from "../../src/annotation/tagged";
-import named from "../../src/annotation/named";
-import targetName from "../../src/annotation/target_name";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import BindingType from "../../src/bindings/binding_type";
+import { resolve } from "../../src/resolution/resolver";
+import { plan } from "../../src/planning/planner";
+import { Container } from "../../src/container/container";
+import { Request } from "../../src/planning/request";
+import { TargetType } from "../../src/planning/target_type";
+import { injectable } from "../../src/annotation/injectable";
+import { inject } from "../../src/annotation/inject";
+import { multiInject } from "../../src/annotation/multi_inject";
+import { tagged } from "../../src/annotation/tagged";
+import { named } from "../../src/annotation/named";
+import { targetName } from "../../src/annotation/target_name";
+import { BindingType } from "../../src/bindings/binding_type";
 import * as Proxy from "harmony-proxy";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import * as sinon from "sinon";
 
 describe("Resolve", () => {
 

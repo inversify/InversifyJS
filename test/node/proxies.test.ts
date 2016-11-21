@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import * as Proxy from "harmony-proxy";
-import interfaces from "../../src/interfaces/interfaces";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { Container, injectable, inject } from "../../src/inversify";
+import * as Proxy from "harmony-proxy";
 
 describe("InversifyJS", () => {
 

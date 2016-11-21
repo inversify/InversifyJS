@@ -1,6 +1,6 @@
-import interfaces from "../interfaces/interfaces";
-import BindingScope from "../bindings/binding_scope";
-import BindingWhenOnSyntax from "./binding_when_on_syntax";
+import { interfaces } from "../interfaces/interfaces";
+import { BindingScope } from "../bindings/binding_scope";
+import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 
 class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
 
@@ -22,4 +22,4 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
 
 }
 
-export default BindingInSyntax;
+export { BindingInSyntax };

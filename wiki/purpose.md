@@ -7,7 +7,17 @@ There are many good reasons to use InversifyJS but we would like to highlight so
 InversifyJS offers you real decoupling. Consider the following class:
 
 ```ts
-import TYPES from "./constants/types";
+let TYPES = {
+  Ninja: Symbol("Ninja"),
+  Katana: Symbol("Katana"),
+  Shuriken: Symbol("Shuriken")
+};
+
+export { TYPES };
+```
+
+```ts
+import { TYPES } from "./constants/types";
 
 @injectable()
 class Ninja implements Ninja {
@@ -29,16 +39,6 @@ class Ninja implements Ninja {
 }
 ```
 
-```ts
-let TYPES = {
-  Ninja: Symbol("Ninja"),
-  Katana: Symbol("Katana"),
-  Shuriken: Symbol("Shuriken")
-};
-
-export default TYPES;
-```
-
 The `Ninja` class will never point to the `Katana` or `Shuriken` classes. However, 
 it will point to the interfaces (at design-time) or Symbols (at run-time) which is 
 admissible because these are abstractions and 
@@ -50,11 +50,10 @@ We recommend to do this in a file named `inversify.config.ts` and store the file
 that contains the application source code:
 
 ```ts
-import TYPES from "./constants/types";
-
-import Katana from "./entitites/katana";
-import Shuriken from "./entitites/shuriken";
-import Ninja from "./entitites/ninja";
+import { TYPES } from "./constants/types";
+import { Katana } from "./entitites/katana";
+import { Shuriken } from "./entitites/shuriken";
+import { Ninja } from "./entitites/ninja";
 
 container.bind<Katana>(TYPES.KATANA).to(Katana);
 container.bind<Shuriken>(TYPES.SHURIKEN).to(Shuriken);
@@ -67,7 +66,7 @@ Let's imagine that we are changing the difficulty in a game.
 We just need to go to the `inversify.config.ts` and change the Katana binding:
 
 ```ts
-import Katana from "./entitites/SharpKatana";
+import { Katana } from "./entitites/SharpKatana";
 
 if(difficulty === "hard") {
     container.bind<Katana>(TYPES.KATANA).to(SharpKatana);
