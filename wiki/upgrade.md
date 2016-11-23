@@ -1,3 +1,7 @@
+# How to upgrade from 2.x to 3.x
+
+TODO
+
 # How to upgrade from 1.x to 2.x
 
 Version 2.x introduces some changes in the API.
