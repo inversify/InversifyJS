@@ -94,14 +94,6 @@ describe("BindingWhenSyntax", () => {
             name: string;
         }
 
-        class Katana implements Weapon {
-            public name = "Katana";
-        }
-
-        class Shuriken implements Weapon {
-            public name = "Shuriken";
-        }
-
         interface JaponeseWarrior {
             katana: Weapon;
         }
@@ -182,14 +174,6 @@ describe("BindingWhenSyntax", () => {
             name: string;
         }
 
-        class Katana implements Weapon {
-            public name = "Katana";
-        }
-
-        class Shuriken implements Weapon {
-            public name = "Shuriken";
-        }
-
         interface JaponeseWarrior {
             katana: Weapon;
         }
@@ -254,14 +238,6 @@ describe("BindingWhenSyntax", () => {
             name: string;
         }
 
-        class Katana implements Weapon {
-            public name = "Katana";
-        }
-
-        class Shuriken implements Weapon {
-            public name = "Shuriken";
-        }
-
         interface JaponeseWarrior {
             katana: Weapon;
         }
@@ -320,14 +296,6 @@ describe("BindingWhenSyntax", () => {
 
         interface Material {
             name: string;
-        }
-
-        class Wood implements Material {
-            public name = "Wood";
-        }
-
-        class Iron implements Material {
-            public name = "Iron";
         }
 
         interface Weapon {

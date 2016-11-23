@@ -550,5 +550,11 @@ describe("Container", () => {
 
     });
 
+    it("Should be able create a child containers", () => {
+        let parent = new Container();
+        let child = parent.createChild();
+        expect(child.parent.guid).to.eql(parent.guid);
+    });
+
 
 });

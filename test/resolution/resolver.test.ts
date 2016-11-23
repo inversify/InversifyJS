@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { resolve } from "../../src/resolution/resolver";
 import { plan } from "../../src/planning/planner";
 import { Container } from "../../src/container/container";
-import { Request } from "../../src/planning/request";
 import { TargetType } from "../../src/planning/target_type";
 import { injectable } from "../../src/annotation/injectable";
 import { inject } from "../../src/annotation/inject";

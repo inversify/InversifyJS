@@ -68,9 +68,6 @@ export class DecoratedWarriotWithoutInjections {}
 
 @injectable()
 export class Warrior {
-    private _primaryWeapon: Katana;
-    private _secondaryWeapon: Shuriken;
-
     constructor(
       @inject("Katana") primary: Katana,
       @inject("Shuriken") secondary: Shuriken
@@ -80,10 +77,6 @@ export class Warrior {
 }
 
 export class InvalidDecoratorUsageWarrior {
-
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
-
     constructor(
       primary: Weapon,
       secondary: Weapon) {
@@ -92,10 +85,6 @@ export class InvalidDecoratorUsageWarrior {
 }
 
 export class MissingInjectionWarrior {
-
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
-
     constructor(
       primary: Weapon,
       secondary: Weapon) {
@@ -105,10 +94,6 @@ export class MissingInjectionWarrior {
 
 @injectable()
 export class NamedWarrior {
-
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
-
     constructor(
       @inject("Katana") @named("strong") primary: Weapon,
       @inject("Shuriken") @named("weak") secondary: Weapon
@@ -119,10 +104,6 @@ export class NamedWarrior {
 
 @injectable()
 export class TaggedWarrior {
-
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
-
     constructor(
       @inject("Katana") @tagged("power", 5) primary: Weapon,
       @inject("Shuriken") @tagged("power", 1) secondary: Weapon

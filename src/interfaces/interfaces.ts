@@ -147,6 +147,7 @@ namespace interfaces {
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
+        createChild(): Container;
     }
 
     export interface Bind extends Function {

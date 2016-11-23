@@ -9,8 +9,6 @@ import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 interface Weapon {}
-class Katana implements Weapon {}
-class Shuriken implements Weapon {}
 
 class NamedWarrior {
 

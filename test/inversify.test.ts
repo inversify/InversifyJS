@@ -2653,8 +2653,6 @@ describe("InversifyJS", () => {
 
     it("Should display a error when injecting into an abstract class", () => {
 
-        interface Weapon { }
-
         @injectable()
         class Soldier extends Stubs.BaseSoldier { }
 

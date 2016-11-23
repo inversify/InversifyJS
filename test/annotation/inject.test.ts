@@ -13,21 +13,6 @@ interface Shuriken {}
 class Katana implements Katana {}
 class Shuriken implements Shuriken {}
 
-class WarriorWithoutDecorator {
-
-    private _primaryWeapon: Katana;
-    private _secondaryWeapon: Shuriken;
-
-    constructor(
-      primary: Katana,
-      secondary: Shuriken
-    ) {
-
-          this._primaryWeapon = primary;
-          this._secondaryWeapon = secondary;
-    }
-}
-
 class DecoratedWarrior {
 
     private _primaryWeapon: Katana;
