@@ -9,22 +9,6 @@ import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 interface Weapon {}
-class Katana implements Weapon {}
-class Shuriken implements Weapon {}
-
-class WarriorWithoutDecorator {
-
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
-
-    constructor(
-      weapons: Weapon[]
-    ) {
-
-          this._primaryWeapon = weapons[0];
-          this._secondaryWeapon = weapons[1];
-    }
-}
 
 class DecoratedWarrior {
 

@@ -53,6 +53,19 @@ gulp.task("build-lib", function() {
     .js.pipe(gulp.dest("lib/"));
 });
 
+var tsAmdProject = tsc.createProject("tsconfig.json", { module : "amd", typescript: require("typescript") });
+
+gulp.task("build-amd", function() {
+    return gulp.src([
+        "src/**/*.ts"
+    ])
+    .pipe(tsAmdProject())
+    .on("error", function (err) {
+        process.exit(1);
+    })
+    .js.pipe(gulp.dest("amd/"));
+});
+
 var tsEsProject = tsc.createProject("tsconfig.json", { module : "es2015", typescript: require("typescript") });
 
 gulp.task("build-es", function() {
@@ -185,10 +198,17 @@ if (process.env.APPVEYOR) {
 //* DEFAULT
 //******************************************************************************
 gulp.task("build", function(cb) {
-  runSequence(
-      "lint", 
-      ["build-src", "build-es", "build-lib", "build-dts"],   // tests + build es and lib
-      "build-test", cb);
+    runSequence(
+        "lint", 
+        [
+            "build-src",
+            "build-es",
+            "build-lib",
+            "build-amd",
+            "build-dts"
+        ],
+        "build-test", cb
+    );
 });
 
 gulp.task("default", function (cb) {

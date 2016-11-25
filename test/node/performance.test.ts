@@ -56,52 +56,52 @@ describe("Performance", () => {
         return result;
     }
 
-    it("Registring 1 binding should be doen in less than 1 ms", () => {
+    it("Should be able to register 1 binding in less than 1 ms", () => {
         let result1 = registerN(1);
         expect(result1.register).to.below(1);
         expect(result1.register).to.below(1);
     });
 
-    it("Registring 5 bindings should be doen in less than 1 ms", () => {
+    it("Should be able to register 5 bindings in less than 1 ms", () => {
         let result5 = registerN(5);
         expect(result5.register).to.below(1);
     });
 
-    it("Registring 1K bindings should be doen in less than 1 ms", () => {
+    it("Should be able to register 1K bindings in less than 1 ms", () => {
         let result1K = registerN(1000);
         expect(result1K.register).to.below(1);
     });
 
-    it("Registring 5K bindings should be doen in less than 1 ms", () => {
+    it("Should be able to register 5K bindings in less than 1 ms", () => {
         let result5K = registerN(5000);
         expect(result5K.register).to.below(1);
     });
 
-    it("Resolving 1 binding should be done in less than 1 ms", () => {
+    it("Should be able to register 1 bindings in less than 1 ms", () => {
         let container1 = registerN(1000).container;
         let result1 = resolveN(container1, 5);
         expect(result1.avg).to.below(1);
     });
 
-    it("Resolving 5 bindings should be done in less than 1 ms", () => {
+    it("Should be able to register 5 bindings in less than 1 ms", () => {
         let container5 = registerN(1000).container;
         let result5 = resolveN(container5, 5);
         expect(result5.avg).to.below(1);
     });
 
-    it("Resolving 1K bindings should be done in less than 1 ms", () => {
+    it("Should be able to register 1K bindings in less than 1 ms", () => {
         let container1K = registerN(1000).container;
         let result1K = resolveN(container1K, 5);
         expect(result1K.avg).to.below(1);
     });
 
-    it("Resolving 5K bindings should be done in less than 1 ms", () => {
+    it("Should be able to register 5K bindings in less than 1 ms", () => {
         let container5K = registerN(5000).container;
         let result5K = resolveN(container5K, 5);
         expect(result5K.avg).to.below(1);
     });
 
-    it("Resolving 10K bindings should be done in less than 1 ms", () => {
+    it("Should be able to register 10K bindings in less than 1 ms", () => {
         let container10K = registerN(10000).container;
         let result10K = resolveN(container10K, 5);
         expect(result10K.avg).to.below(1);

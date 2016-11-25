@@ -145,6 +145,12 @@ class Container implements interfaces.Container {
         this._middleware = snapshot.middleware;
     }
 
+    public createChild(): Container {
+        let child = new Container();
+        child.parent = this;
+        return child;
+    }
+
     public set parent (container: interfaces.Container) {
         this._parentContainer = container;
     }
@@ -164,11 +170,11 @@ class Container implements interfaces.Container {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, TargetType.Variable, serviceIdentifier) as T;
+        return this._get<T>(false, false, TargetType.Variable, serviceIdentifier) as T;
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
-        return this._get<T>(false, TargetType.Variable, serviceIdentifier, key, value) as T;
+        return this._get<T>(false, false, TargetType.Variable, serviceIdentifier, key, value) as T;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
@@ -178,11 +184,11 @@ class Container implements interfaces.Container {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(true, TargetType.Variable, serviceIdentifier) as T[];
+        return this._get<T>(true, true, TargetType.Variable, serviceIdentifier) as T[];
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
-        return this._get<T>(true, TargetType.Variable, serviceIdentifier, key, value) as T[];
+        return this._get<T>(false, true, TargetType.Variable, serviceIdentifier, key, value) as T[];
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
@@ -193,6 +199,7 @@ class Container implements interfaces.Container {
     // delegates resolution to _middleware if available
     // otherwise it delegates resoltion to _planAndResolve
     private _get<T>(
+        avoidConstraints: boolean,
         isMultiInject: boolean,
         targetType: TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
@@ -203,6 +210,7 @@ class Container implements interfaces.Container {
         let result: (T|T[]) = null;
 
         let args: interfaces.NextArgs = {
+            avoidConstraints: avoidConstraints,
             contextInterceptor: (context: interfaces.Context) => { return context; },
             isMultiInject: isMultiInject,
             key: key,
@@ -229,7 +237,13 @@ class Container implements interfaces.Container {
     private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T|T[]) {
         return (args: interfaces.NextArgs) => {
             let context = plan(
-                this, args.isMultiInject, args.targetType, args.serviceIdentifier, args.key, args.value
+                this,
+                args.isMultiInject,
+                args.targetType,
+                args.serviceIdentifier,
+                args.key,
+                args.value,
+                args.avoidConstraints
             );
             let result = resolve<T>(args.contextInterceptor(context));
             return result;

@@ -13,6 +13,7 @@ import {
     multiInject
 } from "../../src/inversify";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 describe("Bugs", () => {
 
@@ -419,6 +420,62 @@ describe("Bugs", () => {
         expect(name).to.eql("Anonymous function: " + (function (options: any) {
             this.configure(options);
         }).toString());
+
+    });
+
+    it("Should be able to get all the available bindings for a service identifier", () => {
+
+        const controllerId = "SomeControllerID";
+        const tagA = "A";
+        const tagB = "B";
+
+        interface Controller {
+            name: string;
+        }
+
+        let container = new Container();
+
+        @injectable()
+        class AppController implements Controller {
+            public name: string;
+            public constructor() {
+                this.name = "AppController";
+            }
+        }
+
+        @injectable()
+        class AppController2 implements Controller {
+            public name: string;
+            public constructor() {
+                this.name = "AppController2";
+            }
+        }
+
+        container.bind(controllerId).to(AppController).whenTargetNamed(tagA);
+        container.bind(controllerId).to(AppController2).whenTargetNamed(tagB);
+
+        function wrongNamedBinding() { container.getAllNamed<Controller>(controllerId, "Wrong"); }
+        expect(wrongNamedBinding).to.throw();
+
+        let appControllerNamedRight = container.getAllNamed<Controller>(controllerId, tagA);
+        expect(appControllerNamedRight.length).to.eql(1, "getAllNamed");
+        expect(appControllerNamedRight[0].name).to.eql("AppController");
+
+        function wrongTaggedBinding() { container.getAllTagged<Controller>(controllerId, "Wrong", "Wrong"); }
+        expect(wrongTaggedBinding).to.throw();
+
+        let appControllerTaggedRight = container.getAllTagged<Controller>(controllerId, METADATA_KEY.NAMED_TAG, tagB);
+        expect(appControllerTaggedRight.length).to.eql(1, "getAllTagged");
+        expect(appControllerTaggedRight[0].name).to.eql("AppController2");
+
+        let getAppController = () => {
+            let matches = container.getAll<Controller>(controllerId);
+            expect(matches.length).to.eql(2);
+            expect(matches[0].name).to.eql("AppController");
+            expect(matches[1].name).to.eql("AppController2");
+        };
+
+        expect(getAppController).not.to.throw();
 
     });
 

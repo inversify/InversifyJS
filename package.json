@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",

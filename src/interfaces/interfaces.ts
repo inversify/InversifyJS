@@ -43,6 +43,7 @@ namespace interfaces {
     }
 
     export interface NextArgs {
+        avoidConstraints: boolean;
         contextInterceptor?: (contexts: Context) => Context;
         isMultiInject: boolean;
         targetType: number;
@@ -147,6 +148,7 @@ namespace interfaces {
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
+        createChild(): Container;
     }
 
     export interface Bind extends Function {

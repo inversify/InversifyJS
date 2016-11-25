@@ -219,12 +219,6 @@ describe("Middleware", () => {
 
         interface Warrior {}
 
-        @injectable()
-        class Ninja implements Warrior {}
-
-        @injectable()
-        class Samurai implements Warrior {}
-
         let container = new Container();
 
         let log: string[] = [];
@@ -250,14 +244,6 @@ describe("Middleware", () => {
     });
 
     it("Should help users to identify problems with middleware", () => {
-
-        interface Warrior {}
-
-        @injectable()
-        class Ninja implements Warrior {}
-
-        @injectable()
-        class Samurai implements Warrior {}
 
         let container = new Container();
 
