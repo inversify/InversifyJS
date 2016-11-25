@@ -43,6 +43,7 @@ namespace interfaces {
     }
 
     export interface NextArgs {
+        avoidConstraints: boolean;
         contextInterceptor?: (contexts: Context) => Context;
         isMultiInject: boolean;
         targetType: number;

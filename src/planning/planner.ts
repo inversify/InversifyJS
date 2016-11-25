@@ -40,6 +40,7 @@ function _createTarget(
 }
 
 function _getActiveBindings(
+    avoidConstraints: boolean,
     context: interfaces.Context,
     parentRequest: interfaces.Request,
     target: interfaces.Target
@@ -48,8 +49,8 @@ function _getActiveBindings(
     let bindings = getBindings<any>(context.container, target.serviceIdentifier);
     let activeBindings: interfaces.Binding<any>[] = [];
 
-    // multiple bindings available but not a multi-injection
-    if (bindings.length > 1) {
+    // multiple bindings available
+    if (bindings.length > 1 && avoidConstraints === false) {
 
         // apply constraints if available to reduce the number of active bindings
         activeBindings = bindings.filter((binding) => {
@@ -113,6 +114,7 @@ function _validateActiveBindingCount(
 }
 
 function _createSubRequests(
+    avoidConstraints: boolean,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     context: interfaces.Context,
     parentRequest: interfaces.Request,
@@ -126,7 +128,7 @@ function _createSubRequests(
 
         if (parentRequest === null) {
 
-            activeBindings = _getActiveBindings(context, null, target);
+            activeBindings = _getActiveBindings(avoidConstraints, context, null, target);
 
             childRequest = new Request(
                 serviceIdentifier,
@@ -140,7 +142,7 @@ function _createSubRequests(
             context.addPlan(plan);
 
         } else {
-            activeBindings = _getActiveBindings(context, parentRequest, target);
+            activeBindings = _getActiveBindings(avoidConstraints, context, parentRequest, target);
             childRequest = parentRequest.addChildRequest(target.serviceIdentifier, activeBindings, target);
         }
 
@@ -159,7 +161,7 @@ function _createSubRequests(
                 let dependencies = getDependencies(binding.implementationType);
 
                 dependencies.forEach((dependency: interfaces.Target) => {
-                    _createSubRequests(dependency.serviceIdentifier, context, subChildRequest, dependency);
+                    _createSubRequests(false, dependency.serviceIdentifier, context, subChildRequest, dependency);
                 });
 
             }
@@ -203,12 +205,13 @@ function plan(
     targetType: TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     key?: string,
-    value?: any
+    value?: any,
+    avoidConstraints = false
 ): interfaces.Context {
 
     let context = new Context(container);
     let target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
-    _createSubRequests(serviceIdentifier, context, null, target);
+    _createSubRequests(avoidConstraints, serviceIdentifier, context, null, target);
     return context;
 
 }
