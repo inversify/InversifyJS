@@ -6,6 +6,7 @@ import { ContainerModule } from "../../src/container/container_module";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
+import { BindingScopeEnum } from "../../src/constants/literal_types";
 
 type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
 
@@ -471,7 +472,7 @@ describe("Container", () => {
         transientNinja2.takeHit(10);
         expect(transientNinja2.health).to.eql(90);
 
-        let container2 = new Container({ defaultScope: "singleton" });
+        let container2 = new Container({ defaultScope: BindingScopeEnum.Singleton });
         container2.bind<Warrior>(TYPES.Warrior).to(Ninja);
 
         let singletonNinja1 = container2.get<Warrior>(TYPES.Warrior);
@@ -556,5 +557,49 @@ describe("Container", () => {
         expect(child.parent.guid).to.eql(parent.guid);
     });
 
+    it("Should be able check if a named binding is bound", () => {
+
+        const zero = "Zero";
+        const invalidDivisor = "InvalidDivisor";
+        const validDivisor = "ValidDivisor";
+        let container = new Container();
+
+        expect(container.isBound(zero)).to.eql(false);
+        container.bind<number>(zero).toConstantValue(0);
+        expect(container.isBound(zero)).to.eql(true);
+
+        container.unbindAll();
+        expect(container.isBound(zero)).to.eql(false);
+        container.bind<number>(zero).toConstantValue(0).whenTargetNamed(invalidDivisor);
+        expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
+        expect(container.isBoundNamed(zero, validDivisor)).to.eql(false);
+
+        container.bind<number>(zero).toConstantValue(1).whenTargetNamed(validDivisor);
+        expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
+        expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
+
+    });
+
+    it("Should be able check if a tagged binding is bound", () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        let container = new Container();
+
+        expect(container.isBound(zero)).to.eql(false);
+        container.bind<number>(zero).toConstantValue(0);
+        expect(container.isBound(zero)).to.eql(true);
+
+        container.unbindAll();
+        expect(container.isBound(zero)).to.eql(false);
+        container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
+        expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
+        expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(false);
+
+        container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
+        expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
+        expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
+
+    });
 
 });

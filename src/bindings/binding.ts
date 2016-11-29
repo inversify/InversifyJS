@@ -1,8 +1,6 @@
 import { interfaces } from "../interfaces/interfaces";
-import { BindingScope } from "./binding_scope";
-import { BindingType } from "./binding_type";
 import { guid } from "../utils/guid";
-
+import { BindingTypeEnum } from "../constants/literal_types";
 class Binding<T> implements interfaces.Binding<T> {
 
     public guid: string;
@@ -26,10 +24,10 @@ class Binding<T> implements interfaces.Binding<T> {
     public dynamicValue: (context: interfaces.Context) => T;
 
     // The scope mode to be used
-    public scope: BindingScope;
+    public scope: interfaces.BindingScope;
 
     // The kind of binding
-    public type: BindingType;
+    public type: interfaces.BindingType;
 
     // A factory method used in BindingType.Factory bindings
     public factory: interfaces.FactoryCreator<T>;
@@ -43,12 +41,12 @@ class Binding<T> implements interfaces.Binding<T> {
     // On activation handler (invoked just before an instance is added to cache and injected)
     public onActivation: (context: interfaces.Context, injectable: T) => T;
 
-    constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, defaultScope: BindingScope) {
+    constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, defaultScope: interfaces.BindingScope) {
         this.guid = guid();
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
         this.scope = defaultScope;
-        this.type = BindingType.Invalid;
+        this.type = BindingTypeEnum.Invalid;
         this.constraint = (request: interfaces.Request) => { return true; };
         this.implementationType = null;
         this.cache = null;

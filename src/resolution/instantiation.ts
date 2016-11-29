@@ -1,5 +1,5 @@
-import { TargetType } from "../planning/target_type";
 import { interfaces } from "../interfaces/interfaces";
+import { TargetTypeEnum } from "../constants/literal_types";
 
 function _injectProperties(
     instance: any,
@@ -8,7 +8,7 @@ function _injectProperties(
 ): any {
 
     let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-        return childRequest.target.type === TargetType.ClassProperty;
+        return childRequest.target.type === TargetTypeEnum.ClassProperty;
     });
 
     let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
@@ -39,7 +39,7 @@ function resolveInstance(
     if (childRequests.length > 0) {
 
         let constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-            return childRequest.target.type === TargetType.ConstructorArgument;
+            return childRequest.target.type === TargetTypeEnum.ConstructorArgument;
         });
 
         let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {

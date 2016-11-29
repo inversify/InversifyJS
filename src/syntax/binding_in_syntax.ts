@@ -1,5 +1,5 @@
 import { interfaces } from "../interfaces/interfaces";
-import { BindingScope } from "../bindings/binding_scope";
+import { BindingScopeEnum } from "../constants/literal_types";
 import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 
 class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
@@ -11,12 +11,12 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
     }
 
     public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScope.Singleton;
+        this._binding.scope = BindingScopeEnum.Singleton;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
     public inTransientScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScope.Transient;
+        this._binding.scope = BindingScopeEnum.Transient;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 

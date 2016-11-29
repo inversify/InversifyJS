@@ -1,9 +1,9 @@
 import { interfaces } from "../interfaces/interfaces";
 import { getFunctionName } from "../utils/serialization";
-import { TargetType } from "./target_type";
 import { Target } from "./target";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
+import { TargetTypeEnum } from "../constants/literal_types";
 
 function getDependencies(func: Function): interfaces.Target[] {
 
@@ -87,7 +87,7 @@ function getConstructorArgsAsTargets(
         }
 
         // Create target
-        let target = new Target(TargetType.ConstructorArgument, metadata.targetName, serviceIndentifier);
+        let target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIndentifier);
         target.metadata = targetMetadata;
         targets.push(target);
 
@@ -120,7 +120,7 @@ function getClassPropsAsTargets(func: Function) {
         let serviceIndentifier = (metadata.inject || metadata.multiInject);
 
         // The property target
-        let target = new Target(TargetType.ClassProperty, targetName, serviceIndentifier);
+        let target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIndentifier);
         target.metadata = targetMetadata;
         targets.push(target);
     }

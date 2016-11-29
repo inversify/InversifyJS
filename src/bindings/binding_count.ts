@@ -1,7 +1,7 @@
-enum BindingCount {
-    NoBindingsAvailable = 0,
-    OnlyOneBindingAvailable = 1,
-    MultipleBindingsAvailable = 2
-}
+let BindingCount = {
+    MultipleBindingsAvailable: 2,
+    NoBindingsAvailable: 0,
+    OnlyOneBindingAvailable: 1
+};
 
 export { BindingCount };

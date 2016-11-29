@@ -15,6 +15,7 @@
         "suppressImplicitAnyIndexErrors": false,
         "noResolve": false,
         "noUnusedParameters": false,
-        "noUnusedLocals": true
+        "noUnusedLocals": true,
+        "alwaysStrict": true
     }
 }

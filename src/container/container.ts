@@ -1,16 +1,15 @@
 import { interfaces } from "../interfaces/interfaces";
 import { Binding } from "../bindings/binding";
-import { BindingScope } from "../bindings/binding_scope";
 import { Lookup } from "./lookup";
-import { plan } from "../planning/planner";
+import { plan, createMockRequest } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
-import { TargetType } from "../planning/target_type";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
 import { guid } from "../utils/guid";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
+import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
 
 class Container implements interfaces.Container {
 
@@ -56,7 +55,10 @@ class Container implements interfaces.Container {
                 throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_MUST_BE_AN_OBJECT}`);
             } else if (containerOptions.defaultScope === undefined) {
                 throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
-            } else if (containerOptions.defaultScope !== "singleton" && containerOptions.defaultScope !== "transient") {
+            } else if (
+                containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
+                containerOptions.defaultScope !== BindingScopeEnum.Transient
+            ) {
                 throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
             }
 
@@ -66,7 +68,7 @@ class Container implements interfaces.Container {
 
         } else {
             this.options = {
-                defaultScope: "transient"
+                defaultScope: BindingScopeEnum.Transient
             };
         }
 
@@ -107,7 +109,8 @@ class Container implements interfaces.Container {
 
     // Regiters a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
-        let defaultScope = (this.options.defaultScope === "transient") ? BindingScope.Transient : BindingScope.Singleton;
+        let defaultScope = BindingScopeEnum.Transient;
+        defaultScope = (this.options.defaultScope === defaultScope) ? defaultScope : BindingScopeEnum.Singleton;
         let binding = new Binding<T>(serviceIdentifier, defaultScope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
@@ -130,6 +133,19 @@ class Container implements interfaces.Container {
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
         return this._bindingDictionary.hasKey(serviceIdentifier);
+    }
+
+    public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string): boolean {
+        return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
+    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any): boolean {
+        let bindings = this._bindingDictionary.get(serviceIdentifier);
+        let request = createMockRequest(serviceIdentifier, key, value);
+        // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
+        // Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+        // binding with a complex constraint is available.
+        return bindings.some((b) => b.constraint(request));
     }
 
     public snapshot(): void {
@@ -170,11 +186,11 @@ class Container implements interfaces.Container {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, false, TargetType.Variable, serviceIdentifier) as T;
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
-        return this._get<T>(false, false, TargetType.Variable, serviceIdentifier, key, value) as T;
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
@@ -184,11 +200,11 @@ class Container implements interfaces.Container {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(true, true, TargetType.Variable, serviceIdentifier) as T[];
+        return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
-        return this._get<T>(false, true, TargetType.Variable, serviceIdentifier, key, value) as T[];
+        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
@@ -201,7 +217,7 @@ class Container implements interfaces.Container {
     private _get<T>(
         avoidConstraints: boolean,
         isMultiInject: boolean,
-        targetType: TargetType,
+        targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         key?: string,
         value?: any
