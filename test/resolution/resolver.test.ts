@@ -3,14 +3,13 @@ import { expect } from "chai";
 import { resolve } from "../../src/resolution/resolver";
 import { plan } from "../../src/planning/planner";
 import { Container } from "../../src/container/container";
-import { TargetType } from "../../src/planning/target_type";
+import { TargetTypeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
 import { injectable } from "../../src/annotation/injectable";
 import { inject } from "../../src/annotation/inject";
 import { multiInject } from "../../src/annotation/multi_inject";
 import { tagged } from "../../src/annotation/tagged";
 import { named } from "../../src/annotation/named";
 import { targetName } from "../../src/annotation/target_name";
-import { BindingType } from "../../src/bindings/binding_type";
 import * as Proxy from "harmony-proxy";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
@@ -93,7 +92,7 @@ describe("Resolve", () => {
       container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -171,7 +170,7 @@ describe("Resolve", () => {
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
 
       let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
       let ninja = resolve<Ninja>(context);
@@ -220,13 +219,13 @@ describe("Resolve", () => {
       container.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
 
       // context and plan
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let throwFunction = () => {
           resolve(context);
       };
 
-      expect(context.plan.rootRequest.bindings[0].type).eql(BindingType.Invalid);
+      expect(context.plan.rootRequest.bindings[0].type).eql(BindingTypeEnum.Invalid);
       expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
 
   });
@@ -290,7 +289,7 @@ describe("Resolve", () => {
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -402,7 +401,7 @@ describe("Resolve", () => {
       container.bind<Katana>(katanaId).to(Katana);
       container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -490,7 +489,7 @@ describe("Resolve", () => {
           };
       });
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -574,7 +573,7 @@ describe("Resolve", () => {
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
       container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -664,7 +663,7 @@ describe("Resolve", () => {
           };
       });
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Warrior>(context);
 
@@ -716,7 +715,7 @@ describe("Resolve", () => {
       container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
       container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -762,7 +761,7 @@ describe("Resolve", () => {
       container.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
       container.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -814,7 +813,7 @@ describe("Resolve", () => {
           return request.target.name.equals("shuriken");
       });
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -864,7 +863,7 @@ describe("Resolve", () => {
       container.bind<Weapon>(weaponId).to(Katana);
       container.bind<Weapon>(weaponId).to(Shuriken);
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -877,7 +876,7 @@ describe("Resolve", () => {
       container2.bind<Ninja>(ninjaId).to(Ninja);
       container2.bind<Weapon>(weaponId).to(Katana);
 
-      let context2 = plan(container2, false, TargetType.Variable, ninjaId);
+      let context2 = plan(container2, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja2 = resolve<Ninja>(context2);
 
@@ -937,7 +936,7 @@ describe("Resolve", () => {
             return katana;
         });
 
-        let context = plan(container, false, TargetType.Variable, ninjaId);
+        let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
         let ninja = resolve<Ninja>(context);
 
@@ -1015,7 +1014,7 @@ describe("Resolve", () => {
 
       container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
 
-      let context = plan(container, false, TargetType.Variable, ninjaId);
+      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 

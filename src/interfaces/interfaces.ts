@@ -1,5 +1,34 @@
 namespace interfaces {
 
+    export type BindingScope = "Singleton" | "Transient";
+
+    export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
+                              "Function" | "Instance" | "Invalid" | "Provider";
+
+    export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
+
+    export interface BindingScopeEnum {
+        Singleton: interfaces.BindingScope;
+        Transient: interfaces.BindingScope;
+    }
+
+    export interface BindingTypeEnum {
+        ConstantValue: interfaces.BindingType;
+        Constructor: interfaces.BindingType;
+        DynamicValue: interfaces.BindingType;
+        Factory: interfaces.BindingType;
+        Function: interfaces.BindingType;
+        Instance: interfaces.BindingType;
+        Invalid: interfaces.BindingType;
+        Provider: interfaces.BindingType;
+    }
+
+    export interface TargetTypeEnum {
+        ConstructorArgument: interfaces.TargetType;
+        ClassProperty: interfaces.TargetType;
+        Variable: interfaces.TargetType;
+    }
+
     export interface Newable<T> {
         new (...args: any[]): T;
     }
@@ -22,8 +51,8 @@ namespace interfaces {
         onActivation: (context: Context, injectable: T) => T;
         cache: T;
         dynamicValue: (context: Context) => T;
-        scope: number; // BindingScope
-        type: number; // BindingType
+        scope: BindingScope;
+        type: BindingType;
     }
 
     export interface Factory<T> extends Function {
@@ -46,7 +75,7 @@ namespace interfaces {
         avoidConstraints: boolean;
         contextInterceptor?: (contexts: Context) => Context;
         isMultiInject: boolean;
-        targetType: number;
+        targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
         key?: string;
         value?: any;
@@ -111,7 +140,7 @@ namespace interfaces {
     export interface Target {
         guid: string;
         serviceIdentifier: ServiceIdentifier<any>;
-        type: number; // TargetType
+        type: TargetType;
         name: QueryableString;
         metadata: Array<Metadata>;
         getNamedTag(): interfaces.Metadata;
@@ -125,10 +154,8 @@ namespace interfaces {
         matchesTag(key: string): (value: any) => boolean;
     }
 
-    export type ContainerOptionsScope = "singleton" | "transient";
-
     export interface ContainerOptions {
-        defaultScope: ContainerOptionsScope;
+        defaultScope: BindingScope;
     }
 
     export interface Container {
@@ -139,6 +166,8 @@ namespace interfaces {
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
+        isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string): boolean;
+        isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any): boolean;
         get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string): T;
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string, value: any): T;
@@ -226,6 +255,7 @@ namespace interfaces {
        (request: Request) : boolean;
         metaData?: Metadata;
     }
+
 }
 
 export { interfaces };

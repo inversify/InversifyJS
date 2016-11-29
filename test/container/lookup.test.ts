@@ -2,7 +2,7 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import { Lookup } from "../../src/container/lookup";
 import { Binding } from "../../src/bindings/binding";
-import { BindingScope } from "../../src/bindings/binding_scope";
+import { BindingScopeEnum } from "../../src/constants/literal_types";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
@@ -96,24 +96,24 @@ describe("Lookup", () => {
       interface Warrior {}
 
       class Ninja implements Warrior {}
-      let ninjaBinding = new Binding(warriorId, BindingScope.Transient);
+      let ninjaBinding = new Binding(warriorId, BindingScopeEnum.Transient);
       ninjaBinding.implementationType = Ninja;
       ninjaBinding.moduleId = moduleId1;
 
       class Samurai implements Warrior {}
-      let samuraiBinding = new Binding(warriorId, BindingScope.Transient);
+      let samuraiBinding = new Binding(warriorId, BindingScopeEnum.Transient);
       samuraiBinding.implementationType = Samurai;
       samuraiBinding.moduleId = moduleId2;
 
       interface Weapon {}
 
       class Shuriken implements Weapon {}
-      let shurikenBinding = new Binding(weaponId, BindingScope.Transient);
+      let shurikenBinding = new Binding(weaponId, BindingScopeEnum.Transient);
       shurikenBinding.implementationType = Shuriken;
       shurikenBinding.moduleId = moduleId1;
 
       class Katana implements Weapon {}
-      let katanaBinding = new Binding(weaponId, BindingScope.Transient);
+      let katanaBinding = new Binding(weaponId, BindingScopeEnum.Transient);
       katanaBinding.implementationType = Katana;
       katanaBinding.moduleId = moduleId2;
 

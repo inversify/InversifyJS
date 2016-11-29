@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { Binding } from "../../src/bindings/binding";
 import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
 import { injectable } from "../../src/annotation/injectable";
-import { BindingScope } from "../../src/bindings/binding_scope";
+import { BindingScopeEnum } from "../../src/constants/literal_types";
 import * as sinon from "sinon";
 
 describe("BindingInWhenOnSyntax", () => {
@@ -23,7 +23,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
         let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -38,7 +38,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
         let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -73,7 +73,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
         let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -151,7 +151,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         let ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScope.Transient);
+        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
         let bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props

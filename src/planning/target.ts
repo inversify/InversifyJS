@@ -1,20 +1,19 @@
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import { QueryableString } from "./queryable_string";
-import { TargetType } from "./target_type";
 import { guid } from "../utils/guid";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
 class Target implements interfaces.Target {
 
     public guid: string;
-    public type: TargetType;
+    public type: interfaces.TargetType;
     public serviceIdentifier: interfaces.ServiceIdentifier<any>;
     public name: interfaces.QueryableString;
     public metadata: Array<Metadata>;
 
     constructor(
-        type: TargetType,
+        type: interfaces.TargetType,
         name: string,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         namedOrTagged?: (string|Metadata)

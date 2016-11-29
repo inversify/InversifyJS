@@ -1,6 +1,5 @@
 import { interfaces } from "../interfaces/interfaces";
-import { BindingScope } from "../bindings/binding_scope";
-import { BindingType } from "../bindings/binding_type";
+import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
 import * as ERROR_MSGS from "../constants/error_msgs";
@@ -27,7 +26,7 @@ function _resolveRequest(request: interfaces.Request): any {
 
         let result: any = null;
         let binding = bindings[0];
-        let isSingleton = binding.scope === BindingScope.Singleton;
+        let isSingleton = binding.scope === BindingScopeEnum.Singleton;
 
         if (isSingleton && binding.activated === true) {
             return binding.cache;
@@ -35,35 +34,35 @@ function _resolveRequest(request: interfaces.Request): any {
 
         switch (binding.type) {
 
-            case BindingType.ConstantValue:
+            case BindingTypeEnum.ConstantValue:
                 result = binding.cache;
                 break;
 
-            case BindingType.DynamicValue:
+            case BindingTypeEnum.DynamicValue:
                 result = binding.dynamicValue(request.parentContext);
                 break;
 
-            case BindingType.Constructor:
+            case BindingTypeEnum.Constructor:
                 result = binding.implementationType;
                 break;
 
-            case BindingType.Factory:
+            case BindingTypeEnum.Factory:
                 result = binding.factory(request.parentContext);
                 break;
 
-                case BindingType.Function:
+            case BindingTypeEnum.Function:
                 result = binding.cache;
                 break;
 
-            case BindingType.Provider:
+            case BindingTypeEnum.Provider:
                 result = binding.provider(request.parentContext);
                 break;
 
-            case BindingType.Instance:
+            case BindingTypeEnum.Instance:
                 result = resolveInstance(binding.implementationType, childRequests, _resolveRequest);
                 break;
 
-            case BindingType.Invalid:
+            case BindingTypeEnum.Invalid:
             default:
                 // The user probably created a binding but didn't finish it
                 // e.g. container.bind<T>("Something"); missing BindingToSyntax

@@ -1,6 +1,8 @@
 import { expect } from "chai";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 import { getFunctionName } from "../../src/utils/serialization";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import {
     Container,
     injectable,
@@ -12,8 +14,6 @@ import {
     tagged,
     multiInject
 } from "../../src/inversify";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 describe("Bugs", () => {
 

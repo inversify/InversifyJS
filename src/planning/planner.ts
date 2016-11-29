@@ -3,23 +3,22 @@ import { Plan } from "./plan";
 import { Context } from "./context";
 import { Request } from "./request";
 import { Target } from "./target";
-import { TargetType } from "./target_type";
-import { BindingType } from "../bindings/binding_type";
 import { BindingCount } from "../bindings/binding_count";
 import { getDependencies } from "./reflection_utils";
 import { Metadata } from "../planning/metadata";
+import * as ERROR_MSGS from "../constants/error_msgs";
+import * as METADATA_KEY from "../constants/metadata_keys";
+import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
 import {
     circularDependencyToException,
     getServiceIdentifierAsString,
     listRegisteredBindingsForServiceIdentifier,
     listMetadataForTarget
 } from "../utils/serialization";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import * as METADATA_KEY from "../constants/metadata_keys";
 
 function _createTarget(
     isMultiInject: boolean,
-    targetType: TargetType,
+    targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     name: string,
     key?: string,
@@ -156,7 +155,7 @@ function _createSubRequests(
                 subChildRequest = childRequest;
             }
 
-            if (binding.type === BindingType.Instance) {
+            if (binding.type === BindingTypeEnum.Instance) {
 
                 let dependencies = getDependencies(binding.implementationType);
 
@@ -202,7 +201,7 @@ function getBindings<T>(
 function plan(
     container: interfaces.Container,
     isMultiInject: boolean,
-    targetType: TargetType,
+    targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     key?: string,
     value?: any,
@@ -216,4 +215,10 @@ function plan(
 
 }
 
-export { plan };
+function createMockRequest(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any): interfaces.Request {
+    let target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
+    let request = new Request(serviceIdentifier, null, null, [], target);
+    return request;
+}
+
+export { plan, createMockRequest };

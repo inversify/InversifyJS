@@ -2,7 +2,7 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import { plan } from "../../src/planning/planner";
 import { Container } from "../../src/container/container";
-import { TargetType } from "../../src/planning/target_type";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { injectable } from "../../src/annotation/injectable";
 import { targetName } from "../../src/annotation/target_name";
 import { tagged } from "../../src/annotation/tagged";
@@ -84,7 +84,7 @@ describe("Planner", () => {
         container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
         // Actual
-        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetTypeEnum.Variable, ninjaId).plan;
         let actualNinjaRequest = actualPlan.rootRequest;
         let actualKatanaRequest = actualNinjaRequest.childRequests[0];
         let actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
@@ -245,7 +245,7 @@ describe("Planner", () => {
             };
         });
 
-        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(katanaFactoryId);
@@ -288,7 +288,7 @@ describe("Planner", () => {
         container.bind<Weapon>(weaponId).to(Shuriken);
         container.bind<Weapon>(weaponId).to(Katana);
 
-        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -357,7 +357,7 @@ describe("Planner", () => {
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-        let throwFunction = () => { plan(container, false, TargetType.Variable, ninjaId); };
+        let throwFunction = () => { plan(container, false, TargetTypeEnum.Variable, ninjaId); };
         expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Katana`);
 
     });
@@ -400,7 +400,7 @@ describe("Planner", () => {
         container.bind<Katana>(katanaId).to(SharpKatana);
         container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-        let throwFunction = () => { plan(container, false, TargetType.Variable, ninjaId); };
+        let throwFunction = () => { plan(container, false, TargetTypeEnum.Variable, ninjaId); };
         expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} Katana`);
 
     });
@@ -438,7 +438,7 @@ describe("Planner", () => {
         container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
         container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-        let actualPlan = plan(container, false, TargetType.Variable, ninjaId).plan;
+        let actualPlan = plan(container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -468,7 +468,7 @@ describe("Planner", () => {
         container.bind<Weapon>("Weapon").to(Katana);
 
         let throwFunction = () => {
-            plan(container, false, TargetType.Variable, "Weapon");
+            plan(container, false, TargetTypeEnum.Variable, "Weapon");
         };
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
@@ -501,7 +501,7 @@ describe("Planner", () => {
         container.bind<Sword>("Sword").to(Katana);
 
         let throwFunction = () => {
-            plan(container, false, TargetType.Variable, "Warrior");
+            plan(container, false, TargetTypeEnum.Variable, "Warrior");
         };
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
@@ -535,7 +535,7 @@ describe("Planner", () => {
         container.bind<Katana>("Factory<Katana>").to(Katana);
 
         let throwFunction = () => {
-            plan(container, false, TargetType.Variable, "Ninja");
+            plan(container, false, TargetTypeEnum.Variable, "Ninja");
         };
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
