@@ -229,6 +229,7 @@ Let's take a look to the InversifyJS features!
 
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
 - [Support for Symbols](https://github.com/inversify/InversifyJS/blob/master/wiki/symbols_as_id.md)
+- [Container API](https://github.com/inversify/InversifyJS/blob/master/wiki/container_api.md)
 - [Declaring container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
 - [Container snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/container_snapshots.md)
 - [Controlling the scope of the dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)
@@ -243,7 +244,7 @@ Let's take a look to the InversifyJS features!
 - [Tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md)
 - [Create your own tag decorators](https://github.com/inversify/InversifyJS/blob/master/wiki/custom_tag_decorators.md)
 - [Named bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/named_bindings.md)
-- [Container.getAll<T>(), Container.getNamed<T>() & Container.getTagged<T>()](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
+- [Default target](https://github.com/inversify/InversifyJS/blob/master/wiki/default_targets.md)
 - [Support for hierarchical DI systems](https://github.com/inversify/InversifyJS/blob/master/wiki/hierarchical_di.md)
 - [Contextual bindings & @targetName](https://github.com/inversify/InversifyJS/blob/master/wiki/contextual_bindings.md)
 - [Property injection](https://github.com/inversify/InversifyJS/blob/master/wiki/property_injection.md)

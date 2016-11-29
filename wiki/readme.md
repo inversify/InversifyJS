@@ -12,7 +12,7 @@ Welcome to the InversifyJS wiki!
 ### The InversifyJS Features and API
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
 - [Support for Symbols](https://github.com/inversify/InversifyJS/blob/master/wiki/symbols_as_id.md)
-- [Container API](https://github.com/inversify/InversifyJS/blob/master/wiki/get_all_named_tagged.md)
+- [Container API](https://github.com/inversify/InversifyJS/blob/master/wiki/container_api.md)
 - [Declaring container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
 - [Container snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/container_snapshots.md)
 - [Controlling the scope of the dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)

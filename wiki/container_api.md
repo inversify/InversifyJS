@@ -190,3 +190,58 @@ container.isBound(Katana)).eql(false);
 container.isBound(katanaId)).eql(false);
 container.isBound(katanaSymbol)).eql(false);
 ```
+
+## container.isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string)
+You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
+
+> NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
+> Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+> binding with a complex constraint is available.
+
+```ts
+const zero = "Zero";
+const invalidDivisor = "InvalidDivisor";
+const validDivisor = "ValidDivisor";
+let container = new Container();
+
+expect(container.isBound(zero)).to.eql(false);
+container.bind<number>(zero).toConstantValue(0);
+expect(container.isBound(zero)).to.eql(true);
+
+container.unbindAll();
+expect(container.isBound(zero)).to.eql(false);
+container.bind<number>(zero).toConstantValue(0).whenTargetNamed(invalidDivisor);
+expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
+expect(container.isBoundNamed(zero, validDivisor)).to.eql(false);
+
+container.bind<number>(zero).toConstantValue(1).whenTargetNamed(validDivisor);
+expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
+expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
+```
+
+## container.isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any)
+You can use the `isBoundTagged` method to check if there are registered bindings for a given service identifier with a given tagged constraint.
+
+> NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
+> Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+> binding with a complex constraint is available.
+
+```ts
+const zero = "Zero";
+const isValidDivisor = "IsValidDivisor";
+let container = new Container();
+
+expect(container.isBound(zero)).to.eql(false);
+container.bind<number>(zero).toConstantValue(0);
+expect(container.isBound(zero)).to.eql(true);
+
+container.unbindAll();
+expect(container.isBound(zero)).to.eql(false);
+container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
+expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
+expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(false);
+
+container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
+expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
+expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
+```
