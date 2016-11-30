@@ -77,7 +77,7 @@ namespace interfaces {
         isMultiInject: boolean;
         targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
-        key?: string;
+        key?: string|number|symbol;
         value?: any;
     }
 
@@ -105,7 +105,7 @@ namespace interfaces {
     }
 
     export interface Metadata {
-        key: string;
+        key: string|number|symbol;
         value: any;
     }
 
@@ -145,13 +145,13 @@ namespace interfaces {
         metadata: Array<Metadata>;
         getNamedTag(): interfaces.Metadata;
         getCustomTags(): interfaces.Metadata[];
-        hasTag(key: string): boolean;
+        hasTag(key: string|number|symbol): boolean;
         isArray(): boolean;
         matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
         matchesNamedTag(name: string): boolean;
-        matchesTag(key: string): (value: any) => boolean;
+        matchesTag(key: string|number|symbol): (value: any) => boolean;
     }
 
     export interface ContainerOptions {
@@ -166,11 +166,11 @@ namespace interfaces {
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
-        isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string): boolean;
-        isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any): boolean;
+        isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string|number|symbol): boolean;
+        isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean;
         get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-        getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string): T;
-        getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string, value: any): T;
+        getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string|number|symbol): T;
+        getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string|number|symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
         load(...modules: ContainerModule[]): void;
         unload(...modules: ContainerModule[]): void;
@@ -235,18 +235,18 @@ namespace interfaces {
 
     export interface BindingWhenSyntax<T> {
         when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
-        whenTargetNamed(name: string): BindingOnSyntax<T>;
+        whenTargetNamed(name: string|number|symbol): BindingOnSyntax<T>;
         whenTargetIsDefault(): BindingOnSyntax<T>;
-        whenTargetTagged(tag: string, value: any): BindingOnSyntax<T>;
+        whenTargetTagged(tag: string|number|symbol, value: any): BindingOnSyntax<T>;
         whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
-        whenParentNamed(name: string): BindingOnSyntax<T>;
-        whenParentTagged(tag: string, value: any): BindingOnSyntax<T>;
+        whenParentNamed(name: string|number|symbol): BindingOnSyntax<T>;
+        whenParentTagged(tag: string|number|symbol, value: any): BindingOnSyntax<T>;
         whenAnyAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
         whenNoAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
-        whenAnyAncestorNamed(name: string): BindingOnSyntax<T>;
-        whenAnyAncestorTagged(tag: string, value: any): BindingOnSyntax<T>;
-        whenNoAncestorNamed(name: string): BindingOnSyntax<T>;
-        whenNoAncestorTagged(tag: string, value: any): BindingOnSyntax<T>;
+        whenAnyAncestorNamed(name: string|number|symbol): BindingOnSyntax<T>;
+        whenAnyAncestorTagged(tag: string|number|symbol, value: any): BindingOnSyntax<T>;
+        whenNoAncestorNamed(name: string|number|symbol): BindingOnSyntax<T>;
+        whenNoAncestorTagged(tag: string|number|symbol, value: any): BindingOnSyntax<T>;
         whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
         whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
     }

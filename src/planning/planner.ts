@@ -21,7 +21,7 @@ function _createTarget(
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     name: string,
-    key?: string,
+    key?: string|number|symbol,
     value?: any
 ): interfaces.Target {
 
@@ -203,7 +203,7 @@ function plan(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    key?: string,
+    key?: string|number|symbol,
     value?: any,
     avoidConstraints = false
 ): interfaces.Context {
@@ -215,10 +215,16 @@ function plan(
 
 }
 
-function createMockRequest(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any): interfaces.Request {
+function createMockRequest(
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    key: string|number|symbol,
+    value: any
+): interfaces.Request {
+
     let target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
     let request = new Request(serviceIdentifier, null, null, [], target);
     return request;
+
 }
 
 export { plan, createMockRequest };
