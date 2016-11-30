@@ -30,18 +30,23 @@ describe("Error message when resolving fails", () => {
     it("Should contain the provided name in error message when target is named", () => {
 
         let container = new Container();
-        let tryGetNamedWeapon = () => { container.getNamed("Weapon", "superior"); };
+        let tryGetNamedWeapon = (name: string|number|symbol) => { container.getNamed("Weapon", name); };
 
-        expect(tryGetNamedWeapon).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
+        expect(() => tryGetNamedWeapon("superior")).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
+        expect(() => tryGetNamedWeapon(Symbol("Superior"))).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
+        expect(() => tryGetNamedWeapon(0)).to.throw(/.*\bWeapon\b.*\b0\b/g);
 
     });
+
 
     it("Should contain the provided tag in error message when target is tagged", () => {
 
         let container = new Container();
-        let tryGetTaggedWeapon = () => { container.getTagged("Weapon", "canShoot", true); };
+        let tryGetTaggedWeapon = (tag: string|number|symbol) => { container.getTagged("Weapon", tag, true); };
 
-        expect(tryGetTaggedWeapon).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
+        expect(() => tryGetTaggedWeapon("canShoot")).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
+        expect(() => tryGetTaggedWeapon(Symbol("Can shoot"))).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
+        expect(() => tryGetTaggedWeapon(0)).to.throw(/.*\bWeapon\b.*\b0\b.*\btrue\b/g);
 
     });
 
