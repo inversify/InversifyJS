@@ -10,7 +10,7 @@ describe("Context", () => {
 
       let container = new Container();
       let context1 = new Context(container);
-      let context2 = new Context(null);
+      let context2: Context = new (<any>Context)(null);
 
       expect(context1.container).not.to.eql(null);
       expect(context2.container).eql(null);
@@ -25,7 +25,7 @@ describe("Context", () => {
       let container = new Container();
       let context = new Context(container);
 
-      let ninjaRequest = new Request(
+      let ninjaRequest: Request = new (<any>Request)(
           "Ninja",
           context,
           null,

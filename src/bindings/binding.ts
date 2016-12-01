@@ -1,6 +1,7 @@
 import { interfaces } from "../interfaces/interfaces";
 import { guid } from "../utils/guid";
 import { BindingTypeEnum } from "../constants/literal_types";
+
 class Binding<T> implements interfaces.Binding<T> {
 
     public guid: string;
@@ -15,13 +16,13 @@ class Binding<T> implements interfaces.Binding<T> {
     public serviceIdentifier: interfaces.ServiceIdentifier<T>;
 
     // The constructor of a class which must implement T
-    public implementationType: interfaces.Newable<T>;
+    public implementationType: interfaces.Newable<T> | null;
 
     // Cache used to allow singleton scope and BindingType.ConstantValue bindings
-    public cache: T;
+    public cache: T | null;
 
     // Cache used to allow BindingType.DynamicValue bindings
-    public dynamicValue: (context: interfaces.Context) => T;
+    public dynamicValue: ((context: interfaces.Context) => T) | null;
 
     // The scope mode to be used
     public scope: interfaces.BindingScope;
@@ -30,16 +31,16 @@ class Binding<T> implements interfaces.Binding<T> {
     public type: interfaces.BindingType;
 
     // A factory method used in BindingType.Factory bindings
-    public factory: interfaces.FactoryCreator<T>;
+    public factory: interfaces.FactoryCreator<T> | null;
 
     // An async factory method used in BindingType.Provider bindings
-    public provider: interfaces.ProviderCreator<T>;
+    public provider: interfaces.ProviderCreator<T> | null;
 
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: interfaces.Request) => boolean;
 
     // On activation handler (invoked just before an instance is added to cache and injected)
-    public onActivation: (context: interfaces.Context, injectable: T) => T;
+    public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
 
     constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, defaultScope: interfaces.BindingScope) {
         this.guid = guid();
@@ -53,6 +54,7 @@ class Binding<T> implements interfaces.Binding<T> {
         this.factory = null;
         this.provider = null;
         this.onActivation = null;
+        this.dynamicValue = null;
     }
 
     public clone(): interfaces.Binding<T> {

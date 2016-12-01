@@ -21,7 +21,7 @@ describe("Request", () => {
       let container = new Container();
       let context = new Context(container);
 
-      let request1 = new Request(
+      let request1: Request = new (<any>Request)(
           identifiers.Ninja,
           context,
           null,
@@ -88,7 +88,7 @@ describe("Request", () => {
       let container = new Container();
       let context = new Context(container);
 
-      let ninjaRequest = new Request(
+      let ninjaRequest: Request = new (<any>Request)(
           identifiers.Ninja,
           context,
           null,
@@ -98,16 +98,17 @@ describe("Request", () => {
 
       ninjaRequest.addChildRequest(
           identifiers.Katana,
-          null,
+          [],
           new Target(TargetTypeEnum.ConstructorArgument, "katana", identifiers.Katana));
 
       let katanaRequest = ninjaRequest.childRequests[0];
 
       expect(katanaRequest.serviceIdentifier).eql(identifiers.Katana);
-      expect(katanaRequest.parentRequest.serviceIdentifier).eql(identifiers.Ninja);
+      expect((<any>katanaRequest).parentRequest.serviceIdentifier).eql(identifiers.Ninja);
       expect(katanaRequest.childRequests.length).eql(0);
-      expect(katanaRequest.target.name.value()).eql("katana");
-      expect(katanaRequest.target.serviceIdentifier).eql(identifiers.Katana);
+      expect((<any>katanaRequest).target.name.value()).eql("katana");
+      expect((<any>katanaRequest).target.serviceIdentifier).eql(identifiers.Katana);
+
   });
 
 });

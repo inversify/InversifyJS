@@ -12,7 +12,7 @@ describe("Plan", () => {
       let context = new Context(container);
       let runtimeId = "Something";
 
-      let request = new Request(
+      let request: Request = new (<any>Request)(
           runtimeId,
           context,
           null,

@@ -13,6 +13,7 @@ function _resolveRequest(request: interfaces.Request): any {
 
     let targetParentIsNotAnArray = !request.parentRequest ||
                                    !request.parentRequest.target ||
+                                   !request.target ||
                                    !request.parentRequest.target.matchesArray(request.target.serviceIdentifier);
 
     if (targetIsAnAray && targetParentIsNotAnArray) {
@@ -39,6 +40,9 @@ function _resolveRequest(request: interfaces.Request): any {
                 break;
 
             case BindingTypeEnum.DynamicValue:
+                if (binding.dynamicValue === null) {
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_PROPERTY}DynamicValue`);
+                }
                 result = binding.dynamicValue(request.parentContext);
                 break;
 
@@ -47,6 +51,9 @@ function _resolveRequest(request: interfaces.Request): any {
                 break;
 
             case BindingTypeEnum.Factory:
+                if (binding.factory === null) {
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_PROPERTY}factory`);
+                }
                 result = binding.factory(request.parentContext);
                 break;
 
@@ -55,10 +62,16 @@ function _resolveRequest(request: interfaces.Request): any {
                 break;
 
             case BindingTypeEnum.Provider:
+                if (binding.provider === null) {
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_PROPERTY}provider`);
+                }
                 result = binding.provider(request.parentContext);
                 break;
 
             case BindingTypeEnum.Instance:
+                if (binding.implementationType === null) {
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_PROPERTY}implementationType`);
+                }
                 result = resolveInstance(binding.implementationType, childRequests, _resolveRequest);
                 break;
 

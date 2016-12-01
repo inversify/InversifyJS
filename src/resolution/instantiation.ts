@@ -8,7 +8,7 @@ function _injectProperties(
 ): any {
 
     let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-        return childRequest.target.type === TargetTypeEnum.ClassProperty;
+        return (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ClassProperty);
     });
 
     let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
@@ -16,8 +16,12 @@ function _injectProperties(
     });
 
     propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
+        let propertyName = "";
+        if (r.target !== null) {
+            propertyName = r.target.name.value();
+        }
         let injection = propertyInjections[index];
-        instance[r.target.name.value()] = injection;
+        instance[propertyName] = injection;
     });
 
     return instance;
@@ -39,7 +43,7 @@ function resolveInstance(
     if (childRequests.length > 0) {
 
         let constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-            return childRequest.target.type === TargetTypeEnum.ConstructorArgument;
+            return (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ConstructorArgument);
         });
 
         let constructorInjections = constructorInjectionsRequests.map((childRequest: interfaces.Request) => {

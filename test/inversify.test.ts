@@ -749,12 +749,12 @@ describe("InversifyJS", () => {
         class SparkPlugs implements SparkPlugs { }
 
         class Engine {
-            public displacement: number;
+            public displacement: number | null;
         }
 
         @injectable()
         class DieselEngine implements Engine {
-            public displacement: number;
+            public displacement: number | null;
             private _injectorPump: InjectorPump;
             constructor(
                 @inject("InjectorPump") injectorPump: InjectorPump
@@ -766,7 +766,7 @@ describe("InversifyJS", () => {
 
         @injectable()
         class PetrolEngine implements Engine {
-            public displacement: number;
+            public displacement: number | null;
             private _sparkPlugs: SparkPlugs;
             constructor(
                 @inject("SparkPlugs") sparkPlugs: SparkPlugs
@@ -881,7 +881,7 @@ describe("InversifyJS", () => {
     it("Should support the injection of providers", (done) => {
 
         interface Ninja {
-            katana: Katana;
+            katana: Katana | null;
             katanaProvider: interfaces.Provider<Katana>;
         }
 
@@ -899,7 +899,7 @@ describe("InversifyJS", () => {
         @injectable()
         class NinjaWithProvider implements Ninja {
 
-            public katana: Katana;
+            public katana: Katana | null;
             public katanaProvider: interfaces.Provider<Katana>;
 
             public constructor(
@@ -1786,11 +1786,11 @@ describe("InversifyJS", () => {
         container.bind<Warrior>("Warrior").to(Ninja);
 
         container.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
-            return request.target.name.equals("katana");
+            return request !== null && request.target !== null && request.target.name.equals("katana");
         });
 
         container.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
-            return request.target.name.equals("shuriken");
+            return request !== null && request.target !== null && request.target.name.equals("shuriken");
         });
 
         let ninja = container.get<Warrior>("Warrior");

@@ -31,8 +31,9 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
         let entry = this._map.get(serviceIdentifier);
+
         if (entry !== undefined) {
-            return this._map.get(serviceIdentifier);
+            return entry;
         } else {
             throw new Error(ERROR_MSGS.KEY_NOT_FOUND);
         }

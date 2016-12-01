@@ -41,7 +41,7 @@ function _createTarget(
 function _getActiveBindings(
     avoidConstraints: boolean,
     context: interfaces.Context,
-    parentRequest: interfaces.Request,
+    parentRequest: interfaces.Request | null,
     target: interfaces.Target
 ): interfaces.Binding<any>[] {
 
@@ -116,7 +116,7 @@ function _createSubRequests(
     avoidConstraints: boolean,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     context: interfaces.Context,
-    parentRequest: interfaces.Request,
+    parentRequest: interfaces.Request | null,
     target: interfaces.Target
 ) {
 
@@ -147,7 +147,7 @@ function _createSubRequests(
 
         activeBindings.forEach((binding) => {
 
-            let subChildRequest: interfaces.Request = null;
+            let subChildRequest: interfaces.Request | null = null;
 
             if (target.isArray()) {
                 subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
@@ -156,6 +156,10 @@ function _createSubRequests(
             }
 
             if (binding.type === BindingTypeEnum.Instance) {
+
+                if (binding.implementationType === null) {
+                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_PROPERTY}implementationType`);
+                }
 
                 let dependencies = getDependencies(binding.implementationType);
 
@@ -168,7 +172,7 @@ function _createSubRequests(
         });
 
     } catch (error) {
-        if (error instanceof RangeError) {
+        if (error instanceof RangeError && parentRequest !== null) {
             circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
         } else {
             throw new Error(error.message);
@@ -215,9 +219,13 @@ function plan(
 
 }
 
-function createMockRequest(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any): interfaces.Request {
+function createMockRequest(
+    container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any
+): interfaces.Request {
+
     let target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
-    let request = new Request(serviceIdentifier, null, null, [], target);
+    let context = new Context(container);
+    let request = new Request(serviceIdentifier, context, null, [], target);
     return request;
 }
 

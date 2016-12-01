@@ -19,14 +19,14 @@ describe("Lookup", () => {
 
   it("Should throw when invoking get, remove or hasKey with a null key", () => {
     let lookup = new Lookup<any>();
-    expect(() => { lookup.get(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
-    expect(() => { lookup.remove(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
-    expect(() => { lookup.hasKey(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { (<any>lookup).get(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { (<any>lookup).remove(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { (<any>lookup).hasKey(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should throw when attempting to add a null key", () => {
     let lookup = new Lookup<any>();
-    expect(() => { lookup.add(null, new ClonableValue<number>(1)); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { (<any>lookup).add(null, new ClonableValue<number>(1)); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should throw when attempting to add a null value", () => {

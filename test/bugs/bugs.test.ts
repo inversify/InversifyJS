@@ -50,7 +50,7 @@ describe("Bugs", () => {
 
         @injectable()
         class Warrior {
-            protected rank: string;
+            protected rank: string | null;
             public constructor() { // length = 0
                 this.rank = null;
             }
@@ -373,6 +373,11 @@ describe("Bugs", () => {
                 args.contextInterceptor = (context: interfaces.Context) => {
 
                     context.plan.rootRequest.childRequests.forEach((request, index) => {
+
+                        if (request === null || request.target === null) {
+                            throw new Error("Request should not be null!");
+                        }
+
                         switch (index) {
                             case 0:
                                 expect(request.target.isNamed()).to.eql(false);
@@ -397,7 +402,12 @@ describe("Bugs", () => {
                         }
                     });
 
-                    return nextContextInterceptor(context);
+                    if (nextContextInterceptor !== null) {
+                        return nextContextInterceptor(context);
+                    } else {
+                        throw new Error("nextContextInterceptor should not be null!");
+                    }
+
                 };
 
                 let result = next(args);

@@ -34,11 +34,11 @@ describe("BindingWhenSyntax", () => {
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         bindingWhenSyntax.when((request: interfaces.Request) => {
-            return request.target.name.equals("ninja");
+            return (<any>request).target.name.equals("ninja");
         });
 
         let target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier);
-        let request = new Request(ninjaIdentifier, null, null, binding, target);
+        let request: Request = new (<any>Request)(ninjaIdentifier, null, null, binding, target);
         expect(binding.constraint(request)).eql(true);
 
     });
@@ -57,11 +57,11 @@ describe("BindingWhenSyntax", () => {
         expect(binding.constraint).not.to.eql(null);
 
         let target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier, named);
-        let request = new Request(ninjaIdentifier, null, null, binding, target);
+        let request: Request = new (<any>Request)(ninjaIdentifier, null, null, binding, target);
         expect(binding.constraint(request)).eql(true);
 
         let target2 = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier);
-        let request2 = new Request(ninjaIdentifier, null, null, binding, target2);
+        let request2: Request = new (<any>Request)(ninjaIdentifier, null, null, binding, target2);
         expect(binding.constraint(request2)).eql(false);
 
     });
@@ -78,11 +78,11 @@ describe("BindingWhenSyntax", () => {
         expect(binding.constraint).not.to.eql(null);
 
         let target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier, new Metadata("canSwim", true));
-        let request = new Request(ninjaIdentifier, null, null, binding, target);
+        let request: Request = new (<any>Request)(ninjaIdentifier, null, null, binding, target);
         expect(binding.constraint(request)).eql(true);
 
         let target2 = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier, new Metadata("canSwim", false));
-        let request2 = new Request(ninjaIdentifier, null, null, binding, target2);
+        let request2: Request = new (<any>Request)(ninjaIdentifier, null, null, binding, target2);
         expect(binding.constraint(request2)).eql(false);
 
     });
@@ -117,21 +117,21 @@ describe("BindingWhenSyntax", () => {
 
         let samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
         samuraiBinding.implementationType = Samurai;
-        let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, null);
+        let samuraiRequest: Request = new (<any>Request)("Samurai", null, null, samuraiBinding, null);
 
         let ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
         ninjaBinding.implementationType = Ninja;
-        let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, null);
+        let ninjaRequest: Request = new (<any>Request)("Ninja", null, null, ninjaBinding, null);
 
         let katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
-        let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
+        let katanaRequest: Request = new (<any>Request)("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
         let shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
-        let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+        let shurikenRequest: Request = new (<any>Request)("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
 
         katanaBindingWhenSyntax.whenInjectedInto(Samurai);
         expect(katanaBinding.constraint(katanaRequest)).eql(true);
@@ -198,26 +198,26 @@ describe("BindingWhenSyntax", () => {
         let samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
         samuraiBinding.implementationType = Samurai;
 
-        let samuraiRequest = new Request(
-            "Samurai", null, null, samuraiBinding, new Target(TargetTypeEnum.ConstructorArgument, null, "Samurai", "japonese")
+        let samuraiRequest: Request = new (<any>Request)(
+            "Samurai", null, null, samuraiBinding, new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Samurai", "japonese")
         );
 
         let ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
         ninjaBinding.implementationType = Ninja;
 
-        let ninjaRequest = new Request(
-            "Ninja", null, null, ninjaBinding, new Target(TargetTypeEnum.ConstructorArgument, null, "Ninja", "chinese")
+        let ninjaRequest: Request = new (<any>Request)(
+            "Ninja", null, null, ninjaBinding, new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Ninja", "chinese")
         );
 
         let katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
-        let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
+        let katanaRequest: Request = new (<any>Request)("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
         let shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
-        let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+        let shurikenRequest: Request = new (<any>Request)("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
 
         katanaBindingWhenSyntax.whenParentNamed("chinese");
         shurikenBindingWhenSyntax.whenParentNamed("chinese");
@@ -261,23 +261,23 @@ describe("BindingWhenSyntax", () => {
 
         let samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
         samuraiBinding.implementationType = Samurai;
-        let samuraiTarget = new Target(TargetTypeEnum.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
-        let samuraiRequest = new Request("Samurai", null, null, samuraiBinding, samuraiTarget);
+        let samuraiTarget = new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
+        let samuraiRequest: Request = new (<any>Request)("Samurai", null, null, samuraiBinding, samuraiTarget);
 
         let ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
         ninjaBinding.implementationType = Ninja;
-        let ninjaTarget = new Target(TargetTypeEnum.ConstructorArgument, null, "Ninja", new Metadata("sneaky", true));
-        let ninjaRequest = new Request("Ninja", null, null, ninjaBinding, ninjaTarget);
+        let ninjaTarget = new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Ninja", new Metadata("sneaky", true));
+        let ninjaRequest: Request = new (<any>Request)("Ninja", null, null, ninjaBinding, ninjaTarget);
 
         let katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
-        let katanaRequest = new Request("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
+        let katanaRequest: Request = new (<any>Request)("Weapon", null, samuraiRequest, katanaBinding, katanaTarget);
 
         let shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
-        let shurikenRequest = new Request("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
+        let shurikenRequest: Request = new (<any>Request)("Weapon", null, ninjaRequest, shurikenBinding, shurikenTarget);
 
         katanaBindingWhenSyntax.whenParentTagged("sneaky", true);
         shurikenBindingWhenSyntax.whenParentTagged("sneaky", true);
@@ -361,9 +361,9 @@ describe("BindingWhenSyntax", () => {
         let samuraiStudentBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
         samuraiStudentBinding.implementationType = SamuraiStudent;
 
-        let samuraiTarget = new Target(TargetTypeEnum.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
-        let samuraiMasterRequest = new Request("Samurai", null, null, samuraiMasterBinding, samuraiTarget);
-        let samuraiStudentRequest = new Request("Samurai", null, null, samuraiStudentBinding, samuraiTarget);
+        let samuraiTarget: Request = new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
+        let samuraiMasterRequest: Request = new (<any>Request)("Samurai", null, null, samuraiMasterBinding, samuraiTarget);
+        let samuraiStudentRequest: Request = new (<any>Request)("Samurai", null, null, samuraiStudentBinding, samuraiTarget);
 
         // Ninja
         let ninjaMasterBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
@@ -372,25 +372,25 @@ describe("BindingWhenSyntax", () => {
         let ninjaStudentBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
         ninjaStudentBinding.implementationType = NinjaStudent;
 
-        let ninjaTarget = new Target(TargetTypeEnum.ConstructorArgument, null, "Ninja", new Metadata("sneaky", true));
-        let ninjaMasterRequest = new Request("Ninja", null, null, ninjaMasterBinding, ninjaTarget);
-        let ninjaStudentRequest = new Request("Ninja", null, null, ninjaStudentBinding, ninjaTarget);
+        let ninjaTarget: Request = new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Ninja", new Metadata("sneaky", true));
+        let ninjaMasterRequest: Request = new (<any>Request)("Ninja", null, null, ninjaMasterBinding, ninjaTarget);
+        let ninjaStudentRequest: Request = new (<any>Request)("Ninja", null, null, ninjaStudentBinding, ninjaTarget);
 
         // Katana
         let katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         katanaBinding.implementationType = Katana;
         let katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         let katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
-        let ironKatanaRequest = new Request("Weapon", null, samuraiMasterRequest, katanaBinding, katanaTarget);
-        let woodKatanaRequest = new Request("Weapon", null, samuraiStudentRequest, katanaBinding, katanaTarget);
+        let ironKatanaRequest: Request = new (<any>Request)("Weapon", null, samuraiMasterRequest, katanaBinding, katanaTarget);
+        let woodKatanaRequest: Request = new (<any>Request)("Weapon", null, samuraiStudentRequest, katanaBinding, katanaTarget);
 
         // Shuriken
         let shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         shurikenBinding.implementationType = Shuriken;
         let shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         let shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
-        let ironShurikenRequest = new Request("Weapon", null, ninjaMasterRequest, shurikenBinding, shurikenTarget);
-        let woodShurikenRequest = new Request("Weapon", null, ninjaStudentRequest, shurikenBinding, shurikenTarget);
+        let ironShurikenRequest: Request = new (<any>Request)("Weapon", null, ninjaMasterRequest, shurikenBinding, shurikenTarget);
+        let woodShurikenRequest: Request = new (<any>Request)("Weapon", null, ninjaStudentRequest, shurikenBinding, shurikenTarget);
 
         it("Should be able to apply a type constraint to some of its ancestors", () => {
 

@@ -627,14 +627,14 @@ describe("Resolve", () => {
       class Shuriken implements Shuriken {}
 
       interface Warrior {
-          katana: Katana;
+          katana: Katana | null;
           katanaProvider: interfaces.Provider<Sword>;
           shuriken: Shuriken;
       }
 
       @injectable()
       class Ninja implements Warrior {
-          public katana: Katana;
+          public katana: Katana | null;
           public katanaProvider: interfaces.Provider<Sword>;
           public shuriken: Shuriken;
           public constructor(
@@ -806,11 +806,11 @@ describe("Resolve", () => {
       container.bind<Ninja>(ninjaId).to(Ninja);
 
       container.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) => {
-          return request.target.name.equals("katana");
+          return (<any>request).target.name.equals("katana");
       });
 
       container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) => {
-          return request.target.name.equals("shuriken");
+        return (<any>request).target.name.equals("shuriken");
       });
 
       let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);

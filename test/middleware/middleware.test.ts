@@ -279,7 +279,7 @@ describe("Middleware", () => {
                 let nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
                     log.push(`contextInterceptor1: ${args.serviceIdentifier}`);
-                    return nextContextInterceptor(context);
+                    return nextContextInterceptor !== null ? nextContextInterceptor(context) : context;
                 };
                 return planAndResolve(args);
             };
@@ -290,7 +290,7 @@ describe("Middleware", () => {
                 let nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
                     log.push(`contextInterceptor2: ${args.serviceIdentifier}`);
-                    return nextContextInterceptor(context);
+                    return nextContextInterceptor !== null ? nextContextInterceptor(context) : context;
                 };
                 return planAndResolve(args);
             };
