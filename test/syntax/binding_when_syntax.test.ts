@@ -7,6 +7,8 @@ import { Metadata } from "../../src/planning/metadata";
 import { BindingWhenSyntax } from "../../src/syntax/binding_when_syntax";
 import { typeConstraint } from "../../src/syntax/constraint_helpers";
 import { BindingScopeEnum, TargetTypeEnum } from "../../src/constants/literal_types";
+import { Context } from "../../src/planning/context";
+import { Container } from "../../src/container/container";
 
 describe("BindingWhenSyntax", () => {
 
@@ -34,11 +36,12 @@ describe("BindingWhenSyntax", () => {
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
         bindingWhenSyntax.when((request: interfaces.Request) => {
-            return (<any>request).target.name.equals("ninja");
+            return request.target.name.equals("ninja");
         });
 
         let target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier);
-        let request: Request = new (<any>Request)(ninjaIdentifier, null, null, binding, target);
+        let context = new Context(new Container());
+        let request: Request = new Request(ninjaIdentifier, context, null, binding, target);
         expect(binding.constraint(request)).eql(true);
 
     });

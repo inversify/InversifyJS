@@ -72,7 +72,7 @@
     "run-sequence": "^1.2.0",
     "sinon": "^1.17.3",
     "tslint": "^4.0.1",
-    "typescript": "^2.0.2",
+    "typescript": "^2.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

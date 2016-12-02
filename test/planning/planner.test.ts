@@ -97,23 +97,23 @@ describe("Planner", () => {
         // Katana
         expect(actualKatanaRequest.serviceIdentifier).eql(katanaId);
         expect(actualKatanaRequest.bindings.length).eql(1);
-        expect((<any>actualKatanaRequest).target.serviceIdentifier).eql(katanaId);
+        expect(actualKatanaRequest.target.serviceIdentifier).eql(katanaId);
         expect(actualKatanaRequest.childRequests.length).eql(2);
 
         // KatanaHandler
         expect(actualKatanaHandlerRequest.serviceIdentifier).eql(katanaHandlerId);
         expect(actualKatanaHandlerRequest.bindings.length).eql(1);
-        expect((<any>actualKatanaHandlerRequest).target.serviceIdentifier).eql(katanaHandlerId);
+        expect(actualKatanaHandlerRequest.target.serviceIdentifier).eql(katanaHandlerId);
 
         // KatanaBalde
         expect(actualKatanaBladeRequest.serviceIdentifier).eql(katanaBladeId);
         expect(actualKatanaBladeRequest.bindings.length).eql(1);
-        expect((<any>actualKatanaBladeRequest).target.serviceIdentifier).eql(katanaBladeId);
+        expect(actualKatanaBladeRequest.target.serviceIdentifier).eql(katanaBladeId);
 
         // Shuriken
         expect(actualShurikenRequest.serviceIdentifier).eql(shurikenId);
         expect(actualShurikenRequest.bindings.length).eql(1);
-        expect((<any>actualShurikenRequest).target.serviceIdentifier).eql(shurikenId);
+        expect(actualShurikenRequest.target.serviceIdentifier).eql(shurikenId);
 
     });
 
@@ -292,32 +292,32 @@ describe("Planner", () => {
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
-        expect((<any>actualPlan.rootRequest).target.serviceIdentifier).eql(ninjaId);
-        expect((<any>actualPlan.rootRequest).target.isArray()).eql(false);
+        expect(actualPlan.rootRequest.target.serviceIdentifier).eql(ninjaId);
+        expect(actualPlan.rootRequest.target.isArray()).eql(false);
 
         // root request should only have one child request with target weapons/Weapon[]
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql("Weapon");
         expect(actualPlan.rootRequest.childRequests[1]).eql(undefined);
-        expect((<any>actualPlan.rootRequest.childRequests[0]).target.name.value()).eql("weapons");
-        expect((<any>actualPlan.rootRequest.childRequests[0]).target.serviceIdentifier).eql("Weapon");
-        expect((<any>actualPlan.rootRequest.childRequests[0]).target.isArray()).eql(true);
+        expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("weapons");
+        expect(actualPlan.rootRequest.childRequests[0].target.serviceIdentifier).eql("Weapon");
+        expect(actualPlan.rootRequest.childRequests[0].target.isArray()).eql(true);
 
         // child request should have two child requests with targets weapons/Weapon[] but bindings Katana and Shuriken
         expect(actualPlan.rootRequest.childRequests[0].childRequests.length).eql(2);
 
         expect(actualPlan.rootRequest.childRequests[0].childRequests[0].serviceIdentifier).eql(weaponId);
-        expect((<any>actualPlan.rootRequest.childRequests[0].childRequests[0]).target.name.value()).eql("weapons");
-        expect((<any>actualPlan.rootRequest.childRequests[0].childRequests[0]).target.serviceIdentifier).eql("Weapon");
-        expect((<any>actualPlan.rootRequest.childRequests[0].childRequests[0]).target.isArray()).eql(true);
+        expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.name.value()).eql("weapons");
+        expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.serviceIdentifier).eql("Weapon");
+        expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.isArray()).eql(true);
         expect(actualPlan.rootRequest.childRequests[0].childRequests[0].serviceIdentifier).eql("Weapon");
         expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].serviceIdentifier).eql("Weapon");
         let shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
         expect(shurikenImplementationType.name).eql("Shuriken");
 
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql(weaponId);
-        expect((<any>actualPlan.rootRequest.childRequests[0].childRequests[1].target).name.value()).eql("weapons");
-        expect((<any>actualPlan.rootRequest.childRequests[0].childRequests[1].target).serviceIdentifier).eql("Weapon");
-        expect((<any>actualPlan.rootRequest.childRequests[0].childRequests[1].target).isArray()).eql(true);
+        expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.name.value()).eql("weapons");
+        expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.serviceIdentifier).eql("Weapon");
+        expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.isArray()).eql(true);
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql("Weapon");
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].serviceIdentifier).eql("Weapon");
         let katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
@@ -442,17 +442,17 @@ describe("Planner", () => {
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
-        expect((<any>actualPlan.rootRequest).target.serviceIdentifier).eql(ninjaId);
-        expect((<any>actualPlan.rootRequest).target.isArray()).eql(false);
+        expect(actualPlan.rootRequest.target.serviceIdentifier).eql(ninjaId);
+        expect(actualPlan.rootRequest.target.isArray()).eql(false);
 
         // root request should have 2 child requests
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(weaponId);
-        expect((<any>actualPlan.rootRequest.childRequests[0].target).name.value()).eql("katana");
-        expect((<any>actualPlan.rootRequest.childRequests[0].target).serviceIdentifier).eql(weaponId);
+        expect(actualPlan.rootRequest.childRequests[0].target.name.value()).eql("katana");
+        expect(actualPlan.rootRequest.childRequests[0].target.serviceIdentifier).eql(weaponId);
 
         expect(actualPlan.rootRequest.childRequests[1].serviceIdentifier).eql(weaponId);
-        expect((<any>actualPlan.rootRequest.childRequests[1].target).name.value()).eql("shuriken");
-        expect((<any>actualPlan.rootRequest.childRequests[1].target).serviceIdentifier).eql(weaponId);
+        expect(actualPlan.rootRequest.childRequests[1].target.name.value()).eql("shuriken");
+        expect(actualPlan.rootRequest.childRequests[1].target.serviceIdentifier).eql(weaponId);
 
         expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
