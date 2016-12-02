@@ -109,7 +109,7 @@ describe("Request", () => {
       expect(katanaRequest.target.name.value()).eql("Katana");
       expect(katanaRequest.childRequests.length).eql(0);
 
-      let katanaParentRequest: interfaces.Request = <any>katanaRequest.parentRequest;
+      let katanaParentRequest: interfaces.Request = katanaRequest.parentRequest as any;
       expect(katanaParentRequest.serviceIdentifier).eql(identifiers.Ninja);
       expect(katanaParentRequest.target.name.value()).eql("Ninja");
       expect(katanaParentRequest.target.serviceIdentifier).eql(identifiers.Ninja);

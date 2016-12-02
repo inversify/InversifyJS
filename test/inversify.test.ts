@@ -1933,9 +1933,9 @@ describe("InversifyJS", () => {
         let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
         expect(errorFunction).to.throw(error);
 
-        let samuraiMaster2 = container.get<Warrior>(SYMBOLS.SamuraiMaster2);
+        let samuraiMaster2 = container.get<SamuraiMaster2>(SYMBOLS.SamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
-        expect(typeof (<any>samuraiMaster2).isMaster).eql("boolean");
+        expect(typeof samuraiMaster2.isMaster).eql("boolean");
 
     });
 
