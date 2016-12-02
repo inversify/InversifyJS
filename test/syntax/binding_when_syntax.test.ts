@@ -200,6 +200,7 @@ describe("BindingWhenSyntax", () => {
 
         let samuraiRequest: Request = new (<any>Request)(
             "Samurai", null, null, samuraiBinding, new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Samurai", "japonese")
+
         );
 
         let ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
@@ -207,6 +208,7 @@ describe("BindingWhenSyntax", () => {
 
         let ninjaRequest: Request = new (<any>Request)(
             "Ninja", null, null, ninjaBinding, new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Ninja", "chinese")
+
         );
 
         let katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
@@ -261,6 +263,7 @@ describe("BindingWhenSyntax", () => {
 
         let samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
         samuraiBinding.implementationType = Samurai;
+
         let samuraiTarget = new (<any>Target)(TargetTypeEnum.ConstructorArgument, null, "Samurai", new Metadata("sneaky", false));
         let samuraiRequest: Request = new (<any>Request)("Samurai", null, null, samuraiBinding, samuraiTarget);
 

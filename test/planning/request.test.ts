@@ -99,7 +99,8 @@ describe("Request", () => {
       ninjaRequest.addChildRequest(
           identifiers.Katana,
           [],
-          new Target(TargetTypeEnum.ConstructorArgument, "katana", identifiers.Katana));
+          new Target(TargetTypeEnum.ConstructorArgument, "katana", identifiers.Katana)
+      );
 
       let katanaRequest = ninjaRequest.childRequests[0];
 

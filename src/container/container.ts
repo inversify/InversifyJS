@@ -135,14 +135,14 @@ class Container implements interfaces.Container {
         return this._bindingDictionary.hasKey(serviceIdentifier);
     }
 
-    public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string): boolean {
+    public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string|number|symbol): boolean {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
     // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
     // Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
     // binding with a complex constraint is available.
-    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string, value: any): boolean {
+    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
         let bindings = this._bindingDictionary.get(serviceIdentifier);
         let request = createMockRequest(this, serviceIdentifier, key, value);
         return bindings.some((b) => b.constraint(request));
@@ -181,11 +181,11 @@ class Container implements interfaces.Container {
         return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
     }
 
-    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T {
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string|number|symbol, value: any): T {
         return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
     }
 
-    public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T {
+    public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string|number|symbol): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
@@ -195,11 +195,11 @@ class Container implements interfaces.Container {
         return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
     }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string, value: any): T[] {
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string|number|symbol, value: any): T[] {
         return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
     }
 
-    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string): T[] {
+    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string|number|symbol): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
@@ -211,7 +211,7 @@ class Container implements interfaces.Container {
         isMultiInject: boolean,
         targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        key?: string,
+        key?: string|number|symbol,
         value?: any
     ): (T|T[]) {
 

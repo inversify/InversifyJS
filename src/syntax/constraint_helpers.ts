@@ -17,7 +17,7 @@ let traverseAncerstors = (
 
 // This helpers use currying to help you to generate constraints
 
-let taggedConstraint = (key: string) => (value: any) => {
+let taggedConstraint = (key: string|number|symbol) => (value: any) => {
 
     let constraint: interfaces.ConstraintFunction =  (request: interfaces.Request | null) =>  {
         return request !== null && request.target !== null && request.target.matchesTag(key)(value);
