@@ -9,14 +9,14 @@ class Request implements interfaces.Request {
     public parentRequest: interfaces.Request | null;
     public bindings: interfaces.Binding<any>[];
     public childRequests: interfaces.Request[];
-    public target: interfaces.Target | null;
+    public target: interfaces.Target;
 
     public constructor(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         parentContext: interfaces.Context,
         parentRequest: interfaces.Request | null,
         bindings: (interfaces.Binding<any>|interfaces.Binding<any>[]),
-        target: interfaces.Target | null = null
+        target: interfaces.Target
     ) {
 
             this.guid = guid();

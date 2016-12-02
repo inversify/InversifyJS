@@ -128,7 +128,7 @@ namespace interfaces {
         parentContext: Context;
         parentRequest: Request | null;
         childRequests: Request[];
-        target: Target | null;
+        target: Target;
         bindings: Binding<any>[];
         addChildRequest(
             serviceIdentifier: ServiceIdentifier<any>,

@@ -17,9 +17,7 @@ function _injectProperties(
 
     propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
         let propertyName = "";
-        if (r.target !== null) {
-            propertyName = r.target.name.value();
-        }
+        propertyName = r.target.name.value();
         let injection = propertyInjections[index];
         instance[propertyName] = injection;
     });

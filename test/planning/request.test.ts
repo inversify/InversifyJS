@@ -34,7 +34,7 @@ describe("Request", () => {
           context,
           null,
           [],
-          null
+          new Target(TargetTypeEnum.Variable, "", identifiers.Ninja)
       );
 
       expect(request1.serviceIdentifier).eql(identifiers.Ninja);

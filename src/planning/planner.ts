@@ -155,11 +155,7 @@ function _createSubRequests(
                 subChildRequest = childRequest;
             }
 
-            if (binding.type === BindingTypeEnum.Instance) {
-
-                if (binding.implementationType === null) {
-                    throw new Error(`${ERROR_MSGS.INVALID_BINDING_PROPERTY}implementationType`);
-                }
+            if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 
                 let dependencies = getDependencies(binding.implementationType);
 
