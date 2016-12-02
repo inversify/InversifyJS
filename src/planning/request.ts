@@ -18,14 +18,13 @@ class Request implements interfaces.Request {
         bindings: (interfaces.Binding<any>|interfaces.Binding<any>[]),
         target: interfaces.Target
     ) {
-
             this.guid = guid();
             this.serviceIdentifier = serviceIdentifier;
             this.parentContext = parentContext;
             this.parentRequest = parentRequest;
             this.target = target;
             this.childRequests = [];
-            this.bindings = (Array.isArray(bindings) ? bindings : ((bindings) ? [bindings] : []));
+            this.bindings = (Array.isArray(bindings) ? bindings : [bindings]);
     }
 
     public addChildRequest(
