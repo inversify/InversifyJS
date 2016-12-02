@@ -17,16 +17,18 @@ class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
 
 describe("Lookup", () => {
 
+  let invalid: any = null;
+
   it("Should throw when invoking get, remove or hasKey with a null key", () => {
     let lookup = new Lookup<any>();
-    expect(() => { (<any>lookup).get(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
-    expect(() => { (<any>lookup).remove(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
-    expect(() => { (<any>lookup).hasKey(null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { lookup.get(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { lookup.remove(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { lookup.hasKey(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should throw when attempting to add a null key", () => {
     let lookup = new Lookup<any>();
-    expect(() => { (<any>lookup).add(null, new ClonableValue<number>(1)); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { lookup.add(invalid, new ClonableValue<number>(1)); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should throw when attempting to add a null value", () => {

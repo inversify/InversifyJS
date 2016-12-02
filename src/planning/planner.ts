@@ -16,6 +16,10 @@ import {
     listMetadataForTarget
 } from "../utils/serialization";
 
+function getBindingDictionary (cntnr: any): interfaces.Lookup<interfaces.Binding<any>> {
+    return cntnr._bindingDictionary;
+}
+
 function _createTarget(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
@@ -182,7 +186,7 @@ function getBindings<T>(
 ): interfaces.Binding<T>[] {
 
     let bindings: interfaces.Binding<T>[] = [];
-    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
+    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
 
     if (bindingDictionary.hasKey(serviceIdentifier)) {
 
@@ -228,4 +232,4 @@ function createMockRequest(
     return request;
 }
 
-export { plan, createMockRequest };
+export { plan, createMockRequest, getBindingDictionary };

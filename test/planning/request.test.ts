@@ -5,6 +5,7 @@ import { Container } from "../../src/container/container";
 import { Target } from "../../src/planning/target";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { injectable } from "../../src/annotation/injectable";
+import { interfaces } from "../../src/interfaces/interfaces";
 
 describe("Request", () => {
 
@@ -21,12 +22,12 @@ describe("Request", () => {
       let container = new Container();
       let context = new Context(container);
 
-      let request1: Request = new (<any>Request)(
+      let request1: Request = new Request(
           identifiers.Ninja,
           context,
           null,
-          null,
-          null
+          [],
+          new Target(TargetTypeEnum.Variable, "", identifiers.Ninja)
       );
 
       let request2 = new Request(
@@ -88,27 +89,30 @@ describe("Request", () => {
       let container = new Container();
       let context = new Context(container);
 
-      let ninjaRequest: Request = new (<any>Request)(
+      let ninjaRequest: Request = new Request(
           identifiers.Ninja,
           context,
           null,
-          null,
-          null
+          [],
+          new Target(TargetTypeEnum.Variable, "Ninja", identifiers.Ninja)
       );
 
       ninjaRequest.addChildRequest(
           identifiers.Katana,
           [],
-          new Target(TargetTypeEnum.ConstructorArgument, "katana", identifiers.Katana)
+          new Target(TargetTypeEnum.ConstructorArgument, "Katana", identifiers.Katana)
       );
 
       let katanaRequest = ninjaRequest.childRequests[0];
 
       expect(katanaRequest.serviceIdentifier).eql(identifiers.Katana);
-      expect((<any>katanaRequest).parentRequest.serviceIdentifier).eql(identifiers.Ninja);
+      expect(katanaRequest.target.name.value()).eql("Katana");
       expect(katanaRequest.childRequests.length).eql(0);
-      expect((<any>katanaRequest).target.name.value()).eql("katana");
-      expect((<any>katanaRequest).target.serviceIdentifier).eql(identifiers.Katana);
+
+      let katanaParentRequest: interfaces.Request = <any>katanaRequest.parentRequest;
+      expect(katanaParentRequest.serviceIdentifier).eql(identifiers.Ninja);
+      expect(katanaParentRequest.target.name.value()).eql("Ninja");
+      expect(katanaParentRequest.target.serviceIdentifier).eql(identifiers.Ninja);
 
   });
 

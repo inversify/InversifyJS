@@ -10,6 +10,10 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         this._map = new Map<interfaces.ServiceIdentifier<any>, T[]>();
     }
 
+    public getMap() {
+        return this._map;
+    }
+
 	// adds a new entry to _map
     public add(serviceIdentifier: interfaces.ServiceIdentifier<any>, value: T): void {
 

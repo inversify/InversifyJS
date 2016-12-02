@@ -200,6 +200,7 @@ namespace interfaces {
 
     export interface Lookup<T> extends Clonable<Lookup<T>> {
         add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
+        getMap(): Map<interfaces.ServiceIdentifier<any>, T[]>;
         get(serviceIdentifier: ServiceIdentifier<any>): T[];
         remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void;
         removeByCondition(condition: (item: T) => boolean): void;

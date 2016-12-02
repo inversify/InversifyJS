@@ -19,7 +19,8 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     }
 
     public toSelf(): interfaces.BindingInWhenOnSyntax<T> {
-        return this.to(<any>this._binding.serviceIdentifier);
+        let self: any = this._binding.serviceIdentifier;
+        return this.to(self);
     }
 
     public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {

@@ -1,7 +1,7 @@
 import { interfaces } from "../interfaces/interfaces";
 import { Binding } from "../bindings/binding";
 import { Lookup } from "./lookup";
-import { plan, createMockRequest } from "../planning/planner";
+import { plan, createMockRequest, getBindingDictionary } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
 import { getServiceIdentifierAsString } from "../utils/serialization";
@@ -23,9 +23,9 @@ class Container implements interfaces.Container {
     public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
 
         let container = new Container();
-        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
-        let bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = (<any>container1)._bindingDictionary;
-        let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = (<any>container2)._bindingDictionary;
+        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
+        let bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container1);
+        let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
             origing: interfaces.Lookup<interfaces.Binding<any>>,
@@ -80,18 +80,25 @@ class Container implements interfaces.Container {
     }
 
     public load(...modules: interfaces.ContainerModule[]): void {
+
+        let setModuleId = (bindingToSyntax: any, moduleId: string) => {
+            bindingToSyntax._binding.moduleId = moduleId;
+        };
+
         let getBindFunction = (moduleId: string) => {
             return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 let _bind = this.bind.bind(this);
                 let bindingToSyntax = _bind(serviceIdentifier);
-                (<any>bindingToSyntax)._binding.moduleId = moduleId;
+                setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
         };
+
         modules.forEach((module) => {
             let bindFunction = getBindFunction(module.guid);
             module.registry(bindFunction);
         });
+
     }
 
     public unload(...modules: interfaces.ContainerModule[]): void {
@@ -264,6 +271,7 @@ class Container implements interfaces.Container {
 
         };
     }
+
 }
 
 export { Container };
