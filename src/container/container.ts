@@ -224,7 +224,7 @@ class Container implements interfaces.Container {
 
         let result: (T|T[]) | null = null;
 
-        let args: interfaces.NextArgs = {
+        let defaultArgs: interfaces.NextArgs = {
             avoidConstraints: avoidConstraints,
             contextInterceptor: (context: interfaces.Context) => { return context; },
             isMultiInject: isMultiInject,
@@ -235,12 +235,12 @@ class Container implements interfaces.Container {
         };
 
         if (this._middleware) {
-            result = this._middleware(args);
+            result = this._middleware(defaultArgs);
             if (result === undefined || result === null) {
                 throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
             }
         } else {
-            result = this._planAndResolve<T>()(args);
+            result = this._planAndResolve<T>()(defaultArgs);
         }
 
         return result;
@@ -252,6 +252,7 @@ class Container implements interfaces.Container {
     private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T|T[]) {
         return (args: interfaces.NextArgs) => {
 
+            // create a plan
             let context = plan(
                 this,
                 args.isMultiInject,
@@ -262,10 +263,10 @@ class Container implements interfaces.Container {
                 args.avoidConstraints
             );
 
-            if (args.contextInterceptor !== null) {
-                context = args.contextInterceptor(context);
-            }
+            // apply context interceptor
+            context = args.contextInterceptor(context);
 
+            // resolve plan
             let result = resolve<T>(context);
             return result;
 

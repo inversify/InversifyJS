@@ -73,7 +73,7 @@ namespace interfaces {
 
     export interface NextArgs {
         avoidConstraints: boolean;
-        contextInterceptor: ((contexts: Context) => Context) | null;
+        contextInterceptor: ((contexts: Context) => Context);
         isMultiInject: boolean;
         targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
