@@ -1,7 +1,7 @@
 import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
 import { resolve } from "../../src/resolution/resolver";
-import { plan } from "../../src/planning/planner";
+import { plan, getBindingDictionary } from "../../src/planning/planner";
 import { Container } from "../../src/container/container";
 import { TargetTypeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
 import { injectable } from "../../src/annotation/injectable";
@@ -169,7 +169,7 @@ describe("Resolve", () => {
       container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
 
-      let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
+      let bindingDictionary = getBindingDictionary(container);
       let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
 
       expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
@@ -627,14 +627,14 @@ describe("Resolve", () => {
       class Shuriken implements Shuriken {}
 
       interface Warrior {
-          katana: Katana;
+          katana: Katana | null;
           katanaProvider: interfaces.Provider<Sword>;
           shuriken: Shuriken;
       }
 
       @injectable()
       class Ninja implements Warrior {
-          public katana: Katana;
+          public katana: Katana | null;
           public katanaProvider: interfaces.Provider<Sword>;
           public shuriken: Shuriken;
           public constructor(
@@ -810,7 +810,7 @@ describe("Resolve", () => {
       });
 
       container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) => {
-          return request.target.name.equals("shuriken");
+        return request.target.name.equals("shuriken");
       });
 
       let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);

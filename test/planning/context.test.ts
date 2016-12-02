@@ -3,6 +3,8 @@ import { Container } from "../../src/container/container";
 import { Context } from "../../src/planning/context";
 import { Request } from "../../src/planning/request";
 import { Plan } from "../../src/planning/plan";
+import { Target } from "../../src/planning/target";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
 
 describe("Context", () => {
 
@@ -10,7 +12,8 @@ describe("Context", () => {
 
       let container = new Container();
       let context1 = new Context(container);
-      let context2 = new Context(null);
+      let invalid: any = null;
+      let context2: Context = new (Context)(invalid);
 
       expect(context1.container).not.to.eql(null);
       expect(context2.container).eql(null);
@@ -24,12 +27,14 @@ describe("Context", () => {
 
       let container = new Container();
       let context = new Context(container);
+      let target = new Target(TargetTypeEnum.Variable, "", "Ninja");
 
       let ninjaRequest = new Request(
           "Ninja",
           context,
           null,
-          null
+          [],
+          target
       );
 
       let plan = new Plan(context, ninjaRequest);

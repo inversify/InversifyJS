@@ -1,7 +1,7 @@
 import { interfaces } from "../interfaces/interfaces";
 import { Binding } from "../bindings/binding";
 import { Lookup } from "./lookup";
-import { plan, createMockRequest } from "../planning/planner";
+import { plan, createMockRequest, getBindingDictionary } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
 import { getServiceIdentifierAsString } from "../utils/serialization";
@@ -14,18 +14,18 @@ import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
 class Container implements interfaces.Container {
 
     public guid: string;
+    public parent: interfaces.Container | null;
     public readonly options: interfaces.ContainerOptions;
-    private _middleware: interfaces.Next;
+    private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _snapshots: Array<interfaces.ContainerSnapshot>;
-    private _parentContainer: interfaces.Container;
 
     public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
 
         let container = new Container();
-        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
-        let bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = (<any>container1)._bindingDictionary;
-        let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = (<any>container2)._bindingDictionary;
+        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
+        let bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container1);
+        let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
             origing: interfaces.Lookup<interfaces.Binding<any>>,
@@ -52,14 +52,14 @@ class Container implements interfaces.Container {
         if (containerOptions !== undefined) {
 
             if (typeof containerOptions !== "object") {
-                throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_MUST_BE_AN_OBJECT}`);
+                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
             } else if (containerOptions.defaultScope === undefined) {
-                throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
             } else if (
                 containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
                 containerOptions.defaultScope !== BindingScopeEnum.Transient
             ) {
-                throw new Error(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
             }
 
             this.options = {
@@ -76,22 +76,29 @@ class Container implements interfaces.Container {
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._snapshots = [];
         this._middleware = null;
-        this._parentContainer = null;
+        this.parent = null;
     }
 
     public load(...modules: interfaces.ContainerModule[]): void {
+
+        let setModuleId = (bindingToSyntax: any, moduleId: string) => {
+            bindingToSyntax._binding.moduleId = moduleId;
+        };
+
         let getBindFunction = (moduleId: string) => {
             return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 let _bind = this.bind.bind(this);
                 let bindingToSyntax = _bind(serviceIdentifier);
-                (<any>bindingToSyntax)._binding.moduleId = moduleId;
+                setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
         };
+
         modules.forEach((module) => {
             let bindFunction = getBindFunction(module.guid);
             module.registry(bindFunction);
         });
+
     }
 
     public unload(...modules: interfaces.ContainerModule[]): void {
@@ -139,12 +146,12 @@ class Container implements interfaces.Container {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
+    // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
+    // Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+    // binding with a complex constraint is available.
     public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
         let bindings = this._bindingDictionary.get(serviceIdentifier);
-        let request = createMockRequest(serviceIdentifier, key, value);
-        // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
-        // Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
-        // binding with a complex constraint is available.
+        let request = createMockRequest(this, serviceIdentifier, key, value);
         return bindings.some((b) => b.constraint(request));
     }
 
@@ -153,10 +160,10 @@ class Container implements interfaces.Container {
     }
 
     public restore(): void {
-        if (this._snapshots.length === 0) {
+        let snapshot = this._snapshots.pop();
+        if (snapshot === undefined) {
             throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
         }
-        let snapshot = this._snapshots.pop();
         this._bindingDictionary = snapshot.bindings;
         this._middleware = snapshot.middleware;
     }
@@ -165,14 +172,6 @@ class Container implements interfaces.Container {
         let child = new Container();
         child.parent = this;
         return child;
-    }
-
-    public set parent (container: interfaces.Container) {
-        this._parentContainer = container;
-    }
-
-    public get parent() {
-        return this._parentContainer;
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
@@ -223,9 +222,9 @@ class Container implements interfaces.Container {
         value?: any
     ): (T|T[]) {
 
-        let result: (T|T[]) = null;
+        let result: (T|T[]) | null = null;
 
-        let args: interfaces.NextArgs = {
+        let defaultArgs: interfaces.NextArgs = {
             avoidConstraints: avoidConstraints,
             contextInterceptor: (context: interfaces.Context) => { return context; },
             isMultiInject: isMultiInject,
@@ -236,12 +235,12 @@ class Container implements interfaces.Container {
         };
 
         if (this._middleware) {
-            result = this._middleware(args);
+            result = this._middleware(defaultArgs);
             if (result === undefined || result === null) {
                 throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
             }
         } else {
-            result = this._planAndResolve<T>()(args);
+            result = this._planAndResolve<T>()(defaultArgs);
         }
 
         return result;
@@ -252,6 +251,8 @@ class Container implements interfaces.Container {
     // with the Resolver and that is what this function is about
     private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T|T[]) {
         return (args: interfaces.NextArgs) => {
+
+            // create a plan
             let context = plan(
                 this,
                 args.isMultiInject,
@@ -261,10 +262,17 @@ class Container implements interfaces.Container {
                 args.value,
                 args.avoidConstraints
             );
-            let result = resolve<T>(args.contextInterceptor(context));
+
+            // apply context interceptor
+            context = args.contextInterceptor(context);
+
+            // resolve plan
+            let result = resolve<T>(context);
             return result;
+
         };
     }
+
 }
 
 export { Container };

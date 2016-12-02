@@ -13,6 +13,7 @@ function _resolveRequest(request: interfaces.Request): any {
 
     let targetParentIsNotAnArray = !request.parentRequest ||
                                    !request.parentRequest.target ||
+                                   !request.target ||
                                    !request.parentRequest.target.matchesArray(request.target.serviceIdentifier);
 
     if (targetIsAnAray && targetParentIsNotAnArray) {
@@ -32,42 +33,25 @@ function _resolveRequest(request: interfaces.Request): any {
             return binding.cache;
         }
 
-        switch (binding.type) {
-
-            case BindingTypeEnum.ConstantValue:
-                result = binding.cache;
-                break;
-
-            case BindingTypeEnum.DynamicValue:
-                result = binding.dynamicValue(request.parentContext);
-                break;
-
-            case BindingTypeEnum.Constructor:
-                result = binding.implementationType;
-                break;
-
-            case BindingTypeEnum.Factory:
-                result = binding.factory(request.parentContext);
-                break;
-
-            case BindingTypeEnum.Function:
-                result = binding.cache;
-                break;
-
-            case BindingTypeEnum.Provider:
-                result = binding.provider(request.parentContext);
-                break;
-
-            case BindingTypeEnum.Instance:
-                result = resolveInstance(binding.implementationType, childRequests, _resolveRequest);
-                break;
-
-            case BindingTypeEnum.Invalid:
-            default:
-                // The user probably created a binding but didn't finish it
-                // e.g. container.bind<T>("Something"); missing BindingToSyntax
-                let serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
-                throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
+        if (binding.type === BindingTypeEnum.ConstantValue) {
+            result = binding.cache;
+        } else if (binding.type === BindingTypeEnum.Function) {
+            result = binding.cache;
+        } else if (binding.type === BindingTypeEnum.Constructor) {
+            result = binding.implementationType;
+        } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
+            result = binding.dynamicValue(request.parentContext);
+        } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
+            result = binding.factory(request.parentContext);
+        } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
+            result = binding.provider(request.parentContext);
+        } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+            result = resolveInstance(binding.implementationType, childRequests, _resolveRequest);
+        } else {
+            // The user probably created a binding but didn't finish it
+            // e.g. container.bind<T>("Something"); missing BindingToSyntax
+            let serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
+            throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
         }
 
         // use activation handler if available

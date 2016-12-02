@@ -7,6 +7,7 @@ import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
+import { getBindingDictionary } from "../../src/planning/planner";
 
 type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
 
@@ -49,7 +50,7 @@ describe("Container", () => {
       let container = new Container();
       container.load(warriors, weapons);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = getBindingDictionary(container).getMap();
       expect(map.has("Ninja")).eql(true);
       expect(map.has("Katana")).eql(true);
       expect(map.has("Shuriken")).eql(true);
@@ -60,14 +61,14 @@ describe("Container", () => {
       let tryGetShuruken = () => { container.get("Shuriken"); };
 
       container.unload(warriors);
-      map = (<any>container)._bindingDictionary._map;
+      map = getBindingDictionary(container).getMap();
       expect(map.size).eql(2);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).not.to.throw();
       expect(tryGetShuruken).not.to.throw();
 
       container.unload(weapons);
-      map = (<any>container)._bindingDictionary._map;
+      map = getBindingDictionary(container).getMap();
       expect(map.size).eql(0);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
@@ -86,7 +87,7 @@ describe("Container", () => {
       let container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = getBindingDictionary(container).getMap();
       expect(map.size).eql(1);
       expect(map.has(ninjaId)).eql(true);
 
@@ -113,7 +114,7 @@ describe("Container", () => {
       let container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = getBindingDictionary(container).getMap();
       expect(map.has(ninjaId)).eql(true);
 
       container.unbind(ninjaId);
@@ -154,14 +155,14 @@ describe("Container", () => {
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Samurai>(samuraiId).to(Samurai);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = getBindingDictionary(container).getMap();
 
       expect(map.size).eql(2);
       expect(map.has(ninjaId)).eql(true);
       expect(map.has(samuraiId)).eql(true);
 
       container.unbind(ninjaId);
-      map = (<any>container)._bindingDictionary._map;
+      map = getBindingDictionary(container).getMap();
       expect(map.size).eql(1);
 
   });
@@ -185,14 +186,14 @@ describe("Container", () => {
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Samurai>(samuraiId).to(Samurai);
 
-      let map: Dictionary = (<any>container)._bindingDictionary._map;
+      let map: Dictionary = getBindingDictionary(container).getMap();
 
       expect(map.size).eql(2);
       expect(map.has(ninjaId)).eql(true);
       expect(map.has(samuraiId)).eql(true);
 
       container.unbindAll();
-      map = (<any>container)._bindingDictionary._map;
+      map = getBindingDictionary(container).getMap();
       expect(map.size).eql(0);
 
   });
@@ -228,7 +229,7 @@ describe("Container", () => {
       container.bind<Warrior>(warriorId).to(Samurai);
 
       type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
-      let dictionary: Dictionary = (<any>container)._bindingDictionary._map;
+      let dictionary: Dictionary = getBindingDictionary(container).getMap();
 
       expect(dictionary.size).eql(1);
       dictionary.forEach((value, key) => {
@@ -489,17 +490,17 @@ describe("Container", () => {
 
     it("Should be throw an exception if incorrect options is provided", () => {
 
-        let f = () => 0;
-        let wrong1 = () => new Container(<any>f);
-        expect(wrong1).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_MUST_BE_AN_OBJECT}`);
+        let invalidOptions1: any = () => 0;
+        let wrong1 = () => new Container(invalidOptions1);
+        expect(wrong1).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
 
-        let options1 = { wrongKey: "singleton" };
-        let wrong2 = () => new Container(<any>options1);
-        expect(wrong2).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+        let invalidOptions2: any = { wrongKey: "singleton" };
+        let wrong2 = () => new Container(invalidOptions2);
+        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
 
-        let options2 = { defaultScope: "wrongValue" };
-        let wrong3 = () => new Container(<any>options2);
-        expect(wrong3).to.throw(`${ERROR_MSGS.KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+        let invalidOptions3: any = { defaultScope: "wrongValue" };
+        let wrong3 = () => new Container(invalidOptions3);
+        expect(wrong3).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
 
     });
 
@@ -554,6 +555,9 @@ describe("Container", () => {
     it("Should be able create a child containers", () => {
         let parent = new Container();
         let child = parent.createChild();
+        if (child.parent === null) {
+            throw new Error("Parent should not be null");
+        }
         expect(child.parent.guid).to.eql(parent.guid);
     });
 

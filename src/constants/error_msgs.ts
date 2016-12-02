@@ -20,8 +20,10 @@ export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and
 export const ARGUMENTS_LENGTH_MISMATCH_1 = "The number of constructor arguments in the derived class ";
 export const ARGUMENTS_LENGTH_MISMATCH_2 = " must be >= than the number of constructor arguments of its base class.";
 
-export const KERNEL_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructor argument. Container options " +
+export const CONTAINER_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructor argument. Container options " +
     "must be an object.";
 
-export const KERNEL_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Container option. Default scope must " +
+export const CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Container option. Default scope must " +
     "be a string ('singleton' or 'transient').";
+
+export const INVALID_BINDING_PROPERTY = "TODO";

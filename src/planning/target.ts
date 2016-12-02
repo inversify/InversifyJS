@@ -24,7 +24,8 @@ class Target implements interfaces.Target {
         this.serviceIdentifier = serviceIdentifier;
         this.name = new QueryableString(name || "");
         this.metadata = new Array<Metadata>();
-        let metadataItem: interfaces.Metadata = null;
+
+        let metadataItem: interfaces.Metadata | null = null;
 
         // is named target
         if (typeof namedOrTagged === "string") {
@@ -73,14 +74,14 @@ class Target implements interfaces.Target {
         });
     }
 
-    public getNamedTag(): interfaces.Metadata {
+    public getNamedTag(): interfaces.Metadata | null {
         if (this.isNamed()) {
             return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
         }
         return null;
     }
 
-    public getCustomTags(): interfaces.Metadata[] {
+    public getCustomTags(): interfaces.Metadata[] | null {
         if (this.isTagged()) {
             return this.metadata.filter((m) => {
                 return (m.key !== METADATA_KEY.INJECT_TAG) &&

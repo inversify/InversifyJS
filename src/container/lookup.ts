@@ -10,6 +10,10 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         this._map = new Map<interfaces.ServiceIdentifier<any>, T[]>();
     }
 
+    public getMap() {
+        return this._map;
+    }
+
 	// adds a new entry to _map
     public add(serviceIdentifier: interfaces.ServiceIdentifier<any>, value: T): void {
 
@@ -31,8 +35,9 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         if (serviceIdentifier === null || serviceIdentifier === undefined) { throw new Error(ERROR_MSGS.NULL_ARGUMENT); }
 
         let entry = this._map.get(serviceIdentifier);
+
         if (entry !== undefined) {
-            return this._map.get(serviceIdentifier);
+            return entry;
         } else {
             throw new Error(ERROR_MSGS.KEY_NOT_FOUND);
         }

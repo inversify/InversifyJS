@@ -16,6 +16,10 @@ import {
     listMetadataForTarget
 } from "../utils/serialization";
 
+function getBindingDictionary (cntnr: any): interfaces.Lookup<interfaces.Binding<any>> {
+    return cntnr._bindingDictionary;
+}
+
 function _createTarget(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
@@ -41,7 +45,7 @@ function _createTarget(
 function _getActiveBindings(
     avoidConstraints: boolean,
     context: interfaces.Context,
-    parentRequest: interfaces.Request,
+    parentRequest: interfaces.Request | null,
     target: interfaces.Target
 ): interfaces.Binding<any>[] {
 
@@ -116,7 +120,7 @@ function _createSubRequests(
     avoidConstraints: boolean,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     context: interfaces.Context,
-    parentRequest: interfaces.Request,
+    parentRequest: interfaces.Request | null,
     target: interfaces.Target
 ) {
 
@@ -147,7 +151,7 @@ function _createSubRequests(
 
         activeBindings.forEach((binding) => {
 
-            let subChildRequest: interfaces.Request = null;
+            let subChildRequest: interfaces.Request | null = null;
 
             if (target.isArray()) {
                 subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
@@ -155,7 +159,7 @@ function _createSubRequests(
                 subChildRequest = childRequest;
             }
 
-            if (binding.type === BindingTypeEnum.Instance) {
+            if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 
                 let dependencies = getDependencies(binding.implementationType);
 
@@ -168,7 +172,7 @@ function _createSubRequests(
         });
 
     } catch (error) {
-        if (error instanceof RangeError) {
+        if (error instanceof RangeError && parentRequest !== null) {
             circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
         } else {
             throw new Error(error.message);
@@ -182,7 +186,7 @@ function getBindings<T>(
 ): interfaces.Binding<T>[] {
 
     let bindings: interfaces.Binding<T>[] = [];
-    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = (<any>container)._bindingDictionary;
+    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
 
     if (bindingDictionary.hasKey(serviceIdentifier)) {
 
@@ -216,15 +220,16 @@ function plan(
 }
 
 function createMockRequest(
+    container: interfaces.Container,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     key: string|number|symbol,
     value: any
 ): interfaces.Request {
 
     let target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
-    let request = new Request(serviceIdentifier, null, null, [], target);
+    let context = new Context(container);
+    let request = new Request(serviceIdentifier, context, null, [], target);
     return request;
-
 }
 
-export { plan, createMockRequest };
+export { plan, createMockRequest, getBindingDictionary };

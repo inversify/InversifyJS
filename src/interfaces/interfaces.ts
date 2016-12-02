@@ -44,15 +44,15 @@ namespace interfaces {
         moduleId: string;
         activated: boolean;
         serviceIdentifier: ServiceIdentifier<T>;
-        implementationType: Newable<T>;
-        factory: FactoryCreator<any>;
-        provider: ProviderCreator<any>;
         constraint: ConstraintFunction;
-        onActivation: (context: Context, injectable: T) => T;
-        cache: T;
-        dynamicValue: (context: Context) => T;
+        dynamicValue: ((context: interfaces.Context) => T) | null;
         scope: BindingScope;
         type: BindingType;
+        implementationType: Newable<T> | null;
+        factory: FactoryCreator<any> | null;
+        provider: ProviderCreator<any> | null;
+        onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+        cache: T | null;
     }
 
     export interface Factory<T> extends Function {
@@ -73,7 +73,7 @@ namespace interfaces {
 
     export interface NextArgs {
         avoidConstraints: boolean;
-        contextInterceptor?: (contexts: Context) => Context;
+        contextInterceptor: ((contexts: Context) => Context);
         isMultiInject: boolean;
         targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
@@ -126,7 +126,7 @@ namespace interfaces {
         guid: string;
         serviceIdentifier: ServiceIdentifier<any>;
         parentContext: Context;
-        parentRequest: Request;
+        parentRequest: Request | null;
         childRequests: Request[];
         target: Target;
         bindings: Binding<any>[];
@@ -143,8 +143,8 @@ namespace interfaces {
         type: TargetType;
         name: QueryableString;
         metadata: Array<Metadata>;
-        getNamedTag(): interfaces.Metadata;
-        getCustomTags(): interfaces.Metadata[];
+        getNamedTag(): interfaces.Metadata | null;
+        getCustomTags(): interfaces.Metadata[] | null;
         hasTag(key: string|number|symbol): boolean;
         isArray(): boolean;
         matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;
@@ -160,7 +160,7 @@ namespace interfaces {
 
     export interface Container {
         guid: string;
-        parent: Container;
+        parent: Container | null;
         options: ContainerOptions;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
@@ -191,7 +191,7 @@ namespace interfaces {
 
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
-        middleware: Next;
+        middleware: Next | null;
     }
 
     export interface Clonable<T> {
@@ -200,6 +200,7 @@ namespace interfaces {
 
     export interface Lookup<T> extends Clonable<Lookup<T>> {
         add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
+        getMap(): Map<interfaces.ServiceIdentifier<any>, T[]>;
         get(serviceIdentifier: ServiceIdentifier<any>): T[];
         remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void;
         removeByCondition(condition: (item: T) => boolean): void;
@@ -252,8 +253,8 @@ namespace interfaces {
     }
 
     export interface ConstraintFunction extends Function {
-       (request: Request) : boolean;
         metaData?: Metadata;
+        (request: Request | null): boolean;
     }
 
 }

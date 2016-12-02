@@ -19,7 +19,8 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     }
 
     public toSelf(): interfaces.BindingInWhenOnSyntax<T> {
-        return this.to(<any>this._binding.serviceIdentifier);
+        let self: any = this._binding.serviceIdentifier;
+        return this.to(self);
     }
 
     public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {
@@ -40,13 +41,13 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Constructor;
-        this._binding.implementationType = <any>constructor;
+        this._binding.implementationType = constructor as any;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
     public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Factory;
-        this._binding.factory = <any>factory;
+        this._binding.factory = factory;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
@@ -70,7 +71,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Provider;
-        this._binding.provider = <any>provider;
+        this._binding.provider = provider;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 

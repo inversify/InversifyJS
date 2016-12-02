@@ -51,7 +51,9 @@ describe("BindingToSyntax", () => {
         bindingToSyntax.toDynamicValue((context: interfaces.Context) => { return new Ninja(); });
         expect(binding.type).eql(BindingTypeEnum.DynamicValue);
         expect(typeof binding.dynamicValue).eql("function");
-        expect(binding.dynamicValue(null) instanceof Ninja).eql(true);
+
+        let dynamicValueFactory: any = binding.dynamicValue;
+        expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
 
         bindingToSyntax.toConstructor<Ninja>(Ninja);
         expect(binding.type).eql(BindingTypeEnum.Constructor);

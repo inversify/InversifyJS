@@ -105,7 +105,7 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
         let otherTags = target.getCustomTags();
 
         if (namedTag !== null) {
-            m = target.getNamedTag().toString();
+            m += namedTag.toString() + "\n";
         }
 
         if (otherTags !== null) {

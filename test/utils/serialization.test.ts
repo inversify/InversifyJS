@@ -1,5 +1,7 @@
 import { expect } from "chai";
-import { getFunctionName } from "../../src/utils/serialization";
+import { getFunctionName, listMetadataForTarget } from "../../src/utils/serialization";
+import { Target } from "../../src/planning/target";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
 
 describe("serialization", () => {
 
@@ -22,6 +24,13 @@ describe("serialization", () => {
 
         expect(getFunctionName(testFunction)).eql("testFunction");
 
+    });
+
+    it("Should not fail when target is not named or tagged", () => {
+        let serviceIdentifier = "SomeTypeId";
+        let target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier);
+        let list = listMetadataForTarget(serviceIdentifier, target);
+        expect(list).to.eql(` ${serviceIdentifier}`);
     });
 
 });

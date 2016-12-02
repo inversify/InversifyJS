@@ -16,6 +16,6 @@
         "noResolve": false,
         "noUnusedParameters": false,
         "noUnusedLocals": true,
-        "alwaysStrict": true
+        "strictNullChecks": true
     }
 }

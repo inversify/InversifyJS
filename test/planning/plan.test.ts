@@ -3,6 +3,8 @@ import { Plan } from "../../src/planning/plan";
 import { Request } from "../../src/planning/request";
 import { Context } from "../../src/planning/context";
 import { Container } from "../../src/container/container";
+import { Target } from "../../src/planning/target";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
 
 describe("Plan", () => {
 
@@ -12,11 +14,12 @@ describe("Plan", () => {
       let context = new Context(container);
       let runtimeId = "Something";
 
-      let request = new Request(
+      let request: Request = new Request(
           runtimeId,
           context,
           null,
-          null
+          [],
+          new Target(TargetTypeEnum.Variable, "", runtimeId)
       );
 
       let plan = new Plan(context, request);
