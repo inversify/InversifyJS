@@ -7,6 +7,9 @@ export const NAME_TAG = "name";
 // The for unmanaged injections (in base classes when using inheritance)
 export const UNMANAGED_TAG = "unmanaged";
 
+// The for optional injections
+export const OPTIONAL_TAG = "optional";
+
 // The type of the binding at design time
 export const INJECT_TAG = "inject";
 

@@ -26,6 +26,11 @@ function _resolveRequest(request: interfaces.Request): any {
     } else {
 
         let result: any = null;
+
+        if (request.target.isOptional() === true && bindings.length === 0) {
+            return undefined;
+        }
+
         let binding = bindings[0];
         let isSingleton = binding.scope === BindingScopeEnum.Singleton;
 

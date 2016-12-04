@@ -71,7 +71,9 @@ describe("Bugs", () => {
 
     });
 
-    it("Should not throw when args length of base and derived class match (inject into the derived class)", () => {
+    it("Should not throw when args length of base and derived class match", () => {
+
+        // Injecting into the derived class
 
         @injectable()
         class Warrior {
@@ -103,7 +105,9 @@ describe("Bugs", () => {
 
     });
 
-    it("Should not throw when args length of base and derived class match (inject into the derived class with multiple args)", () => {
+    it("Should not throw when args length of base and derived class match", () => {
+
+        // Injecting into the derived class with multiple args
 
         @injectable()
         class Warrior {
