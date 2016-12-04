@@ -880,9 +880,11 @@ describe("InversifyJS", () => {
 
     it("Should support the injection of providers", (done) => {
 
+        type KatanaProvider = () => Promise<Katana>;
+
         interface Ninja {
             katana: Katana | null;
-            katanaProvider: interfaces.Provider<Katana>;
+            katanaProvider: KatanaProvider;
         }
 
         interface Katana {
@@ -900,10 +902,10 @@ describe("InversifyJS", () => {
         class NinjaWithProvider implements Ninja {
 
             public katana: Katana | null;
-            public katanaProvider: interfaces.Provider<Katana>;
+            public katanaProvider: KatanaProvider;
 
             public constructor(
-                @inject("Provider<Katana>") katanaProvider: interfaces.Provider<Katana>
+                @inject("Provider<Katana>") katanaProvider: KatanaProvider
             ) {
                 this.katanaProvider = katanaProvider;
                 this.katana = null;
@@ -914,7 +916,8 @@ describe("InversifyJS", () => {
         let container = new Container();
         container.bind<Ninja>("Ninja").to(NinjaWithProvider);
         container.bind<Katana>("Katana").to(Katana);
-        container.bind<interfaces.Provider<Katana>>("Provider<Katana>").toProvider<Katana>((context: interfaces.Context) => {
+
+        container.bind<KatanaProvider>("Provider<Katana>").toProvider<Katana>((context: interfaces.Context) => {
             return () => {
                 return new Promise<Katana>((resolve) => {
                     let katana = context.container.get<Katana>("Katana");

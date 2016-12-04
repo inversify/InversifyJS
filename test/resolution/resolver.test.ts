@@ -586,6 +586,8 @@ describe("Resolve", () => {
 
   it("Should be able to resolve BindingType.Provider bindings", (done) => {
 
+      type SwordProvider = () => Promise<Sword>;
+
       let ninjaId = "Ninja";
       let shurikenId = "Shuriken";
       let swordProviderId = "Provider<Sword>";
@@ -628,17 +630,17 @@ describe("Resolve", () => {
 
       interface Warrior {
           katana: Katana | null;
-          katanaProvider: interfaces.Provider<Sword>;
+          katanaProvider: SwordProvider;
           shuriken: Shuriken;
       }
 
       @injectable()
       class Ninja implements Warrior {
           public katana: Katana | null;
-          public katanaProvider: interfaces.Provider<Sword>;
+          public katanaProvider: SwordProvider;
           public shuriken: Shuriken;
           public constructor(
-              @inject(swordProviderId) @targetName("katanaProvider") katanaProvider: interfaces.Provider<Sword>,
+              @inject(swordProviderId) @targetName("katanaProvider") katanaProvider: SwordProvider,
               @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
           ) {
               this.katana = null;
@@ -654,7 +656,7 @@ describe("Resolve", () => {
       container.bind<Blade>(bladeId).to(KatanaBlade);
       container.bind<Handler>(handlerId).to(KatanaHandler);
 
-      container.bind<interfaces.Provider<Sword>>(swordProviderId).toProvider<Sword>((context: interfaces.Context) => {
+      container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((context: interfaces.Context) => {
           return () => {
               return new Promise<Sword>((resolve) => {
                   // Using setTimeout to simulate complex initialization

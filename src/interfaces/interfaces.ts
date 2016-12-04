@@ -64,7 +64,7 @@ namespace interfaces {
     }
 
     export interface Provider<T> extends Function {
-        (): Promise<T>;
+        (...args: any[]): (((...args: any[]) => Promise<T>) | Promise<T>);
     }
 
     export interface ProviderCreator<T> extends Function {
