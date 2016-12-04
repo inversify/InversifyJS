@@ -74,6 +74,10 @@ class Target implements interfaces.Target {
         });
     }
 
+    public isOptional(): boolean {
+        return this.matchesTag(METADATA_KEY.OPTIONAL_TAG)(true);
+    }
+
     public getNamedTag(): interfaces.Metadata | null {
         if (this.isNamed()) {
             return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];

@@ -91,11 +91,15 @@ function _validateActiveBindingCount(
     switch (bindings.length) {
 
         case BindingCount.NoBindingsAvailable:
-            let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
-            let msg = ERROR_MSGS.NOT_REGISTERED;
-            msg += listMetadataForTarget(serviceIdentifierString, target);
-            msg += listRegisteredBindingsForServiceIdentifier(container, serviceIdentifierString, getBindings);
-            throw new Error(msg);
+            if (target.isOptional() === true) {
+                return bindings;
+            } else {
+                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
+                let msg = ERROR_MSGS.NOT_REGISTERED;
+                msg += listMetadataForTarget(serviceIdentifierString, target);
+                msg += listRegisteredBindingsForServiceIdentifier(container, serviceIdentifierString, getBindings);
+                throw new Error(msg);
+            }
 
         case BindingCount.OnlyOneBindingAvailable:
             if (target.isArray() === false) {

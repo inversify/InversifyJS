@@ -235,6 +235,7 @@ Let's take a look to the InversifyJS features!
 - [Declaring container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
 - [Container snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/container_snapshots.md)
 - [Controlling the scope of the dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)
+- [Declaring optional dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/optional_dependencies.md)
 - [Injecting a constant or dynamic value](https://github.com/inversify/InversifyJS/blob/master/wiki/value_injection.md)
 - [Injecting a class constructor](https://github.com/inversify/InversifyJS/blob/master/wiki/constructor_injection.md)
 - [Injecting a Factory](https://github.com/inversify/InversifyJS/blob/master/wiki/factory_injection.md)

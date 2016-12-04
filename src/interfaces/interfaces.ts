@@ -150,6 +150,7 @@ namespace interfaces {
         matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;
         isNamed(): boolean;
         isTagged(): boolean;
+        isOptional(): boolean;
         matchesNamedTag(name: string): boolean;
         matchesTag(key: string|number|symbol): (value: any) => boolean;
     }
