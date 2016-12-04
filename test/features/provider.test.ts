@@ -18,7 +18,7 @@ describe("Provider", () => {
                     setTimeout(() => {
                         this.level += 10;
                         resolve(this.level);
-                    }, 100);
+                    }, 10);
                 });
             }
         }
@@ -76,18 +76,151 @@ describe("Provider", () => {
     });
 
     it("Should support custom arguments", (done) => {
-        // TODO
-        done();
+
+        let container = new Container();
+
+        interface Sword {
+            material: string;
+            damage: number;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            public material: string;
+            public damage: number;
+        }
+
+        type SwordProvider = (material: string, damage: number) => Promise<Sword>;
+
+        container.bind<Sword>("Sword").to(Katana);
+
+        container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) => {
+            return (material: string, damage: number) => {
+                return new Promise<Sword>((resolve) => {
+                    setTimeout(() => {
+                        let katana = context.container.get<Sword>("Sword");
+                        katana.material = material;
+                        katana.damage = damage;
+                        resolve(katana);
+                    }, 10);
+                });
+            };
+        });
+
+        let katanaProvider = container.get<SwordProvider>("SwordProvider");
+
+        katanaProvider("gold", 100).then((powerfulGoldKatana) => {
+
+            expect(powerfulGoldKatana.material).to.eql("gold");
+            expect(powerfulGoldKatana.damage).to.eql(100);
+
+            katanaProvider("gold", 10).then((notSoPowerfulGoldKatana) => {
+                expect(notSoPowerfulGoldKatana.material).to.eql("gold");
+                expect(notSoPowerfulGoldKatana.damage).to.eql(10);
+                done();
+            });
+
+        });
+
     });
 
     it("Should support partial application of custom arguments", (done) => {
-        // TODO
-        done();
+
+        let container = new Container();
+
+        interface Sword {
+            material: string;
+            damage: number;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            public material: string;
+            public damage: number;
+        }
+
+        type SwordProvider = (material: string) => (damage: number) => Promise<Sword>;
+
+        container.bind<Sword>("Sword").to(Katana);
+
+        container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) => {
+            return (material: string) => {
+                return (damage: number) => {
+                    return new Promise<Sword>((resolve) => {
+                        setTimeout(() => {
+                            let katana = context.container.get<Sword>("Sword");
+                            katana.material = material;
+                            katana.damage = damage;
+                            resolve(katana);
+                        }, 10);
+                    });
+                };
+            };
+        });
+
+        let katanaProvider = container.get<SwordProvider>("SwordProvider");
+        let goldKatanaProvider = katanaProvider("gold");
+
+        goldKatanaProvider(100).then((powerfulGoldKatana) => {
+
+            expect(powerfulGoldKatana.material).to.eql("gold");
+            expect(powerfulGoldKatana.damage).to.eql(100);
+
+            goldKatanaProvider(10).then((notSoPowerfulGoldKatana) => {
+                expect(notSoPowerfulGoldKatana.material).to.eql("gold");
+                expect(notSoPowerfulGoldKatana.damage).to.eql(10);
+                done();
+            });
+
+        });
+
     });
 
     it("Should support the declaration of singletons", (done) => {
-        // TODO
-        done();
+
+        let container = new Container();
+
+        interface Warrior {
+            level: number;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public level: number;
+            public constructor() {
+                this.level = 0;
+            }
+        }
+
+        type WarriorProvider = (level: number) => Promise<Warrior>;
+
+        container.bind<Warrior>("Warrior").to(Ninja).inSingletonScope(); // Value is singleton!
+
+        container.bind<WarriorProvider>("WarriorProvider").toProvider<Warrior>((context) => {
+            return (increaseLevel: number) => {
+                return new Promise<Warrior>((resolve) => {
+                    setTimeout(() => {
+                        let warrior = context.container.get<Warrior>("Warrior"); // Get singleton!
+                        warrior.level += increaseLevel;
+                        resolve(warrior);
+                    }, 100);
+                });
+            };
+        });
+
+        let warriorProvider = container.get<WarriorProvider>("WarriorProvider");
+
+        warriorProvider(10).then((warrior) => {
+
+            expect(warrior.level).to.eql(10);
+
+            warriorProvider(10).then((warrior2) => {
+                expect(warrior.level).to.eql(20);
+                done();
+            });
+
+        });
+
     });
 
 });

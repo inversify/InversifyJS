@@ -45,7 +45,7 @@ ninja.katanaProvider()
      .catch((e) => { console.log(e); });
 ```
 
-## Provider partial application
+## Provider custom arguments
 The `toProvider` binding expects a `ProviderCreator` as its only argument:
 
 ```ts
@@ -65,62 +65,144 @@ interface Provider<T> extends Function {
 These type signatures allow as to pass custom arguments to a provider:
 
 ```ts
-type KatanaProvider = (material: string, damage: number) => Promise<Katana>;
+let container = new Container();
 
-container.bind<KatanaProvider>("KatanaProvider").toProvider<Katana>((context) => {
-    return (material: string, damage: number) => { // "material" and "damage" are custom argument!
-        return new Promise<Katana>((resolve) => {
-            let katana = context.container.get<Katana>("Katana");
-            katana.material = material;
-            resolve(katana);
+interface Sword {
+    material: string;
+    damage: number;
+}
+
+@injectable()
+class Katana implements Sword {
+    public material: string;
+    public damage: number;
+}
+
+type SwordProvider = (material: string, damage: number) => Promise<Sword>;
+
+container.bind<Sword>("Sword").to(Katana);
+
+container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) => {
+    return (material: string, damage: number) => { // Custom args!
+        return new Promise<Sword>((resolve) => {
+            setTimeout(() => {
+                let katana = context.container.get<Sword>("Sword");
+                katana.material = material;
+                katana.damage = damage;
+                resolve(katana);
+            }, 10);
         });
     };
 });
 
-let katanaProvider = container.get<KatanaProvider>("KatanaProvider");
+let katanaProvider = container.get<SwordProvider>("SwordProvider");
 
-katanaProvider("gold", 100).then((powerfulGoldKatana) => {
-    console.log(powerfulGoldKatana);
-})
+katanaProvider("gold", 100).then((powerfulGoldKatana) => { // Apply all custom args
+    expect(powerfulGoldKatana.material).to.eql("gold");
+    expect(powerfulGoldKatana.damage).to.eql(100);
+});
 
 katanaProvider("gold", 10).then((notSoPowerfulGoldKatana) => {
-    console.log(notSoPowerfulGoldKatana);
+    expect(notSoPowerfulGoldKatana.material).to.eql("gold");
+    expect(notSoPowerfulGoldKatana.damage).to.eql(10);
 });
 ```
+
+## Provider partial application
 
 We can also pass the arguments using partial application:
 
 ```ts
-type KatanaProvider = (material: string) => (damage: number) => Promise<Katana>;
+let container = new Container();
 
-container.bind<KatanaProvider>("KatanaProvider").toProvider<Katana>((context) => {
-    return (material: string) => { // "material" is a custom argument!
-        return (damage: number) => { // "damage" is a custom argument!
-            return new Promise<Katana>((resolve) => {
-                let katana = context.container.get<Katana>("Katana");
-                katana.material = material;
-                resolve(katana);
+interface Sword {
+    material: string;
+    damage: number;
+}
+
+@injectable()
+class Katana implements Sword {
+    public material: string;
+    public damage: number;
+}
+
+type SwordProvider = (material: string) => (damage: number) => Promise<Sword>;
+
+container.bind<Sword>("Sword").to(Katana);
+
+container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) => {
+    return (material: string) => {  // Custom arg 1!
+        return (damage: number) => { // Custom arg 2!
+            return new Promise<Sword>((resolve) => {
+                setTimeout(() => {
+                    let katana = context.container.get<Sword>("Sword");
+                    katana.material = material;
+                    katana.damage = damage;
+                    resolve(katana);
+                }, 10);
             });
-        });
+        };
     };
 });
 
-let katanaProvider = container.get<KatanaProvider>("KatanaProvider");
+let katanaProvider = container.get<SwordProvider>("SwordProvider");
+let goldKatanaProvider = katanaProvider("gold");  // Apply the first custom arg!
 
-let goldKatanaProvider = katanaProvider("gold");
-
-goldKatanaProvider(100).then((powerfulGoldKatana) => {
-    console.log(powerfulGoldKatana);
-})
+goldKatanaProvider(100).then((powerfulGoldKatana) => { // Apply the second custom args!
+    expect(powerfulGoldKatana.material).to.eql("gold");
+    expect(powerfulGoldKatana.damage).to.eql(100);
+});
 
 goldKatanaProvider(10).then((notSoPowerfulGoldKatana) => {
-    console.log(notSoPowerfulGoldKatana);
+    expect(notSoPowerfulGoldKatana.material).to.eql("gold");
+    expect(notSoPowerfulGoldKatana.damage).to.eql(10);
 });
 ```
 
 ## Provider as a singleton
+A Provider is always injected as a singleton but ypu can control if the value returned by the 
+Provider is uses singleton or transient scope:
+
 ```ts
-// TODO
+let container = new Container();
+
+interface Warrior {
+    level: number;
+}
+
+@injectable()
+class Ninja implements Warrior {
+    public level: number;
+    public constructor() {
+        this.level = 0;
+    }
+}
+
+type WarriorProvider = (level: number) => Promise<Warrior>;
+
+container.bind<Warrior>("Warrior").to(Ninja).inSingletonScope(); // Value is singleton!
+
+container.bind<WarriorProvider>("WarriorProvider").toProvider<Warrior>((context) => {
+    return (increaseLevel: number) => {
+        return new Promise<Warrior>((resolve) => {
+            setTimeout(() => {
+                let warrior = context.container.get<Warrior>("Warrior"); // Get singleton!
+                warrior.level += increaseLevel;
+                resolve(warrior);
+            }, 100);
+        });
+    };
+});
+
+let warriorProvider = container.get<WarriorProvider>("WarriorProvider");
+
+warriorProvider(10).then((warrior) => {
+    expect(warrior.level).to.eql(10);
+});
+
+warriorProvider(10).then((warrior2) => {
+    expect(warrior.level).to.eql(20);
+});
 ```
 
 ## Provider defaults
