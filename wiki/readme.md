@@ -7,7 +7,7 @@ Welcome to the InversifyJS wiki!
 - [Vanilla JavaScript example](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md)
 - [Working with module bundlers](https://github.com/inversify/InversifyJS/blob/master/wiki/module_bundlers.md)
 - [ES5 and ES6 support](https://github.com/inversify/InversifyJS/blob/master/wiki/javascript.md)
-- [How to upgrade from 1.x to 2.x](https://github.com/inversify/InversifyJS/blob/master/wiki/upgrade.md)
+- [Upgrade guide](https://github.com/inversify/InversifyJS/blob/master/wiki/upgrade.md)
 
 ### The InversifyJS Features and API
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
