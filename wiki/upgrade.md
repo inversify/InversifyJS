@@ -1,6 +1,17 @@
 # How to upgrade from 2.x to 3.x
 
-TODO
+- The 2.x `Kernel` is named `Container` in 3.x
+
+- The 2.x `Kernel` method `getServiceIdentifierAsString` is not a method of `Container`  in 3.x.
+
+- The 2.x `PlanAndResolveArgs` interface is named `NextArgs` in 3.0 and some of its properties have changed.
+
+- The `Provider` signature has been modified.
+
+- In 3.x, `strictNullChecks` is enabled.
+
+- The resolution logic in 2.0 and 3.0 is slightly different in order to support new features like 
+optional dependencies and defaults contextual injections.
 
 # How to upgrade from 1.x to 2.x
 
