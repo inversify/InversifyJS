@@ -53,7 +53,7 @@ function _getActiveBindings(
     let activeBindings: interfaces.Binding<any>[] = [];
 
     // multiple bindings available
-    if (bindings.length > 1 && avoidConstraints === false) {
+    if (avoidConstraints === false) {
 
         // apply constraints if available to reduce the number of active bindings
         activeBindings = bindings.filter((binding) => {
