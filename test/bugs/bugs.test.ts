@@ -493,4 +493,34 @@ describe("Bugs", () => {
 
     });
 
+    it("Should not be able to get a named dependency if no named bindings are gesitered", () => {
+
+        const TYPES = {
+            Weapon: "Weapon"
+        };
+
+        interface Weapon {
+            name: string;
+        }
+
+        @injectable()
+        class Katana implements Weapon {
+            public name: string;
+            public constructor() {
+                this.name = "Katana";
+            }
+        }
+
+        let container = new Container();
+        container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetNamed("sword");
+
+        let throws = () => { container.getNamed<Weapon>(TYPES.Weapon, "bow"); };
+
+        let error = `No matching bindings found for serviceIdentifier: Weapon\n Weapon ` +
+                    `- named: bow \n\nRegistered bindings:\n Katana - named: sword `;
+
+        expect(throws).to.throw(error);
+
+    });
+
 });
