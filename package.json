@@ -9,7 +9,7 @@
     "test": "gulp"
   },
   "scripts": {
-    "test": "gulp",
+    "test": "gulp default",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard"
   },
