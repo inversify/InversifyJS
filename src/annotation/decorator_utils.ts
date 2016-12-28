@@ -9,7 +9,7 @@ function tagParameter(
     metadata: interfaces.Metadata
 ) {
     let metadataKey = METADATA_KEY.TAGGED;
-    return _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
+    _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
 }
 
 function tagProperty(
@@ -18,7 +18,7 @@ function tagProperty(
     metadata: interfaces.Metadata
 ) {
     let metadataKey = METADATA_KEY.TAGGED_PROP;
-    return _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
+    _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
 }
 
 function _tagParameterOrProperty(
@@ -60,8 +60,6 @@ function _tagParameterOrProperty(
     paramOrPropertyMetadata.push(metadata);
     paramsOrPropertiesMetadata[key] = paramOrPropertyMetadata;
     Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
-    return annotationTarget;
-
 }
 
 function _decorate(decorators: any[], target: any): void {

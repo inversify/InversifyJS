@@ -523,4 +523,10 @@ describe("Bugs", () => {
 
     });
 
+    it("Should throw a friendly error when binding a non-class using toSelf", () => {
+        let container = new Container();
+        let throws = () => { container.bind("testId").toSelf(); };
+        expect(throws).to.throw(ERROR_MSGS.INVALID_TO_SELF_VALUE);
+    });
+
 });
