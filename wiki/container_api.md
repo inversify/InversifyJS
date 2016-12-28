@@ -14,11 +14,11 @@ container.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
 You can use container options to change the default scope used at application level:
 
 ```ts
-let container = new Container({ defaultScope: "singleton" });
+let container = new Container({ defaultScope: "Singleton" });
 ```
 
 ## Container.merge(a: Container, b: Container);
-Merges to containers into one:
+Merges two containers into one:
 
 ```ts
 @injectable()
