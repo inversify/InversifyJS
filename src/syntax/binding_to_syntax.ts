@@ -19,6 +19,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     }
 
     public toSelf(): interfaces.BindingInWhenOnSyntax<T> {
+        if (typeof this._binding.serviceIdentifier !== "function") {
+            throw new Error(`${ERROR_MSGS.INVALID_TO_SELF_VALUE}`);
+        }
         let self: any = this._binding.serviceIdentifier;
         return this.to(self);
     }

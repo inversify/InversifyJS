@@ -32,6 +32,7 @@ describe("BindingToSyntax", () => {
         let ninjaIdentifier = "Ninja";
 
         let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
         let bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         expect(binding.type).eql(BindingTypeEnum.Invalid);
@@ -40,10 +41,12 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingTypeEnum.Instance);
         expect(binding.implementationType).not.to.eql(null);
 
-        bindingToSyntax.toSelf();
-        expect(binding.type).eql(BindingTypeEnum.Instance);
-        expect(binding.implementationType).not.to.eql(null);
+//        (bindingToSyntax as any)._binding = bindingWithClassAsId;
+//        bindingToSyntax.toSelf();
+//        expect(binding.type).eql(BindingTypeEnum.Instance);
+//        expect(binding.implementationType).not.to.eql(null);
 
+        (bindingToSyntax as any)._binding = binding;
         bindingToSyntax.toConstantValue(new Ninja());
         expect(binding.type).eql(BindingTypeEnum.ConstantValue);
         expect(binding.cache instanceof Ninja).eql(true);

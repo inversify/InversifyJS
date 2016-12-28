@@ -14,6 +14,9 @@ export const NO_MORE_SNAPSHOTS_AVAILABLE = "No snapshot available to restore.";
 export const INVALID_MIDDLEWARE_RETURN = "Invalid return type in middleware. Middleware must return!";
 export const INVALID_FUNCTION_BINDING = "Value provided to function binding must be a function!";
 
+export const INVALID_TO_SELF_VALUE = "The toSelf function can only be applied when a constructor is " +
+    "used as service identifier";
+
 export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and @named decorators " +
     "must be applied to the parameters of a class constructor or a class property.";
 
