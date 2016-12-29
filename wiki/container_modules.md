@@ -2,11 +2,11 @@
 Container modules can help you to manage the complexity of your bindings in very large applications.
 
 ```ts
-let warriors = new ContainerModule((bind: Bind) => {
+let warriors = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind) => {
     bind<Ninja>("Ninja").to(Ninja);
 });
 
-let weapons = new ContainerModule((bind: Bind) => {
+let weapons = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind) => {
     bind<Katana>("Katana").to(Katana);
     bind<Shuriken>("Shuriken").to(Shuriken);
 });
