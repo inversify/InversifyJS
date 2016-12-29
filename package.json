@@ -51,7 +51,7 @@
     "gulp-tslint": "^7.0.0",
     "gulp-typescript": "^3.0.0",
     "gulp-uglify": "^2.0.0",
-    "harmonize": "^1.4.4",
+    "harmonize": "1.4.4",
     "harmony-proxy": "^1.0.0",
     "istanbul": "^0.4.2",
     "karma": "^1.1.2",
