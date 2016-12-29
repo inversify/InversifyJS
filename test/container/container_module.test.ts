@@ -34,4 +34,21 @@ describe("ContainerModule", () => {
 
   });
 
+  it("Should be able to check for existance of bindings within a container module", () => {
+
+    let container = new Container();
+    container.bind<string>("A").toConstantValue("1");
+    expect(container.get<string>("A")).to.eql("1");
+
+    let warriors = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound) => {
+      expect(container.get<string>("A")).to.eql("1");
+      expect(isBound("A")).to.eql(true);
+      unbind("A");
+      expect(isBound("A")).to.eql(false);
+    });
+
+    container.load(warriors);
+
+  });
+
 });
