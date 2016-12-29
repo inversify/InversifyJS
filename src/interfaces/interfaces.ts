@@ -185,9 +185,17 @@ namespace interfaces {
         <T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
     }
 
+    export interface Unbind extends Function {
+        <T>(serviceIdentifier: ServiceIdentifier<T>): void;
+    }
+
+    export interface IsBound extends Function {
+        <T>(serviceIdentifier: ServiceIdentifier<T>): boolean;
+    }
+
     export interface ContainerModule {
         guid: string;
-        registry: (bind: Bind) => void;
+        registry: (bind: Bind, unbind: Unbind, isBound: IsBound) => void;
     }
 
     export interface ContainerSnapshot {

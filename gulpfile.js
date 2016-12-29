@@ -5,7 +5,7 @@
 //******************************************************************************
 
 // Enable ES6
-require("harmonize")();
+require("harmonize")(["harmony", "harmony-proxies", "harmony_proxies"]);
 
 var gulp        = require("gulp"),
     browserify  = require("browserify"),

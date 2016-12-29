@@ -94,9 +94,25 @@ class Container implements interfaces.Container {
             };
         };
 
+        let getUnbindFunction = (moduleId: string) => {
+            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                let _unbind = this.unbind.bind(this);
+                _unbind(serviceIdentifier);
+            };
+        };
+
+        let getIsboundFunction = (moduleId: string) => {
+            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                let _isBound = this.isBound.bind(this);
+                return _isBound(serviceIdentifier);
+            };
+        };
+
         modules.forEach((module) => {
             let bindFunction = getBindFunction(module.guid);
-            module.registry(bindFunction);
+            let unbindFunction = getUnbindFunction(module.guid);
+            let isboundFunction = getIsboundFunction(module.guid);
+            module.registry(bindFunction, unbindFunction, isboundFunction);
         });
 
     }
