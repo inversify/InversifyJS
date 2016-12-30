@@ -19,7 +19,7 @@ function _injectProperties(
         let propertyName = "";
         propertyName = r.target.name.value();
         let injection = propertyInjections[index];
-        instance[propertyName] = injection;
+        Object.defineProperty(instance, propertyName, { value: injection, writable: true });
     });
 
     return instance;
