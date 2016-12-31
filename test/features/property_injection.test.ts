@@ -5,7 +5,7 @@ import "es6-symbol/implement";
 import {
     Container, injectable, inject,
     named, tagged, multiInject,
-    unmanaged
+    unmanaged, optional
 } from "../../src/inversify";
 
 describe("Property Injection", () => {
@@ -400,6 +400,43 @@ describe("Property Injection", () => {
         expect(samurai.secondaryWeapon.name).to.eql("Shuriken");
         expect(samurai.primaryWeapon).not.to.eql(undefined);
         expect(samurai.primaryWeapon.name).to.eql("Katana");
+
+    });
+
+    it("Should be able to flag a property injection as optional", () => {
+
+        let TYPES = {
+            Route: "Route",
+            Router: "Router"
+        };
+
+        interface Route {
+            name: string;
+        }
+
+        @injectable()
+        class Router {
+
+            @inject(TYPES.Route) @optional()
+            private route: Route;
+
+            public getRoute(): Route {
+                return this.route;
+            }
+
+        }
+
+        let container = new Container();
+
+        container.bind<Router>(TYPES.Router).to(Router);
+
+        let router1 = container.get<Router>(TYPES.Router);
+        expect(router1.getRoute()).to.eql(undefined);
+
+        container.bind<Route>(TYPES.Route).toConstantValue({ name: "route1" });
+
+        let router2 = container.get<Router>(TYPES.Router);
+        expect(router2.getRoute().name).to.eql("route1");
 
     });
 

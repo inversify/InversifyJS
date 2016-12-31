@@ -5,7 +5,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 function unmanaged() {
     return function(target: any, targetKey: string, index: number) {
         let metadata = new Metadata(METADATA_KEY.UNMANAGED_TAG, true);
-        return tagParameter(target, targetKey, index, metadata);
+        tagParameter(target, targetKey, index, metadata);
     };
 }
 

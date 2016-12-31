@@ -5,7 +5,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 function targetName(name: string) {
   return function(target: any, targetKey: string, index: number) {
     let metadata = new Metadata(METADATA_KEY.NAME_TAG, name);
-    return tagParameter(target, targetKey, index, metadata);
+    tagParameter(target, targetKey, index, metadata);
   };
 }
 
