@@ -5,10 +5,10 @@ import { tagParameter, tagProperty } from "./decorator_utils";
 function tagged(metadataKey: string|number|symbol, metadataValue: any) {
     return function(target: any, targetKey: string, index?: number) {
         let metadata = new Metadata(metadataKey, metadataValue);
-            if (typeof index === "number") {
-        return tagParameter(target, targetKey, index, metadata);
+        if (typeof index === "number") {
+            tagParameter(target, targetKey, index, metadata);
         } else {
-            return tagProperty(target, targetKey, metadata);
+            tagProperty(target, targetKey, metadata);
         }
     };
 }

@@ -9,9 +9,9 @@ function multiInject(serviceIdentifier: interfaces.ServiceIdentifier<any>) {
     let metadata = new Metadata(METADATA_KEY.MULTI_INJECT_TAG, serviceIdentifier);
 
     if (typeof index === "number") {
-      return tagParameter(target, targetKey, index, metadata);
+      tagParameter(target, targetKey, index, metadata);
     } else {
-      return tagProperty(target, targetKey, metadata);
+      tagProperty(target, targetKey, metadata);
     }
 
   };
