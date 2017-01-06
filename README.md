@@ -82,9 +82,9 @@ compilation options in your `tsconfig.json` file.
 
 InversifyJS requires a modern JavaScript engine with support for:
 
-- [Reflect metadata](https://github.com/rbuckton/ReflectDecorators/blob/master/spec/metadata.md)
+- [Reflect metadata](https://rbuckton.github.io/reflect-metadata/)
 - [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
-- [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (Only required if using [provider injection](https://github.com/inversify/InversifyJS#injecting-a-provider-asynchronous-factory))
+- [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (Only required if using [provider injection](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md))
 - [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) (Only required if using [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md))
 
 If your environment don't support one of these you will need to import a shim or polyfill.
@@ -269,7 +269,7 @@ Please refer to the [ecosystem wiki page](https://github.com/inversify/Inversify
 If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
 If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
-[wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) and browse the [documented source code](http://inversify.io/documentation/index.html) to learn more about InversifyJS internals.
+[wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) to learn more about InversifyJS internals.
 
 ## Acknowledgements
 
