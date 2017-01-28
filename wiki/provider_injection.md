@@ -160,7 +160,7 @@ goldKatanaProvider(10).then((notSoPowerfulGoldKatana) => {
 ```
 
 ## Provider as a singleton
-A Provider is always injected as a singleton but ypu can control if the value returned by the 
+A Provider is always injected as a singleton but you can control if the value returned by the 
 Provider is uses singleton or transient scope:
 
 ```ts
