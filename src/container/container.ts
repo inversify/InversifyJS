@@ -163,7 +163,7 @@ class Container implements interfaces.Container {
     }
 
     // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
-    // Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+    // Users can try-catch calls to container.get<T>("T") if they really need to do check if a
     // binding with a complex constraint is available.
     public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
         let bindings = this._bindingDictionary.get(serviceIdentifier);
@@ -226,7 +226,7 @@ class Container implements interfaces.Container {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    // Prepares arguments required for resolution and 
+    // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resoltion to _planAndResolve
     private _get<T>(

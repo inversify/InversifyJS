@@ -209,12 +209,12 @@ container.bind<string>(TYPES.Rank)
 ```
 
 ## What can I do when my base class is provided by a third party module?
-In some cases you may get errors about missing annotations classes 
-provided by a third party modul like:
+In some cases, you may get errors about missing annotations in classes 
+provided by a third party module like:
 
 > Error: Missing required @injectable annotation in: SamuraiMaster
 
-You can overcome this problem using the decorate function:
+You can overcome this problem using the `decorate` function:
 
 ```ts
 import { decorate, injectable } from "inversify";

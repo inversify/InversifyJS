@@ -151,14 +151,14 @@ function getBaseClassDepencencyCount(func: Function): number {
         // get targets for base class
         let targets = getTargets(baseConstructor, true);
 
-        // get unmanaged metadata 
+        // get unmanaged metadata
         let metadata: any[] = targets.map((t: interfaces.Target) => {
             return t.metadata.filter((m: interfaces.Metadata) => {
                 return m.key === METADATA_KEY.UNMANAGED_TAG;
             });
         });
 
-        // Compare the number of constructor arguments with the number of 
+        // Compare the number of constructor arguments with the number of
         // unmanaged dependencies unmanaged dependencies are not required
         let unmanagedCount = [].concat.apply([], metadata).length;
         let dependencyCount = targets.length - unmanagedCount;

@@ -100,8 +100,8 @@ describe("Middleware", () => {
             };
         }
 
-        container.applyMiddleware(middleware1); // one point in time 
-        container.applyMiddleware(middleware2);  // another point in time 
+        container.applyMiddleware(middleware1); // one point in time
+        container.applyMiddleware(middleware2);  // another point in time
         container.bind<Ninja>("Ninja").to(Ninja);
 
         let ninja = container.get<Ninja>("Ninja");

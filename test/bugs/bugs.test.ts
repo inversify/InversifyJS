@@ -303,27 +303,27 @@ describe("Bugs", () => {
 
         @injectable()
         class Dependency1 {
-            public name: string = "Dependency1";
+            public name = "Dependency1";
         }
 
         @injectable()
         class Dependency2 {
-            public name: string = "Dependency1";
+            public name = "Dependency1";
         }
 
         @injectable()
         class Dependency3 {
-            public name: string = "Dependency1";
+            public name = "Dependency1";
         }
 
         @injectable()
         class Dependency4 {
-            public name: string = "Dependency1";
+            public name = "Dependency1";
         }
 
         @injectable()
         class Dependency5 {
-            public name: string = "Dependency1";
+            public name = "Dependency1";
         }
 
         @injectable()

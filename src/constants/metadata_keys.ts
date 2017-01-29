@@ -16,7 +16,7 @@ export const INJECT_TAG = "inject";
 // The type of the binding at design type for multi-injections
 export const MULTI_INJECT_TAG = "multi_inject";
 
-// used to store constructor arguments tags 
+// used to store constructor arguments tags
 export const TAGGED = "inversify:tagged";
 
 // used to store class properties tags
