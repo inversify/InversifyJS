@@ -71,7 +71,7 @@
     "reflect-metadata": "^0.1.9",
     "run-sequence": "^1.2.0",
     "sinon": "^1.17.3",
-    "tslint": "^4.2.0",
+    "tslint": "^4.4.2",
     "typescript": "^2.1.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
