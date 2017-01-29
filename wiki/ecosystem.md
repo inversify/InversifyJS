@@ -32,3 +32,4 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Retax](https://github.com/retaxJS) - Universal React Redux Framework.
 - [Prettygoat](https://www.npmjs.com/package/prettygoat) - The not so baaaaaaad Event Sourcing Projection Engine.
 - [Ninjagoat](https://www.npmjs.com/package/ninjagoat) - The not so baaaaaaad MVVM framework.
+- [Javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator) - JavaScript obfuscator for Node.js
