@@ -606,4 +606,25 @@ describe("Container", () => {
 
     });
 
+    it("Should be able to override a binding using rebind", () => {
+
+        let TYPES = {
+            someType: "someType"
+        };
+
+        let container = new Container();
+        container.bind<number>(TYPES.someType).toConstantValue(1);
+        container.bind<number>(TYPES.someType).toConstantValue(2);
+
+        let values1 = container.getAll(TYPES.someType);
+        expect(values1[0]).to.eq(1);
+        expect(values1[1]).to.eq(2);
+
+        container.rebind<number>(TYPES.someType).toConstantValue(3);
+        let values2 = container.getAll(TYPES.someType);
+        expect(values2[0]).to.eq(3);
+        expect(values2[1]).to.eq(undefined);
+
+    });
+
 });

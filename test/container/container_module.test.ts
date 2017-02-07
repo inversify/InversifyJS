@@ -51,4 +51,46 @@ describe("ContainerModule", () => {
 
   });
 
+  it("Should be able to override a binding using rebind within a container module", () => {
+
+    let TYPES = {
+        someType: "someType"
+    };
+
+    let container = new Container();
+
+    let module1 = new ContainerModule(
+      (
+        bind: interfaces.Bind,
+        unbind: interfaces.Unbind,
+        isBound: interfaces.IsBound
+      ) => {
+        bind<number>(TYPES.someType).toConstantValue(1);
+        bind<number>(TYPES.someType).toConstantValue(2);
+      }
+    );
+
+    let module2 = new ContainerModule(
+      (
+        bind: interfaces.Bind,
+        unbind: interfaces.Unbind,
+        isBound: interfaces.IsBound,
+        rebind: interfaces.Rebind
+      ) => {
+        rebind<number>(TYPES.someType).toConstantValue(3);
+      }
+    );
+
+    container.load(module1);
+    let values1 = container.getAll(TYPES.someType);
+    expect(values1[0]).to.eq(1);
+    expect(values1[1]).to.eq(2);
+
+    container.load(module2);
+    let values2 = container.getAll(TYPES.someType);
+    expect(values2[0]).to.eq(3);
+    expect(values2[1]).to.eq(undefined);
+
+  });
+
 });

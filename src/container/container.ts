@@ -108,11 +108,29 @@ class Container implements interfaces.Container {
             };
         };
 
+        let getRebindFunction = (moduleId: string) => {
+            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                let _rebind = this.rebind.bind(this);
+                let bindingToSyntax = _rebind(serviceIdentifier);
+                setModuleId(bindingToSyntax, moduleId);
+                return bindingToSyntax;
+            };
+        };
+
         modules.forEach((module) => {
+
             let bindFunction = getBindFunction(module.guid);
             let unbindFunction = getUnbindFunction(module.guid);
             let isboundFunction = getIsboundFunction(module.guid);
-            module.registry(bindFunction, unbindFunction, isboundFunction);
+            let rebindFunction = getRebindFunction(module.guid);
+
+            module.registry(
+                bindFunction,
+                unbindFunction,
+                isboundFunction,
+                rebindFunction
+            );
+
         });
 
     }
@@ -137,6 +155,11 @@ class Container implements interfaces.Container {
         let binding = new Binding<T>(serviceIdentifier, defaultScope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
+    }
+
+    public rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
+        this.unbind(serviceIdentifier);
+        return this.bind(serviceIdentifier);
     }
 
     // Removes a type binding from the registry by its key

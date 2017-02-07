@@ -1,9 +1,10 @@
 # The Container API
 
-The InversifyJS container provides some helpers to resolve multi-injections 
+The InversifyJS container provides some helpers to resolve multi-injections
 and ambiguous bindings.
 
 ## Container Options
+
 The default scope is `transient` and you can change the scope of a type when declaring a binding:
 
 ```ts
@@ -17,7 +18,8 @@ You can use container options to change the default scope used at application le
 let container = new Container({ defaultScope: "Singleton" });
 ```
 
-## Container.merge(a: Container, b: Container);
+## Container.merge(a: Container, b: Container)
+
 Merges two containers into one:
 
 ```ts
@@ -67,6 +69,7 @@ expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Kat
 ```
 
 ## container.getNamed<T>()
+
 Named bindings:
 
 ```ts
@@ -79,6 +82,7 @@ let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 
 ## container.getTagged<T>()
+
 Tagged bindings:
 
 ```ts
@@ -91,6 +95,7 @@ let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
 ## container.getAll<T>()
+
 Get all available bindings for a given identifier:
 
 ```ts
@@ -102,6 +107,7 @@ let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
 ## container.getAllNamed<T>()
+
 Get all available bindings for a given identifier that match the given 
 named constraint:
 
@@ -132,6 +138,7 @@ expect(es[1].goodbye).to.eql("adios");
 
 
 ## container.getAllTagged<T>()
+
 Get all available bindings for a given identifier that match the given 
 named constraint:
 
@@ -160,7 +167,8 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.isBound()
+## container.isBound(serviceIdentifier: ServiceIdentifier)
+
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
 
 ```ts
@@ -192,10 +200,11 @@ container.isBound(katanaSymbol)).eql(false);
 ```
 
 ## container.isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string)
+
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
 
 > NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
-> Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+> Users can try-catch calls to container.get<T>("T") if they really need to do check if a
 > binding with a complex constraint is available.
 
 ```ts
@@ -220,10 +229,11 @@ expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
 ```
 
 ## container.isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any)
+
 You can use the `isBoundTagged` method to check if there are registered bindings for a given service identifier with a given tagged constraint.
 
 > NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
-> Users can try-catch calls to container.get<T>("T") if they really need to do check if a 
+> Users can try-catch calls to container.get<T>("T") if they really need to do check if a
 > binding with a complex constraint is available.
 
 ```ts
@@ -244,4 +254,28 @@ expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(false);
 container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
 expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
 expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
+```
+
+## container.rebind<T>(serviceIdentifier: ServiceIdentifier<T>)
+
+You can use the `rebind` method to replace all the existing bindings for a given `serviceIdentifier`.
+The function returns an instance of `BindingToSyntax` which allows to create the replacement binding.
+
+```ts
+let TYPES = {
+    someType: "someType"
+};
+
+let container = new Container();
+container.bind<number>(TYPES.someType).toConstantValue(1);
+container.bind<number>(TYPES.someType).toConstantValue(2);
+
+let values1 = container.getAll(TYPES.someType);
+expect(values1[0]).to.eq(1);
+expect(values1[1]).to.eq(2);
+
+container.rebind<number>(TYPES.someType).toConstantValue(3);
+let values2 = container.getAll(TYPES.someType);
+expect(values2[0]).to.eq(3);
+expect(values2[1]).to.eq(undefined);
 ```
