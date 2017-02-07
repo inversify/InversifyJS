@@ -164,6 +164,7 @@ namespace interfaces {
         parent: Container | null;
         options: ContainerOptions;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
+        rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAll(): void;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
@@ -185,6 +186,10 @@ namespace interfaces {
         <T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
     }
 
+    export interface Rebind extends Function {
+        <T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
+    }
+
     export interface Unbind extends Function {
         <T>(serviceIdentifier: ServiceIdentifier<T>): void;
     }
@@ -195,7 +200,16 @@ namespace interfaces {
 
     export interface ContainerModule {
         guid: string;
-        registry: (bind: Bind, unbind: Unbind, isBound: IsBound) => void;
+        registry: ContainerModuleCallBack;
+    }
+
+    export interface ContainerModuleCallBack extends Function {
+        (
+            bind: interfaces.Bind,
+            unbind: interfaces.Unbind,
+            isBound: interfaces.IsBound,
+            rebind: interfaces.Rebind
+        ): void;
     }
 
     export interface ContainerSnapshot {
