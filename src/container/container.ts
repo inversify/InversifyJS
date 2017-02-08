@@ -87,8 +87,7 @@ class Container implements interfaces.Container {
 
         let getBindFunction = (moduleId: string) => {
             return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                let _bind = this.bind.bind(this);
-                let bindingToSyntax = _bind(serviceIdentifier);
+                let bindingToSyntax = this.bind.call(this, serviceIdentifier);
                 setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
@@ -110,8 +109,7 @@ class Container implements interfaces.Container {
 
         let getRebindFunction = (moduleId: string) => {
             return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                let _rebind = this.rebind.bind(this);
-                let bindingToSyntax = _rebind(serviceIdentifier);
+                let bindingToSyntax = this.rebind.call(this, serviceIdentifier);
                 setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
