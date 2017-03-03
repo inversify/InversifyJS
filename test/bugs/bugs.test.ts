@@ -3,6 +3,7 @@ import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 import { getFunctionName } from "../../src/utils/serialization";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import { getDependencies } from "../../src/planning/reflection_utils";
 import {
     Container,
     injectable,
@@ -527,6 +528,33 @@ describe("Bugs", () => {
         let container = new Container();
         let throws = () => { container.bind("testId").toSelf(); };
         expect(throws).to.throw(ERROR_MSGS.INVALID_TO_SELF_VALUE);
+    });
+
+    it("Should generate correct metadata when the spread operator is used", () => {
+
+        const BAR = Symbol("BAR");
+
+        interface Bar {
+            name: string;
+        }
+
+        @injectable()
+        class Foo {
+            public bar: Bar[];
+            constructor(@multiInject(BAR) ...args: Bar[]) {
+                this.bar = args;
+            }
+        }
+
+        // is the metadata correct?
+        let serviceIdentifiers = Reflect.getMetadata(METADATA_KEY.TAGGED, Foo);
+        expect(serviceIdentifiers["0"][0].value.toString()).to.be.eql("Symbol(BAR)");
+
+        // is the plan correct?
+        let dependencies = getDependencies(Foo);
+        expect(dependencies.length).to.be.eql(1);
+        expect(dependencies[0].serviceIdentifier.toString()).to.be.eql("Symbol(BAR)");
+
     });
 
 });
