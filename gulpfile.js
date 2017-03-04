@@ -19,7 +19,23 @@ var gulp        = require("gulp"),
     runSequence = require("run-sequence"),
     mocha       = require("gulp-mocha"),
     istanbul    = require("gulp-istanbul"),
-    karma       = require("karma");
+    karma       = require("karma"),
+    del         = require('del');
+
+//******************************************************************************
+//* CLEAN
+//******************************************************************************
+gulp.task("clean", function() {
+    return del([
+        "src/**/*.js",
+        "test/**/*.test.js",
+        "src/*.js",
+        "test/*.test.js",
+        "lib",
+        "es",
+        "amd"
+    ]);
+});
 
 //******************************************************************************
 //* LINT
@@ -213,6 +229,7 @@ gulp.task("build", function(cb) {
 
 gulp.task("default", function (cb) {
   runSequence(
+    "clean",
     "build",
     "test",
     cb);

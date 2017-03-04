@@ -6,20 +6,8 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { TargetTypeEnum } from "../constants/literal_types";
 
 function getDependencies(func: Function): interfaces.Target[] {
-
     let constructorName = getFunctionName(func);
     let targets: interfaces.Target[] = getTargets(constructorName, func, false);
-
-    // Throw if a derived class does not implement its constructor explicitly
-    // We do this to prevent errors when a base class (parent) has dependencies
-    // and one of the derived classes (children) has no dependencies
-    let baseClassDepencencyCount = getBaseClassDepencencyCount(func);
-    if (targets.length < baseClassDepencencyCount) {
-        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
-                    constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
-        throw new Error(error);
-    }
-
     return targets;
 }
 
@@ -37,16 +25,79 @@ function getTargets(constructorName: string, func: Function, isBaseClass: boolea
     // User generated annotations
     let constructorArgsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
 
+    let keys = Object.keys(constructorArgsMetadata);
+    let hasUserDeclaredUnknownInjections = (func.length === 0 && keys.length > 0);
+    let iterations = (hasUserDeclaredUnknownInjections) ? keys.length : func.length;
+
+    // Target instances that represent constructor arguments to be injected
+    let constructorTargets = getConstructorArgsAsTargets(
+        isBaseClass,
+        constructorName,
+        serviceIdentifiers,
+        constructorArgsMetadata,
+        iterations
+    );
+
+    // Target instances that represent properties to be injected
+    let propertyTargets = getClassPropsAsTargets(func);
+
     let targets = [
-        ...(
-            getConstructorArgsAsTargets(
-                isBaseClass, constructorName, serviceIdentifiers, constructorArgsMetadata, func.length
-            )
-        ),
-        ...(getClassPropsAsTargets(func))
+        ...constructorTargets,
+        ...propertyTargets
     ];
 
+    // Throw if a derived class does not implement its constructor explicitly
+    // We do this to prevent errors when a base class (parent) has dependencies
+    // and one of the derived classes (children) has no dependencies
+    let baseClassDepencencyCount = getBaseClassDepencencyCount(func);
+
+    if (targets.length < baseClassDepencencyCount) {
+        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
+                    constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        throw new Error(error);
+    }
+
     return targets;
+
+}
+function getConstructorArgsAsTarget(
+    index: number,
+    isBaseClass: boolean,
+    constructorName: string,
+    serviceIdentifiers: any,
+    constructorArgsMetadata: any
+) {
+    // Create map from array of metadata for faster access to metadata
+    let targetMetadata = constructorArgsMetadata[index.toString()] || [];
+    let metadata = formatTargetMetadata(targetMetadata);
+    let isManaged = metadata.unmanaged !== true;
+
+    // Take types to be injected from user-generated metadata
+    // if not available use compiler-generated metadata
+    let serviceIndentifier = serviceIdentifiers[index];
+    let injectIndentifier  = (metadata.inject || metadata.multiInject);
+    serviceIndentifier = (injectIndentifier) ? (injectIndentifier) : serviceIndentifier;
+
+    // Types Object and Function are too ambiguous to be resolved
+    // user needs to generate metadata manually for those
+    if (isManaged === true) {
+
+        let isObject = serviceIndentifier === Object;
+        let isFunction = serviceIndentifier === Function;
+        let isUndefined = serviceIndentifier === undefined;
+        let isUnknownType = (isObject || isFunction || isUndefined);
+
+        if (isBaseClass === false && isUnknownType) {
+            let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in class ${constructorName}.`;
+            throw new Error(msg);
+        }
+
+        let target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIndentifier);
+        target.metadata = targetMetadata;
+        return target;
+    }
+
+    return null;
 
 }
 
@@ -55,58 +106,22 @@ function getConstructorArgsAsTargets(
     constructorName: string,
     serviceIdentifiers: any,
     constructorArgsMetadata: any,
-    constructorLength: number
+    iterations: number
 ) {
 
     let targets: interfaces.Target[] = [];
-
-    let keys = Object.keys(constructorArgsMetadata);
-
-    if (constructorLength === 0 && keys.length > 0) {
-
-        for (let i = 0; i < keys.length; i++) {
-
-            // Create map from array of metadata for faster access to metadata
-            let targetMetadata = constructorArgsMetadata[i.toString()] || [];
-            let metadata = formatTargetMetadata(targetMetadata);
-
-            console.log("NOW YOU SEE ME!", metadata);
-
-        }
-
-    } else {
-
-        for (let i = 0; i < constructorLength; i++) {
-
-            // Create map from array of metadata for faster access to metadata
-            let targetMetadata = constructorArgsMetadata[i.toString()] || [];
-            let metadata = formatTargetMetadata(targetMetadata);
-
-            // Take types to be injected from user-generated metadata
-            // if not available use compiler-generated metadata
-            let serviceIndentifier = serviceIdentifiers[i];
-            let hasInjectAnnotations = (metadata.inject || metadata.multiInject);
-            serviceIndentifier = (hasInjectAnnotations) ? (hasInjectAnnotations) : serviceIndentifier;
-
-            // Types Object and Function are too ambiguous to be resolved
-            // user needs to generate metadata manually for those
-            let isObject = serviceIndentifier === Object;
-            let isFunction = serviceIndentifier === Function;
-            let isUndefined = serviceIndentifier === undefined;
-            let isUnknownType = (isObject || isFunction || isUndefined);
-
-            if (isBaseClass === false && isUnknownType) {
-                let msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${i} in class ${constructorName}.`;
-                throw new Error(msg);
-            }
-
-            // Create target
-            let target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIndentifier);
-            target.metadata = targetMetadata;
+    for (let i = 0; i < iterations; i++) {
+        let index = i;
+        let target = getConstructorArgsAsTarget(
+            index,
+            isBaseClass,
+            constructorName,
+            serviceIdentifiers,
+            constructorArgsMetadata
+        );
+        if (target !== null) {
             targets.push(target);
-
         }
-
     }
 
     return targets;
