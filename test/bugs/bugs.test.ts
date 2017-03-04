@@ -3,6 +3,7 @@ import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 import { getFunctionName } from "../../src/utils/serialization";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import { getDependencies } from "../../src/planning/reflection_utils";
 import {
     Container,
     injectable,
@@ -527,6 +528,95 @@ describe("Bugs", () => {
         let container = new Container();
         let throws = () => { container.bind("testId").toSelf(); };
         expect(throws).to.throw(ERROR_MSGS.INVALID_TO_SELF_VALUE);
+    });
+
+    it("Should generate correct metadata when the spread operator is used", () => {
+
+        const BAR = Symbol("BAR");
+        const FOO = Symbol("FOO");
+
+        interface Bar {
+            name: string;
+        }
+
+        @injectable()
+        class Foo {
+            public bar: Bar[];
+            constructor(@multiInject(BAR) ...args: Bar[][]) {
+                this.bar = args[0];
+            }
+        }
+
+        // is the metadata correct?
+        let serviceIdentifiers = Reflect.getMetadata(METADATA_KEY.TAGGED, Foo);
+        expect(serviceIdentifiers["0"][0].value.toString()).to.be.eql("Symbol(BAR)");
+
+        // is the plan correct?
+        let dependencies = getDependencies(Foo);
+        expect(dependencies.length).to.be.eql(1);
+        expect(dependencies[0].serviceIdentifier.toString()).to.be.eql("Symbol(BAR)");
+
+        // integration test
+        let container = new Container();
+        container.bind<Bar>(BAR).toConstantValue({ name: "bar1" });
+        container.bind<Bar>(BAR).toConstantValue({ name: "bar2" });
+        container.bind<Foo>(FOO).to(Foo);
+        let foo = container.get<Foo>(FOO);
+        expect(foo.bar.length).to.eql(2);
+        expect(foo.bar[0].name).to.eql("bar1");
+        expect(foo.bar[1].name).to.eql("bar2");
+
+    });
+
+    it("Should be able to inject into an abstract class", () => {
+
+        interface Weapon {}
+
+        @injectable()
+        abstract class BaseSoldier {
+            public weapon: Weapon;
+            public constructor(
+                @inject("Weapon") weapon: Weapon
+            ) {
+                this.weapon = weapon;
+            }
+        }
+
+        @injectable()
+        class Soldier extends BaseSoldier { }
+
+        @injectable()
+        class Archer extends BaseSoldier { }
+
+        @injectable()
+        class Knight extends BaseSoldier { }
+
+        @injectable()
+        class Sword implements Weapon { }
+
+        @injectable()
+        class Bow implements Weapon { }
+
+        @injectable()
+        class DefaultWeapon implements Weapon { }
+
+        let container = new Container();
+
+        container.bind<Weapon>("Weapon").to(DefaultWeapon).whenInjectedInto(Soldier);
+        container.bind<Weapon>("Weapon").to(Sword).whenInjectedInto(Knight);
+        container.bind<Weapon>("Weapon").to(Bow).whenInjectedInto(Archer);
+        container.bind<BaseSoldier>("BaseSoldier").to(Soldier).whenTargetNamed("default");
+        container.bind<BaseSoldier>("BaseSoldier").to(Knight).whenTargetNamed("knight");
+        container.bind<BaseSoldier>("BaseSoldier").to(Archer).whenTargetNamed("archer");
+
+        let soldier = container.getNamed<BaseSoldier>("BaseSoldier", "default");
+        let knight = container.getNamed<BaseSoldier>("BaseSoldier", "knight");
+        let archer = container.getNamed<BaseSoldier>("BaseSoldier", "archer");
+
+        expect(soldier.weapon instanceof DefaultWeapon).to.eql(true);
+        expect(knight.weapon instanceof Sword).to.eql(true);
+        expect(archer.weapon instanceof Bow).to.eql(true);
+
     });
 
 });

@@ -33,7 +33,7 @@ function _tagParameterOrProperty(
     let isParameterDecorator = (typeof parameterIndex === "number");
     let key: string = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
 
-    // If the decorator is used as a parameter decorator property name must be provided
+    // if the decorator is used as a parameter decorator, the property name must be provided
     if (isParameterDecorator === true && propertyName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
@@ -45,6 +45,7 @@ function _tagParameterOrProperty(
 
     // get metadata for the decorated parameter by its index
     let paramOrPropertyMetadata: interfaces.Metadata[] = paramsOrPropertiesMetadata[key];
+
     if (Array.isArray(paramOrPropertyMetadata) !== true) {
         paramOrPropertyMetadata = [];
     } else {
@@ -60,6 +61,7 @@ function _tagParameterOrProperty(
     paramOrPropertyMetadata.push(metadata);
     paramsOrPropertiesMetadata[key] = paramOrPropertyMetadata;
     Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
+
 }
 
 function _decorate(decorators: any[], target: any): void {

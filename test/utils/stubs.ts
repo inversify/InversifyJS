@@ -112,12 +112,3 @@ export class TaggedWarrior {
     }
 }
 
-@injectable()
-export abstract class BaseSoldier {
-    public weapon: Weapon;
-    public constructor(
-        @inject("Weapon") weapon: Weapon
-    ) {
-        this.weapon = weapon;
-    }
-}

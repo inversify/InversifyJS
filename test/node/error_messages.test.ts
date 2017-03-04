@@ -1,9 +1,6 @@
 import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import * as Stubs from "../utils/stubs";
-import {
-    Container, injectable
-} from "../../src/inversify";
+import { Container, injectable } from "../../src/inversify";
 
 describe("Error message when resolving fails", () => {
     interface Weapon { }
@@ -81,49 +78,6 @@ describe("Error message when resolving fails", () => {
             expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
             expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
         }
-
-    });
-
-    it("Should display a error when injecting into an abstract class", () => {
-
-        @injectable()
-        class Soldier extends Stubs.BaseSoldier { }
-
-        @injectable()
-        class Archer extends Stubs.BaseSoldier { }
-
-        @injectable()
-        class Knight extends Stubs.BaseSoldier { }
-
-        @injectable()
-        class Sword implements Stubs.Weapon { }
-
-        @injectable()
-        class Bow implements Stubs.Weapon { }
-
-        @injectable()
-        class DefaultWeapon implements Stubs.Weapon { }
-
-        let container = new Container();
-
-        container.bind<Stubs.Weapon>("Weapon").to(DefaultWeapon).whenInjectedInto(Soldier);
-        container.bind<Stubs.Weapon>("Weapon").to(Sword).whenInjectedInto(Knight);
-        container.bind<Stubs.Weapon>("Weapon").to(Bow).whenInjectedInto(Archer);
-        container.bind<Stubs.BaseSoldier>("BaseSoldier").to(Soldier).whenTargetNamed("default");
-        container.bind<Stubs.BaseSoldier>("BaseSoldier").to(Knight).whenTargetNamed("knight");
-        container.bind<Stubs.BaseSoldier>("BaseSoldier").to(Archer).whenTargetNamed("archer");
-
-        let throw1 = () => { container.getNamed<Stubs.BaseSoldier>("BaseSoldier", "default"); };
-        let throw2 = () => { container.getNamed<Stubs.BaseSoldier>("BaseSoldier", "knight"); };
-        let throw3 = () => { container.getNamed<Stubs.BaseSoldier>("BaseSoldier", "archer"); };
-
-        function getError(className: string) {
-            return ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + className + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
-        }
-
-        expect(throw1).to.throw(getError("Soldier"));
-        expect(throw2).to.throw(getError("Knight"));
-        expect(throw3).to.throw(getError("Archer"));
 
     });
 
