@@ -98,3 +98,7 @@ function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
     };
 }
 ```
+
+## Custom metadata reader
+
+TODO
