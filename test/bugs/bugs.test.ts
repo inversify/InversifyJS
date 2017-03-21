@@ -4,6 +4,7 @@ import { getFunctionName } from "../../src/utils/serialization";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { getDependencies } from "../../src/planning/reflection_utils";
+import { MetadataReader } from "../../src/planning/metadata_reader";
 import {
     Container,
     injectable,
@@ -552,7 +553,7 @@ describe("Bugs", () => {
         expect(serviceIdentifiers["0"][0].value.toString()).to.be.eql("Symbol(BAR)");
 
         // is the plan correct?
-        let dependencies = getDependencies(Foo);
+        let dependencies = getDependencies(new MetadataReader(), Foo);
         expect(dependencies.length).to.be.eql(1);
         expect(dependencies[0].serviceIdentifier.toString()).to.be.eql("Symbol(BAR)");
 

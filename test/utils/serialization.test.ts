@@ -3,7 +3,7 @@ import { getFunctionName, listMetadataForTarget } from "../../src/utils/serializ
 import { Target } from "../../src/planning/target";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
 
-describe("serialization", () => {
+describe("Serialization", () => {
 
     it("Should return a good function name", () => {
 

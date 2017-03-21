@@ -98,3 +98,83 @@ function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
     };
 }
 ```
+
+## Custom metadata reader
+
+> :warning: Please note that it is not recommended to create your own custom
+> metadata reader. We have included this feature two allow library / framework creators
+> to have a higher level of customization but the average user should not use a custom
+> metadata reader. In general, a custom metadata reader should only be used when
+> developing a framework in order to provide users with an annotation APIs
+> less explicit than the default anotation API.
+>
+> If you are developing a framework or library and you create a custom metadata reader,
+> Please remember to provide your framework with support for an alternative for all the
+> decorators in the default API: `@injectable, ``@inject`, `@multiInject`, `@tagged`,
+> `@named`, `@optional`, `@targetName` & `@unmanaged`.
+
+Middleware allows you to intercept a plan and resolve it but you are not allowed to change the way the annotation phase behaves.
+
+There is a second extension point that allows you to decide what kind of annotation
+system you would like to use. The default annotation system is powered by decorators and
+reflect-metadata:
+
+```ts
+@injectable()
+class Ninja implements Ninja {
+
+    private _katana: Katana;
+    private _shuriken: Shuriken;
+
+    public constructor(
+        @inject("Katana") katana: Katana,
+        @inject("Shuriken") shuriken: Shuriken
+    ) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+```
+
+You can use a custom metadata reader to implement a custom anotation system.
+
+For example, you could implement an annotation system based on static properties:
+
+```ts
+class Ninja implements Ninja {
+
+    public static constructorInjections = [
+        "Katana", "Shuriken"
+    ];
+
+    private _katana: Katana;
+    private _shuriken: Shuriken;
+
+    public constructor(
+        katana: Katana,
+        shuriken: Shuriken
+    ) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+    }
+
+    public fight() { return this._katana.hit(); };
+    public sneak() { return this._shuriken.throw(); };
+
+}
+```
+
+A custom metadata reader must implement the `interfaces.MetadataReader` interface.
+
+A full example [can be found in our unit tests](https://github.com/inversify/InversifyJS/blob/master/test/features/metadata_reader.test.ts).
+
+One you have a custom metadata reader you will be ready to apply it:
+
+```ts
+let container = new Container();
+container.applyCustomMetadataReader(new StaticPropsMetadataReader());
+```

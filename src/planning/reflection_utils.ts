@@ -5,16 +5,22 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { TargetTypeEnum } from "../constants/literal_types";
 
-function getDependencies(func: Function): interfaces.Target[] {
+function getDependencies(
+    metadataReader: interfaces.MetadataReader, func: Function
+): interfaces.Target[] {
     let constructorName = getFunctionName(func);
-    let targets: interfaces.Target[] = getTargets(constructorName, func, false);
+    let targets: interfaces.Target[] = getTargets(metadataReader, constructorName, func, false);
     return targets;
 }
 
-function getTargets(constructorName: string, func: Function, isBaseClass: boolean): interfaces.Target[] {
+function getTargets(
+    metadataReader: interfaces.MetadataReader, constructorName: string, func: Function, isBaseClass: boolean
+): interfaces.Target[] {
+
+    let metadata = metadataReader.getConstrucotorMetadata(func);
 
     // TypeScript compiler generated annotations
-    let serviceIdentifiers = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, func);
+    let serviceIdentifiers = metadata.compilerGeneratedMetadata;
 
     // All types resolved must be annotated with @injectable
     if (serviceIdentifiers === undefined) {
@@ -23,7 +29,7 @@ function getTargets(constructorName: string, func: Function, isBaseClass: boolea
     }
 
     // User generated annotations
-    let constructorArgsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED, func) || [];
+    let constructorArgsMetadata = metadata.userGeneratedMetadata;
 
     let keys = Object.keys(constructorArgsMetadata);
     let hasUserDeclaredUnknownInjections = (func.length === 0 && keys.length > 0);
@@ -39,7 +45,7 @@ function getTargets(constructorName: string, func: Function, isBaseClass: boolea
     );
 
     // Target instances that represent properties to be injected
-    let propertyTargets = getClassPropsAsTargets(func);
+    let propertyTargets = getClassPropsAsTargets(metadataReader, func);
 
     let targets = [
         ...constructorTargets,
@@ -49,7 +55,7 @@ function getTargets(constructorName: string, func: Function, isBaseClass: boolea
     // Throw if a derived class does not implement its constructor explicitly
     // We do this to prevent errors when a base class (parent) has dependencies
     // and one of the derived classes (children) has no dependencies
-    let baseClassDepencencyCount = getBaseClassDepencencyCount(func);
+    let baseClassDepencencyCount = getBaseClassDepencencyCount(metadataReader, func);
 
     if (targets.length < baseClassDepencencyCount) {
         let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
@@ -127,9 +133,9 @@ function getConstructorArgsAsTargets(
     return targets;
 }
 
-function getClassPropsAsTargets(func: Function) {
+function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function) {
 
-    let classPropsMetadata = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, func) || [];
+    let classPropsMetadata = metadataReader.getPropertiesMetadata(constructorFunc);
     let targets: interfaces.Target[] = [];
     let keys = Object.keys(classPropsMetadata);
 
@@ -157,11 +163,11 @@ function getClassPropsAsTargets(func: Function) {
     }
 
     // Check if base class has injected properties
-    let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
+    let baseConstructor = Object.getPrototypeOf(constructorFunc.prototype).constructor;
 
     if (baseConstructor !== Object) {
 
-        let baseTargets = getClassPropsAsTargets(baseConstructor);
+        let baseTargets = getClassPropsAsTargets(metadataReader, baseConstructor);
 
         targets = [
             ...targets,
@@ -173,7 +179,7 @@ function getClassPropsAsTargets(func: Function) {
     return targets;
 }
 
-function getBaseClassDepencencyCount(func: Function): number {
+function getBaseClassDepencencyCount(metadataReader: interfaces.MetadataReader, func: Function): number {
 
     let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
 
@@ -181,7 +187,7 @@ function getBaseClassDepencencyCount(func: Function): number {
 
         // get targets for base class
         let baseConstructorName = getFunctionName(func);
-        let targets = getTargets(baseConstructorName, baseConstructor, true);
+        let targets = getTargets(metadataReader, baseConstructorName, baseConstructor, true);
 
         // get unmanaged metadata
         let metadata: any[] = targets.map((t: interfaces.Target) => {
@@ -198,7 +204,7 @@ function getBaseClassDepencencyCount(func: Function): number {
         if (dependencyCount > 0 ) {
             return dependencyCount;
         } else {
-            return getBaseClassDepencencyCount(baseConstructor);
+            return getBaseClassDepencencyCount(metadataReader, baseConstructor);
         }
 
     } else {

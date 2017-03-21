@@ -121,6 +121,7 @@ function _validateActiveBindingCount(
 }
 
 function _createSubRequests(
+    metadataReader: interfaces.MetadataReader,
     avoidConstraints: boolean,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     context: interfaces.Context,
@@ -165,10 +166,10 @@ function _createSubRequests(
 
             if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 
-                let dependencies = getDependencies(binding.implementationType);
+                let dependencies = getDependencies(metadataReader, binding.implementationType);
 
                 dependencies.forEach((dependency: interfaces.Target) => {
-                    _createSubRequests(false, dependency.serviceIdentifier, context, subChildRequest, dependency);
+                    _createSubRequests(metadataReader, false, dependency.serviceIdentifier, context, subChildRequest, dependency);
                 });
 
             }
@@ -207,6 +208,7 @@ function getBindings<T>(
 }
 
 function plan(
+    metadataReader: interfaces.MetadataReader,
     container: interfaces.Container,
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
@@ -218,7 +220,7 @@ function plan(
 
     let context = new Context(container);
     let target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
-    _createSubRequests(avoidConstraints, serviceIdentifier, context, null, target);
+    _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
     return context;
 
 }

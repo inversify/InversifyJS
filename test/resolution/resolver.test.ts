@@ -13,6 +13,7 @@ import { targetName } from "../../src/annotation/target_name";
 import * as Proxy from "harmony-proxy";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
+import { MetadataReader } from "../../src/planning/metadata_reader";
 
 describe("Resolve", () => {
 
@@ -92,7 +93,7 @@ describe("Resolve", () => {
       container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -170,7 +171,7 @@ describe("Resolve", () => {
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
 
       let bindingDictionary = getBindingDictionary(container);
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
       let ninja = resolve<Ninja>(context);
@@ -219,7 +220,7 @@ describe("Resolve", () => {
       container.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
 
       // context and plan
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let throwFunction = () => {
           resolve(context);
@@ -289,7 +290,7 @@ describe("Resolve", () => {
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -401,7 +402,7 @@ describe("Resolve", () => {
       container.bind<Katana>(katanaId).to(Katana);
       container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -489,7 +490,7 @@ describe("Resolve", () => {
           };
       });
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -573,7 +574,7 @@ describe("Resolve", () => {
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
       container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
       let ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
@@ -665,7 +666,7 @@ describe("Resolve", () => {
           };
       });
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Warrior>(context);
 
@@ -717,7 +718,7 @@ describe("Resolve", () => {
       container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
       container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -763,7 +764,7 @@ describe("Resolve", () => {
       container.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
       container.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -815,7 +816,7 @@ describe("Resolve", () => {
         return request.target.name.equals("shuriken");
       });
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -865,7 +866,7 @@ describe("Resolve", () => {
       container.bind<Weapon>(weaponId).to(Katana);
       container.bind<Weapon>(weaponId).to(Shuriken);
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 
@@ -878,7 +879,7 @@ describe("Resolve", () => {
       container2.bind<Ninja>(ninjaId).to(Ninja);
       container2.bind<Weapon>(weaponId).to(Katana);
 
-      let context2 = plan(container2, false, TargetTypeEnum.Variable, ninjaId);
+      let context2 = plan(new MetadataReader(), container2, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja2 = resolve<Ninja>(context2);
 
@@ -938,7 +939,7 @@ describe("Resolve", () => {
             return katana;
         });
 
-        let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+        let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
         let ninja = resolve<Ninja>(context);
 
@@ -1016,7 +1017,7 @@ describe("Resolve", () => {
 
       container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
 
-      let context = plan(container, false, TargetTypeEnum.Variable, ninjaId);
+      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       let ninja = resolve<Ninja>(context);
 

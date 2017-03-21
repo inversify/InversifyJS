@@ -176,6 +176,7 @@ namespace interfaces {
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
         load(...modules: ContainerModule[]): void;
         unload(...modules: ContainerModule[]): void;
+        applyCustomMetadataReader(metadataReader: MetadataReader): void;
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
@@ -278,6 +279,20 @@ namespace interfaces {
     export interface ConstraintFunction extends Function {
         metaData?: Metadata;
         (request: Request | null): boolean;
+    }
+
+    export interface MetadataReader {
+        getConstrucotorMetadata(constructorFunc: Function): ConstructorMetadata;
+        getPropertiesMetadata(constructorFunc: Function): MetadataMap;
+    }
+
+    export interface MetadataMap {
+        [propertyNameOrArgumentIndex: string]: Metadata[];
+    }
+
+    export interface ConstructorMetadata {
+        compilerGeneratedMetadata: Function[]|undefined;
+        userGeneratedMetadata: MetadataMap;
     }
 
 }

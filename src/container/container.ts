@@ -10,6 +10,7 @@ import { guid } from "../utils/guid";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
+import { MetadataReader } from "../planning/metadata_reader";
 
 class Container implements interfaces.Container {
 
@@ -19,6 +20,7 @@ class Container implements interfaces.Container {
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _snapshots: Array<interfaces.ContainerSnapshot>;
+    private _metadataReader: interfaces.MetadataReader;
 
     public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
 
@@ -77,6 +79,7 @@ class Container implements interfaces.Container {
         this._snapshots = [];
         this._middleware = null;
         this.parent = null;
+        this._metadataReader = new MetadataReader();
     }
 
     public load(...modules: interfaces.ContainerModule[]): void {
@@ -218,6 +221,10 @@ class Container implements interfaces.Container {
         }, initial);
     }
 
+    public applyCustomMetadataReader(metadataReader: interfaces.MetadataReader) {
+        this._metadataReader = metadataReader;
+    }
+
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
@@ -291,6 +298,7 @@ class Container implements interfaces.Container {
 
             // create a plan
             let context = plan(
+                this._metadataReader,
                 this,
                 args.isMultiInject,
                 args.targetType,
