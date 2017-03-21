@@ -13,14 +13,15 @@ class MetadataReader implements interfaces.MetadataReader {
 
         return {
             compilerGeneratedMetadata: compilerGeneratedMetadata,
-            userGeneratedMetadata: userGeneratedMetadata || []
+            userGeneratedMetadata: userGeneratedMetadata || {}
         };
 
     }
 
-    public getPropertiesMetadata(constructorFunc: Function): interfaces.PropertiesMetadata {
+    public getPropertiesMetadata(constructorFunc: Function): interfaces.MetadataMap {
         // User generated properties annotations
-        return Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, constructorFunc) || [];
+        let userGeneratedMetadata =  Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, constructorFunc) || [];
+        return userGeneratedMetadata;
     }
 
 }
