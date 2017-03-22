@@ -70,7 +70,7 @@ compilation options in your `tsconfig.json` file.
 {
     "compilerOptions": {
         "target": "es5",
-        "lib": ["es6", "dom"],
+        "lib": ["es6"],
         "types": ["reflect-metadata"],
         "module": "commonjs",
         "moduleResolution": "node",

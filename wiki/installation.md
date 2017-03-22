@@ -7,11 +7,12 @@ npm install inversify@2.0.0-rc.14 reflect-metadata --save
 ```
 
 The InversifyJS type definitions are included in the inversify npm package. InversifyJS requires the `experimentalDecorators`, `emitDecoratorMetadata`and `lib` compilation options in your `tsconfig.json` file.
+
 ```js
 {
     "compilerOptions": {
         "target": "es5",
-        "lib": ["es6", "dom"],
+        "lib": ["es6"],
         "types": ["reflect-metadata"],
         "module": "commonjs",
         "moduleResolution": "node",

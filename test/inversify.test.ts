@@ -933,7 +933,7 @@ describe("InversifyJS", () => {
                 expect(ninja.katana.hit()).eql("cut!");
                 done();
             })
-            .catch((e) => { console.log(e); });
+            .catch((e) => { /* do nothing */ });
 
     });
 
