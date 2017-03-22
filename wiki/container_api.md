@@ -279,3 +279,35 @@ let values2 = container.getAll(TYPES.someType);
 expect(values2[0]).to.eq(3);
 expect(values2[1]).to.eq(undefined);
 ```
+
+## container.resolve<T>(constructor: Newable<T>)
+Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance wven if no bindings have been declared:
+
+```ts
+@injectable()
+class Katana {
+    public hit() {
+        return "cut!";
+    }
+}
+
+@injectable()
+class Ninja implements Ninja {
+    public katana: Katana;
+    public constructor(katana: Katana) {
+        this.katana = katana;
+    }
+    public fight() { return this.katana.hit(); }
+}
+
+const container = new Container();
+container.bind(Katana).toSelf();
+
+const tryGet = () => container.get(Ninja);
+expect(tryGet).to.throw("No matching bindings found for serviceIdentifier: Ninja");
+
+const ninja = container.resolve(Ninja);
+expect(ninja.fight()).to.eql("cut!");
+```
+
+Please note that it only allows to skip declaring a binding for the root element in the dependency graph (composition root). All the sub-dependencies (e.g. `Katana` in the preceding example) will require a binding to be declared.
