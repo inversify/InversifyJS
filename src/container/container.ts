@@ -254,6 +254,13 @@ class Container implements interfaces.Container {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
+    public resolve<T>(constructorFunction: interfaces.Newable<T>) {
+        const tempContainer = new Container();
+        tempContainer.bind<T>(constructorFunction).toSelf();
+        tempContainer.parent = this;
+        return tempContainer.get<T>(constructorFunction);
+    }
+
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resoltion to _planAndResolve

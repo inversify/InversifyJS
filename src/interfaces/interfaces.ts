@@ -174,6 +174,7 @@ namespace interfaces {
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string|number|symbol): T;
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string|number|symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
+        resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         unload(...modules: ContainerModule[]): void;
         applyCustomMetadataReader(metadataReader: MetadataReader): void;
