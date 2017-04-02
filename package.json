@@ -38,7 +38,7 @@
     "@types/chai": "^3.4.32",
     "@types/harmony-proxy": "^1.0.27",
     "@types/mocha": "^ 2.2.35",
-    "@types/sinon": "^1.16.29",
+    "@types/sinon": "^2.1.0",
     "bluebird": "^3.5.0",
     "browserify": "^14.0.0",
     "chai": "^3.4.1",
