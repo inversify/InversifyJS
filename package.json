@@ -49,7 +49,7 @@
     "gulp-mocha": "^4.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.2.1",
-    "gulp-tslint": "^7.0.0",
+    "gulp-tslint": "^8.0.0",
     "gulp-typescript": "^3.0.0",
     "gulp-uglify": "^2.0.0",
     "harmonize": "^2.0.0",
