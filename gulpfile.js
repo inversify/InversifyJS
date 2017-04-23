@@ -11,7 +11,8 @@ var gulp        = require("gulp"),
     browserify  = require("browserify"),
     source      = require("vinyl-source-stream"),
     buffer      = require("vinyl-buffer"),
-    tslint      = require("gulp-tslint"),
+    gulpTslint  = require("gulp-tslint"),
+    tslint      = require("tslint"),
     tsc         = require("gulp-typescript"),
     sourcemaps  = require("gulp-sourcemaps"),
     uglify      = require("gulp-uglify"),
@@ -42,14 +43,14 @@ gulp.task("clean", function() {
 //******************************************************************************
 gulp.task("lint", function() {
     
-    var config =  { formatter: "verbose", emitError: (process.env.CI) ? true : false };
+    var program = tslint.Linter.createProgram("./tsconfig.json");
     
     return gulp.src([
         "src/**/**.ts",
         "test/**/**.test.ts"
     ])
-    .pipe(tslint(config))
-    .pipe(tslint.report());
+    .pipe(gulpTslint({ program }))
+    .pipe(gulpTslint.report());
 
 });
 

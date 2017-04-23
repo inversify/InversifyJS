@@ -19,11 +19,11 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) {
             throw new Error(ERROR_MSGS.NULL_ARGUMENT);
-        };
+        }
 
         if (value === null || value === undefined) {
             throw new Error(ERROR_MSGS.NULL_ARGUMENT);
-        };
+        }
 
         let entry = this._map.get(serviceIdentifier);
         if (entry !== undefined) {
@@ -101,7 +101,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         this._map.forEach((value, key) => {
             func(key, value);
         });
-    };
+    }
 
 }
 

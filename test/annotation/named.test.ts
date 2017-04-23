@@ -53,17 +53,17 @@ describe("@named", () => {
     let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("more_powerful");
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
     let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m2.value).to.be.eql("less_powerful");
-    expect(paramsMetadata["1"][1]).to.be.undefined;
+    expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
 
   });
 
@@ -80,7 +80,7 @@ describe("@named", () => {
     let m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("throwwable");
-    expect(metadata.weapon[1]).to.be.undefined;
+    expect(metadata.weapon[1]).to.eq(undefined);
 
   });
 
@@ -132,17 +132,17 @@ describe("@named", () => {
     let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m1.value).to.be.eql("more_powerful");
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
     let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql(METADATA_KEY.NAMED_TAG);
     expect(m2.value).to.be.eql("less_powerful");
-    expect(paramsMetadata["1"][1]).to.be.undefined;
+    expect(paramsMetadata["1"][1]).eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
 
   });
 
