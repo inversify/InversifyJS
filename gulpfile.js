@@ -43,7 +43,6 @@ gulp.task("clean", function() {
 //******************************************************************************
 gulp.task("lint", function() {
     
-    // var config =  { formatter: "verbose", emitError: (process.env.CI) ? true : false };
     var program = tslint.Linter.createProgram("./tsconfig.json");
     
     return gulp.src([
@@ -51,7 +50,6 @@ gulp.task("lint", function() {
         "test/**/**.test.ts"
     ])
     .pipe(gulpTslint({ program }))
-    // .pipe(tslint(config))
     .pipe(gulpTslint.report());
 
 });
