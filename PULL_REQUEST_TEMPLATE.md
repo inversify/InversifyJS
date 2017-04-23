@@ -25,7 +25,7 @@
 
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
 
-- [ ] Updated docs / Refactor code / Aded a tests case (non-breaking change)
+- [ ] Updated docs / Refactor code / Added a tests case (non-breaking change)
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to change)
