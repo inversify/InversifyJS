@@ -18,7 +18,7 @@ describe("Custom Metadata Reader", () => {
 
     class StaticPropsMetadataReader implements interfaces.MetadataReader {
 
-        public getConstrucotorMetadata(constructorFunc: FunctionWithMetadata): interfaces.ConstructorMetadata {
+        public getConstructorMetadata(constructorFunc: FunctionWithMetadata): interfaces.ConstructorMetadata {
 
             const formatMetadata = (injections: interfaces.ServiceIdentifier<any>[]) => {
                 let userGeneratedMetadata: interfaces.MetadataMap = {};
