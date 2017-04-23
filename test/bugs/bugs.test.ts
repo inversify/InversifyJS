@@ -620,4 +620,36 @@ describe("Bugs", () => {
 
     });
 
+    it("Should be able apply inject to property shurtcut", () => {
+
+        interface Weapon {
+            use(): string;
+        }
+
+        @injectable()
+        class Katana implements Weapon {
+            public use() {
+                return "Used Katana!";
+            }
+        }
+
+        @injectable()
+        class Ninja {
+            public constructor(@inject("Weapon") @named("sword") private _weapon: Weapon) {
+                //
+            }
+            public fight() {
+                return this._weapon.use();
+            }
+        }
+
+        const container = new Container();
+        container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("sword");
+        container.bind<Ninja>(Ninja).toSelf();
+
+        let ninja = container.get<Ninja>(Ninja);
+        expect(ninja.fight()).eql("Used Katana!");
+
+    });
+
 });
