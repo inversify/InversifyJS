@@ -17,7 +17,7 @@ function getTargets(
     metadataReader: interfaces.MetadataReader, constructorName: string, func: Function, isBaseClass: boolean
 ): interfaces.Target[] {
 
-    let metadata = metadataReader.getConstrucotorMetadata(func);
+    let metadata = metadataReader.getConstructorMetadata(func);
 
     // TypeScript compiler generated annotations
     let serviceIdentifiers = metadata.compilerGeneratedMetadata;
