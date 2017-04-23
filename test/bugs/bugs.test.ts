@@ -653,7 +653,7 @@ describe("Bugs", () => {
 
     });
 
-    it("Should be able inject into abstract base class without decorators", () => {
+    it("Should be able to inject into abstract base class without decorators", () => {
 
         let TYPES = {
             Warrior: "Warrior",
@@ -736,7 +736,7 @@ describe("Bugs", () => {
         expect(samurai.primaryWeapon.name).to.eql("Katana");
     });
 
-    it("Should ...", () => {
+    it("Should be able to combine unmanaged and managed injections ", () => {
 
         interface Model<T> {
             instance: T;
