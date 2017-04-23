@@ -127,8 +127,8 @@ describe("Custom Metadata Reader", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -192,8 +192,8 @@ describe("Custom Metadata Reader", () => {
 
             private _katana: Katana;
             private _shuriken: Shuriken;
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 

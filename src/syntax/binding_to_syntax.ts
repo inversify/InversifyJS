@@ -56,7 +56,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     public toFunction(func: T): interfaces.BindingWhenOnSyntax<T> {
         // toFunction is an alias of toConstantValue
-        if (typeof func !== "function") { throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING); };
+        if (typeof func !== "function") { throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING); }
         let bindingWhenOnSyntax = this.toConstantValue(func);
         this._binding.type = BindingTypeEnum.Function;
         return bindingWhenOnSyntax;

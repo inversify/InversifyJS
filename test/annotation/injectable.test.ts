@@ -29,7 +29,7 @@ describe("@injectable", () => {
 
         expect(metadata[0]).to.be.eql(Katana);
         expect(metadata[1]).to.be.eql(Object);
-        expect(metadata[2]).to.be.undefined;
+        expect(metadata[2]).to.eq(undefined);
     });
 
     it("Should throw when applayed mutiple times", () => {

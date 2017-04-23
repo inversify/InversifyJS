@@ -171,8 +171,8 @@ class Ninja implements Warrior {
         this._shuriken = shuriken;
     }
 
-    public fight() { return this._katana.hit(); };
-    public sneak() { return this._shuriken.throw(); };
+    public fight() { return this._katana.hit(); }
+    public sneak() { return this._shuriken.throw(); }
 
 }
 
@@ -186,8 +186,8 @@ If you prefer it you can use property injection instead of constructor injection
 class Ninja implements Warrior {
     @inject(TYPES.Weapon) private _katana: Weapon;
     @inject(TYPES.ThrowableWeapon) private _shuriken: ThrowableWeapon;
-    public fight() { return this._katana.hit(); };
-    public sneak() { return this._shuriken.throw(); };
+    public fight() { return this._katana.hit(); }
+    public sneak() { return this._shuriken.throw(); }
 }
 ```
 

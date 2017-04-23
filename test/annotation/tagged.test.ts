@@ -69,7 +69,7 @@ describe("@Tagged", () => {
     expect(m1.value).to.be.eql(1);
 
     // argumnet at index 0 should only have one tag
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
@@ -78,10 +78,10 @@ describe("@Tagged", () => {
     expect(m2.value).to.be.eql(2);
 
     // argumnet at index 1 should only have one tag
-    expect(paramsMetadata["1"][1]).to.be.undefined;
+    expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
   });
 
   it("Should generate metadata for tagged properties", () => {
@@ -96,7 +96,7 @@ describe("@Tagged", () => {
     let m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql("throwwable");
     expect(m1.value).to.be.eql(false);
-    expect(metadata.weapon[1]).to.be.undefined;
+    expect(metadata.weapon[1]).to.eq(undefined);
 
   });
 
@@ -132,7 +132,7 @@ describe("@Tagged", () => {
     expect(m22.value).to.be.eql(2);
 
     // no more metadata (argument at index > 1)
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
 
   });
 
@@ -188,7 +188,7 @@ describe("@Tagged", () => {
     expect(m1.value).to.be.eql(1);
 
     // argumnet at index 0 should only have one tag
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
@@ -197,10 +197,10 @@ describe("@Tagged", () => {
     expect(m2.value).to.be.eql(2);
 
     // argumnet at index 1 should only have one tag
-    expect(paramsMetadata["1"][1]).to.be.undefined;
+    expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
 
   });
 

@@ -55,8 +55,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() {return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -101,8 +101,8 @@ describe("InversifyJS", () => {
                 this._katana = katana;
                 this._shuriken = shuriken;
             }
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
         }
 
         decorate(injectable(), Katana);
@@ -150,8 +150,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -216,8 +216,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -273,8 +273,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -367,8 +367,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -592,8 +592,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -652,8 +652,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -712,8 +712,8 @@ describe("InversifyJS", () => {
                 this._shuriken = weaponFactory(true);
             }
 
-            public fight() { return this._katana.use(); };
-            public sneak() { return this._shuriken.use(); };
+            public fight() { return this._katana.use(); }
+            public sneak() { return this._shuriken.use(); }
 
         }
 
@@ -859,8 +859,8 @@ describe("InversifyJS", () => {
                 this._shuriken = shuriken;
             }
 
-            public fight() { return this._katana.hit(); };
-            public sneak() { return this._shuriken.throw(); };
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
 
         }
 
@@ -1035,8 +1035,8 @@ describe("InversifyJS", () => {
                     this._shuriken = shuriken;
                 }
 
-                public fight() { return this._katana.hit(); };
-                public sneak() { return this._shuriken.throw(); };
+                public fight() { return this._katana.hit(); }
+                public sneak() { return this._shuriken.throw(); }
 
             }
 
@@ -1123,8 +1123,8 @@ describe("InversifyJS", () => {
                     this._shuriken = shuriken;
                 }
 
-                public fight() { return this._katana.hit(); };
-                public sneak() { return this._shuriken.throw(); };
+                public fight() { return this._katana.hit(); }
+                public sneak() { return this._shuriken.throw(); }
 
             }
 
@@ -1266,8 +1266,8 @@ describe("InversifyJS", () => {
                     this._shuriken = shuriken;
                 }
 
-                public fight() { return this._katana.hit(); };
-                public sneak() { return this._shuriken.throw(); };
+                public fight() { return this._katana.hit(); }
+                public sneak() { return this._shuriken.throw(); }
 
             }
 
@@ -1330,8 +1330,8 @@ describe("InversifyJS", () => {
                     this._shuriken = shuriken;
                 }
 
-                public fight() { return this._katana.hit(); };
-                public sneak() { return this._shuriken.throw(); };
+                public fight() { return this._katana.hit(); }
+                public sneak() { return this._shuriken.throw(); }
 
             }
 
@@ -1487,8 +1487,8 @@ describe("InversifyJS", () => {
                     this._shuriken = shuriken;
                 }
 
-                public fight() { return this._katana.hit(); };
-                public sneak() { return this._shuriken.throw(); };
+                public fight() { return this._katana.hit(); }
+                public sneak() { return this._shuriken.throw(); }
 
             }
 
@@ -1577,8 +1577,8 @@ describe("InversifyJS", () => {
                     this._shuriken = shuriken;
                 }
 
-                public fight() { return this._katana.hit(); };
-                public sneak() { return this._shuriken.throw(); };
+                public fight() { return this._katana.hit(); }
+                public sneak() { return this._shuriken.throw(); }
 
             }
 

@@ -51,10 +51,10 @@ describe("@multiInject", () => {
     let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.MULTI_INJECT_TAG);
     expect(m1.value).to.be.eql("Weapon");
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["1"]).to.be.undefined;
+    expect(paramsMetadata["1"]).to.eq(undefined);
 
   });
 
@@ -105,10 +105,10 @@ describe("@multiInject", () => {
     let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.MULTI_INJECT_TAG);
     expect(m1.value).to.be.eql("Weapon");
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["1"]).to.be.undefined;
+    expect(paramsMetadata["1"]).to.eq(undefined);
 
   });
 

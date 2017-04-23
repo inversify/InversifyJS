@@ -57,17 +57,17 @@ describe("@inject", () => {
     let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.INJECT_TAG);
     expect(m1.value).to.be.eql("Katana");
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
     let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql(METADATA_KEY.INJECT_TAG);
     expect(m2.value).to.be.eql("Shuriken");
-    expect(paramsMetadata["1"][1]).to.be.undefined;
+    expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
 
   });
 
@@ -119,17 +119,17 @@ describe("@inject", () => {
     let m1: interfaces.Metadata = paramsMetadata["0"][0];
     expect(m1.key).to.be.eql(METADATA_KEY.INJECT_TAG);
     expect(m1.value).to.be.eql("Katana");
-    expect(paramsMetadata["0"][1]).to.be.undefined;
+    expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
     expect(paramsMetadata["1"]).to.be.instanceof(Array);
     let m2: interfaces.Metadata = paramsMetadata["1"][0];
     expect(m2.key).to.be.eql(METADATA_KEY.INJECT_TAG);
     expect(m2.value).to.be.eql("Shurien");
-    expect(paramsMetadata["1"][1]).to.be.undefined;
+    expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.be.undefined;
+    expect(paramsMetadata["2"]).to.eq(undefined);
 
   });
 
