@@ -653,7 +653,7 @@ describe("Bugs", () => {
 
     });
 
-    it("Should be able inject into abstract base class without decorators", () => {
+    it("Should be able to inject into abstract base class without decorators", () => {
 
         let TYPES = {
             Warrior: "Warrior",
@@ -734,6 +734,77 @@ describe("Bugs", () => {
         expect(samurai.secondaryWeapon.name).to.eql("Shuriken");
         expect(samurai.primaryWeapon).not.to.eql(undefined);
         expect(samurai.primaryWeapon.name).to.eql("Katana");
+    });
+
+    it("Should be able to combine unmanaged and managed injections ", () => {
+
+        interface Model<T> {
+            instance: T;
+        }
+
+        interface RepoBaseInterface<T> {
+            model: Model<T>;
+        }
+
+        class Type {
+            public name: string;
+            public constructor() {
+                this.name = "Type";
+            }
+        }
+
+        @injectable()
+        class RepoBase<T> implements RepoBaseInterface<T> {
+
+            public model: Model<T>;
+
+            constructor(
+                // using @unmanaged() here is right
+                // because entityType is NOT Injected by inversify
+                @unmanaged() entityType: { new (): T; }
+            ) {
+                this.model = { instance: new entityType() };
+            }
+
+        }
+
+        @injectable()
+        class TypedRepo extends RepoBase<Type> {
+            constructor() {
+                super(Type); // unmanaged injection (NOT Injected by inversify)
+            }
+        }
+
+        @injectable()
+        class BLBase<T> {
+
+            public repository: RepoBaseInterface<T>;
+
+            constructor(
+                // using @unmanaged() here would wrong
+                // because repository is injected by inversify
+                repository: RepoBaseInterface<T>
+            ) {
+                this.repository = repository;
+            }
+        }
+
+        @injectable()
+        class TypedBL extends BLBase<Type> {
+            constructor(
+                repository: TypedRepo // Injected by inversify (no @inject required)
+            ) {
+                super(repository); // managed injection (Injected by inversify)
+            }
+        }
+
+        const container = new Container();
+        container.bind<TypedRepo>(TypedRepo).toSelf();
+        container.bind<TypedBL>("TypedBL").to(TypedBL);
+
+        const typedBL = container.get<TypedBL>("TypedBL");
+        expect(typedBL.repository.model.instance.name).to.eq(new Type().name);
+
     });
 
 });
