@@ -8,6 +8,7 @@ export { optional } from "./annotation/optional";
 export { unmanaged } from "./annotation/unmanaged";
 export { multiInject } from "./annotation/multi_inject";
 export { targetName } from "./annotation/target_name";
+export { MetadataReader } from "./planning/metadata_reader";
 export { guid } from "./utils/guid";
 export { interfaces } from "./interfaces/interfaces";
 export { decorate } from "./annotation/decorator_utils";
