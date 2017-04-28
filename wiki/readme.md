@@ -41,6 +41,7 @@ Welcome to the InversifyJS wiki!
 - [Good practices](https://github.com/inversify/InversifyJS/blob/master/wiki/good_practices.md)
 - [Ecosystem](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md)
 - [Recipes](https://github.com/inversify/InversifyJS/blob/master/wiki/recipes.md)
+- [Injecting npm modules](https://github.com/inversify/InversifyJS/blob/master/wiki/injecting_npm_modules.md)
 - [Architecture overview](https://github.com/inversify/InversifyJS/blob/master/wiki/architecture.md)
 - [Glossary](https://github.com/inversify/InversifyJS/blob/master/wiki/glossary.md)
 - [Roadmap](https://github.com/inversify/InversifyJS/milestones)
