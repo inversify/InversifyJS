@@ -116,7 +116,7 @@ const someClassInstance = container.get<SomeClassInterface>(TYPES.SomeClass);
 someClassInstance.test();
 ```
 
-### /src/package.json
+### /package.json
 
 ```js
 {
@@ -143,7 +143,7 @@ someClassInstance.test();
 }
 ```
 
-### /src/tsconfig.json
+### /tsconfig.json
 
 ```js
 {
