@@ -1,6 +1,19 @@
 # Injecting npm modules
 
-The following example demonstrates how to inject npm modules (`lodash` & `sequelize`) into a class `SomeClass`:
+The following example demonstrates how to inject npm modules (`lodash` & `sequelize`) into a class `SomeClass`.
+
+The example directory structure looks as follows:
+
+```
+src/
+├── entities
+│   └── some_class.ts
+├── index.ts
+└── ioc
+    ├── interfaces.ts
+    ├── ioc.ts
+    └── types.
+```
 
 ### /src/ioc/types.ts
 
