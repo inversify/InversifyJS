@@ -51,7 +51,7 @@
     "gulp-sourcemaps": "^2.2.1",
     "gulp-tslint": "^8.0.0",
     "gulp-typescript": "^3.0.0",
-    "gulp-uglify": "^2.0.0",
+    "gulp-uglify": "^3.0.0",
     "harmonize": "^2.0.0",
     "harmony-proxy": "^1.0.0",
     "istanbul": "^0.4.2",
