@@ -10,11 +10,9 @@ environment:
 
   matrix:
     - nodejs_version: "stable"
-    - nodejs_version: "5.4.1"
+    - nodejs_version: "7.7.1"
+    - nodejs_version: "6.9.5"
     - nodejs_version: "5.4.0"
-    - nodejs_version: "5.3.0"
-    - nodejs_version: "5.2.0"
-    - nodejs_version: "5.1.1"
     - nodejs_version: "4.4.6"
 
 build: off
