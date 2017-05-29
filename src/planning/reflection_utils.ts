@@ -186,7 +186,8 @@ function getBaseClassDepencencyCount(metadataReader: interfaces.MetadataReader, 
     if (baseConstructor !== Object) {
 
         // get targets for base class
-        let baseConstructorName = getFunctionName(func);
+        let baseConstructorName = getFunctionName(baseConstructor);
+
         let targets = getTargets(metadataReader, baseConstructorName, baseConstructor, true);
 
         // get unmanaged metadata

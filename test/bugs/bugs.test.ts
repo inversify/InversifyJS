@@ -807,4 +807,46 @@ describe("Bugs", () => {
 
     });
 
+    it("Should detect missing annotations in base classes", () => {
+
+        @injectable()
+        class Katana implements Katana {
+            public hit() {
+                return "cut!";
+            }
+        }
+
+        abstract class Warrior {
+            private _katana: Katana;
+
+            public constructor(
+                @unmanaged() katana: Katana
+            ) {
+                this._katana = katana;
+            }
+
+            public fight() {return this._katana.hit(); }
+        }
+
+        @injectable()
+        class Ninja extends Warrior {
+            public constructor (
+                @inject("Katana") katana: Katana
+            ) {
+                super(katana);
+            }
+        }
+
+        let container = new Container();
+        container.bind<Warrior>("Ninja").to(Ninja);
+        container.bind<Katana>("Katana").to(Katana);
+
+        const tryGet = () => {
+            container.get<Ninja>("Ninja");
+        };
+
+        expect(tryGet).to.throw("Missing required @injectable annotation in: Warrior.");
+
+    });
+
 });
