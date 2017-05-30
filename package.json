@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
@@ -46,7 +46,7 @@
     "es6-symbol": "^3.1.0",
     "gulp": "^3.9.0",
     "gulp-istanbul": "^1.0.0",
-    "gulp-mocha": "4.3.1",
+    "gulp-mocha": "3.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.2.1",
     "gulp-tslint": "^8.0.0",
