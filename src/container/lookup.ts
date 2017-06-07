@@ -3,7 +3,7 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 
 class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
 
-	// dictionary used store multiple values for each key <key>
+    // dictionary used store multiple values for each key <key>
     private _map: Map<interfaces.ServiceIdentifier<any>, T[]>;
 
     public constructor() {
@@ -14,7 +14,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         return this._map;
     }
 
-	// adds a new entry to _map
+    // adds a new entry to _map
     public add(serviceIdentifier: interfaces.ServiceIdentifier<any>, value: T): void {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) {
@@ -50,7 +50,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         }
     }
 
-	// removes a entry from _map by its key (serviceIdentifier)
+    // removes a entry from _map by its key (serviceIdentifier)
     public remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
 
         if (serviceIdentifier === null || serviceIdentifier === undefined) {
