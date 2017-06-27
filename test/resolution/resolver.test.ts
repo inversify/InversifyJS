@@ -15,6 +15,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import { postConstruct } from "../../src/annotation/post_construct";
+import { resolveInstance } from "../../src/resolution/instantiation";
 
 describe("Resolve", () => {
 
@@ -1076,6 +1077,21 @@ describe("Resolve", () => {
 
         expect(ninja.katana.use()).eql("Used Katana!");
 
+    });
+
+    it("Should throw an error if the @postConstruct method throws an error", () => {
+
+        @injectable()
+        class Katana {
+
+            @postConstruct()
+            public postConstruct() {
+                throw new Error("Original Message");
+            }
+        }
+
+        expect(resolveInstance.bind(resolveInstance, Katana, [], (request: interfaces.Request) => null))
+            .to.throw("@postConstruct error in class Katana: Original Message");
     });
 
     it("Should run the @PostConstruct method once in the singleton scope", () => {
