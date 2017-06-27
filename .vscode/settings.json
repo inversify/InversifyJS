@@ -5,7 +5,7 @@
 		"src/**/*.js": true,
 		"test/**/*.js": true,
         "**/es": true,
-        "**/lib": true,
+        "**/lib": false,
 		"**/amd": true,
 		"**/dts": true,
 		"**/temp": true,

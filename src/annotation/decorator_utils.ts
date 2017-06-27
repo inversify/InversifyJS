@@ -78,12 +78,14 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(named("foo"), FooBar, 0);
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
-    decorator: (ClassDecorator|ParameterDecorator),
+    decorator: (ClassDecorator|ParameterDecorator|MethodDecorator),
     target: any,
-    parameterIndex?: number): void {
+    parameterIndex?: number | string): void {
 
     if (typeof parameterIndex === "number") {
         _decorate([_param(parameterIndex, <ParameterDecorator>decorator)], target);
+    } else if (typeof parameterIndex === "string") {
+        Reflect.decorate([<MethodDecorator>decorator], target, parameterIndex);
     } else {
         _decorate([<ClassDecorator>decorator], target);
     }
