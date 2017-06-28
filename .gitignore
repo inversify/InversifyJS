@@ -16,8 +16,6 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
-.vscode/launch.json
-
 # node-waf configuration
 .lock-wscript
 
@@ -61,4 +59,6 @@ src/syntax/*.d.ts
 
 test/*.js
 test/**/*.js
+test/*.js.map
+test/**/*.js.map
 type_definitions/**/*.js
