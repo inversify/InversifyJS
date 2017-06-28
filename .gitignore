@@ -61,4 +61,6 @@ test/*.js
 test/**/*.js
 test/*.js.map
 test/**/*.js.map
+src/**/*.js.map
+src/*.js.map
 type_definitions/**/*.js
