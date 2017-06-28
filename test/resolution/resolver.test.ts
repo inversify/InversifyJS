@@ -14,6 +14,8 @@ import * as Proxy from "harmony-proxy";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
 import { MetadataReader } from "../../src/planning/metadata_reader";
+import { postConstruct } from "../../src/annotation/post_construct";
+import { resolveInstance } from "../../src/resolution/instantiation";
 
 describe("Resolve", () => {
 
@@ -1027,6 +1029,106 @@ describe("Resolve", () => {
       expect(ninja.katanaFactory().handler instanceof KatanaHandler).eql(true);
       expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should run the @PostConstruct method", () => {
+
+        interface Sword {
+            use: () => string;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            private useMessage: string;
+
+            public use() {
+                return this.useMessage;
+            }
+
+            @postConstruct()
+            public postConstruct () {
+                this.useMessage = "Used Katana!";
+            }
+        }
+
+        interface Warrior {
+            katana: Katana;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public constructor(@inject("Katana") katana: Katana) {
+                this.katana = katana;
+            }
+        }
+        let ninjaId = "Ninja";
+        let katanaId = "Katana";
+
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+
+        container.bind<Katana>(katanaId).to(Katana);
+
+        let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        let ninja = resolve<Ninja>(context);
+
+        expect(ninja.katana.use()).eql("Used Katana!");
+
+    });
+
+    it("Should throw an error if the @postConstruct method throws an error", () => {
+
+        @injectable()
+        class Katana {
+
+            @postConstruct()
+            public postConstruct() {
+                throw new Error("Original Message");
+            }
+        }
+
+        expect(resolveInstance.bind(resolveInstance, Katana, [], (request: interfaces.Request) => null))
+            .to.throw("@postConstruct error in class Katana: Original Message");
+    });
+
+    it("Should run the @PostConstruct method once in the singleton scope", () => {
+        let timesCalled = 1;
+        @injectable()
+        class Katana {
+            @postConstruct()
+            public postConstruct () {
+                timesCalled ++;
+            }
+        }
+
+        @injectable()
+        class Ninja {
+            public katana: Katana;
+            public constructor(@inject("Katana") katana: Katana) {
+                this.katana = katana;
+            }
+        }
+
+        @injectable()
+        class Samurai  {
+            public katana: Katana;
+            public constructor(@inject("Katana") katana: Katana) {
+                this.katana = katana;
+            }
+        }
+        let ninjaId = "Ninja";
+        let samuraiId = "Samurai";
+        let katanaId = "Katana";
+
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Samurai>(samuraiId).to(Samurai);
+        container.bind<Katana>(katanaId).to(Katana).inSingletonScope();
+
+        expect(timesCalled).to.be.equal(1);
 
   });
 

@@ -1,5 +1,8 @@
 import { interfaces } from "../interfaces/interfaces";
 import { TargetTypeEnum } from "../constants/literal_types";
+import * as METADATA_KEY from "../constants/metadata_keys";
+import { Metadata } from "../planning/metadata";
+import { POST_CONSTRUCT_ERROR } from "../constants/error_msgs";
 
 function _injectProperties(
     instance: any,
@@ -30,11 +33,21 @@ function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): a
     return new Func(...injections);
 }
 
+function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
+    if (Reflect.hasOwnMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
+        let data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
+        try {
+            result[data.value]();
+        } catch (e) {
+            throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
+        }
+    }
+}
+
 function resolveInstance(
     constr: interfaces.Newable<any>,
     childRequests: interfaces.Request[],
-    resolveRequest: (request: interfaces.Request) => any
-): any {
+    resolveRequest: (request: interfaces.Request) => any): any {
 
     let result: any = null;
 
@@ -54,6 +67,7 @@ function resolveInstance(
     } else {
         result = new constr();
     }
+    _postConstruct(constr, result);
 
     return result;
 }

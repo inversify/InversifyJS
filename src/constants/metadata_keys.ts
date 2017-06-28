@@ -27,3 +27,6 @@ export const PARAM_TYPES = "inversify:paramtypes";
 
 // used to access design time types
 export const DESIGN_PARAM_TYPES = "design:paramtypes";
+
+// used to identify postConstruct functions
+export const POST_CONSTRUCT = "post_construct";
