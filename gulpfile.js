@@ -128,7 +128,11 @@ gulp.task("build-src", function() {
     .on("error", function (err) {
         process.exit(1);
     })
-    .js.pipe(sourcemaps.write())
+    .js.pipe(sourcemaps.write(".", {
+        sourceRoot: function(file) {
+            return file.cwd + '/src';
+        }
+    }))
     .pipe(gulp.dest("src/"));
 });
 
@@ -143,7 +147,11 @@ gulp.task("build-test", function() {
     .on("error", function (err) {
         process.exit(1);
     })
-    .js.pipe(sourcemaps.write())
+    .js.pipe(sourcemaps.write(".", {
+        sourceRoot: function(file) {
+            return file.cwd + '/test';
+        }
+    }))
     .pipe(gulp.dest("test/"));
 });
 
