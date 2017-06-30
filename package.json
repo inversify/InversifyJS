@@ -70,7 +70,7 @@
     "performance-now": "^2.0.0",
     "publish-please": "^2.1.4",
     "reflect-metadata": "^0.1.9",
-    "run-sequence": "^1.2.0",
+    "run-sequence": "^2.0.0",
     "sinon": "^2.0.0",
     "tslint": "^5.0.0",
     "typescript": "^2.2.0",
