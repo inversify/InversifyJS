@@ -3,8 +3,6 @@ node_js:
 - stable
 - 7.7.1
 - 6.9.5
-- 5.4.0
-- 4.4.6
 before_install:
 - npm install -g codeclimate-test-reporter
 after_success:
