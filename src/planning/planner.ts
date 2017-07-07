@@ -146,8 +146,8 @@ function _createSubRequests(
                 target
             );
 
-            let plan = new Plan(context, childRequest);
-            context.addPlan(plan);
+            let thePlan = new Plan(context, childRequest);
+            context.addPlan(thePlan);
 
         } else {
             activeBindings = _getActiveBindings(avoidConstraints, context, parentRequest, target);

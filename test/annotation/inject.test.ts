@@ -97,7 +97,6 @@ describe("@inject", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface Katana {}
     interface Shurien {}
 
     let VanillaJSWarrior = (function () {

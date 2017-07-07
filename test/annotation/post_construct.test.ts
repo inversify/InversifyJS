@@ -40,15 +40,12 @@ describe("@postConstruct", () => {
 
     it("Should be usable in VanillaJS applications", () => {
 
-        let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior() {
-                // ...
-            }
-            VanillaJSWarrior.prototype.testMethod = function () {
-                // ...
-            };
-            return VanillaJSWarrior;
-        })();
+        let VanillaJSWarrior = function () {
+                   // ...
+        };
+        VanillaJSWarrior.prototype.testMethod = function () {
+            // ...
+        };
 
         decorate(postConstruct(), VanillaJSWarrior.prototype, "testMethod");
 

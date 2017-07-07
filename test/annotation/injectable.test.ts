@@ -50,12 +50,9 @@ describe("@injectable", () => {
         interface Katana {}
         interface Shuriken {}
 
-        let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary: Katana, secondary: Shuriken) {
+        let VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
                 // ...
-            }
-            return VanillaJSWarrior;
-        })();
+        };
 
         decorate(injectable(), VanillaJSWarrior);
 
