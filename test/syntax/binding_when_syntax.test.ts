@@ -35,8 +35,8 @@ describe("BindingWhenSyntax", () => {
         let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
         let bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
 
-        bindingWhenSyntax.when((request: interfaces.Request) => {
-            return request.target.name.equals("ninja");
+        bindingWhenSyntax.when((theRequest: interfaces.Request) => {
+            return theRequest.target.name.equals("ninja");
         });
 
         let target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier);

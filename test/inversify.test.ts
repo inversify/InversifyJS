@@ -799,10 +799,10 @@ describe("InversifyJS", () => {
         container.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
 
         container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context: interfaces.Context) => {
-            return (named: string) => (displacement: number) => {
-                let engine = context.container.getNamed<Engine>("Engine", named);
-                engine.displacement = displacement;
-                return engine;
+            return (theNamed: string) => (displacement: number) => {
+                let theEngine = context.container.getNamed<Engine>("Engine", theNamed);
+                theEngine.displacement = displacement;
+                return theEngine;
             };
         });
 

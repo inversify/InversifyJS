@@ -40,14 +40,11 @@ describe("@targetName", () => {
     it("Should be usable in VanillaJS applications", () => {
 
         interface Katana {}
-        interface Shurien {}
+        interface Shuriken {}
 
-        let VanillaJSWarrior = (function () {
-            function VanillaJSWarrior(primary: Katana, secondary: Shurien) {
+        let VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
                 // ...
-            }
-            return VanillaJSWarrior;
-        })();
+        };
 
         decorate(targetName("primary"), VanillaJSWarrior, 0);
         decorate(targetName("secondary"), VanillaJSWarrior, 1);

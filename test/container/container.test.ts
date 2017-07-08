@@ -228,7 +228,6 @@ describe("Container", () => {
       container.bind<Warrior>(warriorId).to(Ninja);
       container.bind<Warrior>(warriorId).to(Samurai);
 
-      type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
       let dictionary: Dictionary = getBindingDictionary(container).getMap();
 
       expect(dictionary.size).eql(1);

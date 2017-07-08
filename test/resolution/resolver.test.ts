@@ -486,9 +486,9 @@ describe("Resolve", () => {
       container.bind<KatanaBlade>(bladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(handlerId).to(KatanaHandler);
 
-      container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((context: interfaces.Context) => {
+      container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((theContext: interfaces.Context) => {
           return () => {
-              return context.container.get<Katana>(katanaId);
+              return theContext.container.get<Katana>(katanaId);
           };
       });
 
@@ -659,11 +659,11 @@ describe("Resolve", () => {
       container.bind<Blade>(bladeId).to(KatanaBlade);
       container.bind<Handler>(handlerId).to(KatanaHandler);
 
-      container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((context: interfaces.Context) => {
+      container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((theContext: interfaces.Context) => {
           return () => {
-              return new Promise<Sword>((resolve) => {
+              return new Promise<Sword>((resolveFunc) => {
                   // Using setTimeout to simulate complex initialization
-                  setTimeout(() => { resolve(context.container.get<Sword>(swordId)); }, 100);
+                  setTimeout(() => { resolveFunc(theContext.container.get<Sword>(swordId)); }, 100);
               });
           };
       });
@@ -927,7 +927,7 @@ describe("Resolve", () => {
         // that it is not a good idea to use globals
         let timeTracker: string[] = [];
 
-        container.bind<Katana>(katanaId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
+        container.bind<Katana>(katanaId).to(Katana).onActivation((theContext: interfaces.Context, katana: Katana) => {
             let handler = {
                 apply: function(target: any, thisArgument: any, argumentsList: any[]) {
                     timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);
@@ -998,14 +998,10 @@ describe("Resolve", () => {
 
       @injectable()
       class Ninja implements Warrior {
-          public katanaFactory: KatanaFactory;
-          public shuriken: Shuriken;
           public constructor(
-              @inject(katanaFactoryId) @targetName("katana") katanaFactory: KatanaFactory,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+              @inject(katanaFactoryId) @targetName("katana") public katanaFactory: KatanaFactory,
+              @inject(shurikenId) @targetName("shuriken") public shuriken: Shuriken
           ) {
-              this.katanaFactory = katanaFactory;
-              this.shuriken = shuriken;
           }
       }
 
@@ -1013,11 +1009,11 @@ describe("Resolve", () => {
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-      let katanaFactory = function() {
+      let katanaFactoryInstance = function() {
           return new Katana(new KatanaHandler(), new KatanaBlade());
       };
 
-      container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactory);
+      container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
 
       let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
