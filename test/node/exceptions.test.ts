@@ -58,4 +58,43 @@ describe("Node", () => {
 
     });
 
+    it("Should throw if circular dependencies found with dynamics", () => {
+
+        @injectable()
+        class A {
+            public b: B;
+            public constructor(
+                @inject("B")  b: B
+            ) {
+                this.b = b;
+            }
+        }
+
+        @injectable()
+        class B {
+            public a: A;
+            public constructor(@inject("A") a: A) {
+                this.a = a;
+            }
+        }
+
+        let container = new Container({defaultScope: "Singleton"});
+        container.bind(A).toSelf();
+        container.bind(B).toSelf();
+        container.bind("A").toDynamicValue(ctx =>
+            ctx.container.get(A)
+        );
+        container.bind("B").toDynamicValue(ctx =>
+            ctx.container.get(B)
+        );
+
+        function willThrow() {
+            let a = container.get<A>("A");
+            return a;
+        }
+
+        expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B`);
+
+    });
+
 });
