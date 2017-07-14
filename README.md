@@ -241,6 +241,7 @@ Let's take a look to the InversifyJS features!
 - [Auto factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_factory.md)
 - [Injecting a Provider (asynchronous Factory)](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md)
 - [Activation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md)
+- [Post Construct decorator](https://github.com/inversify/InversifyJS/blob/master/wiki/post_construct.md)
 - [Middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md)
 - [Multi-injection](https://github.com/inversify/InversifyJS/blob/master/wiki/multi_injection.md)
 - [Tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md)
