@@ -365,6 +365,24 @@ describe("Container", () => {
         expect(secondChildContainer.get(weaponIdentifier)).to.be.instanceOf(Katana);
     });
 
+    it("Should be able to check if services are bound from parent container", () => {
+        let weaponIdentifier = "Weapon";
+
+        @injectable()
+        class Katana {}
+
+        let container = new Container();
+        container.bind(weaponIdentifier).to(Katana);
+
+        let childContainer = new Container();
+        childContainer.parent = container;
+
+        let secondChildContainer = new Container();
+        secondChildContainer.parent = childContainer;
+
+        expect(secondChildContainer.isBound(weaponIdentifier)).to.be.equal(true);
+    });
+
     it("Should prioritize requested container to resolve a service identifier", () => {
         let weaponIdentifier = "Weapon";
 

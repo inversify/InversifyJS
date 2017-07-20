@@ -179,7 +179,11 @@ class Container implements interfaces.Container {
 
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
-        return this._bindingDictionary.hasKey(serviceIdentifier);
+        let bound = this._bindingDictionary.hasKey(serviceIdentifier);
+        if (!bound && this.parent) {
+            bound = this.parent.isBound(serviceIdentifier);
+        }
+        return bound;
     }
 
     public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string|number|symbol): boolean {
