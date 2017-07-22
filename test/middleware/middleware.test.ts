@@ -75,7 +75,7 @@ describe("Middleware", () => {
 
     });
 
-    it("Should allow applyMiddleware at mutiple points in time", () => {
+    it("Should allow applyMiddleware at multiple points in time", () => {
 
         interface Ninja {}
 
@@ -263,7 +263,7 @@ describe("Middleware", () => {
 
     });
 
-    it("Should allow users to intercep a resolution context", () => {
+    it("Should allow users to intercept a resolution context", () => {
 
         interface Ninja {}
 

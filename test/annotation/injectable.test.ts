@@ -32,7 +32,7 @@ describe("@injectable", () => {
         expect(metadata[2]).to.eq(undefined);
     });
 
-    it("Should throw when applayed mutiple times", () => {
+    it("Should throw when applied multiple times", () => {
 
         @injectable()
         class Test {}

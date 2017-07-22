@@ -106,7 +106,7 @@ function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
 > to have a higher level of customization but the average user should not use a custom
 > metadata reader. In general, a custom metadata reader should only be used when
 > developing a framework in order to provide users with an annotation APIs
-> less explicit than the default anotation API.
+> less explicit than the default annotation API.
 >
 > If you are developing a framework or library and you create a custom metadata reader,
 > Please remember to provide your framework with support for an alternative for all the
@@ -140,7 +140,7 @@ class Ninja implements Ninja {
 }
 ```
 
-You can use a custom metadata reader to implement a custom anotation system.
+You can use a custom metadata reader to implement a custom annotation system.
 
 For example, you could implement an annotation system based on static properties:
 

@@ -1,5 +1,5 @@
 import { interfaces } from "../interfaces/interfaces";
-import { Metadata } from "../planning/metadata";
+import { Metadata } from "./metadata";
 import { QueryableString } from "./queryable_string";
 import { guid } from "../utils/guid";
 import * as METADATA_KEY from "../constants/metadata_keys";

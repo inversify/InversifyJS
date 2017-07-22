@@ -23,7 +23,7 @@ describe("Context", () => {
 
   });
 
-  it("Should be lickable to a Plan", () => {
+  it("Should be linkable to a Plan", () => {
 
       let container = new Container();
       let context = new Context(container);

@@ -35,7 +35,7 @@ export DerivedModel;
 
 ```
 
-The problem with the code snippet above is that the `DerivedModel` is thighly coupled to the `BaseModel` class.
+The problem with the code snippet above is that the `DerivedModel` is tightly coupled to the `BaseModel` class.
 In this case we used the `extends` keyword. This is particularly bad because there is no way to break the 
 coupling caused by the class inheritance.
 
@@ -89,9 +89,9 @@ In this case the Ninja class has a dependency on the Katana class:
 Ninja --> Katana
 ```
 
-Notice how the arrow that ilustrate the dependency goes from left to right.
+Notice how the arrow that illustrate the dependency goes from left to right.
 
-If we update the ninja class to dependen upon an abstraction of the Katana class (the Katana interface):
+If we update the ninja class to depend upon an abstraction of the Katana class (the Katana interface):
 
 ```ts
 @injectable()

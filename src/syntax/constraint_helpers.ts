@@ -2,14 +2,14 @@ import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import * as METADATA_KEY from "../constants/metadata_keys";
 
-let traverseAncerstors = (
+let traverseAncestors = (
     request: interfaces.Request,
     constraint: interfaces.ConstraintFunction
 ): boolean => {
 
     let parent = request.parentRequest;
     if (parent !== null) {
-        return constraint(parent) ? true : traverseAncerstors(parent, constraint);
+        return constraint(parent) ? true : traverseAncestors(parent, constraint);
     } else {
         return false;
     }
@@ -50,4 +50,4 @@ let typeConstraint = (type: (Function | string)) => (request: interfaces.Request
     return false;
 };
 
-export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint };
+export { traverseAncestors, taggedConstraint, namedConstraint, typeConstraint };

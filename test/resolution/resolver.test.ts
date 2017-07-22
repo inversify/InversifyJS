@@ -219,7 +219,7 @@ describe("Resolve", () => {
       // container and bindings
       let ninjaId = "Ninja";
       let container = new Container();
-      container.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
+      container.bind<Ninja>(ninjaId); // IMPORTANT! (Invalid binding)
 
       // context and plan
       let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);

@@ -70,7 +70,7 @@ describe("@named", () => {
   it("Should generate metadata for named properties", () => {
 
     class Warrior {
-      @named("throwwable")
+      @named("throwable")
       public weapon: Weapon;
     }
 
@@ -79,12 +79,12 @@ describe("@named", () => {
 
     let m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
-    expect(m1.value).to.be.eql("throwwable");
+    expect(m1.value).to.be.eql("throwable");
     expect(metadata.weapon[1]).to.eq(undefined);
 
   });
 
-  it("Should throw when applayed mutiple times", () => {
+  it("Should throw when applied multiple times", () => {
 
     let useDecoratorMoreThanOnce = function() {
       __decorate([ __param(0, named("a")), __param(0, named("b")) ], InvalidDecoratorUsageWarrior);
@@ -95,16 +95,16 @@ describe("@named", () => {
 
   });
 
-  it("Should throw when not applayed to a constructor", () => {
+  it("Should throw when not applied to a constructor", () => {
 
-    let useDecoratorOnMethodThatIsNotAContructor = function() {
+    let useDecoratorOnMethodThatIsNotAConstructor = function() {
       __decorate([ __param(0, named("a")) ],
       InvalidDecoratorUsageWarrior.prototype,
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     let msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
-    expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
+    expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
 
   });
 

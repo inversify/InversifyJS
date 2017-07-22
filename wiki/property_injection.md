@@ -5,7 +5,7 @@ InversifyJS supports property injection because sometimes constructor injection 
 
 Source: [http://stackoverflow.com/](http://stackoverflow.com/questions/1503584/dependency-injection-through-constructors-or-property-setters)
 
-There are two cases in wich you may want to use property injection.
+There are two cases in which you may want to use property injection.
 
 - When we CAN use InversifyJS to create an instance of a class.
 - When we CANNOT use InversifyJS to create an instance of a class.
@@ -70,11 +70,11 @@ let book = container.get<Book>("Book");
 book.print();
 ```
 
-Please refer to our [unit tests](https://github.com/Inversify/InversifyJS/blob/master/wiki/property_injection.md) for additonal examples.
+Please refer to our [unit tests](https://github.com/Inversify/InversifyJS/blob/master/wiki/property_injection.md) for additional examples.
 
 ## When we CANNOT use InversifyJS to create an instance of a class
 InversifyJS has been designed in a way that facilitates its integration with as many
-libraries and frameworks as possible. However, many of its features requre being able to
+libraries and frameworks as possible. However, many of its features require being able to
 create the instances of the classes in an application. 
 
 The problem is that some frameworks take the control over the creation of instances. 
@@ -121,7 +121,7 @@ book.print();
 ```
 
 The utility module is called `inversify-inject-decorators`
-and privides the following decorators:
+and provides the following decorators:
 
 - `@lazyInject` for the injection of a property without metadata
 - `@lazyInjectNamed` for the injection of a property without named metadata.

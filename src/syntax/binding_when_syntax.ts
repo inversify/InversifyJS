@@ -1,6 +1,6 @@
 import { interfaces } from "../interfaces/interfaces";
 import { BindingOnSyntax } from "./binding_on_syntax";
-import { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./constraint_helpers";
+import { traverseAncestors, taggedConstraint, namedConstraint, typeConstraint } from "./constraint_helpers";
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 
@@ -62,14 +62,14 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 
     public whenAnyAncestorIs(ancestor: (Function|string)): interfaces.BindingOnSyntax<T> {
         this._binding.constraint = (request: interfaces.Request) => {
-            return traverseAncerstors(request, typeConstraint(ancestor));
+            return traverseAncestors(request, typeConstraint(ancestor));
         };
         return new BindingOnSyntax<T>(this._binding);
     }
 
     public whenNoAncestorIs(ancestor: (Function|string)): interfaces.BindingOnSyntax<T> {
         this._binding.constraint = (request: interfaces.Request) => {
-            return !traverseAncerstors(request, typeConstraint(ancestor));
+            return !traverseAncestors(request, typeConstraint(ancestor));
         };
         return new BindingOnSyntax<T>(this._binding);
     }
@@ -77,7 +77,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     public whenAnyAncestorNamed(name: string|number|symbol): interfaces.BindingOnSyntax<T> {
 
         this._binding.constraint = (request: interfaces.Request) => {
-            return traverseAncerstors(request, namedConstraint(name));
+            return traverseAncestors(request, namedConstraint(name));
         };
 
         return new BindingOnSyntax<T>(this._binding);
@@ -86,7 +86,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     public whenNoAncestorNamed(name: string|number|symbol): interfaces.BindingOnSyntax<T> {
 
         this._binding.constraint = (request: interfaces.Request) => {
-            return !traverseAncerstors(request, namedConstraint(name));
+            return !traverseAncestors(request, namedConstraint(name));
         };
 
         return new BindingOnSyntax<T>(this._binding);
@@ -95,7 +95,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     public whenAnyAncestorTagged(tag: string|number|symbol, value: any): interfaces.BindingOnSyntax<T> {
 
         this._binding.constraint = (request: interfaces.Request) => {
-            return traverseAncerstors(request, taggedConstraint(tag)(value));
+            return traverseAncestors(request, taggedConstraint(tag)(value));
         };
 
         return new BindingOnSyntax<T>(this._binding);
@@ -104,7 +104,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     public whenNoAncestorTagged(tag: string|number|symbol, value: any): interfaces.BindingOnSyntax<T> {
 
         this._binding.constraint = (request: interfaces.Request) => {
-            return !traverseAncerstors(request, taggedConstraint(tag)(value));
+            return !traverseAncestors(request, taggedConstraint(tag)(value));
         };
 
         return new BindingOnSyntax<T>(this._binding);
@@ -113,7 +113,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     public whenAnyAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
 
         this._binding.constraint = (request: interfaces.Request) => {
-            return traverseAncerstors(request, constraint);
+            return traverseAncestors(request, constraint);
         };
 
         return new BindingOnSyntax<T>(this._binding);
@@ -122,7 +122,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     public whenNoAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
 
         this._binding.constraint = (request: interfaces.Request) => {
-            return !traverseAncerstors(request, constraint);
+            return !traverseAncestors(request, constraint);
         };
 
         return new BindingOnSyntax<T>(this._binding);

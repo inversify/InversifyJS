@@ -1,7 +1,7 @@
 # Wiki
 Welcome to the InversifyJS wiki!
 
-### Installation and enviroment support
+### Installation and environment support
 - [Installation](https://github.com/inversify/InversifyJS/blob/master/wiki/installation.md)
 - [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
 - [Vanilla JavaScript example](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md)

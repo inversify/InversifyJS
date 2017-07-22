@@ -203,7 +203,7 @@ container.isBound(katanaSymbol)).eql(false);
 
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
 
-> NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
+> NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancestors).
 > Users can try-catch calls to container.get<T>("T") if they really need to do check if a
 > binding with a complex constraint is available.
 
@@ -281,7 +281,7 @@ expect(values2[1]).to.eq(undefined);
 ```
 
 ## container.resolve<T>(constructor: Newable<T>)
-Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance wven if no bindings have been declared:
+Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance when if no bindings have been declared:
 
 ```ts
 @injectable()
