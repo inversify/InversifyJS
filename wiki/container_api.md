@@ -203,10 +203,6 @@ container.isBound(katanaSymbol)).eql(false);
 
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
 
-> NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
-> Users can try-catch calls to container.get<T>("T") if they really need to do check if a
-> binding with a complex constraint is available.
-
 ```ts
 const zero = "Zero";
 const invalidDivisor = "InvalidDivisor";
@@ -231,10 +227,6 @@ expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
 ## container.isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any)
 
 You can use the `isBoundTagged` method to check if there are registered bindings for a given service identifier with a given tagged constraint.
-
-> NOTE: We can only identify basic tagged bindings not complex constraints (e.g ancerstors).
-> Users can try-catch calls to container.get<T>("T") if they really need to do check if a
-> binding with a complex constraint is available.
 
 ```ts
 const zero = "Zero";
