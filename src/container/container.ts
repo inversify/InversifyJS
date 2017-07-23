@@ -190,13 +190,23 @@ class Container implements interfaces.Container {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
-    // Users can try-catch calls to container.get<T>("T") if they really need to do check if a
-    // binding with a complex constraint is available.
+    // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
     public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
-        let bindings = this._bindingDictionary.get(serviceIdentifier);
-        let request = createMockRequest(this, serviceIdentifier, key, value);
-        return bindings.some((b) => b.constraint(request));
+        let bound = false;
+
+        // verify if there are bindings available for serviceIdentifier on current binding dictionary
+        if (this._bindingDictionary.hasKey(serviceIdentifier)) {
+            let bindings = this._bindingDictionary.get(serviceIdentifier);
+            let request = createMockRequest(this, serviceIdentifier, key, value);
+            bound = bindings.some((b) => b.constraint(request));
+        }
+
+        // verify if there is a parent container that could solve the request
+        if (!bound && this.parent) {
+            bound = this.parent.isBoundTagged(serviceIdentifier, key, value);
+        }
+
+        return bound;
     }
 
     public snapshot(): void {
