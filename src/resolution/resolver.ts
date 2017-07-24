@@ -9,14 +9,14 @@ function _resolveRequest(request: interfaces.Request): any {
     let bindings = request.bindings;
     let childRequests = request.childRequests;
 
-    let targetIsAnAray = request.target && request.target.isArray();
+    let targetIsAnArray = request.target && request.target.isArray();
 
     let targetParentIsNotAnArray = !request.parentRequest ||
                                    !request.parentRequest.target ||
                                    !request.target ||
                                    !request.parentRequest.target.matchesArray(request.target.serviceIdentifier);
 
-    if (targetIsAnAray && targetParentIsNotAnArray) {
+    if (targetIsAnArray && targetParentIsNotAnArray) {
 
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {

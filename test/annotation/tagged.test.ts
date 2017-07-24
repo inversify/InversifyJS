@@ -68,7 +68,7 @@ describe("@Tagged", () => {
     expect(m1.key).to.be.eql("power");
     expect(m1.value).to.be.eql(1);
 
-    // argumnet at index 0 should only have one tag
+    // argument at index 0 should only have one tag
     expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
@@ -77,7 +77,7 @@ describe("@Tagged", () => {
     expect(m2.key).to.be.eql("power");
     expect(m2.value).to.be.eql(2);
 
-    // argumnet at index 1 should only have one tag
+    // argument at index 1 should only have one tag
     expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available
@@ -87,20 +87,20 @@ describe("@Tagged", () => {
   it("Should generate metadata for tagged properties", () => {
 
     class Warrior {
-      @tagged("throwwable", false)
+      @tagged("throwable", false)
       public weapon: Weapon;
     }
 
     let metadataKey = METADATA_KEY.TAGGED_PROP;
     let metadata: any = Reflect.getMetadata(metadataKey, Warrior);
     let m1 = metadata.weapon[0];
-    expect(m1.key).to.be.eql("throwwable");
+    expect(m1.key).to.be.eql("throwable");
     expect(m1.value).to.be.eql(false);
     expect(metadata.weapon[1]).to.eq(undefined);
 
   });
 
-  it("Should generate metadata for parameters tagged mutiple times", () => {
+  it("Should generate metadata for parameters tagged multiple times", () => {
     let metadataKey = METADATA_KEY.TAGGED;
     let paramsMetadata = Reflect.getMetadata(metadataKey, DoubleTaggedWarrior);
     expect(paramsMetadata).to.be.an("object");
@@ -136,7 +136,7 @@ describe("@Tagged", () => {
 
   });
 
-  it("Should throw when applied mutiple times", () => {
+  it("Should throw when applied multiple times", () => {
 
     let metadataKey = "a";
 
@@ -151,24 +151,24 @@ describe("@Tagged", () => {
 
   it("Should throw when not applied to a constructor", () => {
 
-    let useDecoratorOnMethodThatIsNotAContructor = function() {
+    let useDecoratorOnMethodThatIsNotAConstructor = function() {
       __decorate([ __param(0, tagged("a", 1)) ],
       InvalidDecoratorUsageWarrior.prototype,
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     let msg = ERRORS_MSGS.INVALID_DECORATOR_OPERATION;
-    expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
+    expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
 
   });
 
   it("Should be usable in VanillaJS applications", () => {
 
     interface Katana {}
-    interface Shurien {}
+    interface Shuriken {}
 
     let VanillaJSWarrior = (function () {
-        function TaggedVanillaJSWarrior(primary: Katana, secondary: Shurien) {
+        function TaggedVanillaJSWarrior(primary: Katana, secondary: Shuriken) {
             // ...
         }
         return TaggedVanillaJSWarrior;
@@ -187,7 +187,7 @@ describe("@Tagged", () => {
     expect(m1.key).to.be.eql("power");
     expect(m1.value).to.be.eql(1);
 
-    // argumnet at index 0 should only have one tag
+    // argument at index 0 should only have one tag
     expect(paramsMetadata["0"][1]).to.eq(undefined);
 
     // assert metadata for second argument
@@ -196,7 +196,7 @@ describe("@Tagged", () => {
     expect(m2.key).to.be.eql("power");
     expect(m2.value).to.be.eql(2);
 
-    // argumnet at index 1 should only have one tag
+    // argument at index 1 should only have one tag
     expect(paramsMetadata["1"][1]).to.eq(undefined);
 
     // no more metadata should be available

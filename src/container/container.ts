@@ -30,11 +30,11 @@ class Container implements interfaces.Container {
         let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
-            origing: interfaces.Lookup<interfaces.Binding<any>>,
+            origin: interfaces.Lookup<interfaces.Binding<any>>,
             destination: interfaces.Lookup<interfaces.Binding<any>>
         ) {
 
-            origing.traverse((key, value) => {
+            origin.traverse((key, value) => {
                 value.forEach((binding) => {
                     destination.add(binding.serviceIdentifier, binding.clone());
                 });
@@ -149,7 +149,7 @@ class Container implements interfaces.Container {
 
     }
 
-    // Regiters a type binding
+    // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         let defaultScope = BindingScopeEnum.Transient;
         defaultScope = (this.options.defaultScope === defaultScope) ? defaultScope : BindingScopeEnum.Singleton;
@@ -186,7 +186,7 @@ class Container implements interfaces.Container {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
+    // Note: we can only identify basic tagged bindings not complex constraints (e.g ancestors)
     // Users can try-catch calls to container.get<T>("T") if they really need to do check if a
     // binding with a complex constraint is available.
     public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
@@ -263,7 +263,7 @@ class Container implements interfaces.Container {
 
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
-    // otherwise it delegates resoltion to _planAndResolve
+    // otherwise it delegates resolution to _planAndResolve
     private _get<T>(
         avoidConstraints: boolean,
         isMultiInject: boolean,

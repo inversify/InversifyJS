@@ -58,7 +58,7 @@ describe("@multiInject", () => {
 
   });
 
-  it("Should throw when applayed mutiple times", () => {
+  it("Should throw when applied multiple times", () => {
 
     let useDecoratorMoreThanOnce = function() {
       __decorate([ __param(0, multiInject("Weapon")), __param(0, multiInject("Weapon")) ], InvalidDecoratorUsageWarrior);
@@ -69,16 +69,16 @@ describe("@multiInject", () => {
 
   });
 
-  it("Should throw when not applayed to a constructor", () => {
+  it("Should throw when not applied to a constructor", () => {
 
-    let useDecoratorOnMethodThatIsNotAContructor = function() {
+    let useDecoratorOnMethodThatIsNotAConstructor = function() {
       __decorate([ __param(0, multiInject("Weapon")) ],
       InvalidDecoratorUsageWarrior.prototype,
       "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     let msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
-    expect(useDecoratorOnMethodThatIsNotAContructor).to.throw(msg);
+    expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
 
   });
 

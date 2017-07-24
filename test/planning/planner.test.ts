@@ -106,7 +106,7 @@ describe("Planner", () => {
         expect(actualKatanaHandlerRequest.bindings.length).eql(1);
         expect(actualKatanaHandlerRequest.target.serviceIdentifier).eql(katanaHandlerId);
 
-        // KatanaBalde
+        // KatanaBlade
         expect(actualKatanaBladeRequest.serviceIdentifier).eql(katanaBladeId);
         expect(actualKatanaBladeRequest.bindings.length).eql(1);
         expect(actualKatanaBladeRequest.target.serviceIdentifier).eql(katanaBladeId);
@@ -172,11 +172,11 @@ describe("Planner", () => {
         container.bind<C>(cId).to(C);
         container.bind<D>(dId).to(D);
 
-        let throwErroFunction = () => {
+        let throwErrorFunction = () => {
             container.get(aId);
         };
 
-        expect(throwErroFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B -> C -> D -> A`);
+        expect(throwErrorFunction).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B -> C -> D -> A`);
 
     });
 

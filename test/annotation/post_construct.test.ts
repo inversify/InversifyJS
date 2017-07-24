@@ -24,7 +24,7 @@ describe("@postConstruct", () => {
         expect(metadata.value).to.be.equal("testMethod");
     });
 
-    it("Should throw when applayed mutiple times", () => {
+    it("Should throw when applied multiple times", () => {
         function setup() {
             class Katana {
                 @postConstruct()

@@ -319,7 +319,7 @@ describe("BindingWhenSyntax", () => {
         class Katana implements Weapon {
             public name = "Katana";
             public material: Material;
-            public contructor(material: Material) {
+            public constructor(material: Material) {
                 this.material = material;
             }
         }
@@ -327,7 +327,7 @@ describe("BindingWhenSyntax", () => {
         class Shuriken implements Weapon {
             public name = "Shuriken";
             public material: Material;
-            public contructor(material: Material) {
+            public constructor(material: Material) {
                 this.material = material;
             }
         }
