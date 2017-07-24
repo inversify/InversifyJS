@@ -365,6 +365,24 @@ describe("Container", () => {
         expect(secondChildContainer.get(weaponIdentifier)).to.be.instanceOf(Katana);
     });
 
+    it("Should be able to check if services are bound from parent container", () => {
+        let weaponIdentifier = "Weapon";
+
+        @injectable()
+        class Katana {}
+
+        let container = new Container();
+        container.bind(weaponIdentifier).to(Katana);
+
+        let childContainer = new Container();
+        childContainer.parent = container;
+
+        let secondChildContainer = new Container();
+        secondChildContainer.parent = childContainer;
+
+        expect(secondChildContainer.isBound(weaponIdentifier)).to.be.equal(true);
+    });
+
     it("Should prioritize requested container to resolve a service identifier", () => {
         let weaponIdentifier = "Weapon";
 
@@ -583,6 +601,55 @@ describe("Container", () => {
 
     });
 
+    it("Should be able to check if a named binding is bound from parent container", () => {
+
+        const zero = "Zero";
+        const invalidDivisor = "InvalidDivisor";
+        const validDivisor = "ValidDivisor";
+        let container = new Container();
+        let childContainer = container.createChild();
+        let secondChildContainer = childContainer.createChild();
+
+        container.bind<number>(zero).toConstantValue(0).whenTargetNamed(invalidDivisor);
+        expect(secondChildContainer.isBoundNamed(zero, invalidDivisor)).to.eql(true);
+        expect(secondChildContainer.isBoundNamed(zero, validDivisor)).to.eql(false);
+
+        container.bind<number>(zero).toConstantValue(1).whenTargetNamed(validDivisor);
+        expect(secondChildContainer.isBoundNamed(zero, invalidDivisor)).to.eql(true);
+        expect(secondChildContainer.isBoundNamed(zero, validDivisor)).to.eql(true);
+
+    });
+
+    it("Should be able to get a tagged binding", () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        let container = new Container();
+
+        container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
+        expect(container.getTagged(zero, isValidDivisor, false)).to.eql(0);
+
+        container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
+        expect(container.getTagged(zero, isValidDivisor, false)).to.eql(0);
+        expect(container.getTagged(zero, isValidDivisor, true)).to.eql(1);
+
+    });
+
+    it("Should be able to get a tagged binding from parent container", () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        let container = new Container();
+        let childContainer = container.createChild();
+        let secondChildContainer = childContainer.createChild();
+
+        container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
+        container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
+        expect(secondChildContainer.getTagged(zero, isValidDivisor, false)).to.eql(0);
+        expect(secondChildContainer.getTagged(zero, isValidDivisor, true)).to.eql(1);
+
+    });
+
     it("Should be able check if a tagged binding is bound", () => {
 
         const zero = "Zero";
@@ -602,6 +669,24 @@ describe("Container", () => {
         container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
         expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
         expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
+
+    });
+
+    it("Should be able to check if a tagged binding is bound from parent container", () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        let container = new Container();
+        let childContainer = container.createChild();
+        let secondChildContainer = childContainer.createChild();
+
+        container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, true)).to.eql(false);
+
+        container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
 
     });
 
