@@ -13,5 +13,5 @@ export { MetadataReader } from "./planning/metadata_reader";
 export { guid } from "./utils/guid";
 export { interfaces } from "./interfaces/interfaces";
 export { decorate } from "./annotation/decorator_utils";
-export { traverseAncestors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
+export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 export { getServiceIdentifierAsString } from "./utils/serialization";
