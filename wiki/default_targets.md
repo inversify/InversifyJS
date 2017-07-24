@@ -1,5 +1,5 @@
 # whenTargetIsDefault
-When multiple bindings are avaialble for a given service identifier, we can use 
+When multiple bindings are available for a given service identifier, we can use 
 one of the following features to resolve the potential `AMBIGUOUS_MATCH` exception:
 
 - [Named bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/named_bindings.md)
@@ -27,14 +27,14 @@ The problem with this solution is that we will have to annotate using
 the `@named("strong")`/`@named("weak")` or `@tagged("strong", true)`/`@tagged("strong", false)`
 every single injection.
 
-A betetr solution is to use a default target:
+A better solution is to use a default target:
 
 ```ts
 container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
 container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 ```
 
-We can use the `whenTargetIsDefault` to indicate which binding shoul be used as default
+We can use the `whenTargetIsDefault` to indicate which binding should be used as default
 to resolve an `AMBIGUOUS_MATCH` exception when no `@named` or `@tagged` annotations 
 are available.
 

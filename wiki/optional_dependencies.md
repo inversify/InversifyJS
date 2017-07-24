@@ -53,7 +53,7 @@ expect(ninja.shuriken.name).to.eql("Shuriken");
 ```
 
 In the example we can see how the first time we resolve `Ninja`, its 
-property `shuriken` is undefined because no binsings have been declared
+property `shuriken` is undefined because no bindings have been declared
 for `Shuriken` and the property is annotated with the `@optional()` decorator.
 
 After declaring a binding for `Shuriken`:

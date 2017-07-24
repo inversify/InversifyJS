@@ -273,7 +273,7 @@ expect(values2[1]).to.eq(undefined);
 ```
 
 ## container.resolve<T>(constructor: Newable<T>)
-Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance wven if no bindings have been declared:
+Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance when if no bindings have been declared:
 
 ```ts
 @injectable()

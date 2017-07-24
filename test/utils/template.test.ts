@@ -3,7 +3,7 @@ import { template } from "../../src/utils/template";
 
 describe("template", () => {
 
-  it("Should genereate a string with the args filled in", () => {
+  it("Should generate a string with the args filled in", () => {
       let message = template`start: ${"a"},${1}: finish`;
       let strA = "testA";
       let str1 = "test1";

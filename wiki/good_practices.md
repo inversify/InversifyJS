@@ -3,7 +3,7 @@
 Dependency Inversion (DI) isn't rocket science. 
 We just need to try to avoid new and singleton except when there's a compelling reason to use them, 
 such as a utility method that has no external dependencies, or a utility class that could not possibly 
-have any purpose outside the framework (interop wrappers and dictionary keys are common examples of this).
+have any purpose outside the framework (interoperability wrappers and dictionary keys are common examples of this).
 
 Many of the problems with IoC frameworks come up when developers are first learning how to use them, 
 and instead of actually changing the way they handle dependencies and abstractions to fit the IoC model, 

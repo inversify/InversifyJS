@@ -115,7 +115,7 @@ describe("BindingInWhenOnSyntax", () => {
         bindingInWhenOnSyntax.when((request: interfaces.Request) => { return true; });
         bindingInWhenOnSyntax.whenTargetNamed("test");
         bindingInWhenOnSyntax.whenTargetTagged("test", true);
-        bindingInWhenOnSyntax.whenInjectedInto("armny");
+        bindingInWhenOnSyntax.whenInjectedInto("army");
         bindingInWhenOnSyntax.whenInjectedInto(Army);
         bindingInWhenOnSyntax.whenParentNamed("test");
         bindingInWhenOnSyntax.whenParentTagged("test", true);

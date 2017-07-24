@@ -90,7 +90,7 @@ describe("BindingWhenOnSyntax", () => {
         bindingWhenOnSyntax.when((request: interfaces.Request) => { return true; });
         bindingWhenOnSyntax.whenTargetNamed("test");
         bindingWhenOnSyntax.whenTargetTagged("test", true);
-        bindingWhenOnSyntax.whenInjectedInto("armny");
+        bindingWhenOnSyntax.whenInjectedInto("army");
         bindingWhenOnSyntax.whenInjectedInto(Army);
         bindingWhenOnSyntax.whenParentNamed("test");
         bindingWhenOnSyntax.whenParentTagged("test", true);

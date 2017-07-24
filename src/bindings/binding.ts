@@ -7,7 +7,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public guid: string;
     public moduleId: string;
 
-    // Determines wether the bindings has been already activated
+    // Determines weather the bindings has been already activated
     // The activation action takes place when an instance is resolved
     // If the scope is singleton it only happens once
     public activated: boolean;

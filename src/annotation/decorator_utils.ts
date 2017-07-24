@@ -38,7 +38,7 @@ function _tagParameterOrProperty(
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
 
-    // read metadata if avalible
+    // read metadata if available
     if (Reflect.hasOwnMetadata(metadataKey, annotationTarget) === true) {
         paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
     }

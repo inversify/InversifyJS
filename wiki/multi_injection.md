@@ -64,8 +64,8 @@ class Foo {
 ```
 
 The main problem is that this requires the type of `args` to be `Bar[][]`
-because multiInject will wrap the injections using an arrray and the spread
-operator will do the same. As a result the injection is warapped by an array
+because multiInject will wrap the injections using an array and the spread
+operator will do the same. As a result the injection is wrapped by an array
 two times.
 
 We tried to solve this problem but the only was was to generate some additional

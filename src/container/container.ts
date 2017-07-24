@@ -30,11 +30,11 @@ class Container implements interfaces.Container {
         let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
-            origing: interfaces.Lookup<interfaces.Binding<any>>,
+            origin: interfaces.Lookup<interfaces.Binding<any>>,
             destination: interfaces.Lookup<interfaces.Binding<any>>
         ) {
 
-            origing.traverse((key, value) => {
+            origin.traverse((key, value) => {
                 value.forEach((binding) => {
                     destination.add(binding.serviceIdentifier, binding.clone());
                 });
@@ -149,7 +149,7 @@ class Container implements interfaces.Container {
 
     }
 
-    // Regiters a type binding
+    // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         let defaultScope = BindingScopeEnum.Transient;
         defaultScope = (this.options.defaultScope === defaultScope) ? defaultScope : BindingScopeEnum.Singleton;
@@ -277,7 +277,7 @@ class Container implements interfaces.Container {
 
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
-    // otherwise it delegates resoltion to _planAndResolve
+    // otherwise it delegates resolution to _planAndResolve
     private _get<T>(
         avoidConstraints: boolean,
         isMultiInject: boolean,
