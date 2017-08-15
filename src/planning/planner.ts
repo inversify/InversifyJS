@@ -161,6 +161,9 @@ function _createSubRequests(
             if (target.isArray()) {
                 subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
             } else {
+                if (binding.cache) {
+                    return;
+                }
                 subChildRequest = childRequest;
             }
 
