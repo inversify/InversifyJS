@@ -30,11 +30,11 @@ class Container implements interfaces.Container {
         let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
-            origing: interfaces.Lookup<interfaces.Binding<any>>,
+            origin: interfaces.Lookup<interfaces.Binding<any>>,
             destination: interfaces.Lookup<interfaces.Binding<any>>
         ) {
 
-            origing.traverse((key, value) => {
+            origin.traverse((key, value) => {
                 value.forEach((binding) => {
                     destination.add(binding.serviceIdentifier, binding.clone());
                 });
@@ -149,7 +149,7 @@ class Container implements interfaces.Container {
 
     }
 
-    // Regiters a type binding
+    // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         let defaultScope = BindingScopeEnum.Transient;
         defaultScope = (this.options.defaultScope === defaultScope) ? defaultScope : BindingScopeEnum.Singleton;
@@ -179,20 +179,34 @@ class Container implements interfaces.Container {
 
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
-        return this._bindingDictionary.hasKey(serviceIdentifier);
+        let bound = this._bindingDictionary.hasKey(serviceIdentifier);
+        if (!bound && this.parent) {
+            bound = this.parent.isBound(serviceIdentifier);
+        }
+        return bound;
     }
 
     public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string|number|symbol): boolean {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    // Note: we can only identify basic tagged bindings not complex constraints (e.g ancerstors)
-    // Users can try-catch calls to container.get<T>("T") if they really need to do check if a
-    // binding with a complex constraint is available.
+    // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
     public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
-        let bindings = this._bindingDictionary.get(serviceIdentifier);
-        let request = createMockRequest(this, serviceIdentifier, key, value);
-        return bindings.some((b) => b.constraint(request));
+        let bound = false;
+
+        // verify if there are bindings available for serviceIdentifier on current binding dictionary
+        if (this._bindingDictionary.hasKey(serviceIdentifier)) {
+            let bindings = this._bindingDictionary.get(serviceIdentifier);
+            let request = createMockRequest(this, serviceIdentifier, key, value);
+            bound = bindings.some((b) => b.constraint(request));
+        }
+
+        // verify if there is a parent container that could solve the request
+        if (!bound && this.parent) {
+            bound = this.parent.isBoundTagged(serviceIdentifier, key, value);
+        }
+
+        return bound;
     }
 
     public snapshot(): void {
@@ -263,7 +277,7 @@ class Container implements interfaces.Container {
 
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
-    // otherwise it delegates resoltion to _planAndResolve
+    // otherwise it delegates resolution to _planAndResolve
     private _get<T>(
         avoidConstraints: boolean,
         isMultiInject: boolean,

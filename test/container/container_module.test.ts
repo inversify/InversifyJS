@@ -34,7 +34,7 @@ describe("ContainerModule", () => {
 
   });
 
-  it("Should be able to check for existance of bindings within a container module", () => {
+  it("Should be able to check for existence of bindings within a container module", () => {
 
     let container = new Container();
     container.bind<string>("A").toConstantValue("1");

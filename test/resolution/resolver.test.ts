@@ -219,7 +219,7 @@ describe("Resolve", () => {
       // container and bindings
       let ninjaId = "Ninja";
       let container = new Container();
-      container.bind<Ninja>(ninjaId); // IMPORTAN! (Invalid binding)
+      container.bind<Ninja>(ninjaId); // IMPORTANT! (Invalid binding)
 
       // context and plan
       let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
@@ -1088,6 +1088,58 @@ describe("Resolve", () => {
 
         expect(resolveInstance.bind(resolveInstance, Katana, [], (request: interfaces.Request) => null))
             .to.throw("@postConstruct error in class Katana: Original Message");
+    });
+
+    it("Should run the @PostConstruct method of parent class", () => {
+
+        interface Weapon {
+            use: () => string;
+        }
+
+        @injectable()
+        abstract class Sword implements Weapon {
+            protected useMessage: string;
+
+            @postConstruct()
+            public postConstruct () {
+                this.useMessage = "Used Weapon!";
+            }
+
+            public abstract use(): string;
+        }
+
+        @injectable()
+        class Katana extends Sword {
+            public use() {
+                return this.useMessage;
+            }
+        }
+
+        interface Warrior {
+            katana: Katana;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public constructor(@inject("Katana") katana: Katana) {
+                this.katana = katana;
+            }
+        }
+        let ninjaId = "Ninja";
+        let katanaId = "Katana";
+
+        let container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+
+        container.bind<Katana>(katanaId).to(Katana);
+
+        let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        let ninja = resolve<Ninja>(context);
+
+        expect(ninja.katana.use()).eql("Used Weapon!");
+
     });
 
     it("Should run the @PostConstruct method once in the singleton scope", () => {

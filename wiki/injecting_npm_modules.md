@@ -71,7 +71,7 @@ export { container };
 
 ```
 
-### /src/entitites/some_class.ts
+### /src/entities/some_class.ts
 
 ```ts
 import { Container, injectable, inject } from "inversify";

@@ -47,7 +47,7 @@ export class FooBar implements FooBarInterface {
     this.foo = foo;
     this.bar = bar;
   }
-  public greet(): string{
+  public greet(): string {
     return this.foo.greet() + this.bar.greet();
   }
 }
@@ -61,10 +61,10 @@ export interface Shuriken extends Weapon {}
 export class Katana implements Katana {}
 export class Shuriken implements Shuriken {}
 
-export class WarriotWithoutInjections {}
+export class WarriorWithoutInjections {}
 
 @injectable()
-export class DecoratedWarriotWithoutInjections {}
+export class DecoratedWarriorWithoutInjections {}
 
 @injectable()
 export class Warrior {

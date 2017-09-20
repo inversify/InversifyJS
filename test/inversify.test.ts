@@ -511,13 +511,13 @@ describe("InversifyJS", () => {
         @injectable()
         class Shuriken implements LongDistanceWeapon { }
 
-        interface Warripr {
+        interface Warrior {
             shortDistanceWeaponFactory: ShortDistanceWeaponFactory;
             longDistanceWeapon: LongDistanceWeapon;
         }
 
         @injectable()
-        class Ninja implements Warripr {
+        class Ninja implements Warrior {
             public shortDistanceWeaponFactory: ShortDistanceWeaponFactory;
             public longDistanceWeapon: LongDistanceWeapon;
             public constructor(

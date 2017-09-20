@@ -103,6 +103,8 @@ This means that we should "depend upon Abstractions and do not depend upon concr
 Let's start by declaring some interfaces (abstractions).
 
 ```ts
+// file interfaces.ts
+
 interface Warrior {
     fight(): string;
     sneak(): string;
@@ -120,7 +122,9 @@ interface ThrowableWeapon {
 InversifyJS need to use the type as identifiers at runtime. We use symbols as identifiers but you can also use classes and or string literals.
  
 ```ts
-let TYPES = {
+// file types.ts
+
+const TYPES = {
     Warrior: Symbol("Warrior"),
     Weapon: Symbol("Weapon"),
     ThrowableWeapon: Symbol("ThrowableWeapon")
@@ -138,8 +142,11 @@ Let's continue by declaring some classes (concretions). The classes are implemen
 When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
 
 ```ts
+// file entities.ts
+
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
+import { Weapon, ThrowableWeapon, Warrior } from "./interfaces"
 import { TYPES } from "./types";
 
 @injectable()
@@ -194,11 +201,14 @@ class Ninja implements Warrior {
 We recommend to do this in a file named `inversify.config.ts`. This is the only place in which there is some coupling.
 In the rest of your application your classes should be free of references to other classes.
 ```ts
+// file inversify.config.ts
+
 import { Container } from "inversify";
 import TYPES from "./types";
+import { Warrior, Weapon, ThrowableWeapon } from "./interfaces";
 import { Ninja, Katana, Shuriken } from "./entities";
 
-var myContainer = new Container();
+const myContainer = new Container();
 myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
 myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
 myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
@@ -214,7 +224,7 @@ to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/Serv
 ```ts
 import { myContainer } from "./inversify.config";
 
-var ninja = myContainer.get<Warrior>(TYPES.Warrior);
+const ninja = myContainer.get<Warrior>(TYPES.Warrior);
 
 expect(ninja.fight()).eql("cut!"); // true
 expect(ninja.sneak()).eql("hit!"); // true
@@ -241,6 +251,7 @@ Let's take a look to the InversifyJS features!
 - [Auto factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_factory.md)
 - [Injecting a Provider (asynchronous Factory)](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md)
 - [Activation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md)
+- [Post Construct decorator](https://github.com/inversify/InversifyJS/blob/master/wiki/post_construct.md)
 - [Middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md)
 - [Multi-injection](https://github.com/inversify/InversifyJS/blob/master/wiki/multi_injection.md)
 - [Tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md)

@@ -55,9 +55,9 @@ function getTargets(
     // Throw if a derived class does not implement its constructor explicitly
     // We do this to prevent errors when a base class (parent) has dependencies
     // and one of the derived classes (children) has no dependencies
-    let baseClassDepencencyCount = getBaseClassDepencencyCount(metadataReader, func);
+    let baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, func);
 
-    if (targets.length < baseClassDepencencyCount) {
+    if (targets.length < baseClassDependencyCount) {
         let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
                     constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
         throw new Error(error);
@@ -80,17 +80,17 @@ function getConstructorArgsAsTarget(
 
     // Take types to be injected from user-generated metadata
     // if not available use compiler-generated metadata
-    let serviceIndentifier = serviceIdentifiers[index];
-    let injectIndentifier  = (metadata.inject || metadata.multiInject);
-    serviceIndentifier = (injectIndentifier) ? (injectIndentifier) : serviceIndentifier;
+    let serviceIdentifier = serviceIdentifiers[index];
+    let injectIdentifier  = (metadata.inject || metadata.multiInject);
+    serviceIdentifier = (injectIdentifier) ? (injectIdentifier) : serviceIdentifier;
 
     // Types Object and Function are too ambiguous to be resolved
     // user needs to generate metadata manually for those
     if (isManaged === true) {
 
-        let isObject = serviceIndentifier === Object;
-        let isFunction = serviceIndentifier === Function;
-        let isUndefined = serviceIndentifier === undefined;
+        let isObject = serviceIdentifier === Object;
+        let isFunction = serviceIdentifier === Function;
+        let isUndefined = serviceIdentifier === undefined;
         let isUnknownType = (isObject || isFunction || isUndefined);
 
         if (isBaseClass === false && isUnknownType) {
@@ -98,7 +98,7 @@ function getConstructorArgsAsTarget(
             throw new Error(msg);
         }
 
-        let target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIndentifier);
+        let target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIdentifier);
         target.metadata = targetMetadata;
         return target;
     }
@@ -154,10 +154,10 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
         let targetName = metadata.targetName || key;
 
         // Take types to be injected from user-generated metadata
-        let serviceIndentifier = (metadata.inject || metadata.multiInject);
+        let serviceIdentifier = (metadata.inject || metadata.multiInject);
 
         // The property target
-        let target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIndentifier);
+        let target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIdentifier);
         target.metadata = targetMetadata;
         targets.push(target);
     }
@@ -179,7 +179,7 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
     return targets;
 }
 
-function getBaseClassDepencencyCount(metadataReader: interfaces.MetadataReader, func: Function): number {
+function getBaseClassDependencyCount(metadataReader: interfaces.MetadataReader, func: Function): number {
 
     let baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
 
@@ -205,7 +205,7 @@ function getBaseClassDepencencyCount(metadataReader: interfaces.MetadataReader, 
         if (dependencyCount > 0 ) {
             return dependencyCount;
         } else {
-            return getBaseClassDepencencyCount(metadataReader, baseConstructor);
+            return getBaseClassDependencyCount(metadataReader, baseConstructor);
         }
 
     } else {

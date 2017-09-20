@@ -34,7 +34,7 @@ function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): a
 }
 
 function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
-    if (Reflect.hasOwnMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
+    if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
         let data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
         try {
             result[data.value]();

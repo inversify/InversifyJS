@@ -496,7 +496,7 @@ describe("Bugs", () => {
 
     });
 
-    it("Should not be able to get a named dependency if no named bindings are gesitered", () => {
+    it("Should not be able to get a named dependency if no named bindings are registered", () => {
 
         const TYPES = {
             Weapon: "Weapon"
@@ -621,7 +621,7 @@ describe("Bugs", () => {
 
     });
 
-    it("Should be able apply inject to property shurtcut", () => {
+    it("Should be able apply inject to property shortcut", () => {
 
         interface Weapon {
             use(): string;

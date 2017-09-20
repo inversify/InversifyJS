@@ -6,7 +6,7 @@ import * as METADATA_KEY from "../../src/constants/metadata_keys";
 
 describe("Target", () => {
 
-    it("Should be able to create instances of untagged tagets", () => {
+    it("Should be able to create instances of untagged targets", () => {
         let target = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana");
         expect(target.serviceIdentifier).to.be.eql("Katana");
         expect(target.name.value()).to.be.eql("katana");
@@ -14,7 +14,7 @@ describe("Target", () => {
         expect(target.metadata.length).to.be.eql(0);
     });
 
-    it("Should be able to create instances of named tagets", () => {
+    it("Should be able to create instances of named targets", () => {
         let target = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana", "primary");
         expect(target.serviceIdentifier).to.be.eql("Katana");
         expect(target.name.value()).to.be.eql("katana");
@@ -24,7 +24,7 @@ describe("Target", () => {
         expect(target.metadata[0].value).to.be.eql("primary");
     });
 
-    it("Should be able to create instances of tagged tagets", () => {
+    it("Should be able to create instances of tagged targets", () => {
         let target = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana", new Metadata("power", 5));
         expect(target.serviceIdentifier).to.be.eql("Katana");
         expect(target.name.value()).to.be.eql("katana");
@@ -49,7 +49,7 @@ describe("Target", () => {
         expect(target2.isArray()).to.be.eql(false);
     });
 
-    it("Should be able to match mutli-inject for a specified service metadata", () => {
+    it("Should be able to match multi-inject for a specified service metadata", () => {
         let target1 = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana");
         target1.metadata.push(new Metadata(METADATA_KEY.MULTI_INJECT_TAG, "Katana"));
         target1.metadata.push(new Metadata(METADATA_KEY.INJECT_TAG, "Shuriken"));

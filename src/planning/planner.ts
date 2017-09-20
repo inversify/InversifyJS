@@ -5,7 +5,7 @@ import { Request } from "./request";
 import { Target } from "./target";
 import { BindingCount } from "../bindings/binding_count";
 import { getDependencies } from "./reflection_utils";
-import { Metadata } from "../planning/metadata";
+import { Metadata } from "./metadata";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
@@ -161,6 +161,9 @@ function _createSubRequests(
             if (target.isArray()) {
                 subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
             } else {
+                if (binding.cache) {
+                    return;
+                }
                 subChildRequest = childRequest;
             }
 
