@@ -66,7 +66,7 @@
     "karma-mocha-reporter": "^2.0.5",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-sinon": "^1.0.5",
-    "mocha": "^3.0.1",
+    "mocha": "^4.0.0",
     "performance-now": "^2.0.0",
     "publish-please": "^2.1.4",
     "reflect-metadata": "^0.1.9",
