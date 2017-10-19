@@ -20,8 +20,8 @@ A powerful and lightweight inversion of control container for JavaScript & Node.
 
 ## About
 InversifyJS is a lightweight (4KB) inversion of control (IoC) container for TypeScript and JavaScript apps.
-A IoC container uses a class constructor to identify and inject its dependencies.
-InversifyJS has a friendly API and encourage the usage of the best OOP and IoC practices.
+An IoC container uses a class constructor to identify and inject its dependencies.
+InversifyJS has a friendly API and encourages the usage of the best OOP and IoC practices.
 
 ## Motivation
 JavaScript now supports object oriented (OO) programming with class based inheritance. These features are great but the truth is that they are also
