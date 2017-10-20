@@ -5,7 +5,6 @@ Welcome to the InversifyJS wiki!
 - [Installation](https://github.com/inversify/InversifyJS/blob/master/wiki/installation.md)
 - [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
 - [Vanilla JavaScript example](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md)
-- [Working with module bundlers](https://github.com/inversify/InversifyJS/blob/master/wiki/module_bundlers.md)
 - [ES5 and ES6 support](https://github.com/inversify/InversifyJS/blob/master/wiki/javascript.md)
 - [Upgrade guide](https://github.com/inversify/InversifyJS/blob/master/wiki/upgrade.md)
 
