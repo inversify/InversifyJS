@@ -511,9 +511,9 @@ describe("Container", () => {
         let wrong1 = () => new Container(invalidOptions1);
         expect(wrong1).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
 
-        let invalidOptions2: any = { wrongKey: "singleton" };
+        let invalidOptions2: any = { fallbackToSelf: "wrongValue" };
         let wrong2 = () => new Container(invalidOptions2);
-        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF}`);
 
         let invalidOptions3: any = { defaultScope: "wrongValue" };
         let wrong3 = () => new Container(invalidOptions3);

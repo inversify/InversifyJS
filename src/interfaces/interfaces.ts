@@ -160,7 +160,8 @@ namespace interfaces {
     }
 
     export interface ContainerOptions {
-        defaultScope: BindingScope;
+        defaultScope?: BindingScope;
+        fallbackToSelf?: boolean;
     }
 
     export interface Container {

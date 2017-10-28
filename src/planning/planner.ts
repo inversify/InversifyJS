@@ -43,6 +43,7 @@ function _createTarget(
 }
 
 function _getActiveBindings(
+    metadataReader: interfaces.MetadataReader,
     avoidConstraints: boolean,
     context: interfaces.Context,
     parentRequest: interfaces.Request | null,
@@ -73,6 +74,15 @@ function _getActiveBindings(
     } else {
         // simple injection or multi-injection without constraints
         activeBindings = bindings;
+    }
+
+    if (activeBindings.length === BindingCount.NoBindingsAvailable &&
+        context.container.options.fallbackToSelf &&
+        typeof target.serviceIdentifier === "function" &&
+        metadataReader.getConstructorMetadata(target.serviceIdentifier).compilerGeneratedMetadata
+    ) {
+        context.container.bind(target.serviceIdentifier).toSelf();
+        activeBindings = getBindings(context.container, target.serviceIdentifier);
     }
 
     // validate active bindings
@@ -136,7 +146,7 @@ function _createSubRequests(
 
         if (parentRequest === null) {
 
-            activeBindings = _getActiveBindings(avoidConstraints, context, null, target);
+            activeBindings = _getActiveBindings(metadataReader, avoidConstraints, context, null, target);
 
             childRequest = new Request(
                 serviceIdentifier,
@@ -150,7 +160,7 @@ function _createSubRequests(
             context.addPlan(thePlan);
 
         } else {
-            activeBindings = _getActiveBindings(avoidConstraints, context, parentRequest, target);
+            activeBindings = _getActiveBindings(metadataReader, avoidConstraints, context, parentRequest, target);
             childRequest = parentRequest.addChildRequest(target.serviceIdentifier, activeBindings, target);
         }
 

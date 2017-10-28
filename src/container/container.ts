@@ -55,22 +55,30 @@ class Container implements interfaces.Container {
 
             if (typeof containerOptions !== "object") {
                 throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
-            } else if (containerOptions.defaultScope === undefined) {
-                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
-            } else if (
-                containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
-                containerOptions.defaultScope !== BindingScopeEnum.Transient
-            ) {
-                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+            } else {
+                if (containerOptions.defaultScope !== undefined &&
+                    containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
+                    containerOptions.defaultScope !== BindingScopeEnum.Transient
+                ) {
+                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+                }
+
+                if (containerOptions.fallbackToSelf !== undefined &&
+                    typeof containerOptions.fallbackToSelf !== "boolean"
+                ) {
+                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF}`);
+                }
             }
 
             this.options = {
-                defaultScope: containerOptions.defaultScope
+                defaultScope: containerOptions.defaultScope,
+                fallbackToSelf: containerOptions.fallbackToSelf
             };
 
         } else {
             this.options = {
-                defaultScope: BindingScopeEnum.Transient
+                defaultScope: BindingScopeEnum.Transient,
+                fallbackToSelf: false,
             };
         }
 
