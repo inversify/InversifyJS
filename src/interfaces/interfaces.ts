@@ -160,8 +160,8 @@ namespace interfaces {
     }
 
     export interface ContainerOptions {
-        defaultScope?: BindingScope;
         autoBindInjectable?: boolean;
+        defaultScope?: BindingScope;
     }
 
     export interface Container {

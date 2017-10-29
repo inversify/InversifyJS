@@ -505,7 +505,7 @@ describe("Container", () => {
 
     });
 
-    it("Should be able configure automatic binding for @injectable() decorated classes", () => {
+    it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
 
         @injectable()
         class A {

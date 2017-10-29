@@ -71,14 +71,14 @@ class Container implements interfaces.Container {
             }
 
             this.options = {
-                defaultScope: containerOptions.defaultScope,
-                autoBindInjectable: containerOptions.autoBindInjectable
+                autoBindInjectable: containerOptions.autoBindInjectable,
+                defaultScope: containerOptions.defaultScope
             };
 
         } else {
             this.options = {
-                defaultScope: BindingScopeEnum.Transient,
                 autoBindInjectable: false,
+                defaultScope: BindingScopeEnum.Transient
             };
         }
 
