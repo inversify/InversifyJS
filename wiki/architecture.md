@@ -1,6 +1,6 @@
 # Architecture overview
 
-This page has been created to make the contributors life easier.
+This page has been created to make the contributor's lives easier.
 
 The internal architecture of InversifyJS is heavily influenced by [Ninject](https://github.com/ninject/Ninject). Being influenced does not mean that both architectures are identical. In fact, both architectures are quite different since C# and JavaScript are really different programming languages. However, the terms used to describe some elements of the library and the phases of resolution process are not that different.
 
