@@ -159,9 +159,8 @@ class Container implements interfaces.Container {
 
     // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
-        let defaultScope = BindingScopeEnum.Transient;
-        defaultScope = (this.options.defaultScope === defaultScope) ? defaultScope : BindingScopeEnum.Singleton;
-        let binding = new Binding<T>(serviceIdentifier, defaultScope);
+        let scope = this.options.defaultScope || BindingScopeEnum.Transient;
+        let binding = new Binding<T>(serviceIdentifier, scope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }

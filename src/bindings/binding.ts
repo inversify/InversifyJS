@@ -42,11 +42,11 @@ class Binding<T> implements interfaces.Binding<T> {
     // On activation handler (invoked just before an instance is added to cache and injected)
     public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
 
-    constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, defaultScope: interfaces.BindingScope) {
+    constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, scope: interfaces.BindingScope) {
         this.guid = guid();
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
-        this.scope = defaultScope;
+        this.scope = scope;
         this.type = BindingTypeEnum.Invalid;
         this.constraint = (request: interfaces.Request) => { return true; };
         this.implementationType = null;

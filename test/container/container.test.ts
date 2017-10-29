@@ -505,6 +505,83 @@ describe("Container", () => {
 
     });
 
+    it("Should be able configure toSelf() fallback for @injectable() decorated classes", () => {
+
+        @injectable()
+        class A {
+            public a = "a";
+        }
+
+        @injectable()
+        class B {
+            public b = "b";
+
+            constructor(public a: A) {
+            }
+        }
+
+        @injectable()
+        class AFake implements A {
+            public a = "a fake";
+        }
+
+        class C {
+            public c = "c";
+        }
+
+        const container1 = new Container({fallbackToSelf: true});
+        container1.bind(A).to(A);
+        const a1 = container1.get(A);
+        const b1 = container1.get(B);
+        expect(a1).to.be.an.instanceof(A);
+        expect(a1).to.not.equal(container1.get(A));
+        expect(b1).to.be.an.instanceof(B);
+        expect(b1).to.not.equal(container1.get(B));
+        expect(b1.a).to.be.an.instanceof(A);
+        expect(b1.a).to.not.equal(container1.get(B).a);
+        expect(b1.a).to.not.equal(a1);
+
+        const container2 = new Container({defaultScope: BindingScopeEnum.Singleton, fallbackToSelf: true});
+        container2.bind(A).to(A);
+        const a2 = container2.get(A);
+        const b2 = container2.get(B);
+        expect(a2).to.be.an.instanceof(A);
+        expect(a2).to.equal(container2.get(A));
+        expect(b2).to.be.an.instanceof(B);
+        expect(b2).to.equal(container2.get(B));
+        expect(b2.a).to.be.an.instanceof(A);
+        expect(b2.a).to.equal(container2.get(B).a);
+        expect(b2.a).to.equal(a2);
+
+        const container3 = new Container({fallbackToSelf: true});
+        container3.bind(A).toSelf().inSingletonScope();
+        const a3 = container3.get(A);
+        const b3 = container3.get(B);
+        expect(a3).to.be.an.instanceof(A);
+        expect(a3).to.equal(container3.get(A));
+        expect(b3).to.be.an.instanceof(B);
+        expect(b3).to.not.equal(container3.get(B));
+        expect(b3.a).to.be.an.instanceof(A);
+        expect(b3.a).to.equal(container3.get(B).a);
+        expect(b3.a).to.equal(a3);
+
+        const container4 = new Container({fallbackToSelf: true});
+        container4.bind(A).to(AFake);
+        const a4 = container4.get(A);
+        const b4 = container4.get(B);
+        expect(a4).to.be.an.instanceof(AFake);
+        expect(a4).to.not.equal(container4.get(A));
+        expect(b4).to.be.an.instanceof(B);
+        expect(b4).to.not.equal(container4.get(B));
+        expect(b4.a).to.be.an.instanceof(AFake);
+        expect(b4.a).to.not.equal(container4.get(B).a);
+        expect(b4.a).to.not.equal(a4);
+
+        const container5 = new Container({fallbackToSelf: true});
+        expect(() => container5.get(C)).to.throw(ERROR_MSGS.NOT_REGISTERED);
+
+    });
+
     it("Should be throw an exception if incorrect options is provided", () => {
 
         let invalidOptions1: any = () => 0;

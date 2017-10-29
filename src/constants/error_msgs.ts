@@ -29,10 +29,10 @@ export const CONTAINER_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructo
     "must be an object.";
 
 export const CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Container option. Default scope must " +
-  "be a string ('singleton' or 'transient').";
+    "be a string ('singleton' or 'transient').";
 
 export const CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF = "Invalid Container option. Fallback to self must " +
-  "be a boolean";
+    "be a boolean";
 
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
 export const POST_CONSTRUCT_ERROR = template`@postConstruct error in class ${0}: ${1}`;
