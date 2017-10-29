@@ -508,77 +508,66 @@ describe("Container", () => {
     it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
 
         @injectable()
-        class A {
-            public a = "a";
-        }
+        class Katana {}
 
         @injectable()
-        class B {
-            public b = "b";
-
-            constructor(public a: A) {
-            }
-        }
+        class Shuriken {}
 
         @injectable()
-        class AFake implements A {
-            public a = "a fake";
+        class Ninja {
+            constructor(public weapon: Katana) {}
         }
 
-        class C {
-            public c = "c";
-        }
+        class Samurai {}
 
         const container1 = new Container({autoBindInjectable: true});
-        container1.bind(A).to(A);
-        const a1 = container1.get(A);
-        const b1 = container1.get(B);
-        expect(a1).to.be.an.instanceof(A);
-        expect(a1).to.not.equal(container1.get(A));
-        expect(b1).to.be.an.instanceof(B);
-        expect(b1).to.not.equal(container1.get(B));
-        expect(b1.a).to.be.an.instanceof(A);
-        expect(b1.a).to.not.equal(container1.get(B).a);
-        expect(b1.a).to.not.equal(a1);
+        const katana1 = container1.get(Katana);
+        const ninja1 = container1.get(Ninja);
+        expect(katana1).to.be.an.instanceof(Katana);
+        expect(katana1).to.not.equal(container1.get(Katana));
+        expect(ninja1).to.be.an.instanceof(Ninja);
+        expect(ninja1).to.not.equal(container1.get(Ninja));
+        expect(ninja1.weapon).to.be.an.instanceof(Katana);
+        expect(ninja1.weapon).to.not.equal(container1.get(Ninja).weapon);
+        expect(ninja1.weapon).to.not.equal(katana1);
 
         const container2 = new Container({defaultScope: BindingScopeEnum.Singleton, autoBindInjectable: true});
-        container2.bind(A).to(A);
-        const a2 = container2.get(A);
-        const b2 = container2.get(B);
-        expect(a2).to.be.an.instanceof(A);
-        expect(a2).to.equal(container2.get(A));
-        expect(b2).to.be.an.instanceof(B);
-        expect(b2).to.equal(container2.get(B));
-        expect(b2.a).to.be.an.instanceof(A);
-        expect(b2.a).to.equal(container2.get(B).a);
-        expect(b2.a).to.equal(a2);
+        const katana2 = container2.get(Katana);
+        const ninja2 = container2.get(Ninja);
+        expect(katana2).to.be.an.instanceof(Katana);
+        expect(katana2).to.equal(container2.get(Katana));
+        expect(ninja2).to.be.an.instanceof(Ninja);
+        expect(ninja2).to.equal(container2.get(Ninja));
+        expect(ninja2.weapon).to.be.an.instanceof(Katana);
+        expect(ninja2.weapon).to.equal(container2.get(Ninja).weapon);
+        expect(ninja2.weapon).to.equal(katana2);
 
         const container3 = new Container({autoBindInjectable: true});
-        container3.bind(A).toSelf().inSingletonScope();
-        const a3 = container3.get(A);
-        const b3 = container3.get(B);
-        expect(a3).to.be.an.instanceof(A);
-        expect(a3).to.equal(container3.get(A));
-        expect(b3).to.be.an.instanceof(B);
-        expect(b3).to.not.equal(container3.get(B));
-        expect(b3.a).to.be.an.instanceof(A);
-        expect(b3.a).to.equal(container3.get(B).a);
-        expect(b3.a).to.equal(a3);
+        container3.bind(Katana).toSelf().inSingletonScope();
+        const katana3 = container3.get(Katana);
+        const ninja3 = container3.get(Ninja);
+        expect(katana3).to.be.an.instanceof(Katana);
+        expect(katana3).to.equal(container3.get(Katana));
+        expect(ninja3).to.be.an.instanceof(Ninja);
+        expect(ninja3).to.not.equal(container3.get(Ninja));
+        expect(ninja3.weapon).to.be.an.instanceof(Katana);
+        expect(ninja3.weapon).to.equal(container3.get(Ninja).weapon);
+        expect(ninja3.weapon).to.equal(katana3);
 
         const container4 = new Container({autoBindInjectable: true});
-        container4.bind(A).to(AFake);
-        const a4 = container4.get(A);
-        const b4 = container4.get(B);
-        expect(a4).to.be.an.instanceof(AFake);
-        expect(a4).to.not.equal(container4.get(A));
-        expect(b4).to.be.an.instanceof(B);
-        expect(b4).to.not.equal(container4.get(B));
-        expect(b4.a).to.be.an.instanceof(AFake);
-        expect(b4.a).to.not.equal(container4.get(B).a);
-        expect(b4.a).to.not.equal(a4);
+        container4.bind(Katana).to(Shuriken);
+        const katana4 = container4.get(Katana);
+        const ninja4 = container4.get(Ninja);
+        expect(katana4).to.be.an.instanceof(Shuriken);
+        expect(katana4).to.not.equal(container4.get(Katana));
+        expect(ninja4).to.be.an.instanceof(Ninja);
+        expect(ninja4).to.not.equal(container4.get(Ninja));
+        expect(ninja4.weapon).to.be.an.instanceof(Shuriken);
+        expect(ninja4.weapon).to.not.equal(container4.get(Ninja).weapon);
+        expect(ninja4.weapon).to.not.equal(katana4);
 
         const container5 = new Container({autoBindInjectable: true});
-        expect(() => container5.get(C)).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(() => container5.get(Samurai)).to.throw(ERROR_MSGS.NOT_REGISTERED);
 
     });
 
@@ -590,7 +579,7 @@ describe("Container", () => {
 
         let invalidOptions2: any = { autoBindInjectable: "wrongValue" };
         let wrong2 = () => new Container(invalidOptions2);
-        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF}`);
+        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
 
         let invalidOptions3: any = { defaultScope: "wrongValue" };
         let wrong3 = () => new Container(invalidOptions3);

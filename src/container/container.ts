@@ -66,7 +66,7 @@ class Container implements interfaces.Container {
                 if (containerOptions.autoBindInjectable !== undefined &&
                     typeof containerOptions.autoBindInjectable !== "boolean"
                 ) {
-                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF}`);
+                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
                 }
             }
 
