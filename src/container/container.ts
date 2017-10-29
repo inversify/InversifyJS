@@ -63,8 +63,8 @@ class Container implements interfaces.Container {
                     throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
                 }
 
-                if (containerOptions.fallbackToSelf !== undefined &&
-                    typeof containerOptions.fallbackToSelf !== "boolean"
+                if (containerOptions.autoBindInjectable !== undefined &&
+                    typeof containerOptions.autoBindInjectable !== "boolean"
                 ) {
                     throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF}`);
                 }
@@ -72,13 +72,13 @@ class Container implements interfaces.Container {
 
             this.options = {
                 defaultScope: containerOptions.defaultScope,
-                fallbackToSelf: containerOptions.fallbackToSelf
+                autoBindInjectable: containerOptions.autoBindInjectable
             };
 
         } else {
             this.options = {
                 defaultScope: BindingScopeEnum.Transient,
-                fallbackToSelf: false,
+                autoBindInjectable: false,
             };
         }
 

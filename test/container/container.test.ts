@@ -505,7 +505,7 @@ describe("Container", () => {
 
     });
 
-    it("Should be able configure toSelf() fallback for @injectable() decorated classes", () => {
+    it("Should be able configure automatic binding for @injectable() decorated classes", () => {
 
         @injectable()
         class A {
@@ -529,7 +529,7 @@ describe("Container", () => {
             public c = "c";
         }
 
-        const container1 = new Container({fallbackToSelf: true});
+        const container1 = new Container({autoBindInjectable: true});
         container1.bind(A).to(A);
         const a1 = container1.get(A);
         const b1 = container1.get(B);
@@ -541,7 +541,7 @@ describe("Container", () => {
         expect(b1.a).to.not.equal(container1.get(B).a);
         expect(b1.a).to.not.equal(a1);
 
-        const container2 = new Container({defaultScope: BindingScopeEnum.Singleton, fallbackToSelf: true});
+        const container2 = new Container({defaultScope: BindingScopeEnum.Singleton, autoBindInjectable: true});
         container2.bind(A).to(A);
         const a2 = container2.get(A);
         const b2 = container2.get(B);
@@ -553,7 +553,7 @@ describe("Container", () => {
         expect(b2.a).to.equal(container2.get(B).a);
         expect(b2.a).to.equal(a2);
 
-        const container3 = new Container({fallbackToSelf: true});
+        const container3 = new Container({autoBindInjectable: true});
         container3.bind(A).toSelf().inSingletonScope();
         const a3 = container3.get(A);
         const b3 = container3.get(B);
@@ -565,7 +565,7 @@ describe("Container", () => {
         expect(b3.a).to.equal(container3.get(B).a);
         expect(b3.a).to.equal(a3);
 
-        const container4 = new Container({fallbackToSelf: true});
+        const container4 = new Container({autoBindInjectable: true});
         container4.bind(A).to(AFake);
         const a4 = container4.get(A);
         const b4 = container4.get(B);
@@ -577,7 +577,7 @@ describe("Container", () => {
         expect(b4.a).to.not.equal(container4.get(B).a);
         expect(b4.a).to.not.equal(a4);
 
-        const container5 = new Container({fallbackToSelf: true});
+        const container5 = new Container({autoBindInjectable: true});
         expect(() => container5.get(C)).to.throw(ERROR_MSGS.NOT_REGISTERED);
 
     });
@@ -588,7 +588,7 @@ describe("Container", () => {
         let wrong1 = () => new Container(invalidOptions1);
         expect(wrong1).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
 
-        let invalidOptions2: any = { fallbackToSelf: "wrongValue" };
+        let invalidOptions2: any = { autoBindInjectable: "wrongValue" };
         let wrong2 = () => new Container(invalidOptions2);
         expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_FALLBACK_TO_SELF}`);
 

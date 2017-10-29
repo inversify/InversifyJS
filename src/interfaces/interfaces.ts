@@ -161,7 +161,7 @@ namespace interfaces {
 
     export interface ContainerOptions {
         defaultScope?: BindingScope;
-        fallbackToSelf?: boolean;
+        autoBindInjectable?: boolean;
     }
 
     export interface Container {

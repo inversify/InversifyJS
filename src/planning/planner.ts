@@ -53,6 +53,16 @@ function _getActiveBindings(
     let bindings = getBindings<any>(context.container, target.serviceIdentifier);
     let activeBindings: interfaces.Binding<any>[] = [];
 
+    // automatic binding
+    if (bindings.length === BindingCount.NoBindingsAvailable &&
+        context.container.options.autoBindInjectable &&
+        typeof target.serviceIdentifier === "function" &&
+        metadataReader.getConstructorMetadata(target.serviceIdentifier).compilerGeneratedMetadata
+    ) {
+        context.container.bind(target.serviceIdentifier).toSelf();
+        bindings = getBindings(context.container, target.serviceIdentifier);
+    }
+
     // multiple bindings available
     if (avoidConstraints === false) {
 
@@ -74,15 +84,6 @@ function _getActiveBindings(
     } else {
         // simple injection or multi-injection without constraints
         activeBindings = bindings;
-    }
-
-    if (activeBindings.length === BindingCount.NoBindingsAvailable &&
-        context.container.options.fallbackToSelf &&
-        typeof target.serviceIdentifier === "function" &&
-        metadataReader.getConstructorMetadata(target.serviceIdentifier).compilerGeneratedMetadata
-    ) {
-        context.container.bind(target.serviceIdentifier).toSelf();
-        activeBindings = getBindings(context.container, target.serviceIdentifier);
     }
 
     // validate active bindings
