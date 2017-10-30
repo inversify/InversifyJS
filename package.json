@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/harmony-proxy": "1.0.29",
-    "@types/mocha": " 2.2.35",
+    "@types/mocha": " 2.2.44",
     "@types/sinon": "2.3.7",
     "bluebird": "3.5.1",
     "browserify": "14.5.0",
@@ -66,7 +66,7 @@
     "karma-mocha-reporter": "2.2.5",
     "karma-phantomjs-launcher": "1.0.4",
     "karma-sinon": "1.0.5",
-    "mocha": "3.0.1",
+    "mocha": "4.0.1",
     "performance-now": "2.1.0",
     "publish-please": "2.3.1",
     "reflect-metadata": "0.1.10",
