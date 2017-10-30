@@ -6,7 +6,7 @@ We try to provide developers with useful error feedback like:
 
 This works fine in most cases but it causes some problem when using inheritance. 
 
-For example, the following code snippet throw a misleading error:
+For example, the following code snippet throws a misleading error:
 
 > The number of constructor arguments in a derived class must be >= than the number of constructor arguments of its base class.
 
