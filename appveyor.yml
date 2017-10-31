@@ -10,7 +10,7 @@ environment:
 
   matrix:
     - nodejs_version: "stable"
-    - nodejs_version: "8.8.1"
+    - nodejs_version: "8.1.0"
     - nodejs_version: "7.10.1"
 
 build: off
