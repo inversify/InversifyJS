@@ -31,6 +31,9 @@ export const CONTAINER_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructo
 export const CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Container option. Default scope must " +
     "be a string ('singleton' or 'transient').";
 
+export const CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE = "Invalid Container option. Auto bind injectable must " +
+    "be a boolean";
+
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
 export const POST_CONSTRUCT_ERROR = template`@postConstruct error in class ${0}: ${1}`;
 
