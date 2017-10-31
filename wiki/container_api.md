@@ -5,6 +5,8 @@ and ambiguous bindings.
 
 ## Container Options
 
+### defaultScope
+
 The default scope is `transient` and you can change the scope of a type when declaring a binding:
 
 ```ts
@@ -16,6 +18,25 @@ You can use container options to change the default scope used at application le
 
 ```ts
 let container = new Container({ defaultScope: "Singleton" });
+```
+
+### autoBindInjectable
+
+You can use this to activate automatic binding for `@injectable()` decorated classes:
+
+```ts
+let container = new Container({ autoBindInjectable: true });
+container.isBound(Ninja);          // returns false
+container.get(Ninja);              // returns a Ninja
+container.isBound(Ninja);          // returns true
+```
+
+Manually defined bindings will take precedence:
+
+```ts
+let container = new Container({ autoBindInjectable: true });
+container.bind(Ninja).to(Samurai);
+container.get(Ninja);              // returns a Samurai
 ```
 
 ## Container.merge(a: Container, b: Container)
