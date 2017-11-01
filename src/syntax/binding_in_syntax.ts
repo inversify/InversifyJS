@@ -10,6 +10,11 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
         this._binding = binding;
     }
 
+    public inRequestScope(): interfaces.BindingWhenOnSyntax<T> {
+        this._binding.scope = BindingScopeEnum.Request;
+        return new BindingWhenOnSyntax<T>(this._binding);
+    }
+
     public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
         this._binding.scope = BindingScopeEnum.Singleton;
         return new BindingWhenOnSyntax<T>(this._binding);

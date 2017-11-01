@@ -1,6 +1,6 @@
 namespace interfaces {
 
-    export type BindingScope = "Singleton" | "Transient";
+    export type BindingScope = "Singleton" | "Transient" | "Request";
 
     export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
                               "Function" | "Instance" | "Invalid" | "Provider";
@@ -8,6 +8,7 @@ namespace interfaces {
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
 
     export interface BindingScopeEnum {
+        Request: interfaces.BindingScope;
         Singleton: interfaces.BindingScope;
         Transient: interfaces.BindingScope;
     }
@@ -126,6 +127,13 @@ namespace interfaces {
         value(): string;
     }
 
+    export type RequestResolverHandler = (
+        requestScope: interfaces.RequestScope,
+        request: interfaces.Request
+    ) => any;
+
+    export type RequestScope = Map<any, any> | null;
+
     export interface Request {
         guid: string;
         serviceIdentifier: ServiceIdentifier<any>;
@@ -134,6 +142,7 @@ namespace interfaces {
         childRequests: Request[];
         target: Target;
         bindings: Binding<any>[];
+        requestScope: RequestScope;
         addChildRequest(
             serviceIdentifier: ServiceIdentifier<any>,
             bindings: (Binding<any> | Binding<any>[]),
@@ -262,6 +271,7 @@ namespace interfaces {
     export interface BindingInSyntax<T> {
         inSingletonScope(): BindingWhenOnSyntax<T>;
         inTransientScope(): BindingWhenOnSyntax<T>;
+        inRequestScope(): BindingWhenOnSyntax<T>;
     }
 
     export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
