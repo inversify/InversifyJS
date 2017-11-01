@@ -22,9 +22,17 @@ class NamedWarrior {
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
     }
+
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
 }
 
 class InvalidDecoratorUsageWarrior {
+
     private _primaryWeapon: Weapon;
     private _secondaryWeapon: Weapon;
 
@@ -38,6 +46,13 @@ class InvalidDecoratorUsageWarrior {
     }
 
     public test(a: string) { /*...*/ }
+
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
 }
 
 describe("@named", () => {

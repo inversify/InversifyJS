@@ -4,7 +4,6 @@ import { Context } from "../../src/planning/context";
 import { Container } from "../../src/container/container";
 import { Target } from "../../src/planning/target";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
-import { injectable } from "../../src/annotation/injectable";
 import { interfaces } from "../../src/interfaces/interfaces";
 
 describe("Request", () => {
@@ -48,43 +47,6 @@ describe("Request", () => {
   });
 
   it("Should be able to add a child request", () => {
-
-      interface KatanaBlade {}
-
-      @injectable()
-      class KatanaBlade implements KatanaBlade {}
-
-      interface KatanaHandler {}
-
-      @injectable()
-      class KatanaHandler implements KatanaHandler {}
-
-      interface Katana {}
-
-      @injectable()
-      class Katana implements Katana {
-          public handler: KatanaHandler;
-          public blade: KatanaBlade;
-          public constructor(handler: KatanaHandler, blade: KatanaBlade) {
-              // DO NOTHING
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Ninja {}
-
-      @injectable()
-      class Ninja implements Ninja {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(katana: Katana, shuriken: Shuriken) {
-              // DO NOTHING
-          }
-      }
 
       let container = new Container();
       let context = new Context(container);

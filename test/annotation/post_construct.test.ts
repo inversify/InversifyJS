@@ -19,6 +19,9 @@ describe("@postConstruct", () => {
             public testMethod() {
                 this.useMessage = "Used Katana!";
             }
+            public debug() {
+                return this.useMessage;
+            }
         }
         let metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
         expect(metadata.value).to.be.equal("testMethod");

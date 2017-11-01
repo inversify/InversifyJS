@@ -22,6 +22,12 @@ class TaggedWarrior {
           this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
     }
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
 }
 
 class DoubleTaggedWarrior {
@@ -35,6 +41,12 @@ class DoubleTaggedWarrior {
 
           this._primaryWeapon = primary;
           this._secondaryWeapon = secondary;
+    }
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
     }
 }
 
@@ -52,6 +64,13 @@ class InvalidDecoratorUsageWarrior {
     }
 
     public test(a: string) { /*...*/ }
+
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
 }
 
 describe("@Tagged", () => {

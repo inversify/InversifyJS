@@ -22,6 +22,13 @@ describe("@injectable", () => {
                 this._secondaryWeapon = secondaryWeapon;
             }
 
+            public debug() {
+                return {
+                    primaryWeapon: this._primaryWeapon,
+                    secondaryWeapon: this._secondaryWeapon
+                };
+            }
+
         }
 
         let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
