@@ -58,7 +58,8 @@ class Container implements interfaces.Container {
             } else {
                 if (containerOptions.defaultScope !== undefined &&
                     containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Transient
+                    containerOptions.defaultScope !== BindingScopeEnum.Transient &&
+                    containerOptions.defaultScope !== BindingScopeEnum.Request
                 ) {
                     throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
                 }
