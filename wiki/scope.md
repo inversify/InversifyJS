@@ -1,6 +1,6 @@
 # Controlling the scope of the dependencies
 
-InversifyJS uses transient scope by default but you can also use singleton scope:
+InversifyJS uses transient scope by default but you can also use singleton and request scope:
 
 ```ts
 container.bind<Shuriken>("Shuriken").to(Shuriken).inTransientScope(); // Default
