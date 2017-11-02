@@ -124,17 +124,10 @@ describe("Container", () => {
   });
 
   it("Should throw when cannot unbind", () => {
-
-      interface Ninja {}
-
-      @injectable()
-      class Ninja implements Ninja {}
-
       let serviceIdentifier = "Ninja";
       let container = new Container();
       let throwFunction = () => { container.unbind("Ninja"); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-
   });
 
   it("Should unbind a binding when requested", () => {

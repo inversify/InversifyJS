@@ -1,5 +1,3 @@
-import { template } from "../utils/template";
-
 export const DUPLICATED_INJECTABLE_DECORATOR = "Cannot apply @injectable decorator multiple times.";
 export const DUPLICATED_METADATA = "Metadata key was used more than once in a parameter:";
 export const NULL_ARGUMENT = "NULL argument";
@@ -35,6 +33,4 @@ export const CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE = "Invalid Container
     "be a boolean";
 
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
-export const POST_CONSTRUCT_ERROR = template`@postConstruct error in class ${0}: ${1}`;
-
-
+export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;

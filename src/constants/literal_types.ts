@@ -1,6 +1,7 @@
 import { interfaces } from "../interfaces/interfaces";
 
 let BindingScopeEnum: interfaces.BindingScopeEnum = {
+    Request: "Request",
     Singleton: "Singleton",
     Transient: "Transient"
 };

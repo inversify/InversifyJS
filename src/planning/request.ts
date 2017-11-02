@@ -10,6 +10,7 @@ class Request implements interfaces.Request {
     public bindings: interfaces.Binding<any>[];
     public childRequests: interfaces.Request[];
     public target: interfaces.Target;
+    public requestScope: interfaces.RequestScope;
 
     public constructor(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
@@ -25,6 +26,14 @@ class Request implements interfaces.Request {
             this.target = target;
             this.childRequests = [];
             this.bindings = (Array.isArray(bindings) ? bindings : [bindings]);
+
+            // Set requestScope if Request is the root request
+            if (parentRequest === null) {
+                this.requestScope = new Map<any, any>();
+            } else {
+                this.requestScope = null;
+            }
+
     }
 
     public addChildRequest(
