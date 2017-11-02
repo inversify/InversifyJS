@@ -77,8 +77,8 @@ describe("inRequestScope", () => {
 
         // Two request should use one instances of Katana
         // for each instance of Samurai because scope is request scope
-        expect(samurai3.primaryWeapon.use()).not.to.eql(samurai4.primaryWeapon.use(), "A");
-        expect(samurai3.secondaryWeapon.use()).not.to.eql(samurai4.secondaryWeapon.use(), "B");
+        expect(samurai3.primaryWeapon.use()).not.to.eql(samurai4.primaryWeapon.use());
+        expect(samurai3.secondaryWeapon.use()).not.to.eql(samurai4.secondaryWeapon.use());
 
     });
 
