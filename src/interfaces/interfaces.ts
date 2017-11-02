@@ -127,8 +127,7 @@ namespace interfaces {
         value(): string;
     }
 
-    export type RequestResolverHandler = (
-        requestScope: interfaces.RequestScope,
+    export type ResolveRequestHandler = (
         request: interfaces.Request
     ) => any;
 

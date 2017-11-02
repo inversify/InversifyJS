@@ -4,7 +4,7 @@ import * as now from "performance-now";
 
 describe("inRequestScope", () => {
 
-    it("Should support request scope in basic bindings", (done) => {
+    it("Should support request scope in basic bindings", () => {
 
         const TYPE = {
             Warrior: Symbol("Warrior"),
@@ -48,16 +48,17 @@ describe("inRequestScope", () => {
         const container = new Container();
         container.bind<Weapon>(TYPE.Weapon).to(Katana);
         container.bind<Warrior>(TYPE.Warrior).to(Samurai);
+        const samurai = container.get<Warrior>(TYPE.Warrior);
+        const samurai2 = container.get<Warrior>(TYPE.Warrior);
 
         // One requests should use two instances because scope is transient
-        const samurai = container.get<Warrior>(TYPE.Warrior);
         expect(samurai.primaryWeapon.use()).not.to.eql(samurai.secondaryWeapon.use());
 
         // One requests should use two instances because scope is transient
-        const samurai2 = container.get<Warrior>(TYPE.Warrior);
         expect(samurai2.primaryWeapon.use()).not.to.eql(samurai2.secondaryWeapon.use());
 
-        // Two request should use two instances because scope is transient
+        // Two request should use two Katana instances
+        // for each instance of Samuari because scope is transient
         expect(samurai.primaryWeapon.use()).not.to.eql(samurai2.primaryWeapon.use());
         expect(samurai.secondaryWeapon.use()).not.to.eql(samurai2.secondaryWeapon.use());
 
@@ -65,22 +66,23 @@ describe("inRequestScope", () => {
         const container1 = new Container();
         container1.bind<Weapon>(TYPE.Weapon).to(Katana).inRequestScope(); // Important
         container1.bind<Warrior>(TYPE.Warrior).to(Samurai);
+        const samurai3 = container1.get<Warrior>(TYPE.Warrior);
+        const samurai4 = container1.get<Warrior>(TYPE.Warrior);
 
         // One requests should use one instance because scope is request scope
-        const samurai3 = container1.get<Warrior>(TYPE.Warrior);
         expect(samurai3.primaryWeapon.use()).to.eql(samurai3.secondaryWeapon.use());
 
         // One requests should use one instance because scope is request scope
-        const samurai4 = container1.get<Warrior>(TYPE.Warrior);
         expect(samurai4.primaryWeapon.use()).to.eql(samurai4.secondaryWeapon.use());
 
-        // Two request should use two instances because scope is request scope
-        expect(samurai3.primaryWeapon.use()).not.to.eql(samurai4.primaryWeapon.use());
-        expect(samurai4.primaryWeapon.use()).not.to.eql(samurai4.primaryWeapon.use());
+        // Two request should use one instances of Katana
+        // for each instance of Samurai because scope is request scope
+        expect(samurai3.primaryWeapon.use()).not.to.eql(samurai4.primaryWeapon.use(), "A");
+        expect(samurai3.secondaryWeapon.use()).not.to.eql(samurai4.secondaryWeapon.use(), "B");
 
     });
 
-    it("Should support request scope when using contraints", (done) => {
+    it("Should support request scope when using contraints", () => {
 
         const TYPE = {
             Warrior: Symbol("Warrior"),
@@ -147,15 +149,14 @@ describe("inRequestScope", () => {
 
         container.bind<Warrior>(TYPE.Warrior).to(Samurai);
 
-        const samurai = container.get<Warrior>(TYPE.Warrior);
+        const samurai1 = container.get<Warrior>(TYPE.Warrior);
+        const samurai2 = container.get<Warrior>(TYPE.Warrior);
 
         // Katana and Shuriken are two instances
-        expect(samurai.primaryWeapon.use()).not.to.eql(samurai.secondaryWeapon.use());
+        expect(samurai1.primaryWeapon.use()).not.to.eql(samurai1.secondaryWeapon.use());
 
         // Shuriken should be one shared instance because scope is request scope
-        expect(samurai.secondaryWeapon.use()).to.eql(samurai.tertiaryWeapon.use());
-
-        const samurai2 = container.get<Warrior>(TYPE.Warrior);
+        expect(samurai1.secondaryWeapon.use()).to.eql(samurai1.tertiaryWeapon.use());
 
         // Katana and Shuriken are two instances
         expect(samurai2.primaryWeapon.use()).not.to.eql(samurai2.secondaryWeapon.use());
@@ -163,9 +164,10 @@ describe("inRequestScope", () => {
         // Shuriken should be one shared instance because scope is request scope
         expect(samurai2.secondaryWeapon.use()).to.eql(samurai2.tertiaryWeapon.use());
 
-        // Shuriken should be not one shared instance between requests
-        expect(samurai.tertiaryWeapon.use()).to.eql(samurai2.tertiaryWeapon.use());
-        expect(samurai.tertiaryWeapon.use()).to.eql(samurai2.tertiaryWeapon.use());
+        // Two request should use one instances of Katana
+        // for each instance of Samurai because scope is request scope
+        expect(samurai1.secondaryWeapon.use()).not.to.eql(samurai2.secondaryWeapon.use());
+        expect(samurai1.tertiaryWeapon.use()).not.to.eql(samurai2.tertiaryWeapon.use());
 
 
     });
