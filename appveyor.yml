@@ -9,7 +9,6 @@ environment:
   NODE_ENV: test
 
   matrix:
-    - nodejs_version: "stable"
     - nodejs_version: "7.10.1"
 
 build: off

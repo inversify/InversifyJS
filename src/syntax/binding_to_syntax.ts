@@ -2,7 +2,30 @@ import { interfaces } from "../interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
 import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 import { BindingTypeEnum } from "../constants/literal_types";
+import { isStackOverflowExeption } from "../utils/exceptions";
 import * as ERROR_MSGS from "../constants/error_msgs";
+
+type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
+
+function factoryWrapper<T extends Function>(
+    factoryType: FactoryType,
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    factory: T
+) {
+    return (...args: any[]) => {
+        try {
+            return factory(...args);
+        } catch (error) {
+            if (isStackOverflowExeption(error)) {
+                throw new Error(
+                    ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier)
+                );
+            } else {
+                throw new Error(error.message);
+            }
+        }
+    };
+}
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
@@ -37,7 +60,11 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     public toDynamicValue(func: (context: interfaces.Context) => T): interfaces.BindingInWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.DynamicValue;
         this._binding.cache = null;
-        this._binding.dynamicValue = func;
+        this._binding.dynamicValue = factoryWrapper(
+            "toDynamicValue",
+            this._binding.serviceIdentifier.toString(),
+            func
+        );
         this._binding.implementationType = null;
         return new BindingInWhenOnSyntax<T>(this._binding);
     }
@@ -50,7 +77,11 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Factory;
-        this._binding.factory = factory;
+        this._binding.factory = factoryWrapper(
+            "toFactory",
+            this._binding.serviceIdentifier.toString(),
+            factory
+        );
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
@@ -65,16 +96,23 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     public toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Factory;
         this._binding.factory = (context) => {
-            return () => {
-                return context.container.get<T2>(serviceIdentifier);
-            };
+            const autofactory = () => context.container.get<T2>(serviceIdentifier);
+            return factoryWrapper(
+                "toAutoFactory",
+                this._binding.serviceIdentifier.toString(),
+                autofactory
+            );
         };
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
     public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Provider;
-        this._binding.provider = provider;
+        this._binding.provider = factoryWrapper(
+            "toProvider",
+            this._binding.serviceIdentifier.toString(),
+            provider
+        );
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 

@@ -11,7 +11,10 @@ function _injectProperties(
 ): any {
 
     let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-        return (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ClassProperty);
+        return (
+            childRequest.target !== null &&
+            childRequest.target.type === TargetTypeEnum.ClassProperty
+        );
     });
 
     let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {

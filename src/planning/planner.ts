@@ -8,6 +8,7 @@ import { getDependencies } from "./reflection_utils";
 import { Metadata } from "./metadata";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
+import { isStackOverflowExeption } from "../utils/exceptions";
 import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
 import {
     circularDependencyToException,
@@ -191,7 +192,10 @@ function _createSubRequests(
         });
 
     } catch (error) {
-        if (error instanceof RangeError && parentRequest !== null) {
+        if (
+            isStackOverflowExeption(error) &&
+            parentRequest !== null
+        ) {
             circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
         } else {
             throw new Error(error.message);
