@@ -2,6 +2,7 @@ import { interfaces } from "../interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
 import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 import { BindingTypeEnum } from "../constants/literal_types";
+import { isStackOverflowExeption } from "../utils/exceptions";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
 type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
@@ -15,7 +16,7 @@ function factoryWrapper<T extends Function>(
         try {
             return factory(...args);
         } catch (error) {
-            if (error.message === "Maximum call stack size exceeded") {
+            if (isStackOverflowExeption(error)) {
                 throw new Error(
                     ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier)
                 );
