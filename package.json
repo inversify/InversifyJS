@@ -1,6 +1,6 @@
 {
   "name": "inversify",
-  "version": "4.5.0",
+  "version": "4.5.1",
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
@@ -71,7 +71,7 @@
     "publish-please": "2.3.1",
     "reflect-metadata": "0.1.10",
     "run-sequence": "2.2.0",
-    "sinon": "4.0.2",
+    "sinon": "4.1.0",
     "tslint": "5.8.0",
     "typescript": "2.6.1",
     "vinyl-buffer": "1.0.0",
