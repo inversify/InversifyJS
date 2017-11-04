@@ -34,3 +34,7 @@ export const CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE = "Invalid Container
 
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
 export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
+
+export const CIRCULAR_DEPENDENCY_IN_FACTORY = (...values: any[]) =>  `It looks like there is a circular dependency` +
+    `in one of the '${values[0]}' bindings. Please investigate bindings with` +
+    `service identifier '${values[1]}'`;
