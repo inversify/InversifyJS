@@ -1143,7 +1143,7 @@ describe("Resolve", () => {
     });
 
     it("Should run the @PostConstruct method once in the singleton scope", () => {
-        let timesCalled = 1;
+        let timesCalled = 0;
         @injectable()
         class Katana {
             @postConstruct()
@@ -1175,7 +1175,8 @@ describe("Resolve", () => {
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Samurai>(samuraiId).to(Samurai);
         container.bind<Katana>(katanaId).to(Katana).inSingletonScope();
-
+        container.get(ninjaId);
+        container.get(samuraiId);
         expect(timesCalled).to.be.equal(1);
 
   });
