@@ -29,7 +29,7 @@ JavaScript now supports object oriented (OO) programming with class based inheri
 
 We need a good OO design ([SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)), [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance), etc.) to protect ourselves from these threats. The problem is that OO design is difficult and that is exactly why we created InversifyJS.
 
-InversifyJS is a tool that helps JavaScript developers to write code with a good OO design.
+InversifyJS is a tool that helps JavaScript developers write code with good OO design.
 
 ## Philosophy
 InversifyJS has been developed with 4 main goals:
@@ -86,7 +86,7 @@ InversifyJS requires a modern JavaScript engine with support for:
 - [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (Only required if using [provider injection](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md))
 - [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) (Only required if using [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md))
 
-If your environment don't support one of these you will need to import a shim or polyfill.
+If your environment doesn't support one of these you will need to import a shim or polyfill.
 
 > :warning: **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
@@ -94,7 +94,7 @@ Check out the [Environment support and polyfills](https://github.com/inversify/I
 page in the wiki and the [Basic example](https://github.com/inversify/inversify-basic-example) to learn more.
 
 ## The Basics
-Let’s take a look to the basic usage and APIs of InversifyJS with TypeScript:
+Let’s take a look at the basic usage and APIs of InversifyJS with TypeScript:
 
 ### Step 1: Declare your interfaces and types
 
