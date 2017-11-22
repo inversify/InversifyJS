@@ -198,7 +198,7 @@ function _createSubRequests(
         ) {
             circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
         } else {
-            throw new Error(error.message);
+            throw error;
         }
     }
 }
