@@ -21,7 +21,7 @@ function factoryWrapper<T extends Function>(
                     ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier)
                 );
             } else {
-                throw new Error(error.message);
+                throw error;
             }
         }
     };
