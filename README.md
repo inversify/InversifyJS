@@ -204,7 +204,7 @@ In the rest of your application your classes should be free of references to oth
 // file inversify.config.ts
 
 import { Container } from "inversify";
-import TYPES from "./types";
+import { TYPES } from "./types";
 import { Warrior, Weapon, ThrowableWeapon } from "./interfaces";
 import { Ninja, Katana, Shuriken } from "./entities";
 
@@ -223,6 +223,8 @@ to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/Serv
 
 ```ts
 import { myContainer } from "./inversify.config";
+import { TYPES } from "./types";
+import { Warrior } from "./interfaces";
 
 const ninja = myContainer.get<Warrior>(TYPES.Warrior);
 
