@@ -43,7 +43,7 @@ The following example do something similar but it favors 'object composition' ov
 
 ```ts
 @injectable()
-class DerivedModel extends BaseModel {
+class DerivedModel {
     public baseModel: BaseModel;
     public constructor(@inject("BaseModel") baseModel: BaseModel) {
         this.baseModel = baseModel;
