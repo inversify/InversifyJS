@@ -1,3 +1,5 @@
+import * as keys from "./constants/metadata_keys";
+export const METADATA_KEY = keys;
 export { Container } from "./container/container";
 export { ContainerModule } from "./container/container_module";
 export { injectable } from "./annotation/injectable";
