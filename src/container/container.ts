@@ -55,21 +55,30 @@ class Container implements interfaces.Container {
 
             if (typeof containerOptions !== "object") {
                 throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
-            } else if (containerOptions.defaultScope === undefined) {
-                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
-            } else if (
-                containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
-                containerOptions.defaultScope !== BindingScopeEnum.Transient
-            ) {
-                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+            } else {
+                if (containerOptions.defaultScope !== undefined &&
+                    containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
+                    containerOptions.defaultScope !== BindingScopeEnum.Transient &&
+                    containerOptions.defaultScope !== BindingScopeEnum.Request
+                ) {
+                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+                }
+
+                if (containerOptions.autoBindInjectable !== undefined &&
+                    typeof containerOptions.autoBindInjectable !== "boolean"
+                ) {
+                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
+                }
             }
 
             this.options = {
+                autoBindInjectable: containerOptions.autoBindInjectable,
                 defaultScope: containerOptions.defaultScope
             };
 
         } else {
             this.options = {
+                autoBindInjectable: false,
                 defaultScope: BindingScopeEnum.Transient
             };
         }
@@ -151,9 +160,8 @@ class Container implements interfaces.Container {
 
     // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
-        let defaultScope = BindingScopeEnum.Transient;
-        defaultScope = (this.options.defaultScope === defaultScope) ? defaultScope : BindingScopeEnum.Singleton;
-        let binding = new Binding<T>(serviceIdentifier, defaultScope);
+        let scope = this.options.defaultScope || BindingScopeEnum.Transient;
+        let binding = new Binding<T>(serviceIdentifier, scope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }

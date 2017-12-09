@@ -4,7 +4,8 @@ import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
 import * as ERROR_MSGS from "../constants/error_msgs";
 
-function _resolveRequest(request: interfaces.Request): any {
+const _resolveRequest = (requestScope: interfaces.RequestScope) =>
+    (request: interfaces.Request): any => {
 
     let bindings = request.bindings;
     let childRequests = request.childRequests;
@@ -20,7 +21,8 @@ function _resolveRequest(request: interfaces.Request): any {
 
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {
-            return _resolveRequest(childRequest);
+            const _f = _resolveRequest(requestScope);
+            return _f(childRequest);
         });
 
     } else {
@@ -33,9 +35,18 @@ function _resolveRequest(request: interfaces.Request): any {
 
         let binding = bindings[0];
         let isSingleton = binding.scope === BindingScopeEnum.Singleton;
+        let isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
         if (isSingleton && binding.activated === true) {
             return binding.cache;
+        }
+
+        if (
+            isRequestSingleton &&
+            requestScope !== null &&
+            requestScope.has(binding.guid)
+        ) {
+            return requestScope.get(binding.guid);
         }
 
         if (binding.type === BindingTypeEnum.ConstantValue) {
@@ -51,7 +62,11 @@ function _resolveRequest(request: interfaces.Request): any {
         } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
             result = binding.provider(request.parentContext);
         } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-            result = resolveInstance(binding.implementationType, childRequests, _resolveRequest);
+            result = resolveInstance(
+                binding.implementationType,
+                childRequests,
+                _resolveRequest(requestScope)
+            );
         } else {
             // The user probably created a binding but didn't finish it
             // e.g. container.bind<T>("Something"); missing BindingToSyntax
@@ -70,13 +85,22 @@ function _resolveRequest(request: interfaces.Request): any {
             binding.activated = true;
         }
 
+        if (
+            isRequestSingleton &&
+            requestScope !== null &&
+            !requestScope.has(binding.guid)
+        ) {
+            requestScope.set(binding.guid, result);
+        }
+
         return result;
     }
 
-}
+};
 
 function resolve<T>(context: interfaces.Context): T {
-    return _resolveRequest(context.plan.rootRequest);
+    const _f = _resolveRequest(context.plan.rootRequest.requestScope);
+    return _f(context.plan.rootRequest);
 }
 
 export { resolve };

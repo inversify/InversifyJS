@@ -761,6 +761,9 @@ describe("InversifyJS", () => {
                 this._injectorPump = injectorPump;
                 this.displacement = null;
             }
+            public debug() {
+                return this._injectorPump;
+            }
         }
 
         @injectable()
@@ -772,6 +775,9 @@ describe("InversifyJS", () => {
             ) {
                 this._sparkPlugs = sparkPlugs;
                 this.displacement = null;
+            }
+            public debug() {
+                return this._sparkPlugs;
             }
         }
 

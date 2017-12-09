@@ -22,6 +22,11 @@ class DecoratedWarrior {
         this._primaryWeapon = weapons[0];
         this._secondaryWeapon = weapons[1];
     }
+
+    public mock() {
+      console.log(this._primaryWeapon, this._secondaryWeapon);
+    }
+
 }
 
 class InvalidDecoratorUsageWarrior {
@@ -37,6 +42,14 @@ class InvalidDecoratorUsageWarrior {
     }
 
     public test(a: string) { /*...*/ }
+
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
+
 }
 
 describe("@multiInject", () => {

@@ -7,11 +7,14 @@ import { POST_CONSTRUCT_ERROR } from "../constants/error_msgs";
 function _injectProperties(
     instance: any,
     childRequests: interfaces.Request[],
-    resolveRequest: (request: interfaces.Request) => any
+    resolveRequest: interfaces.ResolveRequestHandler
 ): any {
 
     let propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) => {
-        return (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ClassProperty);
+        return (
+            childRequest.target !== null &&
+            childRequest.target.type === TargetTypeEnum.ClassProperty
+        );
     });
 
     let propertyInjections = propertyInjectionsRequests.map((childRequest: interfaces.Request) => {
@@ -47,7 +50,8 @@ function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
 function resolveInstance(
     constr: interfaces.Newable<any>,
     childRequests: interfaces.Request[],
-    resolveRequest: (request: interfaces.Request) => any): any {
+    resolveRequest: interfaces.ResolveRequestHandler
+): any {
 
     let result: any = null;
 

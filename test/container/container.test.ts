@@ -124,17 +124,10 @@ describe("Container", () => {
   });
 
   it("Should throw when cannot unbind", () => {
-
-      interface Ninja {}
-
-      @injectable()
-      class Ninja implements Ninja {}
-
       let serviceIdentifier = "Ninja";
       let container = new Container();
       let throwFunction = () => { container.unbind("Ninja"); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-
   });
 
   it("Should unbind a binding when requested", () => {
@@ -505,15 +498,81 @@ describe("Container", () => {
 
     });
 
+    it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
+
+        @injectable()
+        class Katana {}
+
+        @injectable()
+        class Shuriken {}
+
+        @injectable()
+        class Ninja {
+            constructor(public weapon: Katana) {}
+        }
+
+        class Samurai {}
+
+        const container1 = new Container({autoBindInjectable: true});
+        const katana1 = container1.get(Katana);
+        const ninja1 = container1.get(Ninja);
+        expect(katana1).to.be.an.instanceof(Katana);
+        expect(katana1).to.not.equal(container1.get(Katana));
+        expect(ninja1).to.be.an.instanceof(Ninja);
+        expect(ninja1).to.not.equal(container1.get(Ninja));
+        expect(ninja1.weapon).to.be.an.instanceof(Katana);
+        expect(ninja1.weapon).to.not.equal(container1.get(Ninja).weapon);
+        expect(ninja1.weapon).to.not.equal(katana1);
+
+        const container2 = new Container({defaultScope: BindingScopeEnum.Singleton, autoBindInjectable: true});
+        const katana2 = container2.get(Katana);
+        const ninja2 = container2.get(Ninja);
+        expect(katana2).to.be.an.instanceof(Katana);
+        expect(katana2).to.equal(container2.get(Katana));
+        expect(ninja2).to.be.an.instanceof(Ninja);
+        expect(ninja2).to.equal(container2.get(Ninja));
+        expect(ninja2.weapon).to.be.an.instanceof(Katana);
+        expect(ninja2.weapon).to.equal(container2.get(Ninja).weapon);
+        expect(ninja2.weapon).to.equal(katana2);
+
+        const container3 = new Container({autoBindInjectable: true});
+        container3.bind(Katana).toSelf().inSingletonScope();
+        const katana3 = container3.get(Katana);
+        const ninja3 = container3.get(Ninja);
+        expect(katana3).to.be.an.instanceof(Katana);
+        expect(katana3).to.equal(container3.get(Katana));
+        expect(ninja3).to.be.an.instanceof(Ninja);
+        expect(ninja3).to.not.equal(container3.get(Ninja));
+        expect(ninja3.weapon).to.be.an.instanceof(Katana);
+        expect(ninja3.weapon).to.equal(container3.get(Ninja).weapon);
+        expect(ninja3.weapon).to.equal(katana3);
+
+        const container4 = new Container({autoBindInjectable: true});
+        container4.bind(Katana).to(Shuriken);
+        const katana4 = container4.get(Katana);
+        const ninja4 = container4.get(Ninja);
+        expect(katana4).to.be.an.instanceof(Shuriken);
+        expect(katana4).to.not.equal(container4.get(Katana));
+        expect(ninja4).to.be.an.instanceof(Ninja);
+        expect(ninja4).to.not.equal(container4.get(Ninja));
+        expect(ninja4.weapon).to.be.an.instanceof(Shuriken);
+        expect(ninja4.weapon).to.not.equal(container4.get(Ninja).weapon);
+        expect(ninja4.weapon).to.not.equal(katana4);
+
+        const container5 = new Container({autoBindInjectable: true});
+        expect(() => container5.get(Samurai)).to.throw(ERROR_MSGS.NOT_REGISTERED);
+
+    });
+
     it("Should be throw an exception if incorrect options is provided", () => {
 
         let invalidOptions1: any = () => 0;
         let wrong1 = () => new Container(invalidOptions1);
         expect(wrong1).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
 
-        let invalidOptions2: any = { wrongKey: "singleton" };
+        let invalidOptions2: any = { autoBindInjectable: "wrongValue" };
         let wrong2 = () => new Container(invalidOptions2);
-        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+        expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
 
         let invalidOptions3: any = { defaultScope: "wrongValue" };
         let wrong3 = () => new Container(invalidOptions3);

@@ -1,8 +1,8 @@
 language: node_js
 node_js:
 - stable
-- 7.7.1
-- 6.9.5
+- 8.8.1
+- 7.10.1
 before_install:
 - npm install -g codeclimate-test-reporter
 after_success:

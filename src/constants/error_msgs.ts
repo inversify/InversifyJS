@@ -1,5 +1,3 @@
-import { template } from "../utils/template";
-
 export const DUPLICATED_INJECTABLE_DECORATOR = "Cannot apply @injectable decorator multiple times.";
 export const DUPLICATED_METADATA = "Metadata key was used more than once in a parameter:";
 export const NULL_ARGUMENT = "NULL argument";
@@ -31,7 +29,14 @@ export const CONTAINER_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructo
 export const CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Container option. Default scope must " +
     "be a string ('singleton' or 'transient').";
 
+export const CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE = "Invalid Container option. Auto bind injectable must " +
+    "be a boolean";
+
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
-export const POST_CONSTRUCT_ERROR = template`@postConstruct error in class ${0}: ${1}`;
+export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
 
+export const CIRCULAR_DEPENDENCY_IN_FACTORY = (...values: any[]) =>  `It looks like there is a circular dependency ` +
+    `in one of the '${values[0]}' bindings. Please investigate bindings with` +
+    `service identifier '${values[1]}'.`;
 
+export const STACK_OVERFLOW = "Maximum call stack size exceeded";

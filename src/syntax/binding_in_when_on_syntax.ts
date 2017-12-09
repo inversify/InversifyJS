@@ -17,6 +17,10 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
         this._bindingInSyntax = new BindingInSyntax<T>(binding);
     }
 
+    public inRequestScope(): interfaces.BindingWhenOnSyntax<T> {
+        return this._bindingInSyntax.inRequestScope();
+    }
+
     public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
         return this._bindingInSyntax.inSingletonScope();
     }

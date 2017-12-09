@@ -362,6 +362,15 @@ describe("Bugs", () => {
                 this._prop4 = prop4;
                 this._prop5 = prop5;
             }
+            public debug() {
+                return {
+                    prop1: this._prop1,
+                    prop2: this._prop2,
+                    prop3: this._prop3,
+                    prop4: this._prop4,
+                    prop5: this._prop5
+                };
+            }
         }
 
         let container = new Container();

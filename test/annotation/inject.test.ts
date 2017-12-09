@@ -26,6 +26,14 @@ class DecoratedWarrior {
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
     }
+
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
+
 }
 
 class InvalidDecoratorUsageWarrior {
@@ -43,11 +51,20 @@ class InvalidDecoratorUsageWarrior {
     }
 
     public test(a: string) { /*...*/ }
+
+    public debug() {
+      return {
+        primaryWeapon: this._primaryWeapon,
+        secondaryWeapon: this._secondaryWeapon
+      };
+    }
+
 }
 
 describe("@inject", () => {
 
   it("Should generate metadata for named parameters", () => {
+
     let metadataKey = METADATA_KEY.TAGGED;
     let paramsMetadata = Reflect.getMetadata(metadataKey, DecoratedWarrior);
     expect(paramsMetadata).to.be.an("object");
