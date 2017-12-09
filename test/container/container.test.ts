@@ -263,7 +263,7 @@ describe("Container", () => {
     });
 
     it("Should be able to get a symbol identifier as a string", () => {
-        let KatanaSymbol = Symbol("Katana");
+        let KatanaSymbol = Symbol.for("Katana");
         let KatanaStr = getServiceIdentifierAsString(KatanaSymbol);
         expect(KatanaStr).to.eql("Symbol(Katana)");
     });
@@ -320,7 +320,7 @@ describe("Container", () => {
 
         interface Warrior {}
         let warriorId = "Warrior";
-        let warriorSymbol = Symbol("Warrior");
+        let warriorSymbol = Symbol.for("Warrior");
 
         @injectable()
         class Ninja implements Warrior {}
@@ -336,7 +336,7 @@ describe("Container", () => {
 
         interface Katana {}
         let katanaId = "Katana";
-        let katanaSymbol = Symbol("Katana");
+        let katanaSymbol = Symbol.for("Katana");
 
         @injectable()
         class Katana implements Katana {}

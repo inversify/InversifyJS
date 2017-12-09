@@ -8,9 +8,9 @@ InversifyJS offers you real decoupling. Consider the following class:
 
 ```ts
 let TYPES = {
-  Ninja: Symbol("Ninja"),
-  Katana: Symbol("Katana"),
-  Shuriken: Symbol("Shuriken")
+  Ninja: Symbol.for("Ninja"),
+  Katana: Symbol.for("Katana"),
+  Shuriken: Symbol.for("Shuriken")
 };
 
 export { TYPES };

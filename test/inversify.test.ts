@@ -197,9 +197,9 @@ describe("InversifyJS", () => {
         }
 
         let TYPES = {
-            Katana: Symbol("Katana"),
-            Ninja: Symbol("Ninja"),
-            Shuriken: Symbol("Shuriken")
+            Katana: Symbol.for("Katana"),
+            Ninja: Symbol.for("Ninja"),
+            Shuriken: Symbol.for("Shuriken")
         };
 
         @injectable()
@@ -1385,8 +1385,8 @@ describe("InversifyJS", () => {
         it("Should support the injection of multiple values when using Symbols as keys", () => {
 
             let TYPES = {
-                Warrior: Symbol("Warrior"),
-                Weapon: Symbol("Weapon")
+                Warrior: Symbol.for("Warrior"),
+                Weapon: Symbol.for("Weapon")
             };
 
             interface Weapon {
@@ -1440,10 +1440,10 @@ describe("InversifyJS", () => {
         it("Should support the injection of multiple values with nested inject", () => {
 
             let TYPES = {
-                Katana: Symbol("Katana"),
-                Ninja: Symbol("Ninja"),
-                School: Symbol("School"),
-                Shuriken: Symbol("Shuriken"),
+                Katana: Symbol.for("Katana"),
+                Ninja: Symbol.for("Ninja"),
+                School: Symbol.for("School"),
+                Shuriken: Symbol.for("Shuriken"),
             };
 
             interface Ninja {
@@ -1529,11 +1529,11 @@ describe("InversifyJS", () => {
         it("Should support the injection of multiple values with nested multiInject", () => {
 
             let TYPES = {
-                Katana: Symbol("Katana"),
-                Ninja: Symbol("Ninja"),
-                Organisation: Symbol("Organisation"),
-                School: Symbol("School"),
-                Shuriken: Symbol("Shuriken"),
+                Katana: Symbol.for("Katana"),
+                Ninja: Symbol.for("Ninja"),
+                Organisation: Symbol.for("Organisation"),
+                School: Symbol.for("School"),
+                Shuriken: Symbol.for("Shuriken"),
             };
 
             interface Ninja {
@@ -1721,7 +1721,7 @@ describe("InversifyJS", () => {
 
     it("Should support named bindings", () => {
 
-        const name: symbol = Symbol("Weak");
+        const name: symbol = Symbol.for("Weak");
 
         interface Weapon { }
 
@@ -1876,10 +1876,10 @@ describe("InversifyJS", () => {
     it("Should be able to inject into a super constructor", () => {
 
         const SYMBOLS = {
-            Samurai: Symbol("Samurai"),
-            SamuraiMaster: Symbol("SamuraiMaster"),
-            SamuraiMaster2: Symbol("SamuraiMaster2"),
-            Weapon: Symbol("Weapon")
+            Samurai: Symbol.for("Samurai"),
+            SamuraiMaster: Symbol.for("SamuraiMaster"),
+            SamuraiMaster2: Symbol.for("SamuraiMaster2"),
+            Weapon: Symbol.for("Weapon")
         };
 
         interface Weapon {
@@ -2660,8 +2660,8 @@ describe("InversifyJS", () => {
     it("Should be able to inject a regular derived class", () => {
 
         const SYMBOLS = {
-            RANK: Symbol("RANK"),
-            SamuraiMaster: Symbol("SamuraiMaster")
+            RANK: Symbol.for("RANK"),
+            SamuraiMaster: Symbol.for("SamuraiMaster")
         };
 
         interface Warrior {
@@ -2697,7 +2697,7 @@ describe("InversifyJS", () => {
     it("Should be able to identify missing @injectable in a base class", () => {
 
         const SYMBOLS = {
-            SamuraiMaster: Symbol("SamuraiMaster")
+            SamuraiMaster: Symbol.for("SamuraiMaster")
         };
 
         interface Warrior {

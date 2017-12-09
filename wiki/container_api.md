@@ -174,14 +174,14 @@ You can use the `isBound` method to check if there are registered bindings for a
 ```ts
 interface Warrior {}
 let warriorId = "Warrior";
-let warriorSymbol = Symbol("Warrior");
+let warriorSymbol = Symbol.for("Warrior");
 
 @injectable()
 class Ninja implements Warrior {}
 
 interface Katana {}
 let katanaId = "Katana";
-let katanaSymbol = Symbol("Katana");
+let katanaSymbol = Symbol.for("Katana");
 
 @injectable()
 class Katana implements Katana {}
