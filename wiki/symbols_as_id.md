@@ -7,9 +7,9 @@ In very large applications using strings as the identifiers of the types to be i
 import { Container, injectable, inject } from "inversify";
 
 let Symbols = {
-	Ninja : Symbol("Ninja"),
-	Katana : Symbol("Katana"),
-	Shuriken : Symbol("Shuriken")
+	Ninja : Symbol.for("Ninja"),
+	Katana : Symbol.for("Katana"),
+	Shuriken : Symbol.for("Shuriken")
 };
 
 @injectable()

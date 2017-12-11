@@ -47,7 +47,7 @@ describe("Lookup", () => {
 
   it("Should be able to link multiple values a symbol key", () => {
     let lookup = new Lookup<any>();
-    let key = Symbol("TEST_KEY");
+    let key = Symbol.for("TEST_KEY");
     lookup.add(key, new ClonableValue<number>(1));
     lookup.add(key, new ClonableValue<number>(2));
     let result = lookup.get(key);
@@ -63,7 +63,7 @@ describe("Lookup", () => {
   it("Should be clonable", () => {
 
     let lookup = new Lookup<interfaces.Clonable<any>>();
-    let key1 = Symbol("TEST_KEY");
+    let key1 = Symbol.for("TEST_KEY");
 
     class Warrior {
       public kind: string;

@@ -125,9 +125,9 @@ InversifyJS need to use the type as identifiers at runtime. We use symbols as id
 // file types.ts
 
 const TYPES = {
-    Warrior: Symbol("Warrior"),
-    Weapon: Symbol("Weapon"),
-    ThrowableWeapon: Symbol("ThrowableWeapon")
+    Warrior: Symbol.for("Warrior"),
+    Weapon: Symbol.for("Weapon"),
+    ThrowableWeapon: Symbol.for("ThrowableWeapon")
 };
 
 export { TYPES };
@@ -139,7 +139,7 @@ export { TYPES };
 ### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
 
-When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol("Weapon")` and `Symbol("ThrowableWeapon")` as runtime identifiers.
+When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol.for("Weapon")` and `Symbol.for("ThrowableWeapon")` as runtime identifiers.
 
 ```ts
 // file entities.ts

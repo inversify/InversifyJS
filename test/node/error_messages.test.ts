@@ -31,7 +31,7 @@ describe("Error message when resolving fails", () => {
         let tryGetNamedWeapon = (name: string|number|symbol) => { container.getNamed("Weapon", name); };
 
         expect(() => tryGetNamedWeapon("superior")).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
-        expect(() => tryGetNamedWeapon(Symbol("Superior"))).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
+        expect(() => tryGetNamedWeapon(Symbol.for("Superior"))).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
         expect(() => tryGetNamedWeapon(0)).to.throw(/.*\bWeapon\b.*\b0\b/g);
 
     });
@@ -43,7 +43,7 @@ describe("Error message when resolving fails", () => {
         let tryGetTaggedWeapon = (tag: string|number|symbol) => { container.getTagged("Weapon", tag, true); };
 
         expect(() => tryGetTaggedWeapon("canShoot")).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
-        expect(() => tryGetTaggedWeapon(Symbol("Can shoot"))).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
+        expect(() => tryGetTaggedWeapon(Symbol.for("Can shoot"))).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
         expect(() => tryGetTaggedWeapon(0)).to.throw(/.*\bWeapon\b.*\b0\b.*\btrue\b/g);
 
     });

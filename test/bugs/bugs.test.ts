@@ -167,7 +167,7 @@ describe("Bugs", () => {
         interface Weapon {}
 
         let TYPES = {
-            Weapon: Symbol("Weapon")
+            Weapon: Symbol.for("Weapon")
         };
 
         let container = new Container();
@@ -291,12 +291,12 @@ describe("Bugs", () => {
     it("Should be able to identify is a target is tagged", () => {
 
         let TYPES = {
-            Dependency1: Symbol("Dependency1"),
-            Dependency2: Symbol("Dependency2"),
-            Dependency3: Symbol("Dependency3"),
-            Dependency4: Symbol("Dependency4"),
-            Dependency5: Symbol("Dependency5"),
-            Test: Symbol("Test")
+            Dependency1: Symbol.for("Dependency1"),
+            Dependency2: Symbol.for("Dependency2"),
+            Dependency3: Symbol.for("Dependency3"),
+            Dependency4: Symbol.for("Dependency4"),
+            Dependency5: Symbol.for("Dependency5"),
+            Test: Symbol.for("Test")
         };
 
         let TAGS = {
@@ -543,8 +543,8 @@ describe("Bugs", () => {
 
     it("Should generate correct metadata when the spread operator is used", () => {
 
-        const BAR = Symbol("BAR");
-        const FOO = Symbol("FOO");
+        const BAR = Symbol.for("BAR");
+        const FOO = Symbol.for("FOO");
 
         interface Bar {
             name: string;
