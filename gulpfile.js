@@ -49,7 +49,10 @@ gulp.task("lint", function() {
         "src/**/**.ts",
         "test/**/**.test.ts"
     ])
-    .pipe(gulpTslint({ program }))
+    .pipe(gulpTslint({
+        formatter: "stylish",
+        program
+    }))
     .pipe(gulpTslint.report());
 
 });

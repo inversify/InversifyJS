@@ -1,13 +1,13 @@
+import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
-import * as METADATA_KEY from "../constants/metadata_keys";
 
-let traverseAncerstors = (
+const traverseAncerstors = (
     request: interfaces.Request,
     constraint: interfaces.ConstraintFunction
 ): boolean => {
 
-    let parent = request.parentRequest;
+    const parent = request.parentRequest;
     if (parent !== null) {
         return constraint(parent) ? true : traverseAncerstors(parent, constraint);
     } else {
@@ -17,20 +17,19 @@ let traverseAncerstors = (
 
 // This helpers use currying to help you to generate constraints
 
-let taggedConstraint = (key: string|number|symbol) => (value: any) => {
+const taggedConstraint = (key: string | number | symbol) => (value: any) => {
 
-    let constraint: interfaces.ConstraintFunction =  (request: interfaces.Request | null) =>  {
-        return request !== null && request.target !== null && request.target.matchesTag(key)(value);
-    };
+    const constraint: interfaces.ConstraintFunction =  (request: interfaces.Request | null) =>
+        request !== null && request.target !== null && request.target.matchesTag(key)(value);
 
     constraint.metaData = new Metadata(key, value);
 
     return constraint;
 };
 
-let namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
+const namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
-let typeConstraint = (type: (Function | string)) => (request: interfaces.Request | null) => {
+const typeConstraint = (type: (Function | string)) => (request: interfaces.Request | null) => {
 
     // Using index 0 because constraints are applied
     // to one binding at a time (see Planner class)
@@ -39,10 +38,10 @@ let typeConstraint = (type: (Function | string)) => (request: interfaces.Request
     if (request !== null) {
         binding = request.bindings[0];
         if (typeof type === "string") {
-            let serviceIdentifier = binding.serviceIdentifier;
+            const serviceIdentifier = binding.serviceIdentifier;
             return serviceIdentifier === type;
         } else {
-            let constructor = request.bindings[0].implementationType;
+            const constructor = request.bindings[0].implementationType;
             return type === constructor;
         }
     }

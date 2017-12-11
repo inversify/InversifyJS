@@ -16,7 +16,7 @@ class Request implements interfaces.Request {
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         parentContext: interfaces.Context,
         parentRequest: interfaces.Request | null,
-        bindings: (interfaces.Binding<any>|interfaces.Binding<any>[]),
+        bindings: (interfaces.Binding<any> | interfaces.Binding<any>[]),
         target: interfaces.Target
     ) {
             this.guid = guid();
@@ -28,21 +28,18 @@ class Request implements interfaces.Request {
             this.bindings = (Array.isArray(bindings) ? bindings : [bindings]);
 
             // Set requestScope if Request is the root request
-            if (parentRequest === null) {
-                this.requestScope = new Map<any, any>();
-            } else {
-                this.requestScope = null;
-            }
-
+            this.requestScope = parentRequest === null
+                ? new Map<any, any>()
+                : null;
     }
 
     public addChildRequest(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        bindings: (interfaces.Binding<any>|Array<interfaces.Binding<any>>),
+        bindings: (interfaces.Binding<any> | interfaces.Binding<any>[]),
         target: interfaces.Target
     ): interfaces.Request {
 
-            let child = new Request(
+            const child = new Request(
                 serviceIdentifier,
                 this.parentContext,
                 this,

@@ -1,16 +1,16 @@
-import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import { plan } from "../../src/planning/planner";
-import { Container } from "../../src/container/container";
-import { TargetTypeEnum } from "../../src/constants/literal_types";
-import { injectable } from "../../src/annotation/injectable";
-import { targetName } from "../../src/annotation/target_name";
-import { tagged } from "../../src/annotation/tagged";
-import { inject } from "../../src/annotation/inject";
-import { multiInject } from "../../src/annotation/multi_inject";
 import * as sinon from "sinon";
+import { inject } from "../../src/annotation/inject";
+import { injectable } from "../../src/annotation/injectable";
+import { multiInject } from "../../src/annotation/multi_inject";
+import { tagged } from "../../src/annotation/tagged";
+import { targetName } from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
+import { Container } from "../../src/container/container";
+import { interfaces } from "../../src/interfaces/interfaces";
 import { MetadataReader } from "../../src/planning/metadata_reader";
+import { plan } from "../../src/planning/planner";
 
 describe("Planner", () => {
 
@@ -71,13 +71,13 @@ describe("Planner", () => {
             }
         }
 
-        let ninjaId = "Ninja";
-        let shurikenId = "Shuriken";
-        let katanaId = "Katana";
-        let katanaHandlerId = "KatanaHandler";
-        let katanaBladeId = "KatanaBlade";
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaId = "Katana";
+        const katanaHandlerId = "KatanaHandler";
+        const katanaBladeId = "KatanaBlade";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Shuriken>(shurikenId).to(Shuriken);
         container.bind<Katana>(katanaId).to(Katana);
@@ -85,12 +85,12 @@ describe("Planner", () => {
         container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
         // Actual
-        let actualPlan = plan(new MetadataReader(),  container, false, TargetTypeEnum.Variable, ninjaId).plan;
-        let actualNinjaRequest = actualPlan.rootRequest;
-        let actualKatanaRequest = actualNinjaRequest.childRequests[0];
-        let actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
-        let actualKatanaBladeRequest = actualKatanaRequest.childRequests[1];
-        let actualShurikenRequest = actualNinjaRequest.childRequests[1];
+        const actualPlan = plan(new MetadataReader(),  container, false, TargetTypeEnum.Variable, ninjaId).plan;
+        const actualNinjaRequest = actualPlan.rootRequest;
+        const actualKatanaRequest = actualNinjaRequest.childRequests[0];
+        const actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
+        const actualKatanaBladeRequest = actualKatanaRequest.childRequests[1];
+        const actualShurikenRequest = actualNinjaRequest.childRequests[1];
 
         expect(actualNinjaRequest.serviceIdentifier).eql(ninjaId);
         expect(actualNinjaRequest.childRequests.length).eql(2);
@@ -161,18 +161,18 @@ describe("Planner", () => {
             }
         }
 
-        let aId = "A";
-        let bId = "B";
-        let cId = "C";
-        let dId = "D";
+        const aId = "A";
+        const bId = "B";
+        const cId = "C";
+        const dId = "D";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<A>(aId).to(A);
         container.bind<B>(bId).to(B);
         container.bind<C>(cId).to(C);
         container.bind<D>(dId).to(D);
 
-        let throwErrorFunction = () => {
+        const throwErrorFunction = () => {
             container.get(aId);
         };
 
@@ -227,26 +227,24 @@ describe("Planner", () => {
             }
         }
 
-        let ninjaId = "Ninja";
-        let shurikenId = "Shuriken";
-        let katanaId = "Katana";
-        let katanaHandlerId = "KatanaHandler";
-        let katanaBladeId = "KatanaBlade";
-        let katanaFactoryId = "Factory<Katana>";
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaId = "Katana";
+        const katanaHandlerId = "KatanaHandler";
+        const katanaBladeId = "KatanaBlade";
+        const katanaFactoryId = "Factory<Katana>";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Shuriken>(shurikenId).to(Shuriken);
         container.bind<Katana>(katanaBladeId).to(Katana);
         container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
         container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
-        container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toFactory<Katana>((context: interfaces.Context) => {
-            return () => {
-                return context.container.get<Katana>(katanaId);
-            };
-        });
+        container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toFactory<Katana>((context: interfaces.Context) =>
+            () =>
+                context.container.get<Katana>(katanaId));
 
-        let actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
+        const actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
         expect(actualPlan.rootRequest.childRequests[0].serviceIdentifier).eql(katanaFactoryId);
@@ -281,15 +279,15 @@ describe("Planner", () => {
             }
         }
 
-        let ninjaId = "Ninja";
-        let weaponId = "Weapon";
+        const ninjaId = "Ninja";
+        const weaponId = "Weapon";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Weapon>(weaponId).to(Shuriken);
         container.bind<Weapon>(weaponId).to(Katana);
 
-        let actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
+        const actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -312,7 +310,7 @@ describe("Planner", () => {
         expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.isArray()).eql(true);
         expect(actualPlan.rootRequest.childRequests[0].childRequests[0].serviceIdentifier).eql("Weapon");
         expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].serviceIdentifier).eql("Weapon");
-        let shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
+        const shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
         expect(shurikenImplementationType.name).eql("Shuriken");
 
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql(weaponId);
@@ -321,7 +319,7 @@ describe("Planner", () => {
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.isArray()).eql(true);
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql("Weapon");
         expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].serviceIdentifier).eql("Weapon");
-        let katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
+        const katanaImplementationType: any = actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
         expect(katanaImplementationType.name).eql("Katana");
 
     });
@@ -351,14 +349,14 @@ describe("Planner", () => {
             }
         }
 
-        let ninjaId = "Ninja";
-        let shurikenId = "Shuriken";
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-        let throwFunction = () => {
+        const throwFunction = () => {
             plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
         };
 
@@ -394,17 +392,17 @@ describe("Planner", () => {
             }
         }
 
-        let ninjaId = "Ninja";
-        let katanaId = "Katana";
-        let shurikenId = "Shuriken";
+        const ninjaId = "Ninja";
+        const katanaId = "Katana";
+        const shurikenId = "Shuriken";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Katana>(katanaId).to(Katana);
         container.bind<Katana>(katanaId).to(SharpKatana);
         container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-        let throwFunction = () => {
+        const throwFunction = () => {
             plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
         };
 
@@ -424,8 +422,8 @@ describe("Planner", () => {
 
         interface Ninja { }
 
-        let ninjaId = "Ninja";
-        let weaponId = "Weapon";
+        const ninjaId = "Ninja";
+        const weaponId = "Weapon";
 
         @injectable()
         class Ninja implements Ninja {
@@ -440,12 +438,12 @@ describe("Planner", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
         container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-        let actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
+        const actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
         // root request has no target
         expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -471,10 +469,10 @@ describe("Planner", () => {
 
         class Katana implements Weapon { }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Weapon>("Weapon").to(Katana);
 
-        let throwFunction = () => {
+        const throwFunction = () => {
             plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, "Weapon");
         };
 
@@ -503,11 +501,11 @@ describe("Planner", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>("Warrior").to(Ninja);
         container.bind<Sword>("Sword").to(Katana);
 
-        let throwFunction = () => {
+        const throwFunction = () => {
             plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, "Warrior");
         };
 
@@ -536,12 +534,12 @@ describe("Planner", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<Katana>("Katana").to(Katana);
         container.bind<Katana>("Factory<Katana>").to(Katana);
 
-        let throwFunction = () => {
+        const throwFunction = () => {
             plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, "Ninja");
         };
 

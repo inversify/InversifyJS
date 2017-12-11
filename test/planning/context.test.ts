@@ -1,19 +1,19 @@
 import { expect } from "chai";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { Context } from "../../src/planning/context";
-import { Request } from "../../src/planning/request";
 import { Plan } from "../../src/planning/plan";
+import { Request } from "../../src/planning/request";
 import { Target } from "../../src/planning/target";
-import { TargetTypeEnum } from "../../src/constants/literal_types";
 
 describe("Context", () => {
 
   it("Should set its own properties correctly", () => {
 
-      let container = new Container();
-      let context1 = new Context(container);
-      let invalid: any = null;
-      let context2: Context = new (Context)(invalid);
+      const container = new Container();
+      const context1 = new Context(container);
+      const invalid: any = null;
+      const context2: Context = new (Context)(invalid);
 
       expect(context1.container).not.to.eql(null);
       expect(context2.container).eql(null);
@@ -25,11 +25,11 @@ describe("Context", () => {
 
   it("Should be linkable to a Plan", () => {
 
-      let container = new Container();
-      let context = new Context(container);
-      let target = new Target(TargetTypeEnum.Variable, "", "Ninja");
+      const container = new Container();
+      const context = new Context(container);
+      const target = new Target(TargetTypeEnum.Variable, "", "Ninja");
 
-      let ninjaRequest = new Request(
+      const ninjaRequest = new Request(
           "Ninja",
           context,
           null,
@@ -37,7 +37,7 @@ describe("Context", () => {
           target
       );
 
-      let plan = new Plan(context, ninjaRequest);
+      const plan = new Plan(context, ninjaRequest);
       context.addPlan(plan);
 
       expect(context.plan.rootRequest.serviceIdentifier).eql("Ninja");

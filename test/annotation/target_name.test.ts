@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import { targetName } from "../../src/annotation/target_name";
 import { injectable } from "../../src/annotation/injectable";
+import { targetName } from "../../src/annotation/target_name";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as Stubs from "../utils/stubs";
 
@@ -15,7 +15,7 @@ describe("@targetName", () => {
             public katana: Stubs.Katana;
             public shuriken: Stubs.Shuriken;
 
-            constructor(
+            public constructor(
                 @targetName("katana") katana: Stubs.Katana,
                 @targetName("shuriken") shuriken: Stubs.Shuriken
             ) {
@@ -25,7 +25,7 @@ describe("@targetName", () => {
             }
         }
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
+        const metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
         expect(metadata["0"]).to.be.instanceof(Array);
         expect(metadata["1"]).to.be.instanceof(Array);
         expect(metadata["2"]).to.eql(undefined);
@@ -42,14 +42,14 @@ describe("@targetName", () => {
         interface Katana {}
         interface Shuriken {}
 
-        let VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
+        const VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
                 // ...
         };
 
         decorate(targetName("primary"), VanillaJSWarrior, 0);
         decorate(targetName("secondary"), VanillaJSWarrior, 1);
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, VanillaJSWarrior);
+        const metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, VanillaJSWarrior);
         expect(metadata["0"]).to.be.instanceof(Array);
         expect(metadata["1"]).to.be.instanceof(Array);
         expect(metadata["2"]).to.eql(undefined);

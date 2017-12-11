@@ -1,12 +1,12 @@
 import { interfaces } from "../interfaces/interfaces";
 
-let BindingScopeEnum: interfaces.BindingScopeEnum = {
+const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Request: "Request",
     Singleton: "Singleton",
     Transient: "Transient"
 };
 
-let BindingTypeEnum: interfaces.BindingTypeEnum = {
+const BindingTypeEnum: interfaces.BindingTypeEnum = {
     ConstantValue: "ConstantValue",
     Constructor: "Constructor",
     DynamicValue: "DynamicValue",
@@ -17,7 +17,7 @@ let BindingTypeEnum: interfaces.BindingTypeEnum = {
     Provider: "Provider"
 };
 
-let TargetTypeEnum: interfaces.TargetTypeEnum = {
+const TargetTypeEnum: interfaces.TargetTypeEnum = {
     ClassProperty: "ClassProperty",
     ConstructorArgument: "ConstructorArgument",
     Variable: "Variable"

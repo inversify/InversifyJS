@@ -18,7 +18,7 @@ export interface FooBarInterface {
 
 export class Foo implements FooInterface {
   public name: string;
-  constructor() {
+  public constructor() {
     this.name = "foo";
   }
   public greet(): string {
@@ -28,7 +28,7 @@ export class Foo implements FooInterface {
 
 export class Bar implements BarInterface {
   public name: string;
-  constructor() {
+  public constructor() {
     this.name = "bar";
   }
   public greet(): string {
@@ -40,7 +40,7 @@ export class Bar implements BarInterface {
 export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
-  constructor(
+  public constructor(
       @inject("FooInterface") foo: FooInterface,
       @inject("BarInterface") bar: BarInterface
   ) {
@@ -68,7 +68,7 @@ export class DecoratedWarriorWithoutInjections {}
 
 @injectable()
 export class Warrior {
-    constructor(
+    public constructor(
       @inject("Katana") primary: Katana,
       @inject("Shuriken") secondary: Shuriken
     ) {
@@ -77,7 +77,7 @@ export class Warrior {
 }
 
 export class InvalidDecoratorUsageWarrior {
-    constructor(
+    public constructor(
       primary: Weapon,
       secondary: Weapon) {
         // ...
@@ -85,7 +85,7 @@ export class InvalidDecoratorUsageWarrior {
 }
 
 export class MissingInjectionWarrior {
-    constructor(
+    public constructor(
       primary: Weapon,
       secondary: Weapon) {
         // ...
@@ -94,7 +94,7 @@ export class MissingInjectionWarrior {
 
 @injectable()
 export class NamedWarrior {
-    constructor(
+    public constructor(
       @inject("Katana") @named("strong") primary: Weapon,
       @inject("Shuriken") @named("weak") secondary: Weapon
     ) {
@@ -104,11 +104,10 @@ export class NamedWarrior {
 
 @injectable()
 export class TaggedWarrior {
-    constructor(
+    public constructor(
       @inject("Katana") @tagged("power", 5) primary: Weapon,
       @inject("Shuriken") @tagged("power", 1) secondary: Weapon
     ) {
         // ...
     }
 }
-

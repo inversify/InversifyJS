@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Container, injectable, inject, named } from "../../src/inversify";
 import * as now from "performance-now";
+import { Container, inject, injectable, named } from "../../src/inversify";
 
 describe("inRequestScope", () => {
 
@@ -168,7 +168,6 @@ describe("inRequestScope", () => {
         // for each instance of Samurai because scope is request scope
         expect(samurai1.secondaryWeapon.use()).not.to.eql(samurai2.secondaryWeapon.use());
         expect(samurai1.tertiaryWeapon.use()).not.to.eql(samurai2.tertiaryWeapon.use());
-
 
     });
 

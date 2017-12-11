@@ -1,14 +1,14 @@
 import { expect } from "chai";
-import { Request } from "../../src/planning/request";
-import { Context } from "../../src/planning/context";
-import { Container } from "../../src/container/container";
-import { Target } from "../../src/planning/target";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
+import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
+import { Context } from "../../src/planning/context";
+import { Request } from "../../src/planning/request";
+import { Target } from "../../src/planning/target";
 
 describe("Request", () => {
 
-  let identifiers = {
+  const identifiers = {
       Katana: "Katana",
       KatanaBlade: "KatanaBlade",
       KatanaHandler: "KatanaHandler",
@@ -18,10 +18,10 @@ describe("Request", () => {
 
   it("Should set its own properties correctly", () => {
 
-      let container = new Container();
-      let context = new Context(container);
+      const container = new Container();
+      const context = new Context(container);
 
-      let request1: Request = new Request(
+      const request1: Request = new Request(
           identifiers.Ninja,
           context,
           null,
@@ -29,7 +29,7 @@ describe("Request", () => {
           new Target(TargetTypeEnum.Variable, "", identifiers.Ninja)
       );
 
-      let request2 = new Request(
+      const request2 = new Request(
           identifiers.Ninja,
           context,
           null,
@@ -48,10 +48,10 @@ describe("Request", () => {
 
   it("Should be able to add a child request", () => {
 
-      let container = new Container();
-      let context = new Context(container);
+      const container = new Container();
+      const context = new Context(container);
 
-      let ninjaRequest: Request = new Request(
+      const ninjaRequest: Request = new Request(
           identifiers.Ninja,
           context,
           null,
@@ -65,13 +65,13 @@ describe("Request", () => {
           new Target(TargetTypeEnum.ConstructorArgument, "Katana", identifiers.Katana)
       );
 
-      let katanaRequest = ninjaRequest.childRequests[0];
+      const katanaRequest = ninjaRequest.childRequests[0];
 
       expect(katanaRequest.serviceIdentifier).eql(identifiers.Katana);
       expect(katanaRequest.target.name.value()).eql("Katana");
       expect(katanaRequest.childRequests.length).eql(0);
 
-      let katanaParentRequest: interfaces.Request = katanaRequest.parentRequest as any;
+      const katanaParentRequest: interfaces.Request = katanaRequest.parentRequest as any;
       expect(katanaParentRequest.serviceIdentifier).eql(identifiers.Ninja);
       expect(katanaParentRequest.target.name.value()).eql("Ninja");
       expect(katanaParentRequest.target.serviceIdentifier).eql(identifiers.Ninja);

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Container, injectable, inject, optional } from "../../src/inversify";
+import { Container, inject, injectable, optional } from "../../src/inversify";
 
 describe("@optional", () => {
 
@@ -36,7 +36,7 @@ describe("@optional", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
 
       container.bind<Katana>("Katana").to(Katana);
       container.bind<Ninja>("Ninja").to(Ninja);
@@ -88,7 +88,7 @@ describe("@optional", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
 
       container.bind<Katana>("Katana").to(Katana);
       container.bind<Ninja>("Ninja").to(Ninja);

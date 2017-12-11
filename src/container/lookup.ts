@@ -1,5 +1,5 @@
-import { interfaces } from "../interfaces/interfaces";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import { interfaces } from "../interfaces/interfaces";
 
 class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
 
@@ -25,7 +25,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
             throw new Error(ERROR_MSGS.NULL_ARGUMENT);
         }
 
-        let entry = this._map.get(serviceIdentifier);
+        const entry = this._map.get(serviceIdentifier);
         if (entry !== undefined) {
             entry.push(value);
             this._map.set(serviceIdentifier, entry);
@@ -41,7 +41,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
             throw new Error(ERROR_MSGS.NULL_ARGUMENT);
         }
 
-        let entry = this._map.get(serviceIdentifier);
+        const entry = this._map.get(serviceIdentifier);
 
         if (entry !== undefined) {
             return entry;
@@ -65,7 +65,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
 
     public removeByCondition(condition: (item: T) => boolean): void {
         this._map.forEach((entries, key) => {
-            let updatedEntries = entries.filter((entry) => !condition(entry));
+            const updatedEntries = entries.filter((entry) => !condition(entry));
             if (updatedEntries.length > 0) {
                 this._map.set(key, updatedEntries);
             } else {
@@ -88,7 +88,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     // cloned, content remains the same
     public clone(): interfaces.Lookup<T> {
 
-        let copy = new Lookup<T>();
+        const copy = new Lookup<T>();
 
         this._map.forEach((value, key) => {
             value.forEach((b) => copy.add(key, b.clone()));

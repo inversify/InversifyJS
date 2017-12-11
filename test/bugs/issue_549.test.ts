@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Container, injectable, inject } from "../../src/inversify";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { Container, inject, injectable } from "../../src/inversify";
 
 describe("issue 549", () => {
 
@@ -26,14 +26,14 @@ describe("issue 549", () => {
             }
         }
 
-        let container = new Container({defaultScope: "Singleton"});
+        const container = new Container({defaultScope: "Singleton"});
         container.bind(A).toSelf();
         container.bind(B).toSelf();
-        container.bind("A").toDynamicValue(ctx =>
+        container.bind("A").toDynamicValue((ctx) =>
             ctx.container.get(A)
         );
 
-        container.bind("B").toDynamicValue(ctx =>
+        container.bind("B").toDynamicValue((ctx) =>
             ctx.container.get(B)
         );
 

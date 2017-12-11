@@ -3,16 +3,16 @@
 import { expect } from "chai";
 import "es6-symbol/implement";
 import {
-    Container, injectable, inject,
-    named, tagged, multiInject,
-    unmanaged, optional
+    Container, inject, injectable,
+    multiInject, named, optional,
+    tagged, unmanaged
 } from "../../src/inversify";
 
 describe("Property Injection", () => {
 
     it("Should be able to inject a property", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
@@ -44,11 +44,11 @@ describe("Property Injection", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Samurai);
         container.bind<Weapon>(TYPES.Weapon).to(Katana);
 
-        let warrior = container.get<Warrior>(TYPES.Warrior);
+        const warrior = container.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
         expect(warrior.weapon).not.to.eql(undefined);
         expect(warrior.weapon.name).to.eql("Katana");
@@ -57,12 +57,12 @@ describe("Property Injection", () => {
 
     it("Should be able to inject a property combined with constructor injection", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
 
-        let TAGS = {
+        const TAGS = {
             Primary: "Primary",
             Secondary: "Secondary"
         };
@@ -111,12 +111,12 @@ describe("Property Injection", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Samurai);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetNamed(TAGS.Primary);
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAGS.Secondary);
 
-        let warrior = container.get<Warrior>(TYPES.Warrior);
+        const warrior = container.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
         expect(warrior.primaryWeapon).not.to.eql(undefined);
         expect(warrior.primaryWeapon.name).to.eql("Katana");
@@ -127,12 +127,12 @@ describe("Property Injection", () => {
 
     it("Should be able to inject a named property", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
 
-        let TAGS = {
+        const TAGS = {
             Primary: "Primary",
             Secondary: "Secondary"
         };
@@ -181,12 +181,12 @@ describe("Property Injection", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Samurai);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetNamed(TAGS.Primary);
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAGS.Secondary);
 
-        let warrior = container.get<Warrior>(TYPES.Warrior);
+        const warrior = container.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
         expect(warrior.primaryWeapon).not.to.eql(undefined);
         expect(warrior.primaryWeapon.name).to.eql("Katana");
@@ -197,12 +197,12 @@ describe("Property Injection", () => {
 
     it("Should be able to inject a tagged property", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
 
-        let TAGS = {
+        const TAGS = {
             Primary: "Primary",
             Priority: "Priority",
             Secondary: "Secondary"
@@ -252,12 +252,12 @@ describe("Property Injection", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Samurai);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetTagged(TAGS.Priority, TAGS.Primary);
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetTagged(TAGS.Priority, TAGS.Secondary);
 
-        let warrior = container.get<Warrior>(TYPES.Warrior);
+        const warrior = container.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
         expect(warrior.primaryWeapon).not.to.eql(undefined);
         expect(warrior.primaryWeapon.name).to.eql("Katana");
@@ -268,7 +268,7 @@ describe("Property Injection", () => {
 
     it("Should be able to multi-inject a property", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
@@ -311,12 +311,12 @@ describe("Property Injection", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Samurai);
         container.bind<Weapon>(TYPES.Weapon).to(Katana);
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken);
 
-        let warrior = container.get<Warrior>(TYPES.Warrior);
+        const warrior = container.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
         expect(warrior.weapons[0]).not.to.eql(undefined);
         expect(warrior.weapons[0].name).to.eql("Katana");
@@ -327,12 +327,12 @@ describe("Property Injection", () => {
 
     it("Should be able to inject a property in a base class", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
 
-        let TAGS = {
+        const TAGS = {
             Primary: "Primary",
             Priority: "Priority",
             Secondary: "Secondary"
@@ -389,12 +389,12 @@ describe("Property Injection", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Samurai);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetTagged(TAGS.Priority, TAGS.Primary);
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetTagged(TAGS.Priority, TAGS.Secondary);
 
-        let samurai = container.get<Samurai>(TYPES.Warrior);
+        const samurai = container.get<Samurai>(TYPES.Warrior);
         expect(samurai.name).to.eql("Samurai");
         expect(samurai.secondaryWeapon).not.to.eql(undefined);
         expect(samurai.secondaryWeapon.name).to.eql("Shuriken");
@@ -405,7 +405,7 @@ describe("Property Injection", () => {
 
     it("Should be able to flag a property injection as optional", () => {
 
-        let TYPES = {
+        const TYPES = {
             Route: "Route",
             Router: "Router"
         };
@@ -426,16 +426,16 @@ describe("Property Injection", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
 
         container.bind<Router>(TYPES.Router).to(Router);
 
-        let router1 = container.get<Router>(TYPES.Router);
+        const router1 = container.get<Router>(TYPES.Router);
         expect(router1.getRoute()).to.eql(undefined);
 
         container.bind<Route>(TYPES.Route).toConstantValue({ name: "route1" });
 
-        let router2 = container.get<Router>(TYPES.Router);
+        const router2 = container.get<Router>(TYPES.Router);
         expect(router2.getRoute().name).to.eql("route1");
 
     });

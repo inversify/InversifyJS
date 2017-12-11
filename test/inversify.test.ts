@@ -1,13 +1,13 @@
 /// <reference path="./globals.d.ts" />
 
-import { interfaces } from "../src/interfaces/interfaces";
 import { expect } from "chai";
 import "es6-symbol/implement";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
+import { interfaces } from "../src/interfaces/interfaces";
 import {
-    Container, injectable, inject, multiInject,
-    tagged, named, targetName, decorate, typeConstraint,
-    ContainerModule, unmanaged
+    Container, ContainerModule, decorate, inject,
+    injectable, multiInject, named, tagged, targetName,
+    typeConstraint, unmanaged
 } from "../src/inversify";
 
 describe("InversifyJS", () => {
@@ -60,12 +60,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<Katana>("Katana").to(Katana);
         container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -74,7 +74,7 @@ describe("InversifyJS", () => {
 
     it("Should be able to resolve and inject dependencies in VanillaJS", () => {
 
-        let TYPES = {
+        const TYPES = {
             Katana: "Katana",
             Ninja: "Ninja",
             Shuriken: "Shuriken"
@@ -111,12 +111,12 @@ describe("InversifyJS", () => {
         decorate(inject(TYPES.Katana), Ninja, 0);
         decorate(inject(TYPES.Shuriken), Ninja, 1);
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(Ninja);
         container.bind<Katana>(TYPES.Katana).to(Katana);
         container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
 
-        let ninja = container.get<Ninja>(TYPES.Ninja);
+        const ninja = container.get<Ninja>(TYPES.Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -155,12 +155,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(Ninja).to(Ninja);
         container.bind<Katana>(Katana).to(Katana);
         container.bind<Shuriken>(Shuriken).to(Shuriken);
 
-        let ninja = container.get<Ninja>(Ninja);
+        const ninja = container.get<Ninja>(Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -196,7 +196,7 @@ describe("InversifyJS", () => {
             }
         }
 
-        let TYPES = {
+        const TYPES = {
             Katana: Symbol.for("Katana"),
             Ninja: Symbol.for("Ninja"),
             Shuriken: Symbol.for("Shuriken")
@@ -221,12 +221,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(Ninja);
         container.bind<Katana>(TYPES.Katana).to(Katana);
         container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
 
-        let ninja = container.get<Ninja>(TYPES.Ninja);
+        const ninja = container.get<Ninja>(TYPES.Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -268,7 +268,7 @@ describe("InversifyJS", () => {
             private _katana: Katana;
             private _shuriken: Shuriken;
 
-            public constructor( @inject("Katana") katana: Katana, @inject("Shuriken") shuriken: Shuriken) {
+            public constructor(@inject("Katana") katana: Katana, @inject("Shuriken") shuriken: Shuriken) {
                 this._katana = katana;
                 this._shuriken = shuriken;
             }
@@ -278,28 +278,28 @@ describe("InversifyJS", () => {
 
         }
 
-        let warriors = new ContainerModule((bind: interfaces.Bind) => {
+        const warriors = new ContainerModule((bind: interfaces.Bind) => {
             bind<Ninja>("Ninja").to(Ninja);
         });
 
-        let weapons = new ContainerModule((bind: interfaces.Bind) => {
+        const weapons = new ContainerModule((bind: interfaces.Bind) => {
             bind<Katana>("Katana").to(Katana);
             bind<Shuriken>("Shuriken").to(Shuriken);
         });
 
-        let container = new Container();
+        const container = new Container();
 
         // load
         container.load(warriors, weapons);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
 
-        let tryGetNinja = () => { container.get("Ninja"); };
-        let tryGetKatana = () => { container.get("Katana"); };
-        let tryGetShuruken = () => { container.get("Shuriken"); };
+        const tryGetNinja = () => { container.get("Ninja"); };
+        const tryGetKatana = () => { container.get("Katana"); };
+        const tryGetShuruken = () => { container.get("Shuriken"); };
 
         // unload
         container.unload(warriors);
@@ -372,26 +372,26 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<Katana>("Katana").to(Katana).inSingletonScope();
         container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja1 = container.get<Ninja>("Ninja");
-        expect(ninja1.fight()).eql(`This katana was used 1 times!`);
-        expect(ninja1.fight()).eql(`This katana was used 2 times!`);
-        expect(ninja1.sneak()).eql(`Only 9 items left!`);
-        expect(ninja1.sneak()).eql(`Only 8 items left!`);
+        const ninja1 = container.get<Ninja>("Ninja");
+        expect(ninja1.fight()).eql("This katana was used 1 times!");
+        expect(ninja1.fight()).eql("This katana was used 2 times!");
+        expect(ninja1.sneak()).eql("Only 9 items left!");
+        expect(ninja1.sneak()).eql("Only 8 items left!");
 
-        let ninja2 = container.get<Ninja>("Ninja");
-        expect(ninja2.fight()).eql(`This katana was used 3 times!`);
-        expect(ninja2.sneak()).eql(`Only 9 items left!`);
+        const ninja2 = container.get<Ninja>("Ninja");
+        expect(ninja2.fight()).eql("This katana was used 3 times!");
+        expect(ninja2.sneak()).eql("Only 9 items left!");
 
     });
 
     it("Should support the injection of classes to itself", () => {
 
-        let heroName = "superman";
+        const heroName = "superman";
 
         @injectable()
         class Hero {
@@ -403,7 +403,7 @@ describe("InversifyJS", () => {
 
         const container = new Container();
         container.bind(Hero).toSelf();
-        let hero = container.get<Hero>(Hero);
+        const hero = container.get<Hero>(Hero);
 
         expect(hero.name).eql(heroName);
 
@@ -419,7 +419,7 @@ describe("InversifyJS", () => {
             Warrior: "Warrior"
         };
 
-        let heroName = "superman";
+        const heroName = "superman";
 
         @injectable()
         class Hero implements Warrior {
@@ -431,7 +431,7 @@ describe("InversifyJS", () => {
 
         const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).toConstantValue(new Hero());
-        let hero = container.get<Warrior>(TYPES.Warrior);
+        const hero = container.get<Warrior>(TYPES.Warrior);
 
         expect(hero.name).eql(heroName);
 
@@ -446,7 +446,7 @@ describe("InversifyJS", () => {
         @injectable()
         class UseDate implements UseDate {
             public currentDate: Date;
-            public constructor( @inject("Date") currentDate: Date) {
+            public constructor(@inject("Date") currentDate: Date) {
                 this.currentDate = currentDate;
             }
             public doSomething() {
@@ -454,32 +454,30 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<UseDate>("UseDate").to(UseDate);
-        container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => { return new Date(); });
+        container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => new Date());
 
-        let subject1 = container.get<UseDate>("UseDate");
-        let subject2 = container.get<UseDate>("UseDate");
+        const subject1 = container.get<UseDate>("UseDate");
+        const subject2 = container.get<UseDate>("UseDate");
         expect(subject1.doSomething() === subject2.doSomething()).eql(false);
 
         container.unbind("Date");
         container.bind<Date>("Date").toConstantValue(new Date());
 
-        let subject3 = container.get<UseDate>("UseDate");
-        let subject4 = container.get<UseDate>("UseDate");
+        const subject3 = container.get<UseDate>("UseDate");
+        const subject4 = container.get<UseDate>("UseDate");
         expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
     });
 
     it("Should support the injection of Functions", () => {
 
-        let ninjaId = "Ninja";
-        let longDistanceWeaponId = "LongDistanceWeapon";
-        let shortDistanceWeaponFactoryId = "ShortDistanceWeaponFactory";
+        const ninjaId = "Ninja";
+        const longDistanceWeaponId = "LongDistanceWeapon";
+        const shortDistanceWeaponFactoryId = "ShortDistanceWeaponFactory";
 
-        interface ShortDistanceWeaponFactory extends Function {
-            (): ShortDistanceWeapon;
-        }
+        type ShortDistanceWeaponFactory = () => ShortDistanceWeapon;
 
         interface KatanaBlade { }
 
@@ -529,16 +527,16 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<LongDistanceWeapon>(longDistanceWeaponId).to(Shuriken);
 
-        let katanaFactory = function () {
+        const katanaFactory = function () {
             return new Katana(new KatanaHandler(), new KatanaBlade());
         };
 
         container.bind<ShortDistanceWeaponFactory>(shortDistanceWeaponFactoryId).toFunction(katanaFactory); // IMPORTANT!
-        let ninja = container.get<Ninja>(ninjaId);
+        const ninja = container.get<Ninja>(ninjaId);
 
         expect(ninja instanceof Ninja).eql(true);
         expect(typeof ninja.shortDistanceWeaponFactory === "function").eql(true);
@@ -597,12 +595,12 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
         container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -657,17 +655,15 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
         container.bind<Shuriken>("Shuriken").to(Shuriken);
         container.bind<Katana>("Katana").to(Katana);
-        container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context) => {
-            return () => {
-                return context.container.get<Katana>("Katana");
-            };
-        });
+        container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context) =>
+            () =>
+                context.container.get<Katana>("Katana"));
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -717,18 +713,16 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(NinjaWithUserDefinedFactory);
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("throwable", true);
         container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
 
-        container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context) => {
-            return (throwable: boolean) => {
-                return context.container.getTagged<Weapon>("Weapon", "throwable", throwable);
-            };
-        });
+        container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context) =>
+            (throwable: boolean) =>
+                context.container.getTagged<Weapon>("Weapon", "throwable", throwable));
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("katana!");
         expect(ninja.sneak()).eql("shuriken!");
@@ -755,7 +749,7 @@ describe("InversifyJS", () => {
         class DieselEngine implements Engine {
             public displacement: number | null;
             private _injectorPump: InjectorPump;
-            constructor(
+            public constructor(
                 @inject("InjectorPump") injectorPump: InjectorPump
             ) {
                 this._injectorPump = injectorPump;
@@ -770,7 +764,7 @@ describe("InversifyJS", () => {
         class PetrolEngine implements Engine {
             public displacement: number | null;
             private _sparkPlugs: SparkPlugs;
-            constructor(
+            public constructor(
                 @inject("SparkPlugs") sparkPlugs: SparkPlugs
             ) {
                 this._sparkPlugs = sparkPlugs;
@@ -788,7 +782,7 @@ describe("InversifyJS", () => {
         @injectable()
         class DieselCarFactory implements CarFactory {
             private _dieselFactory: (displacement: number) => Engine;
-            constructor(
+            public constructor(
                 @inject("Factory<Engine>") factory: (category: string) => (displacement: number) => Engine
             ) {
                 this._dieselFactory = factory("diesel");
@@ -798,24 +792,23 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<SparkPlugs>("SparkPlugs").to(SparkPlugs);
         container.bind<InjectorPump>("InjectorPump").to(InjectorPump);
         container.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
         container.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
 
-        container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context: interfaces.Context) => {
-            return (theNamed: string) => (displacement: number) => {
-                let theEngine = context.container.getNamed<Engine>("Engine", theNamed);
+        container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context: interfaces.Context) =>
+            (theNamed: string) => (displacement: number) => {
+                const theEngine = context.container.getNamed<Engine>("Engine", theNamed);
                 theEngine.displacement = displacement;
                 return theEngine;
-            };
-        });
+            });
 
         container.bind<CarFactory>("DieselCarFactory").to(DieselCarFactory);
 
-        let dieselCarFactory = container.get<CarFactory>("DieselCarFactory");
-        let engine = dieselCarFactory.createEngine(300);
+        const dieselCarFactory = container.get<CarFactory>("DieselCarFactory");
+        const engine = dieselCarFactory.createEngine(300);
 
         expect(engine.displacement).eql(300);
         expect(engine instanceof DieselEngine).eql(true);
@@ -870,13 +863,13 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(NinjaWithAutoFactory);
         container.bind<Shuriken>("Shuriken").to(Shuriken);
         container.bind<Katana>("Katana").to(Katana);
         container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toAutoFactory<Katana>("Katana");
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -918,20 +911,18 @@ describe("InversifyJS", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>("Ninja").to(NinjaWithProvider);
         container.bind<Katana>("Katana").to(Katana);
 
-        container.bind<KatanaProvider>("Provider<Katana>").toProvider<Katana>((context: interfaces.Context) => {
-            return () => {
-                return new Promise<Katana>((resolve) => {
-                    let katana = context.container.get<Katana>("Katana");
+        container.bind<KatanaProvider>("Provider<Katana>").toProvider<Katana>((context: interfaces.Context) =>
+            () =>
+                new Promise<Katana>((resolve) => {
+                    const katana = context.container.get<Katana>("Katana");
                     resolve(katana);
-                });
-            };
-        });
+                }));
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         ninja.katanaProvider()
             .then((katana) => {
@@ -947,8 +938,8 @@ describe("InversifyJS", () => {
 
         it("Should support the injection of multiple values", () => {
 
-            let warriorId = "Warrior";
-            let weaponId = "Weapon";
+            const warriorId = "Warrior";
+            const weaponId = "Weapon";
 
             interface Weapon {
                 name: string;
@@ -973,27 +964,27 @@ describe("InversifyJS", () => {
             class Ninja implements Warrior {
                 public katana: Weapon;
                 public shuriken: Weapon;
-                public constructor( @multiInject(weaponId) weapons: Weapon[]) {
+                public constructor(@multiInject(weaponId) weapons: Weapon[]) {
                     this.katana = weapons[0];
                     this.shuriken = weapons[1];
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Warrior>(warriorId).to(Ninja);
             container.bind<Weapon>(weaponId).to(Katana);
             container.bind<Weapon>(weaponId).to(Shuriken);
 
-            let ninja = container.get<Warrior>(warriorId);
+            const ninja = container.get<Warrior>(warriorId);
             expect(ninja.katana.name).eql("Katana");
             expect(ninja.shuriken.name).eql("Shuriken");
 
             // if only one value is bound to Weapon
-            let container2 = new Container();
+            const container2 = new Container();
             container2.bind<Warrior>(warriorId).to(Ninja);
             container2.bind<Weapon>(weaponId).to(Katana);
 
-            let ninja2 = container2.get<Warrior>(warriorId);
+            const ninja2 = container2.get<Warrior>(warriorId);
             expect(ninja2.katana.name).eql("Katana");
 
         });
@@ -1056,7 +1047,7 @@ describe("InversifyJS", () => {
                 public ninjaMaster: Ninja;
                 public student: Ninja;
 
-                constructor(
+                public constructor(
                     @multiInject("Ninja") ninja: Ninja[]
                 ) {
                     this.ninjaMaster = ninja[0];
@@ -1064,14 +1055,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Katana>("Katana").to(Katana);
             container.bind<Shuriken>("Shuriken").to(Shuriken);
             container.bind<Ninja>("Ninja").to(Ninja);
             container.bind<Ninja>("Ninja").to(Ninja);
             container.bind<School>("School").to(NinjaSchool);
 
-            let ninjaSchool = container.get<School>("School");
+            const ninjaSchool = container.get<School>("School");
             expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
             expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
 
@@ -1082,11 +1073,11 @@ describe("InversifyJS", () => {
 
         it("Should support the injection of multiple values with nested multiInject", () => {
 
-            let warriorId = "Warrior";
-            let swordId = "Sword";
-            let shurikenId = "Shuriken";
-            let schoolId = "School";
-            let organisationId = "Organisation";
+            const warriorId = "Warrior";
+            const swordId = "Sword";
+            const shurikenId = "Shuriken";
+            const schoolId = "School";
+            const organisationId = "Organisation";
 
             interface Warrior {
                 fight(): string;
@@ -1145,7 +1136,7 @@ describe("InversifyJS", () => {
                 public ninjaMaster: Warrior;
                 public student: Warrior;
 
-                constructor(
+                public constructor(
                     @multiInject(warriorId) ninjas: Ninja[]
                 ) {
                     this.ninjaMaster = ninjas[0];
@@ -1161,14 +1152,14 @@ describe("InversifyJS", () => {
             class NinjaOrganisation implements Organisation {
                 public schools: School[];
 
-                constructor(
+                public constructor(
                     @multiInject(schoolId) schools: School[]
                 ) {
                     this.schools = schools;
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Sword>(swordId).to(Katana);
             container.bind<Shuriken>(shurikenId).to(Shuriken);
             container.bind<Warrior>(warriorId).to(Ninja);
@@ -1177,7 +1168,7 @@ describe("InversifyJS", () => {
             container.bind<School>(schoolId).to(NinjaSchool);
             container.bind<Organisation>(organisationId).to(NinjaOrganisation);
 
-            let ninjaOrganisation = container.get<Organisation>(organisationId);
+            const ninjaOrganisation = container.get<Organisation>(organisationId);
 
             for (let i = 0; i < 2; i++) {
                 expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
@@ -1199,7 +1190,7 @@ describe("InversifyJS", () => {
 
             @injectable()
             class Katana extends Weapon {
-                constructor() {
+                public constructor() {
                     super();
                     this.name = "Katana";
                 }
@@ -1207,7 +1198,7 @@ describe("InversifyJS", () => {
 
             @injectable()
             class Shuriken extends Weapon {
-                constructor() {
+                public constructor() {
                     super();
                     this.name = "Shuriken";
                 }
@@ -1217,27 +1208,27 @@ describe("InversifyJS", () => {
             class Ninja {
                 public katana: Weapon;
                 public shuriken: Weapon;
-                public constructor( @multiInject(Weapon) weapons: Weapon[]) {
+                public constructor(@multiInject(Weapon) weapons: Weapon[]) {
                     this.katana = weapons[0];
                     this.shuriken = weapons[1];
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Ninja>(Ninja).to(Ninja);
             container.bind<Weapon>(Weapon).to(Katana);
             container.bind<Weapon>(Weapon).to(Shuriken);
 
-            let ninja = container.get<Ninja>(Ninja);
+            const ninja = container.get<Ninja>(Ninja);
             expect(ninja.katana.name).eql("Katana");
             expect(ninja.shuriken.name).eql("Shuriken");
 
             // if only one value is bound to Weapon
-            let container2 = new Container();
+            const container2 = new Container();
             container2.bind<Ninja>(Ninja).to(Ninja);
             container2.bind<Weapon>(Weapon).to(Katana);
 
-            let ninja2 = container2.get<Ninja>(Ninja);
+            const ninja2 = container2.get<Ninja>(Ninja);
             expect(ninja2.katana.name).eql("Katana");
 
         });
@@ -1282,7 +1273,7 @@ describe("InversifyJS", () => {
                 public ninjaMaster: Ninja;
                 public student: Ninja;
 
-                constructor(
+                public constructor(
                     @multiInject(Ninja) ninja: Ninja[]
                 ) {
                     this.ninjaMaster = ninja[0];
@@ -1290,14 +1281,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Katana>(Katana).to(Katana);
             container.bind<Shuriken>(Shuriken).to(Shuriken);
             container.bind<Ninja>(Ninja).to(Ninja);
             container.bind<Ninja>(Ninja).to(Ninja);
             container.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
 
-            let ninjaSchool = container.get<NinjaSchool>(NinjaSchool);
+            const ninjaSchool = container.get<NinjaSchool>(NinjaSchool);
             expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
             expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
 
@@ -1346,7 +1337,7 @@ describe("InversifyJS", () => {
                 public ninjaMaster: Ninja;
                 public student: Ninja;
 
-                constructor(
+                public constructor(
                     @multiInject(Ninja) ninjas: Ninja[]
                 ) {
                     this.ninjaMaster = ninjas[0];
@@ -1358,14 +1349,14 @@ describe("InversifyJS", () => {
             class NinjaOrganisation {
                 public schools: NinjaSchool[];
 
-                constructor(
+                public constructor(
                     @multiInject(NinjaSchool) schools: NinjaSchool[]
                 ) {
                     this.schools = schools;
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Katana>(Katana).to(Katana);
             container.bind<Shuriken>(Shuriken).to(Shuriken);
             container.bind<Ninja>(Ninja).to(Ninja);
@@ -1374,7 +1365,7 @@ describe("InversifyJS", () => {
             container.bind<NinjaSchool>(NinjaSchool).to(NinjaSchool);
             container.bind<NinjaOrganisation>(NinjaOrganisation).to(NinjaOrganisation);
 
-            let ninjaOrganisation = container.get<NinjaOrganisation>(NinjaOrganisation);
+            const ninjaOrganisation = container.get<NinjaOrganisation>(NinjaOrganisation);
 
             for (let i = 0; i < 2; i++) {
                 expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
@@ -1390,7 +1381,7 @@ describe("InversifyJS", () => {
     describe("Injection of multiple values with Symbol as keys", () => {
         it("Should support the injection of multiple values when using Symbols as keys", () => {
 
-            let TYPES = {
+            const TYPES = {
                 Warrior: Symbol.for("Warrior"),
                 Weapon: Symbol.for("Weapon")
             };
@@ -1418,34 +1409,34 @@ describe("InversifyJS", () => {
             class Ninja implements Warrior {
                 public katana: Weapon;
                 public shuriken: Weapon;
-                public constructor( @multiInject(TYPES.Weapon) weapons: Weapon[]) {
+                public constructor(@multiInject(TYPES.Weapon) weapons: Weapon[]) {
                     this.katana = weapons[0];
                     this.shuriken = weapons[1];
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Warrior>(TYPES.Warrior).to(Ninja);
             container.bind<Weapon>(TYPES.Weapon).to(Katana);
             container.bind<Weapon>(TYPES.Weapon).to(Shuriken);
 
-            let ninja = container.get<Warrior>(TYPES.Warrior);
+            const ninja = container.get<Warrior>(TYPES.Warrior);
             expect(ninja.katana.name).eql("Katana");
             expect(ninja.shuriken.name).eql("Shuriken");
 
             // if only one value is bound to Weapon
-            let container2 = new Container();
+            const container2 = new Container();
             container2.bind<Warrior>(TYPES.Warrior).to(Ninja);
             container2.bind<Weapon>(TYPES.Weapon).to(Katana);
 
-            let ninja2 = container2.get<Warrior>(TYPES.Warrior);
+            const ninja2 = container2.get<Warrior>(TYPES.Warrior);
             expect(ninja2.katana.name).eql("Katana");
 
         });
 
         it("Should support the injection of multiple values with nested inject", () => {
 
-            let TYPES = {
+            const TYPES = {
                 Katana: Symbol.for("Katana"),
                 Ninja: Symbol.for("Ninja"),
                 School: Symbol.for("School"),
@@ -1508,7 +1499,7 @@ describe("InversifyJS", () => {
                 public ninjaMaster: Ninja;
                 public student: Ninja;
 
-                constructor(
+                public constructor(
                     @multiInject(TYPES.Ninja) ninja: Ninja[]
                 ) {
                     this.ninjaMaster = ninja[0];
@@ -1516,14 +1507,14 @@ describe("InversifyJS", () => {
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Katana>(TYPES.Katana).to(Katana);
             container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
             container.bind<Ninja>(TYPES.Ninja).to(Ninja);
             container.bind<Ninja>(TYPES.Ninja).to(Ninja);
             container.bind<School>(TYPES.School).to(NinjaSchool);
 
-            let ninjaSchool = container.get<School>(TYPES.School);
+            const ninjaSchool = container.get<School>(TYPES.School);
             expect(ninjaSchool.ninjaMaster.fight()).eql("cut!");
             expect(ninjaSchool.ninjaMaster.sneak()).eql("hit!");
 
@@ -1534,7 +1525,7 @@ describe("InversifyJS", () => {
 
         it("Should support the injection of multiple values with nested multiInject", () => {
 
-            let TYPES = {
+            const TYPES = {
                 Katana: Symbol.for("Katana"),
                 Ninja: Symbol.for("Ninja"),
                 Organisation: Symbol.for("Organisation"),
@@ -1598,7 +1589,7 @@ describe("InversifyJS", () => {
                 public ninjaMaster: Ninja;
                 public student: Ninja;
 
-                constructor(
+                public constructor(
                     @multiInject(TYPES.Ninja) ninjas: Ninja[]
                 ) {
                     this.ninjaMaster = ninjas[0];
@@ -1614,14 +1605,14 @@ describe("InversifyJS", () => {
             class NinjaOrganisation implements Organisation {
                 public schools: NinjaSchool[];
 
-                constructor(
+                public constructor(
                     @multiInject(TYPES.School) schools: School[]
                 ) {
                     this.schools = schools;
                 }
             }
 
-            let container = new Container();
+            const container = new Container();
             container.bind<Katana>(TYPES.Katana).to(Katana);
             container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
             container.bind<Ninja>(TYPES.Ninja).to(Ninja);
@@ -1630,7 +1621,7 @@ describe("InversifyJS", () => {
             container.bind<School>(TYPES.School).to(NinjaSchool);
             container.bind<Organisation>(TYPES.Organisation).to(NinjaOrganisation);
 
-            let ninjaOrganisation = container.get<Organisation>(TYPES.Organisation);
+            const ninjaOrganisation = container.get<Organisation>(TYPES.Organisation);
 
             for (let i = 0; i < 2; i++) {
                 expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
@@ -1672,12 +1663,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>("Warrior").to(Ninja);
         container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged(Tag.CanThrow, true);
 
-        let ninja = container.get<Warrior>("Warrior");
+        const ninja = container.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1698,8 +1689,8 @@ describe("InversifyJS", () => {
             shuriken: Weapon;
         }
 
-        let throwable = tagged("canThrow", true);
-        let notThrowable = tagged("canThrow", false);
+        const throwable = tagged("canThrow", true);
+        const notThrowable = tagged("canThrow", false);
 
         @injectable()
         class Ninja implements Warrior {
@@ -1714,12 +1705,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>("Warrior").to(Ninja);
         container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
 
-        let ninja = container.get<Warrior>("Warrior");
+        const ninja = container.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1755,12 +1746,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>("Warrior").to(Ninja);
         container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed(name);
 
-        let ninja = container.get<Warrior>("Warrior");
+        const ninja = container.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1794,18 +1785,16 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>("Warrior").to(Ninja);
 
-        container.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) => {
-            return request !== null && request.target !== null && request.target.name.equals("katana");
-        });
+        container.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) =>
+            request !== null && request.target !== null && request.target.name.equals("katana"));
 
-        container.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) => {
-            return request !== null && request.target !== null && request.target.name.equals("shuriken");
-        });
+        container.bind<Weapon>("Weapon").to(Shuriken).when((request: interfaces.Request) =>
+            request !== null && request.target !== null && request.target.name.equals("shuriken"));
 
-        let ninja = container.get<Warrior>("Warrior");
+        const ninja = container.get<Warrior>("Warrior");
         expect(ninja.katana instanceof Katana).eql(true);
         expect(ninja.shuriken instanceof Shuriken).eql(true);
 
@@ -1833,12 +1822,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
 
-        let katana = container.getNamed<Weapon>("Weapon", "japonese");
-        let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
+        const katana = container.getNamed<Weapon>("Weapon", "japonese");
+        const shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 
         expect(katana.name).eql("katana");
         expect(shuriken.name).eql("shuriken");
@@ -1867,12 +1856,12 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
 
-        let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
-        let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
+        const katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
+        const shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 
         expect(katana.name).eql("katana");
         expect(shuriken.name).eql("shuriken");
@@ -1925,7 +1914,7 @@ describe("InversifyJS", () => {
         @injectable()
         class SamuraiMaster2 extends Samurai implements Warrior {
             public isMaster: boolean;
-            public constructor( @inject(SYMBOLS.Weapon) weapon: Weapon) {
+            public constructor(@inject(SYMBOLS.Weapon) weapon: Weapon) {
                 super(weapon);
                 this.isMaster = true;
             }
@@ -1937,11 +1926,11 @@ describe("InversifyJS", () => {
         container.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
         container.bind<Warrior>(SYMBOLS.SamuraiMaster2).to(SamuraiMaster2);
 
-        let errorFunction = () => { container.get<Warrior>(SYMBOLS.SamuraiMaster); };
-        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        const errorFunction = () => { container.get<Warrior>(SYMBOLS.SamuraiMaster); };
+        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
         expect(errorFunction).to.throw(error);
 
-        let samuraiMaster2 = container.get<SamuraiMaster2>(SYMBOLS.SamuraiMaster2);
+        const samuraiMaster2 = container.get<SamuraiMaster2>(SYMBOLS.SamuraiMaster2);
         expect(samuraiMaster2.weapon.name).eql("katana");
         expect(typeof samuraiMaster2.isMaster).eql("boolean");
 
@@ -1949,7 +1938,7 @@ describe("InversifyJS", () => {
 
     it("Should allow to flag arguments as unmanaged", () => {
 
-        let container = new Container();
+        const container = new Container();
 
         // CASE 1: should throw
 
@@ -1971,8 +1960,8 @@ describe("InversifyJS", () => {
         }
 
         container.bind<Base1>(Base1Id).to(Derived1);
-        let tryGet = () => { container.get(Base1Id); };
-        let error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "Derived1" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        const tryGet = () => { container.get(Base1Id); };
+        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "Derived1" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
         expect(tryGet).to.throw(error);
 
         // CASE 2: Use @unmanaged to overcome issue
@@ -1995,7 +1984,7 @@ describe("InversifyJS", () => {
         }
 
         container.bind<Base2>(Base2Id).to(Derived2);
-        let derived1 = container.get<Base2>(Base2Id);
+        const derived1 = container.get<Base2>(Base2Id);
         expect(derived1 instanceof Derived2).to.eql(true);
         expect(derived1.prop1).to.eql("unmanaged-injected-value");
 
@@ -2022,7 +2011,7 @@ describe("InversifyJS", () => {
 
         container.bind<Base3>(Base3Id).to(Derived3);
         container.bind<string>("SomeId").toConstantValue("managed-injected-value");
-        let derived2 = container.get<Base3>(Base3Id);
+        const derived2 = container.get<Base3>(Base3Id);
         expect(derived2 instanceof Base3).to.eql(true);
         expect(derived2.prop1).to.eql("unmanaged-injected-value");
         expect(derived2.prop2).to.eql("managed-injected-value");
@@ -2031,7 +2020,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenInjectedInto contextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Ninja: "Ninja",
             Weapon: "Weapon"
         };
@@ -2084,14 +2073,14 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).whenInjectedInto(NinjaMaster);
         container.bind<Weapon>(TYPES.Weapon).to(Bokken).whenInjectedInto(NinjaStudent);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master instanceof NinjaMaster).eql(true);
         expect(student instanceof NinjaStudent).eql(true);
@@ -2103,7 +2092,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenParentNamed contextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Material: "Material",
             Ninja: "Ninja",
             Weapon: "Weapon"
@@ -2136,7 +2125,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Sword implements Weapon {
             public material: Material;
-            public constructor( @inject("Material") material: Material) {
+            public constructor(@inject("Material") material: Material) {
                 this.material = material;
             }
         }
@@ -2169,15 +2158,15 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container.bind<Weapon>(TYPES.Weapon).to(Sword);
         container.bind<Material>(TYPES.Material).to(Iron).whenParentNamed("lethal");
         container.bind<Material>(TYPES.Material).to(Wood).whenParentNamed("non-lethal");
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
@@ -2186,7 +2175,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenParentTagged contextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Material: "Material",
             Ninja: "Ninja",
             Weapon: "Weapon"
@@ -2219,7 +2208,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Sword implements Weapon {
             public material: Material;
-            public constructor( @inject("Material") material: Material) {
+            public constructor(@inject("Material") material: Material) {
                 this.material = material;
             }
         }
@@ -2252,15 +2241,15 @@ describe("InversifyJS", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container.bind<Weapon>(TYPES.Weapon).to(Sword);
         container.bind<Material>(TYPES.Material).to(Iron).whenParentTagged("lethal", true);
         container.bind<Material>(TYPES.Material).to(Wood).whenParentTagged("lethal", false);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
@@ -2269,7 +2258,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenAnyAncestorIs and whenNoAncestorIs contextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Material: "Material",
             Ninja: "Ninja",
             Weapon: "Weapon"
@@ -2302,7 +2291,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Sword implements Weapon {
             public material: Material;
-            public constructor( @inject("Material") material: Material) {
+            public constructor(@inject("Material") material: Material) {
                 this.material = material;
             }
         }
@@ -2336,29 +2325,29 @@ describe("InversifyJS", () => {
         }
 
         // whenAnyAncestorIs
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container.bind<Weapon>(TYPES.Weapon).to(Sword);
         container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorIs(NinjaMaster);
         container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorIs(NinjaStudent);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorIs
-        let container2 = new Container();
+        const container2 = new Container();
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container2.bind<Weapon>(TYPES.Weapon).to(Sword);
         container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorIs(NinjaStudent);
         container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorIs(NinjaMaster);
 
-        let master2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2367,7 +2356,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenAnyAncestorNamed and whenNoAncestorNamed contextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Material: "Material",
             Ninja: "Ninja",
             Weapon: "Weapon"
@@ -2400,7 +2389,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Sword implements Weapon {
             public material: Material;
-            public constructor( @inject("Material") material: Material) {
+            public constructor(@inject("Material") material: Material) {
                 this.material = material;
             }
         }
@@ -2434,29 +2423,29 @@ describe("InversifyJS", () => {
         }
 
         // whenAnyAncestorNamed
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetNamed("non-lethal");
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetNamed("lethal");
         container.bind<Weapon>(TYPES.Weapon).to(Sword);
         container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorNamed("lethal");
         container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorNamed("non-lethal");
 
-        let master = container.getNamed<Ninja>(TYPES.Ninja, "lethal");
-        let student = container.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
+        const master = container.getNamed<Ninja>(TYPES.Ninja, "lethal");
+        const student = container.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorNamed
-        let container2 = new Container();
+        const container2 = new Container();
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetNamed("non-lethal");
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetNamed("lethal");
         container2.bind<Weapon>(TYPES.Weapon).to(Sword);
         container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorNamed("non-lethal");
         container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorNamed("lethal");
 
-        let master2 = container.getNamed<Ninja>(TYPES.Ninja, "lethal");
-        let student2 = container.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
+        const master2 = container.getNamed<Ninja>(TYPES.Ninja, "lethal");
+        const student2 = container.getNamed<Ninja>(TYPES.Ninja, "non-lethal");
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2465,7 +2454,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenAnyAncestorTagged and whenNoAncestorTaggedcontextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Material: "Material",
             Ninja: "Ninja",
             Weapon: "Weapon"
@@ -2498,7 +2487,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Sword implements Weapon {
             public material: Material;
-            public constructor( @inject("Material") material: Material) {
+            public constructor(@inject("Material") material: Material) {
                 this.material = material;
             }
         }
@@ -2532,29 +2521,29 @@ describe("InversifyJS", () => {
         }
 
         // whenAnyAncestorTagged
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("lethal", false);
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("lethal", true);
         container.bind<Weapon>(TYPES.Weapon).to(Sword);
         container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorTagged("lethal", true);
         container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorTagged("lethal", false);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
+        const master = container.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
+        const student = container.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorTagged
-        let container2 = new Container();
+        const container2 = new Container();
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("lethal", false);
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("lethal", true);
         container2.bind<Weapon>(TYPES.Weapon).to(Sword);
         container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorTagged("lethal", false);
         container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorTagged("lethal", true);
 
-        let master2 = container.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
-        let student2 = container.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
+        const master2 = container.getTagged<Ninja>(TYPES.Ninja, "lethal", true);
+        const student2 = container.getTagged<Ninja>(TYPES.Ninja, "lethal", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2563,7 +2552,7 @@ describe("InversifyJS", () => {
 
     it("Should support a whenAnyAncestorMatches and whenNoAncestorMatches contextual bindings constraint", () => {
 
-        let TYPES = {
+        const TYPES = {
             Material: "Material",
             Ninja: "Ninja",
             Weapon: "Weapon"
@@ -2596,7 +2585,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Sword implements Weapon {
             public material: Material;
-            public constructor( @inject("Material") material: Material) {
+            public constructor(@inject("Material") material: Material) {
                 this.material = material;
             }
         }
@@ -2630,33 +2619,33 @@ describe("InversifyJS", () => {
         }
 
         // custom constraints
-        let anyAncestorIsNinjaMasterConstraint = typeConstraint(NinjaMaster);
-        let anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
+        const anyAncestorIsNinjaMasterConstraint = typeConstraint(NinjaMaster);
+        const anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
 
         // whenAnyAncestorMatches
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container.bind<Weapon>(TYPES.Weapon).to(Sword);
         container.bind<Material>(TYPES.Material).to(Iron).whenAnyAncestorMatches(anyAncestorIsNinjaMasterConstraint);
         container.bind<Material>(TYPES.Material).to(Wood).whenAnyAncestorMatches(anyAncestorIsNinjaStudentConstraint);
 
-        let master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master = container.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student = container.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master.weapon.material.name).eql("iron");
         expect(student.weapon.material.name).eql("wood");
 
         // whenNoAncestorMatches
-        let container2 = new Container();
+        const container2 = new Container();
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaStudent).whenTargetTagged("master", false);
         container2.bind<Ninja>(TYPES.Ninja).to(NinjaMaster).whenTargetTagged("master", true);
         container2.bind<Weapon>(TYPES.Weapon).to(Sword);
         container2.bind<Material>(TYPES.Material).to(Iron).whenNoAncestorMatches(anyAncestorIsNinjaStudentConstraint);
         container2.bind<Material>(TYPES.Material).to(Wood).whenNoAncestorMatches(anyAncestorIsNinjaMasterConstraint);
 
-        let master2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", true);
-        let student2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", false);
+        const master2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", true);
+        const student2 = container2.getTagged<Ninja>(TYPES.Ninja, "master", false);
 
         expect(master2.weapon.material.name).eql("iron");
         expect(student2.weapon.material.name).eql("wood");
@@ -2686,7 +2675,7 @@ describe("InversifyJS", () => {
 
         @injectable()
         class SamuraiMaster extends Samurai implements Warrior {
-            constructor( @inject(SYMBOLS.RANK) rank: string) {
+            public constructor(@inject(SYMBOLS.RANK) rank: string) {
                 super(rank);
             }
         }
@@ -2695,7 +2684,7 @@ describe("InversifyJS", () => {
         container.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
         container.bind<string>(SYMBOLS.RANK).toConstantValue("Master");
 
-        let samurai = container.get<SamuraiMaster>(SYMBOLS.SamuraiMaster);
+        const samurai = container.get<SamuraiMaster>(SYMBOLS.SamuraiMaster);
         expect(samurai.rank).eql("Master");
 
     });
@@ -2722,7 +2711,7 @@ describe("InversifyJS", () => {
 
         @injectable()
         class SamuraiMaster extends Samurai implements Warrior {
-            constructor() {
+            public constructor() {
                 super("master");
             }
         }
