@@ -52,7 +52,7 @@ describe("issue 549", () => {
         } catch (e) {
 
             const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
-            const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
+            const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.BDynamicValue.toString());
             const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1;
             const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1;
 
