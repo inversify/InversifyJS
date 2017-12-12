@@ -52,6 +52,10 @@ InversifyJS has been developed with 4 main goals:
 **[Michel Weststrate](https://twitter.com/mweststrate)** - Author of [MobX](https://github.com/mobxjs/mobx)
 > *Dependency injection like InversifyJS works nicely*
 
+## Some companies using InversifyJS
+
+<img src="https://avatars0.githubusercontent.com/u/6154722?s=200&v=4" width="100" /> <img src="https://pbs.twimg.com/profile_images/827249559046909954/SyaBPcH8_400x400.jpg" width="100" /> <img src="https://avatars3.githubusercontent.com/u/114767?s=200&v=4" width="100" /> <img src="https://avatars0.githubusercontent.com/u/25283328?s=200&v=4" width="100" /> <img src="https://avatars1.githubusercontent.com/u/1957282?s=200&v=4" width="100" /> <img src="https://avatars1.githubusercontent.com/u/17648048?s=200&v=4" width="100" /> <img src="https://avatars0.githubusercontent.com/u/16970371?s=200&v=4" width="100" /> <img src="https://avatars0.githubusercontent.com/u/18010308?s=200&v=4" width="100" /> <img src="https://avatars2.githubusercontent.com/u/8085382?s=200&v=4" width="100" /> <img src="https://avatars2.githubusercontent.com/u/29682426?s=200&v=4" width="100" /> <img src="https://avatars1.githubusercontent.com/u/14963540?s=200&v=4" width="100" /> <img src="https://avatars0.githubusercontent.com/u/26021686?s=200&v=4" width="100" /> <img src="https://avatars2.githubusercontent.com/u/24523195?s=200&v=4" width="100" /> <img src="https://avatars3.githubusercontent.com/u/16556899?s=200&v=4" width="100" />
+
 ## Installation
 
 You can get the latest release and the type definitions using npm:
