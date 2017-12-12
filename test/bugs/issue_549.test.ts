@@ -47,8 +47,26 @@ describe("issue 549", () => {
             return container.get<A>(A);
         }
 
-        const expectedError = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
-        expect(willThrow).to.throw(expectedError);
+        const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
+        const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
+        
+        try {
+            willThrow();
+            throw new Error("This line should never be executed. Expected 'willThrow' to throw!");
+        } catch (e) {
+            const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1);
+            const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1);
+            if (matchesErrorA === false && matchesErrorB === false) {
+                throw new Error(
+                    "Expected 'willThrow' to throw:\n" +
+                    `- ${expectedErrorA}\n` +
+                    "or\n" +
+                    `- ${expectedErrorB}\n` +
+                    "but got\n" +
+                    `- ${e.message}`
+                );
+            }
+        }
 
     });
 
