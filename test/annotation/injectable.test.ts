@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { injectable, decorate } from "../../src/inversify";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import { decorate, injectable } from "../../src/inversify";
 
 describe("@injectable", () => {
 
@@ -31,7 +31,7 @@ describe("@injectable", () => {
 
         }
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
+        const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
         expect(metadata).to.be.instanceof(Array);
 
         expect(metadata[0]).to.be.eql(Katana);
@@ -44,7 +44,7 @@ describe("@injectable", () => {
         @injectable()
         class Test {}
 
-        let useDecoratorMoreThanOnce = function() {
+        const useDecoratorMoreThanOnce = function() {
             decorate(injectable(), Test);
             decorate(injectable(), Test);
         };
@@ -57,13 +57,13 @@ describe("@injectable", () => {
         interface Katana {}
         interface Shuriken {}
 
-        let VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
+        const VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
                 // ...
         };
 
         decorate(injectable(), VanillaJSWarrior);
 
-        let metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
+        const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
         expect(metadata).to.be.instanceof(Array);
         expect(metadata.length).to.eql(0);
 

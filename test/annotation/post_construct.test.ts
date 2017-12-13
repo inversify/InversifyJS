@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import { postConstruct } from "../../src/annotation/post_construct";
 import { Metadata } from "../../dts/planning/metadata";
+import { postConstruct } from "../../src/annotation/post_construct";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { decorate } from "../../src/inversify";
 
 describe("@postConstruct", () => {
@@ -23,7 +23,7 @@ describe("@postConstruct", () => {
                 return this.useMessage;
             }
         }
-        let metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
+        const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
         expect(metadata.value).to.be.equal("testMethod");
     });
 
@@ -43,7 +43,7 @@ describe("@postConstruct", () => {
 
     it("Should be usable in VanillaJS applications", () => {
 
-        let VanillaJSWarrior = function () {
+        const VanillaJSWarrior = function () {
                    // ...
         };
         VanillaJSWarrior.prototype.testMethod = function () {
@@ -52,7 +52,7 @@ describe("@postConstruct", () => {
 
         decorate(postConstruct(), VanillaJSWarrior.prototype, "testMethod");
 
-        let metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
+        const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
         expect(metadata.value).to.be.equal("testMethod");
     });
 

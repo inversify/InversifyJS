@@ -1,14 +1,14 @@
-import { interfaces } from "../interfaces/interfaces";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import { interfaces } from "../interfaces/interfaces";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
     if (typeof serviceIdentifier === "function") {
-        let _serviceIdentifier: any = serviceIdentifier;
+        const _serviceIdentifier: any = serviceIdentifier;
         return _serviceIdentifier.name;
     } else if (typeof serviceIdentifier === "symbol") {
         return serviceIdentifier.toString();
     } else { // string
-        let _serviceIdentifier: any = serviceIdentifier;
+        const _serviceIdentifier: any = serviceIdentifier;
         return _serviceIdentifier;
     }
 }
@@ -23,11 +23,11 @@ function listRegisteredBindingsForServiceIdentifier(
 ): string {
 
     let registeredBindingsList = "";
-    let registeredBindings = getBindings(container, serviceIdentifier);
+    const registeredBindings = getBindings(container, serviceIdentifier);
 
     if (registeredBindings.length !== 0) {
 
-        registeredBindingsList = `\nRegistered bindings:`;
+        registeredBindingsList = "\nRegistered bindings:";
 
         registeredBindings.forEach((binding: interfaces.Binding<any>) => {
 
@@ -58,14 +58,14 @@ function circularDependencyToException(
 ) {
 
     // Add to list so we know that we have already visit this node in the request tree
-    let parentServiceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
+    const parentServiceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
     previousServiceIdentifiers.push(parentServiceIdentifier);
 
     // iterate child requests
     request.childRequests.forEach((childRequest) => {
 
         // the service identifier of a child request
-        let childServiceIdentifier = getServiceIdentifierAsString(childRequest.serviceIdentifier);
+        const childServiceIdentifier = getServiceIdentifierAsString(childRequest.serviceIdentifier);
 
         // check if the child request has been already visited
         if (previousServiceIdentifiers.indexOf(childServiceIdentifier) === -1) {
@@ -83,9 +83,10 @@ function circularDependencyToException(
             // create description of circular dependency
             previousServiceIdentifiers.push(childServiceIdentifier);
 
-            let services = previousServiceIdentifiers.reduce((prev, curr) => {
-                return (prev !== "") ? `${prev} -> ${curr}` : `${curr}`;
-            }, "");
+            const services = previousServiceIdentifiers.reduce(
+                (prev, curr) =>
+                    (prev !== "") ? `${prev} -> ${curr}` : `${curr}`,
+                "");
 
             // throw when we have already visit this node in the request tree
             throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
@@ -101,8 +102,8 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
 
         let m = "";
 
-        let namedTag = target.getNamedTag();
-        let otherTags = target.getCustomTags();
+        const namedTag = target.getNamedTag();
+        const otherTags = target.getCustomTags();
 
         if (namedTag !== null) {
             m += namedTag.toString() + "\n";
@@ -125,8 +126,8 @@ function getFunctionName(v: any): string {
     if (v.name) {
         return v.name;
     } else {
-        let name = v.toString();
-        let match = name.match(/^function\s*([^\s(]+)/);
+        const name = v.toString();
+        const match = name.match(/^function\s*([^\s(]+)/);
         return match ? match[1] : `Anonymous function: ${name}`;
     }
 }

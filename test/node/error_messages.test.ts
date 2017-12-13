@@ -15,11 +15,11 @@ describe("Error message when resolving fails", () => {
     class Bokken implements Weapon { }
 
     it("Should contain correct message and the serviceIdentifier in error message", () => {
-        let container = new Container();
+        const container = new Container();
 
         container.bind<Weapon>("Weapon").to(Katana);
 
-        let tryWeapon = () => { container.get("Ninja"); };
+        const tryWeapon = () => { container.get("Ninja"); };
 
         expect(tryWeapon).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Ninja`);
 
@@ -27,8 +27,8 @@ describe("Error message when resolving fails", () => {
 
     it("Should contain the provided name in error message when target is named", () => {
 
-        let container = new Container();
-        let tryGetNamedWeapon = (name: string|number|symbol) => { container.getNamed("Weapon", name); };
+        const container = new Container();
+        const tryGetNamedWeapon = (name: string | number | symbol) => { container.getNamed("Weapon", name); };
 
         expect(() => tryGetNamedWeapon("superior")).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
         expect(() => tryGetNamedWeapon(Symbol.for("Superior"))).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
@@ -36,11 +36,10 @@ describe("Error message when resolving fails", () => {
 
     });
 
-
     it("Should contain the provided tag in error message when target is tagged", () => {
 
-        let container = new Container();
-        let tryGetTaggedWeapon = (tag: string|number|symbol) => { container.getTagged("Weapon", tag, true); };
+        const container = new Container();
+        const tryGetTaggedWeapon = (tag: string | number | symbol) => { container.getTagged("Weapon", tag, true); };
 
         expect(() => tryGetTaggedWeapon("canShoot")).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
         expect(() => tryGetTaggedWeapon(Symbol.for("Can shoot"))).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
@@ -50,7 +49,7 @@ describe("Error message when resolving fails", () => {
 
     it("Should list all possible bindings in error message if no matching binding found", () => {
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
         container.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
@@ -66,7 +65,7 @@ describe("Error message when resolving fails", () => {
 
     it("Should list all possible bindings in error message if ambiguous matching binding found", () => {
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
         container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
         container.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");

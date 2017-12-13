@@ -1,10 +1,10 @@
-import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import { Binding } from "../../src/bindings/binding";
-import { BindingWhenOnSyntax } from "../../src/syntax/binding_when_on_syntax";
-import { injectable } from "../../src/annotation/injectable";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import * as sinon from "sinon";
+import { injectable } from "../../src/annotation/injectable";
+import { Binding } from "../../src/bindings/binding";
+import { BindingScopeEnum } from "../../src/constants/literal_types";
+import { interfaces } from "../../src/interfaces/interfaces";
+import { BindingWhenOnSyntax } from "../../src/syntax/binding_when_on_syntax";
 
 describe("BindingWhenOnSyntax", () => {
 
@@ -21,13 +21,13 @@ describe("BindingWhenOnSyntax", () => {
     it("Should set its own properties correctly", () => {
 
         interface Ninja {}
-        let ninjaIdentifier = "Ninja";
+        const ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
-        let _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
+        const _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
 
         expect(_bindingWhenOnSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
 
@@ -46,48 +46,48 @@ describe("BindingWhenOnSyntax", () => {
         class ZombieArmy implements ZombieArmy {}
 
         interface Ninja {}
-        let ninjaIdentifier = "Ninja";
+        const ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
-        let _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
+        const _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
 
         // stubs for BindingWhenSyntax methods
-        let whenStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "when").returns(null);
-        let whenTargetNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetNamed").returns(null);
-        let whenTargetTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetTagged").returns(null);
-        let whenInjectedIntoStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenInjectedInto").returns(null);
-        let whenParentNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentNamed").returns(null);
-        let whenParentTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentTagged").returns(null);
+        const whenStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "when").returns(null);
+        const whenTargetNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetNamed").returns(null);
+        const whenTargetTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetTagged").returns(null);
+        const whenInjectedIntoStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenInjectedInto").returns(null);
+        const whenParentNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentNamed").returns(null);
+        const whenParentTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentTagged").returns(null);
 
-        let whenAnyAncestorIsStub = sinon.stub(
+        const whenAnyAncestorIsStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorIs").returns(null);
 
-        let whenNoAncestorIsStub = sinon.stub(
+        const whenNoAncestorIsStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorIs").returns(null);
 
-        let whenAnyAncestorNamedStub = sinon.stub(
+        const whenAnyAncestorNamedStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorNamed").returns(null);
 
-        let whenNoAncestorNamedStub = sinon.stub(
+        const whenNoAncestorNamedStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorNamed").returns(null);
 
-        let whenNoAncestorTaggedStub = sinon.stub(
+        const whenNoAncestorTaggedStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorTagged").returns(null);
 
-        let whenAnyAncestorTaggedStub = sinon.stub(
+        const whenAnyAncestorTaggedStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorTagged").returns(null);
 
-        let whenAnyAncestorMatchesStub = sinon.stub(
+        const whenAnyAncestorMatchesStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenAnyAncestorMatches").returns(null);
 
-        let whenNoAncestorMatchesStub = sinon.stub(
+        const whenNoAncestorMatchesStub = sinon.stub(
             _bindingWhenOnSyntax._bindingWhenSyntax, "whenNoAncestorMatches").returns(null);
 
         // invoke BindingWhenOnSyntax methods
-        bindingWhenOnSyntax.when((request: interfaces.Request) => { return true; });
+        bindingWhenOnSyntax.when((request: interfaces.Request) => true);
         bindingWhenOnSyntax.whenTargetNamed("test");
         bindingWhenOnSyntax.whenTargetTagged("test", true);
         bindingWhenOnSyntax.whenInjectedInto("army");
@@ -100,8 +100,8 @@ describe("BindingWhenOnSyntax", () => {
         bindingWhenOnSyntax.whenAnyAncestorTagged("test", true);
         bindingWhenOnSyntax.whenNoAncestorNamed("test");
         bindingWhenOnSyntax.whenNoAncestorTagged("test", true);
-        bindingWhenOnSyntax.whenAnyAncestorMatches((request: interfaces.Request) => { return true; });
-        bindingWhenOnSyntax.whenNoAncestorMatches((request: interfaces.Request) => { return true; });
+        bindingWhenOnSyntax.whenAnyAncestorMatches((request: interfaces.Request) => true);
+        bindingWhenOnSyntax.whenNoAncestorMatches((request: interfaces.Request) => true);
 
         // assert invoked BindingWhenSyntax methods
         expect(whenStub.callCount).eql(1);
@@ -124,22 +124,21 @@ describe("BindingWhenOnSyntax", () => {
     it("Should provide access to BindingOnSyntax methods", () => {
 
         interface Ninja {}
-        let ninjaIdentifier = "Ninja";
+        const ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        let bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
-        let _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
+        const _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
 
         // stubs for BindingWhenSyntax methods
-        let onActivationStub = sinon.stub(_bindingWhenOnSyntax._bindingOnSyntax, "onActivation").returns(null);
+        const onActivationStub = sinon.stub(_bindingWhenOnSyntax._bindingOnSyntax, "onActivation").returns(null);
 
         // invoke BindingWhenOnSyntax methods
-        bindingWhenOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) => {
+        bindingWhenOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) =>
             // DO NOTHING
-            return ninja;
-        });
+            ninja);
 
         // assert invoked BindingWhenSyntax methods
         expect(onActivationStub.callCount).eql(1);

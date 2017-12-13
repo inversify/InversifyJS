@@ -1,21 +1,21 @@
-import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import { resolve } from "../../src/resolution/resolver";
-import { plan, getBindingDictionary } from "../../src/planning/planner";
-import { Container } from "../../src/container/container";
-import { TargetTypeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
-import { injectable } from "../../src/annotation/injectable";
-import { inject } from "../../src/annotation/inject";
-import { multiInject } from "../../src/annotation/multi_inject";
-import { tagged } from "../../src/annotation/tagged";
-import { named } from "../../src/annotation/named";
-import { targetName } from "../../src/annotation/target_name";
 import * as Proxy from "harmony-proxy";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
-import { MetadataReader } from "../../src/planning/metadata_reader";
+import { inject } from "../../src/annotation/inject";
+import { injectable } from "../../src/annotation/injectable";
+import { multiInject } from "../../src/annotation/multi_inject";
+import { named } from "../../src/annotation/named";
 import { postConstruct } from "../../src/annotation/post_construct";
+import { tagged } from "../../src/annotation/tagged";
+import { targetName } from "../../src/annotation/target_name";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { BindingTypeEnum, TargetTypeEnum } from "../../src/constants/literal_types";
+import { Container } from "../../src/container/container";
+import { interfaces } from "../../src/interfaces/interfaces";
+import { MetadataReader } from "../../src/planning/metadata_reader";
+import { getBindingDictionary, plan } from "../../src/planning/planner";
 import { resolveInstance } from "../../src/resolution/instantiation";
+import { resolve } from "../../src/resolution/resolver";
 
 describe("Resolve", () => {
 
@@ -31,11 +31,11 @@ describe("Resolve", () => {
 
   it("Should be able to resolve BindingType.Instance bindings", () => {
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaId = "Katana";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const katanaId = "Katana";
+      const katanaHandlerId = "KatanaHandler";
+      const katanaBladeId = "KatanaBlade";
 
       interface Blade {}
 
@@ -88,15 +88,15 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).to(Katana);
       container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-      let ninja = resolve<Ninja>(context);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -108,11 +108,11 @@ describe("Resolve", () => {
 
   it("Should store singleton type bindings in cache", () => {
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaId = "Katana";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const katanaId = "Katana";
+      const katanaHandlerId = "KatanaHandler";
+      const katanaBladeId = "KatanaBlade";
 
       interface Blade {}
 
@@ -165,21 +165,21 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
       container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
 
-      let bindingDictionary = getBindingDictionary(container);
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const bindingDictionary = getBindingDictionary(container);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
       expect(ninja instanceof Ninja).eql(true);
 
-      let ninja2 = resolve<Ninja>(context);
+      const ninja2 = resolve<Ninja>(context);
       expect(ninja2 instanceof Ninja).eql(true);
 
       expect(bindingDictionary.get(katanaId)[0].cache instanceof Katana).eql(true);
@@ -217,14 +217,14 @@ describe("Resolve", () => {
       }
 
       // container and bindings
-      let ninjaId = "Ninja";
-      let container = new Container();
+      const ninjaId = "Ninja";
+      const container = new Container();
       container.bind<Ninja>(ninjaId); // IMPORTANT! (Invalid binding)
 
       // context and plan
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let throwFunction = () => {
+      const throwFunction = () => {
           resolve(context);
       };
 
@@ -283,18 +283,18 @@ describe("Resolve", () => {
           }
       }
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaId = "Katana";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const katanaId = "Katana";
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -321,31 +321,31 @@ describe("Resolve", () => {
         }
     }
 
-    let container = new Container();
+    const container = new Container();
     container.bind<UseDate>("UseDate").to(UseDate);
-    container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => { return new Date(); });
+    container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => new Date());
 
-    let subject1 = container.get<UseDate>("UseDate");
-    let subject2 = container.get<UseDate>("UseDate");
+    const subject1 = container.get<UseDate>("UseDate");
+    const subject2 = container.get<UseDate>("UseDate");
     expect(subject1.doSomething() === subject2.doSomething()).eql(false);
 
     container.unbind("Date");
     container.bind<Date>("Date").toConstantValue(new Date());
 
-    let subject3 = container.get<UseDate>("UseDate");
-    let subject4 = container.get<UseDate>("UseDate");
+    const subject3 = container.get<UseDate>("UseDate");
+    const subject4 = container.get<UseDate>("UseDate");
     expect(subject3.doSomething() === subject4.doSomething()).eql(true);
 
   });
 
   it("Should be able to resolve BindingType.Constructor bindings", () => {
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaId = "Katana";
-      let newableKatanaId = "Newable<Katana>";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const katanaId = "Katana";
+      const newableKatanaId = "Newable<Katana>";
+      const katanaHandlerId = "KatanaHandler";
+      const katanaBladeId = "KatanaBlade";
 
       interface KatanaBlade {}
 
@@ -398,14 +398,14 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).to(Katana);
       container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-      let ninja = resolve<Ninja>(context);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -417,12 +417,12 @@ describe("Resolve", () => {
 
   it("Should be able to resolve BindingType.Factory bindings", () => {
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let swordFactoryId = "Factory<Sword>";
-      let katanaId = "Katana";
-      let handlerId = "Handler";
-      let bladeId = "Blade";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const swordFactoryId = "Factory<Sword>";
+      const katanaId = "Katana";
+      const handlerId = "Handler";
+      const bladeId = "Blade";
 
       interface Blade {}
 
@@ -439,9 +439,7 @@ describe("Resolve", () => {
           blade: Blade;
       }
 
-      interface SwordFactory extends Function {
-          (): Sword;
-      }
+      type SwordFactory = () => Sword;
 
       @injectable()
       class Katana implements Sword {
@@ -479,22 +477,20 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).to(Katana);
       container.bind<KatanaBlade>(bladeId).to(KatanaBlade);
       container.bind<KatanaHandler>(handlerId).to(KatanaHandler);
 
-      container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((theContext: interfaces.Context) => {
-          return () => {
-              return theContext.container.get<Katana>(katanaId);
-          };
-      });
+      container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((theContext: interfaces.Context) =>
+          () =>
+              theContext.container.get<Katana>(katanaId));
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -506,12 +502,12 @@ describe("Resolve", () => {
 
   it("Should be able to resolve bindings with auto factory", () => {
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaFactoryId = "Factory<Sword>";
-      let katanaId = "Katana";
-      let katanaHandlerId = "KatanaHandler";
-      let katanaBladeId = "KatanaBlade";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const katanaFactoryId = "Factory<Sword>";
+      const katanaId = "Katana";
+      const katanaHandlerId = "KatanaHandler";
+      const katanaBladeId = "KatanaBlade";
 
       interface KatanaBlade {}
 
@@ -528,9 +524,7 @@ describe("Resolve", () => {
           blade: KatanaBlade;
       }
 
-      interface SwordFactory extends Function {
-          (): Sword;
-      }
+      type SwordFactory = () => Sword;
 
       @injectable()
       class Katana implements Sword {
@@ -568,7 +562,7 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Katana>(katanaId).to(Katana);
@@ -576,8 +570,8 @@ describe("Resolve", () => {
       container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
       container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-      let ninja = resolve<Ninja>(context);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -591,12 +585,12 @@ describe("Resolve", () => {
 
       type SwordProvider = () => Promise<Sword>;
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let swordProviderId = "Provider<Sword>";
-      let swordId = "Sword";
-      let handlerId = "Handler";
-      let bladeId = "Blade";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const swordProviderId = "Provider<Sword>";
+      const swordId = "Sword";
+      const handlerId = "Handler";
+      const bladeId = "Blade";
 
       interface Blade {}
 
@@ -652,25 +646,23 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Warrior>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
       container.bind<Sword>(swordId).to(Katana);
       container.bind<Blade>(bladeId).to(KatanaBlade);
       container.bind<Handler>(handlerId).to(KatanaHandler);
 
-      container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((theContext: interfaces.Context) => {
-          return () => {
-              return new Promise<Sword>((resolveFunc) => {
+      container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((theContext: interfaces.Context) =>
+          () =>
+              new Promise<Sword>((resolveFunc) => {
                   // Using setTimeout to simulate complex initialization
                   setTimeout(() => { resolveFunc(theContext.container.get<Sword>(swordId)); }, 100);
-              });
-          };
-      });
+              }));
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Warrior>(context);
+      const ninja = resolve<Warrior>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
@@ -712,17 +704,17 @@ describe("Resolve", () => {
           }
       }
 
-      let ninjaId = "Ninja";
-      let weaponId = "Weapon";
+      const ninjaId = "Ninja";
+      const weaponId = "Weapon";
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
       container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -758,17 +750,17 @@ describe("Resolve", () => {
           }
       }
 
-      let ninjaId = "Ninja";
-      let weaponId = "Weapon";
+      const ninjaId = "Ninja";
+      const weaponId = "Weapon";
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
       container.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -804,23 +796,21 @@ describe("Resolve", () => {
           }
       }
 
-      let ninjaId = "Ninja";
-      let weaponId = "Weapon";
+      const ninjaId = "Ninja";
+      const weaponId = "Weapon";
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
 
-      container.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) => {
-          return request.target.name.equals("katana");
-      });
+      container.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) =>
+          request.target.name.equals("katana"));
 
-      container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) => {
-        return request.target.name.equals("shuriken");
-      });
+      container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) =>
+        request.target.name.equals("shuriken"));
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -860,30 +850,30 @@ describe("Resolve", () => {
           }
       }
 
-      let ninjaId = "Ninja";
-      let weaponId = "Weapon";
+      const ninjaId = "Ninja";
+      const weaponId = "Weapon";
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Weapon>(weaponId).to(Katana);
       container.bind<Weapon>(weaponId).to(Shuriken);
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
 
       // if only one value is bound to weaponId
-      let container2 = new Container();
+      const container2 = new Container();
       container2.bind<Ninja>(ninjaId).to(Ninja);
       container2.bind<Weapon>(weaponId).to(Katana);
 
-      let context2 = plan(new MetadataReader(), container2, false, TargetTypeEnum.Variable, ninjaId);
+      const context2 = plan(new MetadataReader(), container2, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja2 = resolve<Ninja>(context2);
+      const ninja2 = resolve<Ninja>(context2);
 
       expect(ninja2 instanceof Ninja).eql(true);
       expect(ninja2.katana instanceof Katana).eql(true);
@@ -893,7 +883,7 @@ describe("Resolve", () => {
   it("Should be able to resolve plans with activation handlers", () => {
 
         interface Sword {
-            use: () => void;
+            use(): void;
         }
 
         @injectable()
@@ -917,21 +907,21 @@ describe("Resolve", () => {
             }
         }
 
-        let ninjaId = "Ninja";
-        let katanaId = "Katana";
+        const ninjaId = "Ninja";
+        const katanaId = "Katana";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
 
         // This is a global for unit testing but remember
         // that it is not a good idea to use globals
-        let timeTracker: string[] = [];
+        const timeTracker: string[] = [];
 
         container.bind<Katana>(katanaId).to(Katana).onActivation((theContext: interfaces.Context, katana: Katana) => {
-            let handler = {
-                apply: function(target: any, thisArgument: any, argumentsList: any[]) {
+            const handler = {
+                apply(target: any, thisArgument: any, argumentsList: any[]) {
                     timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);
-                    let result = target.apply(thisArgument, argumentsList);
+                    const result = target.apply(thisArgument, argumentsList);
                     timeTracker.push(`Finished ${target.name} ${new Date().getTime()}`);
                     return result;
                 }
@@ -941,9 +931,9 @@ describe("Resolve", () => {
             return katana;
         });
 
-        let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-        let ninja = resolve<Ninja>(context);
+        const ninja = resolve<Ninja>(context);
 
         expect(ninja.katana.use()).eql("Used Katana!");
         expect(Array.isArray(timeTracker)).eql(true);
@@ -953,13 +943,11 @@ describe("Resolve", () => {
 
   it("Should be able to resolve BindingType.Function bindings", () => {
 
-      let ninjaId = "Ninja";
-      let shurikenId = "Shuriken";
-      let katanaFactoryId = "KatanaFactory";
+      const ninjaId = "Ninja";
+      const shurikenId = "Shuriken";
+      const katanaFactoryId = "KatanaFactory";
 
-      interface KatanaFactory extends Function {
-          (): Katana;
-      }
+      type KatanaFactory = () => Katana;
 
       interface KatanaBlade {}
 
@@ -1005,19 +993,19 @@ describe("Resolve", () => {
           }
       }
 
-      let container = new Container();
+      const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
       container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-      let katanaFactoryInstance = function() {
+      const katanaFactoryInstance = function() {
           return new Katana(new KatanaHandler(), new KatanaBlade());
       };
 
       container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
 
-      let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      let ninja = resolve<Ninja>(context);
+      const ninja = resolve<Ninja>(context);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(typeof ninja.katanaFactory === "function").eql(true);
@@ -1028,10 +1016,10 @@ describe("Resolve", () => {
 
     });
 
-    it("Should run the @PostConstruct method", () => {
+  it("Should run the @PostConstruct method", () => {
 
         interface Sword {
-            use: () => string;
+            use(): string;
         }
 
         @injectable()
@@ -1059,23 +1047,23 @@ describe("Resolve", () => {
                 this.katana = katana;
             }
         }
-        let ninjaId = "Ninja";
-        let katanaId = "Katana";
+        const ninjaId = "Ninja";
+        const katanaId = "Katana";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
 
         container.bind<Katana>(katanaId).to(Katana);
 
-        let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-        let ninja = resolve<Ninja>(context);
+        const ninja = resolve<Ninja>(context);
 
         expect(ninja.katana.use()).eql("Used Katana!");
 
     });
 
-    it("Should throw an error if the @postConstruct method throws an error", () => {
+  it("Should throw an error if the @postConstruct method throws an error", () => {
 
         @injectable()
         class Katana {
@@ -1090,10 +1078,10 @@ describe("Resolve", () => {
             .to.throw("@postConstruct error in class Katana: Original Message");
     });
 
-    it("Should run the @PostConstruct method of parent class", () => {
+  it("Should run the @PostConstruct method of parent class", () => {
 
         interface Weapon {
-            use: () => string;
+            use(): string;
         }
 
         @injectable()
@@ -1126,23 +1114,23 @@ describe("Resolve", () => {
                 this.katana = katana;
             }
         }
-        let ninjaId = "Ninja";
-        let katanaId = "Katana";
+        const ninjaId = "Ninja";
+        const katanaId = "Katana";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
 
         container.bind<Katana>(katanaId).to(Katana);
 
-        let context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-        let ninja = resolve<Ninja>(context);
+        const ninja = resolve<Ninja>(context);
 
         expect(ninja.katana.use()).eql("Used Weapon!");
 
     });
 
-    it("Should run the @PostConstruct method once in the singleton scope", () => {
+  it("Should run the @PostConstruct method once in the singleton scope", () => {
         let timesCalled = 0;
         @injectable()
         class Katana {
@@ -1167,11 +1155,11 @@ describe("Resolve", () => {
                 this.katana = katana;
             }
         }
-        let ninjaId = "Ninja";
-        let samuraiId = "Samurai";
-        let katanaId = "Katana";
+        const ninjaId = "Ninja";
+        const samuraiId = "Samurai";
+        const katanaId = "Katana";
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Ninja>(ninjaId).to(Ninja);
         container.bind<Samurai>(samuraiId).to(Samurai);
         container.bind<Katana>(katanaId).to(Katana).inSingletonScope();

@@ -1,9 +1,9 @@
-import { interfaces } from "../../src/interfaces/interfaces";
 import { expect } from "chai";
-import { Container } from "../../src/container/container";
+import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import * as sinon from "sinon";
+import { Container } from "../../src/container/container";
+import { interfaces } from "../../src/interfaces/interfaces";
 
 describe("Middleware", () => {
 
@@ -19,9 +19,9 @@ describe("Middleware", () => {
 
     it("Should be able to use middleware as Container configuration", () => {
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -31,7 +31,7 @@ describe("Middleware", () => {
         }
 
         container.applyMiddleware(middleware1);
-        let _container: any = container;
+        const _container: any = container;
         expect(_container._middleware).not.to.eql(null);
 
     });
@@ -43,9 +43,9 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -66,12 +66,12 @@ describe("Middleware", () => {
 
         container.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`Middleware2: Ninja`);
-        expect(log[1]).eql(`Middleware1: Ninja`);
+        expect(log[0]).eql("Middleware2: Ninja");
+        expect(log[1]).eql("Middleware1: Ninja");
 
     });
 
@@ -82,9 +82,9 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -104,12 +104,12 @@ describe("Middleware", () => {
         container.applyMiddleware(middleware2);  // another point in time
         container.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`Middleware2: Ninja`);
-        expect(log[1]).eql(`Middleware1: Ninja`);
+        expect(log[0]).eql("Middleware2: Ninja");
+        expect(log[1]).eql("Middleware1: Ninja");
 
     });
 
@@ -120,9 +120,9 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -141,12 +141,12 @@ describe("Middleware", () => {
         container.applyMiddleware(middleware1, middleware2);
         container.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`Middleware2: Ninja`);
-        expect(log[1]).eql(`Middleware1: Ninja`);
+        expect(log[0]).eql("Middleware2: Ninja");
+        expect(log[1]).eql("Middleware1: Ninja");
 
     });
 
@@ -157,9 +157,9 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -190,9 +190,9 @@ describe("Middleware", () => {
         @injectable()
         class Samurai implements Warrior {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -219,9 +219,9 @@ describe("Middleware", () => {
 
         interface Warrior {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -245,7 +245,7 @@ describe("Middleware", () => {
 
     it("Should help users to identify problems with middleware", () => {
 
-        let container = new Container();
+        const container = new Container();
 
         function middleware(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
@@ -258,7 +258,7 @@ describe("Middleware", () => {
         }
 
         container.applyMiddleware(middleware);
-        let throws = () => { container.get<any>("SOME_NOT_REGISTERED_ID"); };
+        const throws = () => { container.get<any>("SOME_NOT_REGISTERED_ID"); };
         expect(throws).to.throw(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
 
     });
@@ -270,13 +270,13 @@ describe("Middleware", () => {
         @injectable()
         class Ninja implements Ninja {}
 
-        let container = new Container();
+        const container = new Container();
 
-        let log: string[] = [];
+        const log: string[] = [];
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                let nextContextInterceptor = args.contextInterceptor;
+                const nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
                     log.push(`contextInterceptor1: ${args.serviceIdentifier}`);
                     return nextContextInterceptor !== null ? nextContextInterceptor(context) : context;
@@ -287,7 +287,7 @@ describe("Middleware", () => {
 
         function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                let nextContextInterceptor = args.contextInterceptor;
+                const nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
                     log.push(`contextInterceptor2: ${args.serviceIdentifier}`);
                     return nextContextInterceptor !== null ? nextContextInterceptor(context) : context;
@@ -299,12 +299,12 @@ describe("Middleware", () => {
         container.applyMiddleware(middleware1, middleware2);
         container.bind<Ninja>("Ninja").to(Ninja);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja instanceof Ninja).eql(true);
         expect(log.length).eql(2);
-        expect(log[0]).eql(`contextInterceptor1: Ninja`);
-        expect(log[1]).eql(`contextInterceptor2: Ninja`);
+        expect(log[0]).eql("contextInterceptor1: Ninja");
+        expect(log[1]).eql("contextInterceptor2: Ninja");
 
     });
 

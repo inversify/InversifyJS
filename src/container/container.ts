@@ -1,16 +1,16 @@
-import { interfaces } from "../interfaces/interfaces";
 import { Binding } from "../bindings/binding";
-import { Lookup } from "./lookup";
-import { plan, createMockRequest, getBindingDictionary } from "../planning/planner";
+import * as ERROR_MSGS from "../constants/error_msgs";
+import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
+import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
+import { MetadataReader } from "../planning/metadata_reader";
+import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
+import { guid } from "../utils/guid";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
-import { guid } from "../utils/guid";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
-import { MetadataReader } from "../planning/metadata_reader";
+import { Lookup } from "./lookup";
 
 class Container implements interfaces.Container {
 
@@ -19,15 +19,15 @@ class Container implements interfaces.Container {
     public readonly options: interfaces.ContainerOptions;
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
-    private _snapshots: Array<interfaces.ContainerSnapshot>;
+    private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
     public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
 
-        let container = new Container();
-        let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
-        let bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container1);
-        let bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
+        const container = new Container();
+        const bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
+        const bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container1);
+        const bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
             origin: interfaces.Lookup<interfaces.Binding<any>>,
@@ -93,46 +93,42 @@ class Container implements interfaces.Container {
 
     public load(...modules: interfaces.ContainerModule[]): void {
 
-        let setModuleId = (bindingToSyntax: any, moduleId: string) => {
+        const setModuleId = (bindingToSyntax: any, moduleId: string) => {
             bindingToSyntax._binding.moduleId = moduleId;
         };
 
-        let getBindFunction = (moduleId: string) => {
-            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                let bindingToSyntax = this.bind.call(this, serviceIdentifier);
+        const getBindFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const bindingToSyntax = this.bind.call(this, serviceIdentifier);
                 setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
-        };
 
-        let getUnbindFunction = (moduleId: string) => {
-            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                let _unbind = this.unbind.bind(this);
+        const getUnbindFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const _unbind = this.unbind.bind(this);
                 _unbind(serviceIdentifier);
             };
-        };
 
-        let getIsboundFunction = (moduleId: string) => {
-            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                let _isBound = this.isBound.bind(this);
+        const getIsboundFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const _isBound = this.isBound.bind(this);
                 return _isBound(serviceIdentifier);
             };
-        };
 
-        let getRebindFunction = (moduleId: string) => {
-            return (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                let bindingToSyntax = this.rebind.call(this, serviceIdentifier);
+        const getRebindFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const bindingToSyntax = this.rebind.call(this, serviceIdentifier);
                 setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
-        };
 
         modules.forEach((module) => {
 
-            let bindFunction = getBindFunction(module.guid);
-            let unbindFunction = getUnbindFunction(module.guid);
-            let isboundFunction = getIsboundFunction(module.guid);
-            let rebindFunction = getRebindFunction(module.guid);
+            const bindFunction = getBindFunction(module.guid);
+            const unbindFunction = getUnbindFunction(module.guid);
+            const isboundFunction = getIsboundFunction(module.guid);
+            const rebindFunction = getRebindFunction(module.guid);
 
             module.registry(
                 bindFunction,
@@ -147,12 +143,11 @@ class Container implements interfaces.Container {
 
     public unload(...modules: interfaces.ContainerModule[]): void {
 
-        let conditionFactory = (expected: any) => (item: interfaces.Binding<any>): boolean => {
-            return item.moduleId === expected;
-        };
+        const conditionFactory = (expected: any) => (item: interfaces.Binding<any>): boolean =>
+            item.moduleId === expected;
 
         modules.forEach((module) => {
-            let condition = conditionFactory(module.guid);
+            const condition = conditionFactory(module.guid);
             this._bindingDictionary.removeByCondition(condition);
         });
 
@@ -160,8 +155,8 @@ class Container implements interfaces.Container {
 
     // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
-        let scope = this.options.defaultScope || BindingScopeEnum.Transient;
-        let binding = new Binding<T>(serviceIdentifier, scope);
+        const scope = this.options.defaultScope || BindingScopeEnum.Transient;
+        const binding = new Binding<T>(serviceIdentifier, scope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }
@@ -194,18 +189,18 @@ class Container implements interfaces.Container {
         return bound;
     }
 
-    public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string|number|symbol): boolean {
+    public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string | number | symbol): boolean {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
     // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
-    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string|number|symbol, value: any): boolean {
+    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean {
         let bound = false;
 
         // verify if there are bindings available for serviceIdentifier on current binding dictionary
         if (this._bindingDictionary.hasKey(serviceIdentifier)) {
-            let bindings = this._bindingDictionary.get(serviceIdentifier);
-            let request = createMockRequest(this, serviceIdentifier, key, value);
+            const bindings = this._bindingDictionary.get(serviceIdentifier);
+            const request = createMockRequest(this, serviceIdentifier, key, value);
             bound = bindings.some((b) => b.constraint(request));
         }
 
@@ -222,7 +217,7 @@ class Container implements interfaces.Container {
     }
 
     public restore(): void {
-        let snapshot = this._snapshots.pop();
+        const snapshot = this._snapshots.pop();
         if (snapshot === undefined) {
             throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
         }
@@ -231,16 +226,16 @@ class Container implements interfaces.Container {
     }
 
     public createChild(): Container {
-        let child = new Container();
+        const child = new Container();
         child.parent = this;
         return child;
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
-        let initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
-        this._middleware = middlewares.reduce((prev, curr) => {
-            return curr(prev);
-        }, initial);
+        const initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
+        this._middleware = middlewares.reduce(
+            (prev, curr) => curr(prev),
+            initial);
     }
 
     public applyCustomMetadataReader(metadataReader: interfaces.MetadataReader) {
@@ -254,11 +249,11 @@ class Container implements interfaces.Container {
         return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
     }
 
-    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string|number|symbol, value: any): T {
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
         return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
     }
 
-    public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string|number|symbol): T {
+    public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
@@ -268,11 +263,11 @@ class Container implements interfaces.Container {
         return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
     }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string|number|symbol, value: any): T[] {
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
         return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
     }
 
-    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string|number|symbol): T[] {
+    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
@@ -291,20 +286,20 @@ class Container implements interfaces.Container {
         isMultiInject: boolean,
         targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        key?: string|number|symbol,
+        key?: string | number | symbol,
         value?: any
-    ): (T|T[]) {
+    ): (T | T[]) {
 
-        let result: (T|T[]) | null = null;
+        let result: (T | T[]) | null = null;
 
-        let defaultArgs: interfaces.NextArgs = {
-            avoidConstraints: avoidConstraints,
-            contextInterceptor: (context: interfaces.Context) => { return context; },
-            isMultiInject: isMultiInject,
-            key: key,
-            serviceIdentifier: serviceIdentifier,
-            targetType: targetType,
-            value: value
+        const defaultArgs: interfaces.NextArgs = {
+            avoidConstraints,
+            contextInterceptor: (context: interfaces.Context) => context,
+            isMultiInject,
+            key,
+            serviceIdentifier,
+            targetType,
+            value
         };
 
         if (this._middleware) {
@@ -322,7 +317,7 @@ class Container implements interfaces.Container {
     // Planner creates a plan and Resolver resolves a plan
     // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
-    private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T|T[]) {
+    private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T | T[]) {
         return (args: interfaces.NextArgs) => {
 
             // create a plan
@@ -341,7 +336,7 @@ class Container implements interfaces.Container {
             context = args.contextInterceptor(context);
 
             // resolve plan
-            let result = resolve<T>(context);
+            const result = resolve<T>(context);
             return result;
 
         };

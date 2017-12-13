@@ -18,7 +18,7 @@ describe("Provider", () => {
                     setTimeout(() => {
                         this.level += 10;
                         resolve(this.level);
-                    }, 10);
+                    },         10);
                 });
             }
         }
@@ -33,13 +33,13 @@ describe("Provider", () => {
 
         type NinjaMasterProvider = () => Promise<NinjaMaster>;
 
-        let container = new Container();
+        const container = new Container();
 
         container.bind<Ninja>("Ninja").to(Ninja).inSingletonScope();
-        container.bind<NinjaMasterProvider>("Provider<NinjaMaster>").toProvider((context) => {
-            return () => {
-                return new Promise<NinjaMaster>((resolve, reject) => {
-                    let ninja = context.container.get<Ninja>("Ninja");
+        container.bind<NinjaMasterProvider>("Provider<NinjaMaster>").toProvider((context) =>
+            () =>
+                new Promise<NinjaMaster>((resolve, reject) => {
+                    const ninja = context.container.get<Ninja>("Ninja");
                     ninja.train().then((level) => {
                         if (level >= 20) {
                             resolve(new NinjaMaster());
@@ -47,11 +47,9 @@ describe("Provider", () => {
                             reject("Not enough training");
                         }
                     });
-                });
-            };
-        });
+                }));
 
-        let ninjaMasterProvider = container.get<NinjaMasterProvider>("Provider<NinjaMaster>");
+        const ninjaMasterProvider = container.get<NinjaMasterProvider>("Provider<NinjaMaster>");
 
         // helper
         function valueOrDefault<T>(provider: () => Promise<T>, defaultValue: T) {
@@ -77,7 +75,7 @@ describe("Provider", () => {
 
     it("Should support custom arguments", (done) => {
 
-        let container = new Container();
+        const container = new Container();
 
         interface Sword {
             material: string;
@@ -94,20 +92,18 @@ describe("Provider", () => {
 
         container.bind<Sword>("Sword").to(Katana);
 
-        container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) => {
-            return (material: string, damage: number) => {
-                return new Promise<Sword>((resolve) => {
+        container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) =>
+            (material: string, damage: number) =>
+                new Promise<Sword>((resolve) => {
                     setTimeout(() => {
-                        let katana = context.container.get<Sword>("Sword");
+                        const katana = context.container.get<Sword>("Sword");
                         katana.material = material;
                         katana.damage = damage;
                         resolve(katana);
-                    }, 10);
-                });
-            };
-        });
+                    },         10);
+                }));
 
-        let katanaProvider = container.get<SwordProvider>("SwordProvider");
+        const katanaProvider = container.get<SwordProvider>("SwordProvider");
 
         katanaProvider("gold", 100).then((powerfulGoldKatana) => {
 
@@ -126,7 +122,7 @@ describe("Provider", () => {
 
     it("Should support partial application of custom arguments", (done) => {
 
-        let container = new Container();
+        const container = new Container();
 
         interface Sword {
             material: string;
@@ -143,23 +139,20 @@ describe("Provider", () => {
 
         container.bind<Sword>("Sword").to(Katana);
 
-        container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) => {
-            return (material: string) => {
-                return (damage: number) => {
-                    return new Promise<Sword>((resolve) => {
+        container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) =>
+            (material: string) =>
+                (damage: number) =>
+                    new Promise<Sword>((resolve) => {
                         setTimeout(() => {
-                            let katana = context.container.get<Sword>("Sword");
+                            const katana = context.container.get<Sword>("Sword");
                             katana.material = material;
                             katana.damage = damage;
                             resolve(katana);
-                        }, 10);
-                    });
-                };
-            };
-        });
+                        },         10);
+                    }));
 
-        let katanaProvider = container.get<SwordProvider>("SwordProvider");
-        let goldKatanaProvider = katanaProvider("gold");
+        const katanaProvider = container.get<SwordProvider>("SwordProvider");
+        const goldKatanaProvider = katanaProvider("gold");
 
         goldKatanaProvider(100).then((powerfulGoldKatana) => {
 
@@ -178,7 +171,7 @@ describe("Provider", () => {
 
     it("Should support the declaration of singletons", (done) => {
 
-        let container = new Container();
+        const container = new Container();
 
         interface Warrior {
             level: number;
@@ -196,19 +189,17 @@ describe("Provider", () => {
 
         container.bind<Warrior>("Warrior").to(Ninja).inSingletonScope(); // Value is singleton!
 
-        container.bind<WarriorProvider>("WarriorProvider").toProvider<Warrior>((context) => {
-            return (increaseLevel: number) => {
-                return new Promise<Warrior>((resolve) => {
+        container.bind<WarriorProvider>("WarriorProvider").toProvider<Warrior>((context) =>
+            (increaseLevel: number) =>
+                new Promise<Warrior>((resolve) => {
                     setTimeout(() => {
-                        let warrior = context.container.get<Warrior>("Warrior"); // Get singleton!
+                        const warrior = context.container.get<Warrior>("Warrior"); // Get singleton!
                         warrior.level += increaseLevel;
                         resolve(warrior);
-                    }, 100);
-                });
-            };
-        });
+                    },         100);
+                }));
 
-        let warriorProvider = container.get<WarriorProvider>("WarriorProvider");
+        const warriorProvider = container.get<WarriorProvider>("WarriorProvider");
 
         warriorProvider(10).then((warrior) => {
 

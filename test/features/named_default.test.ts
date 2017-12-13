@@ -1,19 +1,19 @@
 /// <reference path="../globals.d.ts" />
 
-import "es6-symbol/implement";
 import { expect } from "chai";
-import { Container, injectable, named, inject } from "../../src/inversify";
+import "es6-symbol/implement";
+import { Container, inject, injectable, named } from "../../src/inversify";
 
 describe("Named default", () => {
 
     it("Should be able to inject a default to avoid ambiguous binding exceptions", () => {
 
-        let TYPES = {
+        const TYPES = {
             Warrior: "Warrior",
             Weapon: "Weapon"
         };
 
-        let TAG = {
+        const TAG = {
             chinese: "chinese",
             japanese: "japanese",
             throwable: "throwable"
@@ -68,14 +68,14 @@ describe("Named default", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Warrior>(TYPES.Warrior).to(Ninja).whenTargetNamed(TAG.chinese);
         container.bind<Warrior>(TYPES.Warrior).to(Samurai).whenTargetNamed(TAG.japanese);
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 
-        let ninja = container.getNamed<Warrior>(TYPES.Warrior, TAG.chinese);
-        let samurai = container.getNamed<Warrior>(TYPES.Warrior, TAG.japanese);
+        const ninja = container.getNamed<Warrior>(TYPES.Warrior, TAG.chinese);
+        const samurai = container.getNamed<Warrior>(TYPES.Warrior, TAG.japanese);
 
         expect(ninja.name).to.eql("Ninja");
         expect(ninja.weapon.name).to.eql("Shuriken");
@@ -86,11 +86,11 @@ describe("Named default", () => {
 
     it("Should be able to select a default to avoid ambiguous binding exceptions", () => {
 
-        let TYPES = {
+        const TYPES = {
             Weapon: "Weapon"
         };
 
-        let TAG = {
+        const TAG = {
             throwable: "throwable"
         };
 
@@ -114,12 +114,12 @@ describe("Named default", () => {
             }
         }
 
-        let container = new Container();
+        const container = new Container();
         container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
         container.bind<Weapon>(TYPES.Weapon).to(Katana).inSingletonScope().whenTargetIsDefault();
 
-        let defaultWeapon = container.get<Weapon>(TYPES.Weapon);
-        let throwableWeapon = container.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
+        const defaultWeapon = container.get<Weapon>(TYPES.Weapon);
+        const throwableWeapon = container.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
 
         expect(defaultWeapon.name).eql("Katana");
         expect(throwableWeapon.name).eql("Shuriken");

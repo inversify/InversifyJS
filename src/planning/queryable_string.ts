@@ -4,7 +4,7 @@ class QueryableString implements interfaces.QueryableString {
 
   private str: string;
 
-  constructor(str: string) {
+  public constructor(str: string) {
     this.str = str;
   }
 
@@ -14,7 +14,7 @@ class QueryableString implements interfaces.QueryableString {
 
   public endsWith(searchString: string): boolean {
     let reverseString = "";
-    let reverseSearchString = searchString.split("").reverse().join("");
+    const reverseSearchString = searchString.split("").reverse().join("");
     reverseString = this.str.split("").reverse().join("");
     return this.startsWith.call({ str : reverseString }, reverseSearchString);
   }

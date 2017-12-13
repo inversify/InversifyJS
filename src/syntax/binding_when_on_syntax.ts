@@ -1,6 +1,6 @@
 import { interfaces } from "../interfaces/interfaces";
-import { BindingWhenSyntax } from "./binding_when_syntax";
 import { BindingOnSyntax } from "./binding_on_syntax";
+import { BindingWhenSyntax } from "./binding_when_syntax";
 
 class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfaces.BindingOnSyntax<T> {
 
@@ -30,7 +30,7 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
         return this._bindingWhenSyntax.whenTargetTagged(tag, value);
     }
 
-    public whenInjectedInto(parent: (Function|string)): interfaces.BindingOnSyntax<T> {
+    public whenInjectedInto(parent: (Function | string)): interfaces.BindingOnSyntax<T> {
         return this._bindingWhenSyntax.whenInjectedInto(parent);
     }
 
@@ -42,11 +42,11 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
         return this._bindingWhenSyntax.whenParentTagged(tag, value);
     }
 
-    public whenAnyAncestorIs(ancestor: (Function|string)): interfaces.BindingOnSyntax<T> {
+    public whenAnyAncestorIs(ancestor: (Function | string)): interfaces.BindingOnSyntax<T> {
         return this._bindingWhenSyntax.whenAnyAncestorIs(ancestor);
     }
 
-    public whenNoAncestorIs(ancestor: (Function|string)): interfaces.BindingOnSyntax<T> {
+    public whenNoAncestorIs(ancestor: (Function | string)): interfaces.BindingOnSyntax<T> {
         return this._bindingWhenSyntax.whenNoAncestorIs(ancestor);
     }
 

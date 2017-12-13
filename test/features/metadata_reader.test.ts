@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { Container, injectable, inject, MetadataReader } from "../../src/inversify";
-import { interfaces } from "../../src/interfaces/interfaces";
-import { Metadata } from "../../src/planning/metadata";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import { interfaces } from "../../src/interfaces/interfaces";
+import { Container, inject, injectable, MetadataReader } from "../../src/inversify";
+import { Metadata } from "../../src/planning/metadata";
 
 describe("Custom Metadata Reader", () => {
 
@@ -21,9 +21,9 @@ describe("Custom Metadata Reader", () => {
         public getConstructorMetadata(constructorFunc: FunctionWithMetadata): interfaces.ConstructorMetadata {
 
             const formatMetadata = (injections: interfaces.ServiceIdentifier<any>[]) => {
-                let userGeneratedMetadata: interfaces.MetadataMap = {};
+                const userGeneratedMetadata: interfaces.MetadataMap = {};
                 injections.forEach((injection, index) => {
-                    let metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);
+                    const metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);
                     if (Array.isArray(userGeneratedMetadata[index])) {
                         userGeneratedMetadata[index].push(metadata);
                     } else {
@@ -33,13 +33,13 @@ describe("Custom Metadata Reader", () => {
                 return userGeneratedMetadata;
             };
 
-            let constructorInjections = constructorFunc.constructorInjections;
+            const constructorInjections = constructorFunc.constructorInjections;
 
-            if (Array.isArray(constructorInjections) === false) {
+            if (!Array.isArray(constructorInjections)) {
                 throw new Error("Missing constructorInjections annotation!");
             }
 
-            let userGeneratedConsturctorMetadata = formatMetadata(constructorInjections);
+            const userGeneratedConsturctorMetadata = formatMetadata(constructorInjections);
 
             return {
                 // compilerGeneratedMetadata lenght must match userGeneratedMetadata
@@ -55,9 +55,9 @@ describe("Custom Metadata Reader", () => {
         public getPropertiesMetadata(constructorFunc: FunctionWithMetadata): interfaces.MetadataMap {
 
             const formatMetadata = (injections: PropertyInjectionMetadata[]) => {
-                let userGeneratedMetadata: interfaces.MetadataMap = {};
+                const userGeneratedMetadata: interfaces.MetadataMap = {};
                 injections.forEach((propInjection, index) => {
-                    let metadata = new Metadata(METADATA_KEY.INJECT_TAG, propInjection.injection);
+                    const metadata = new Metadata(METADATA_KEY.INJECT_TAG, propInjection.injection);
                     if (Array.isArray(userGeneratedMetadata[propInjection.propName])) {
                         userGeneratedMetadata[propInjection.propName].push(metadata);
                     } else {
@@ -67,13 +67,13 @@ describe("Custom Metadata Reader", () => {
                 return userGeneratedMetadata;
             };
 
-            let propertyInjections = constructorFunc.propertyInjections;
+            const propertyInjections = constructorFunc.propertyInjections;
 
-            if (Array.isArray(propertyInjections) === false) {
+            if (!Array.isArray(propertyInjections)) {
                 throw new Error("Missing propertyInjections annotation!");
             }
 
-            let userGeneratedPropertyMetadata = formatMetadata(propertyInjections);
+            const userGeneratedPropertyMetadata = formatMetadata(propertyInjections);
             return userGeneratedPropertyMetadata;
 
         }
@@ -132,14 +132,14 @@ describe("Custom Metadata Reader", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.applyCustomMetadataReader(new StaticPropsMetadataReader());
 
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<Katana>("Katana").to(Katana);
         container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -197,19 +197,18 @@ describe("Custom Metadata Reader", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.applyCustomMetadataReader(new StaticPropsMetadataReader());
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<Katana>("Katana").to(Katana);
         container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
 
     });
-
 
     it("Should be able to use extend the default metadata reader", () => {
 
@@ -275,14 +274,14 @@ describe("Custom Metadata Reader", () => {
 
         }
 
-        let container = new Container();
+        const container = new Container();
         container.applyCustomMetadataReader(new CustomMetadataReader());
 
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<Katana>("Katana").to(Katana);
         container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        let ninja = container.get<Ninja>("Ninja");
+        const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
@@ -290,7 +289,7 @@ describe("Custom Metadata Reader", () => {
         expect(Array.isArray(constructorMetadataLog)).eq(true);
         expect(constructorMetadataLog.length).eq(3);
 
-        let compilerGeneratedMetadata0 = constructorMetadataLog[0].compilerGeneratedMetadata;
+        const compilerGeneratedMetadata0 = constructorMetadataLog[0].compilerGeneratedMetadata;
 
         if (compilerGeneratedMetadata0) {
             expect(compilerGeneratedMetadata0[0]).eq(Katana);

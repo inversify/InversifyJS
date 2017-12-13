@@ -8,13 +8,13 @@ describe("BindingInSyntax", () => {
     it("Should set its own properties correctly", () => {
 
         interface Ninja {}
-        let ninjaIdentifier = "Ninja";
+        const ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        let bindingInSyntax = new BindingInSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
-        let _bindingInSyntax: any = bindingInSyntax;
+        const _bindingInSyntax: any = bindingInSyntax;
 
         expect(_bindingInSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
 
@@ -23,10 +23,10 @@ describe("BindingInSyntax", () => {
     it("Should be able to configure the scope of a binding", () => {
 
         interface Ninja {}
-        let ninjaIdentifier = "Ninja";
+        const ninjaIdentifier = "Ninja";
 
-        let binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        let bindingInSyntax = new BindingInSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
         // default scope is transient
         expect(binding.scope).eql(BindingScopeEnum.Transient);

@@ -1,6 +1,6 @@
-import { interfaces } from "../interfaces/interfaces";
-import * as METADATA_KEY from "../constants/metadata_keys";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
 
 function tagParameter(
     annotationTarget: any,
@@ -8,7 +8,7 @@ function tagParameter(
     parameterIndex: number,
     metadata: interfaces.Metadata
 ) {
-    let metadataKey = METADATA_KEY.TAGGED;
+    const metadataKey = METADATA_KEY.TAGGED;
     _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
 }
 
@@ -17,7 +17,7 @@ function tagProperty(
     propertyName: string,
     metadata: interfaces.Metadata
 ) {
-    let metadataKey = METADATA_KEY.TAGGED_PROP;
+    const metadataKey = METADATA_KEY.TAGGED_PROP;
     _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
 }
 
@@ -30,27 +30,26 @@ function _tagParameterOrProperty(
 ) {
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
-    let isParameterDecorator = (typeof parameterIndex === "number");
-    let key: string = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
+    const isParameterDecorator = (typeof parameterIndex === "number");
+    const key: string = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
 
     // if the decorator is used as a parameter decorator, the property name must be provided
-    if (isParameterDecorator === true && propertyName !== undefined) {
+    if (isParameterDecorator && propertyName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
 
     // read metadata if available
-    if (Reflect.hasOwnMetadata(metadataKey, annotationTarget) === true) {
+    if (Reflect.hasOwnMetadata(metadataKey, annotationTarget)) {
         paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
     }
 
     // get metadata for the decorated parameter by its index
     let paramOrPropertyMetadata: interfaces.Metadata[] = paramsOrPropertiesMetadata[key];
 
-    if (Array.isArray(paramOrPropertyMetadata) !== true) {
+    if (!Array.isArray(paramOrPropertyMetadata)) {
         paramOrPropertyMetadata = [];
     } else {
-        for (let i = 0; i < paramOrPropertyMetadata.length; i++) {
-            let m: interfaces.Metadata = paramOrPropertyMetadata[i];
+        for (const m of paramOrPropertyMetadata) {
             if (m.key === metadata.key) {
                 throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${m.key}`);
             }
@@ -78,16 +77,16 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(named("foo"), FooBar, 0);
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
-    decorator: (ClassDecorator|ParameterDecorator|MethodDecorator),
+    decorator: (ClassDecorator | ParameterDecorator | MethodDecorator),
     target: any,
     parameterIndex?: number | string): void {
 
     if (typeof parameterIndex === "number") {
-        _decorate([_param(parameterIndex, <ParameterDecorator>decorator)], target);
+        _decorate([_param(parameterIndex, decorator as ParameterDecorator)], target);
     } else if (typeof parameterIndex === "string") {
-        Reflect.decorate([<MethodDecorator>decorator], target, parameterIndex);
+        Reflect.decorate([decorator as MethodDecorator], target, parameterIndex);
     } else {
-        _decorate([<ClassDecorator>decorator], target);
+        _decorate([decorator as ClassDecorator], target);
     }
 }
 

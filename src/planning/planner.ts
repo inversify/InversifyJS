@@ -1,21 +1,21 @@
-import { interfaces } from "../interfaces/interfaces";
-import { Plan } from "./plan";
-import { Context } from "./context";
-import { Request } from "./request";
-import { Target } from "./target";
 import { BindingCount } from "../bindings/binding_count";
-import { getDependencies } from "./reflection_utils";
-import { Metadata } from "./metadata";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { isStackOverflowExeption } from "../utils/exceptions";
 import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
+import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
+import { isStackOverflowExeption } from "../utils/exceptions";
 import {
     circularDependencyToException,
     getServiceIdentifierAsString,
-    listRegisteredBindingsForServiceIdentifier,
-    listMetadataForTarget
+    listMetadataForTarget,
+    listRegisteredBindingsForServiceIdentifier
 } from "../utils/serialization";
+import { Context } from "./context";
+import { Metadata } from "./metadata";
+import { Plan } from "./plan";
+import { getDependencies } from "./reflection_utils";
+import { Request } from "./request";
+import { Target } from "./target";
 
 function getBindingDictionary (cntnr: any): interfaces.Lookup<interfaces.Binding<any>> {
     return cntnr._bindingDictionary;
@@ -26,16 +26,16 @@ function _createTarget(
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     name: string,
-    key?: string|number|symbol,
+    key?: string | number | symbol,
     value?: any
 ): interfaces.Target {
 
-    let metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
-    let injectMetadata = new Metadata(metadataKey, serviceIdentifier);
-    let target = new Target(targetType, name, serviceIdentifier, injectMetadata);
+    const metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
+    const injectMetadata = new Metadata(metadataKey, serviceIdentifier);
+    const target = new Target(targetType, name, serviceIdentifier, injectMetadata);
 
     if (key !== undefined) {
-        let tagMetadata = new Metadata(key, value);
+        const tagMetadata = new Metadata(key, value);
         target.metadata.push(tagMetadata);
     }
 
@@ -65,12 +65,12 @@ function _getActiveBindings(
     }
 
     // multiple bindings available
-    if (avoidConstraints === false) {
+    if (!avoidConstraints) {
 
         // apply constraints if available to reduce the number of active bindings
         activeBindings = bindings.filter((binding) => {
 
-            let request = new Request(
+            const request = new Request(
                 binding.serviceIdentifier,
                 context,
                 parentRequest,
@@ -103,10 +103,10 @@ function _validateActiveBindingCount(
     switch (bindings.length) {
 
         case BindingCount.NoBindingsAvailable:
-            if (target.isOptional() === true) {
+            if (target.isOptional()) {
                 return bindings;
             } else {
-                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
+                const serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
                 let msg = ERROR_MSGS.NOT_REGISTERED;
                 msg += listMetadataForTarget(serviceIdentifierString, target);
                 msg += listRegisteredBindingsForServiceIdentifier(container, serviceIdentifierString, getBindings);
@@ -114,15 +114,15 @@ function _validateActiveBindingCount(
             }
 
         case BindingCount.OnlyOneBindingAvailable:
-            if (target.isArray() === false) {
+            if (!target.isArray()) {
                 return bindings;
             }
 
         case BindingCount.MultipleBindingsAvailable:
         default:
-            if (target.isArray() === false) {
-                let serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier),
-                msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
+            if (!target.isArray()) {
+                const serviceIdentifierString = getServiceIdentifierAsString(serviceIdentifier);
+                let msg = `${ERROR_MSGS.AMBIGUOUS_MATCH} ${serviceIdentifierString}`;
                 msg += listRegisteredBindingsForServiceIdentifier(container, serviceIdentifierString, getBindings);
                 throw new Error(msg);
             } else {
@@ -158,7 +158,7 @@ function _createSubRequests(
                 target
             );
 
-            let thePlan = new Plan(context, childRequest);
+            const thePlan = new Plan(context, childRequest);
             context.addPlan(thePlan);
 
         } else {
@@ -181,7 +181,7 @@ function _createSubRequests(
 
             if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 
-                let dependencies = getDependencies(metadataReader, binding.implementationType);
+                const dependencies = getDependencies(metadataReader, binding.implementationType);
 
                 dependencies.forEach((dependency: interfaces.Target) => {
                     _createSubRequests(metadataReader, false, dependency.serviceIdentifier, context, subChildRequest, dependency);
@@ -209,7 +209,7 @@ function getBindings<T>(
 ): interfaces.Binding<T>[] {
 
     let bindings: interfaces.Binding<T>[] = [];
-    let bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
+    const bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
 
     if (bindingDictionary.hasKey(serviceIdentifier)) {
 
@@ -231,13 +231,13 @@ function plan(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    key?: string|number|symbol,
+    key?: string | number | symbol,
     value?: any,
     avoidConstraints = false
 ): interfaces.Context {
 
-    let context = new Context(container);
-    let target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
+    const context = new Context(container);
+    const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
     _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
     return context;
 
@@ -246,13 +246,13 @@ function plan(
 function createMockRequest(
     container: interfaces.Container,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    key: string|number|symbol,
+    key: string | number | symbol,
     value: any
 ): interfaces.Request {
 
-    let target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
-    let context = new Context(container);
-    let request = new Request(serviceIdentifier, context, null, [], target);
+    const target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
+    const context = new Context(container);
+    const request = new Request(serviceIdentifier, context, null, [], target);
     return request;
 }
 

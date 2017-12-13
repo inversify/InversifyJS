@@ -1,9 +1,9 @@
+import * as ERROR_MSGS from "../constants/error_msgs";
+import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
+import { isStackOverflowExeption } from "../utils/exceptions";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
 import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
-import { BindingTypeEnum } from "../constants/literal_types";
-import { isStackOverflowExeption } from "../utils/exceptions";
-import * as ERROR_MSGS from "../constants/error_msgs";
 
 type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
 
@@ -35,7 +35,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         this._binding = binding;
     }
 
-    public to(constructor: { new(...args: any[]): T; }): interfaces.BindingInWhenOnSyntax<T> {
+    public to(constructor: { new(...args: any[]): T }): interfaces.BindingInWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Instance;
         this._binding.implementationType = constructor;
         return new BindingInWhenOnSyntax<T>(this._binding);
@@ -45,7 +45,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         if (typeof this._binding.serviceIdentifier !== "function") {
             throw new Error(`${ERROR_MSGS.INVALID_TO_SELF_VALUE}`);
         }
-        let self: any = this._binding.serviceIdentifier;
+        const self: any = this._binding.serviceIdentifier;
         return this.to(self);
     }
 
@@ -88,7 +88,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     public toFunction(func: T): interfaces.BindingWhenOnSyntax<T> {
         // toFunction is an alias of toConstantValue
         if (typeof func !== "function") { throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING); }
-        let bindingWhenOnSyntax = this.toConstantValue(func);
+        const bindingWhenOnSyntax = this.toConstantValue(func);
         this._binding.type = BindingTypeEnum.Function;
         return bindingWhenOnSyntax;
     }

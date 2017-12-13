@@ -1,18 +1,18 @@
-import { interfaces } from "../interfaces/interfaces";
+import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
+import { interfaces } from "../interfaces/interfaces";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
-import * as ERROR_MSGS from "../constants/error_msgs";
 
 const _resolveRequest = (requestScope: interfaces.RequestScope) =>
     (request: interfaces.Request): any => {
 
-    let bindings = request.bindings;
-    let childRequests = request.childRequests;
+    const bindings = request.bindings;
+    const childRequests = request.childRequests;
 
-    let targetIsAnArray = request.target && request.target.isArray();
+    const targetIsAnArray = request.target && request.target.isArray();
 
-    let targetParentIsNotAnArray = !request.parentRequest ||
+    const targetParentIsNotAnArray = !request.parentRequest ||
                                    !request.parentRequest.target ||
                                    !request.target ||
                                    !request.parentRequest.target.matchesArray(request.target.serviceIdentifier);
@@ -29,15 +29,15 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
 
         let result: any = null;
 
-        if (request.target.isOptional() === true && bindings.length === 0) {
+        if (request.target.isOptional() && bindings.length === 0) {
             return undefined;
         }
 
-        let binding = bindings[0];
-        let isSingleton = binding.scope === BindingScopeEnum.Singleton;
-        let isRequestSingleton = binding.scope === BindingScopeEnum.Request;
+        const binding = bindings[0];
+        const isSingleton = binding.scope === BindingScopeEnum.Singleton;
+        const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
-        if (isSingleton && binding.activated === true) {
+        if (isSingleton && binding.activated) {
             return binding.cache;
         }
 
@@ -70,7 +70,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         } else {
             // The user probably created a binding but didn't finish it
             // e.g. container.bind<T>("Something"); missing BindingToSyntax
-            let serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
+            const serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
             throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
         }
 

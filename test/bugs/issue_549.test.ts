@@ -1,16 +1,20 @@
-import { expect } from "chai";
-import { Container, injectable, inject } from "../../src/inversify";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { Container, inject, injectable } from "../../src/inversify";
 
 describe("issue 549", () => {
 
     it("Should throw if circular dependencies found with dynamics", () => {
 
+        const TYPE = {
+            ADynamicValue: Symbol.for("ADynamicValue"),
+            BDynamicValue: Symbol.for("BDynamicValue")
+        };
+
         @injectable()
         class A {
             public b: B;
             public constructor(
-                @inject("B")  b: B
+                @inject(TYPE.BDynamicValue)  b: B
             ) {
                 this.b = b;
             }
@@ -20,29 +24,50 @@ describe("issue 549", () => {
         class B {
             public a: A;
             public constructor(
-                @inject("A") a: A
+                @inject(TYPE.ADynamicValue) a: A
             ) {
                 this.a = a;
             }
         }
 
-        let container = new Container({defaultScope: "Singleton"});
+        const container = new Container({defaultScope: "Singleton"});
         container.bind(A).toSelf();
         container.bind(B).toSelf();
-        container.bind("A").toDynamicValue(ctx =>
+
+        container.bind(TYPE.ADynamicValue).toDynamicValue((ctx) =>
             ctx.container.get(A)
         );
 
-        container.bind("B").toDynamicValue(ctx =>
+        container.bind(TYPE.BDynamicValue).toDynamicValue((ctx) =>
             ctx.container.get(B)
         );
 
         function willThrow() {
-            return container.get<A>("A");
+            return container.get<A>(A);
         }
 
-        const expectedError = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", "A");
-        expect(willThrow).to.throw(expectedError);
+        try {
+            willThrow();
+            throw new Error("This line should never be executed. Expected 'willThrow' to throw!");
+        } catch (e) {
+
+            const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
+            const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.BDynamicValue.toString());
+            const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1;
+            const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1;
+
+            if (!matchesErrorA && !matchesErrorB) {
+                throw new Error(
+                    "Expected 'willThrow' to throw:\n" +
+                    `- ${expectedErrorA}\n` +
+                    "or\n" +
+                    `- ${expectedErrorB}\n` +
+                    "but got\n" +
+                    `- ${e.message}`
+                );
+            }
+
+        }
 
     });
 

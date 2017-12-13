@@ -1,12 +1,12 @@
-import { interfaces } from "../interfaces/interfaces";
 import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
 
 class Metadata implements interfaces.Metadata {
 
-  public key: string|number|symbol;
+  public key: string | number | symbol;
   public value: any;
 
-  constructor(key: string|number|symbol, value: any) {
+  public constructor(key: string | number | symbol, value: any) {
     this.key = key;
     this.value = value;
   }

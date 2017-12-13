@@ -1,20 +1,20 @@
 import { expect } from "chai";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
+import { Container } from "../../src/container/container";
+import { Context } from "../../src/planning/context";
 import { Plan } from "../../src/planning/plan";
 import { Request } from "../../src/planning/request";
-import { Context } from "../../src/planning/context";
-import { Container } from "../../src/container/container";
 import { Target } from "../../src/planning/target";
-import { TargetTypeEnum } from "../../src/constants/literal_types";
 
 describe("Plan", () => {
 
   it("Should set its own properties correctly", () => {
 
-      let container = new Container();
-      let context = new Context(container);
-      let runtimeId = "Something";
+      const container = new Container();
+      const context = new Context(container);
+      const runtimeId = "Something";
 
-      let request: Request = new Request(
+      const request: Request = new Request(
           runtimeId,
           context,
           null,
@@ -22,7 +22,7 @@ describe("Plan", () => {
           new Target(TargetTypeEnum.Variable, "", runtimeId)
       );
 
-      let plan = new Plan(context, request);
+      const plan = new Plan(context, request);
 
       expect(plan.parentContext).eql(context);
       expect(plan.rootRequest.serviceIdentifier).eql(request.serviceIdentifier);
