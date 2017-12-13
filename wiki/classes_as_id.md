@@ -96,7 +96,7 @@ class Test {
 
 container.bind<Dom>(Dom).toSelf().inSingletonScope();
 container.bind<DomUi>(DomUi).toSelf().inSingletonScope();
-const dom = container.resolve(Test);
+const dom = container.resolve(Test); // Error!
 ```
 
 This error may seem a bit misleading because when using classes as service identifiers `@inject` annotations should not be required and if we do add an annotation like `@inject(Dom)` or `@inject(DomUi)` we will still get the same exception.  This happens because, at the point in time in which the decorator is invoked, the class has not been declared so the decorator is invoked as `@inject(undefined)`. This trigger InversifyJS to think that the annotation was never added. 
@@ -150,12 +150,6 @@ class Test {
 container.bind<Dom>(TYPE.Dom).to(Dom).inSingletonScope();
 container.bind<DomUi>(TYPE.DomUi).to(DomUi).inSingletonScope();
 
-const test = container.resolve(Test);
-
-expect(test.dom.name).eq("Dom");
-expect(test.dom.domUi.name).eq("DomUi");
-expect(test.dom.domUi.dom.name).eq("Dom");
-expect(test.dom).eq(test.dom.domUi.dom);
-expect(test.dom.domUi).eq(test.dom.domUi.dom.domUi);
+const test = container.resolve(Test); // Works!
 ```
 
