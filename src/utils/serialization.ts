@@ -73,8 +73,8 @@ function dependencyChainToString(
         req: interfaces.Request,
         result: string[] = []
     ): string[] {
-        const parentServiceIdentifier = getServiceIdentifierAsString(req.serviceIdentifier);
-        result.push(parentServiceIdentifier);
+        const serviceIdentifier = getServiceIdentifierAsString(req.serviceIdentifier);
+        result.push(serviceIdentifier);
         if (req.parentRequest !== null) {
             return _createStringArr(req.parentRequest, result);
         }
