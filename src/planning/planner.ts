@@ -231,7 +231,6 @@ function plan(
         _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
         return context;
     } catch (error) {
-        console.log("++++"); // tslint:disable-line
         if (
             isStackOverflowExeption(error)
         ) {

@@ -24,8 +24,7 @@ class DecoratedWarrior {
     }
 
     public mock() {
-      // tslint:disable-next-line:no-console
-      console.log(this._primaryWeapon, this._secondaryWeapon);
+      return `${JSON.stringify(this._primaryWeapon)} ${JSON.stringify(this._secondaryWeapon)}`;
     }
 
 }
