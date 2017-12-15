@@ -9,6 +9,8 @@ environment:
   NODE_ENV: test
 
   matrix:
+    - nodejs_version: "9.3.0"
+    - nodejs_version: "8.9.3"
     - nodejs_version: "7.10.1"
 
 build: off
