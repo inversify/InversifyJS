@@ -52,49 +52,51 @@ function listRegisteredBindingsForServiceIdentifier(
     return registeredBindingsList;
 }
 
-function circularDependencyToException(
+function alreadyDependencyChain(
     request: interfaces.Request,
-    previousServiceIdentifiers: interfaces.ServiceIdentifier<any>[] = []
+    serviceIdentifier: interfaces.ServiceIdentifier<any>
+): boolean {
+    if (request.parentRequest === null) {
+        return false;
+    } else if (request.parentRequest.serviceIdentifier === serviceIdentifier) {
+        return true;
+    } else {
+        return alreadyDependencyChain(request.parentRequest, serviceIdentifier);
+    }
+}
+
+function dependencyChainToString(
+    request: interfaces.Request
 ) {
 
-    // Add to list so we know that we have already visit this node in the request tree
-    const parentServiceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
-    previousServiceIdentifiers.push(parentServiceIdentifier);
-
-    // iterate child requests
-    request.childRequests.forEach((childRequest) => {
-
-        // the service identifier of a child request
-        const childServiceIdentifier = getServiceIdentifierAsString(childRequest.serviceIdentifier);
-
-        // check if the child request has been already visited
-        if (previousServiceIdentifiers.indexOf(childServiceIdentifier) === -1) {
-
-            if (childRequest.childRequests.length > 0) {
-                // use recursion to continue traversing the request tree
-                circularDependencyToException(childRequest, previousServiceIdentifiers);
-            } else {
-                // the node has no child so we add it to list to know that we have already visit this node
-                previousServiceIdentifiers.push(childServiceIdentifier);
-            }
-
-        } else {
-
-            // create description of circular dependency
-            previousServiceIdentifiers.push(childServiceIdentifier);
-
-            const services = previousServiceIdentifiers.reduce(
-                (prev, curr) =>
-                    (prev !== "") ? `${prev} -> ${curr}` : `${curr}`,
-                "");
-
-            // throw when we have already visit this node in the request tree
-            throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
-
+    function _createStringArr(
+        req: interfaces.Request,
+        result: string[] = []
+    ): string[] {
+        const serviceIdentifier = getServiceIdentifierAsString(req.serviceIdentifier);
+        result.push(serviceIdentifier);
+        if (req.parentRequest !== null) {
+            return _createStringArr(req.parentRequest, result);
         }
+        return result;
+    }
 
+    const stringArr = _createStringArr(request);
+    return stringArr.reverse().join(" --> ");
+
+}
+
+function circularDependencyToException(
+    request: interfaces.Request
+) {
+    request.childRequests.forEach((childRequest) => {
+        if (alreadyDependencyChain(childRequest, childRequest.serviceIdentifier)) {
+            const services = dependencyChainToString(childRequest);
+            throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
+        } else {
+            circularDependencyToException(childRequest);
+        }
     });
-
 }
 
 function listMetadataForTarget(serviceIdentifierString: string, target: interfaces.Target): string {

@@ -47,8 +47,10 @@ describe("issue 549", () => {
         }
 
         try {
-            willThrow();
-            throw new Error("This line should never be executed. Expected 'willThrow' to throw!");
+            const result = willThrow();
+            throw new Error(
+                `This line should never be executed. Expected 'willThrow' to throw! ${JSON.stringify(result)}`
+            );
         } catch (e) {
 
             const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
