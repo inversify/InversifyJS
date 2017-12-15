@@ -54,7 +54,9 @@ describe("Node", () => {
             return a;
         }
 
-        expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A -> B -> C -> D -> A`);
+        expect(willThrow).to.throw(
+            `${ERROR_MSGS.CIRCULAR_DEPENDENCY} A --> C --> D --> A`
+        );
 
     });
 

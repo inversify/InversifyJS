@@ -141,66 +141,54 @@ function _createSubRequests(
     target: interfaces.Target
 ) {
 
-    try {
+    let activeBindings: interfaces.Binding<any>[];
+    let childRequest: interfaces.Request;
 
-        let activeBindings: interfaces.Binding<any>[];
-        let childRequest: interfaces.Request;
+    if (parentRequest === null) {
 
-        if (parentRequest === null) {
+        activeBindings = _getActiveBindings(metadataReader, avoidConstraints, context, null, target);
 
-            activeBindings = _getActiveBindings(metadataReader, avoidConstraints, context, null, target);
+        childRequest = new Request(
+            serviceIdentifier,
+            context,
+            null,
+            activeBindings,
+            target
+        );
 
-            childRequest = new Request(
-                serviceIdentifier,
-                context,
-                null,
-                activeBindings,
-                target
-            );
+        const thePlan = new Plan(context, childRequest);
+        context.addPlan(thePlan);
 
-            const thePlan = new Plan(context, childRequest);
-            context.addPlan(thePlan);
-
-        } else {
-            activeBindings = _getActiveBindings(metadataReader, avoidConstraints, context, parentRequest, target);
-            childRequest = parentRequest.addChildRequest(target.serviceIdentifier, activeBindings, target);
-        }
-
-        activeBindings.forEach((binding) => {
-
-            let subChildRequest: interfaces.Request | null = null;
-
-            if (target.isArray()) {
-                subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
-            } else {
-                if (binding.cache) {
-                    return;
-                }
-                subChildRequest = childRequest;
-            }
-
-            if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-
-                const dependencies = getDependencies(metadataReader, binding.implementationType);
-
-                dependencies.forEach((dependency: interfaces.Target) => {
-                    _createSubRequests(metadataReader, false, dependency.serviceIdentifier, context, subChildRequest, dependency);
-                });
-
-            }
-
-        });
-
-    } catch (error) {
-        if (
-            isStackOverflowExeption(error) &&
-            parentRequest !== null
-        ) {
-            circularDependencyToException(parentRequest.parentContext.plan.rootRequest);
-        } else {
-            throw error;
-        }
+    } else {
+        activeBindings = _getActiveBindings(metadataReader, avoidConstraints, context, parentRequest, target);
+        childRequest = parentRequest.addChildRequest(target.serviceIdentifier, activeBindings, target);
     }
+
+    activeBindings.forEach((binding) => {
+
+        let subChildRequest: interfaces.Request | null = null;
+
+        if (target.isArray()) {
+            subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
+        } else {
+            if (binding.cache) {
+                return;
+            }
+            subChildRequest = childRequest;
+        }
+
+        if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+
+            const dependencies = getDependencies(metadataReader, binding.implementationType);
+
+            dependencies.forEach((dependency: interfaces.Target) => {
+                _createSubRequests(metadataReader, false, dependency.serviceIdentifier, context, subChildRequest, dependency);
+            });
+
+        }
+
+    });
+
 }
 
 function getBindings<T>(
@@ -238,8 +226,20 @@ function plan(
 
     const context = new Context(container);
     const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
-    _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
-    return context;
+
+    try {
+        _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
+        return context;
+    } catch (error) {
+        if (
+            isStackOverflowExeption(error)
+        ) {
+            if (context.plan) {
+                circularDependencyToException(context.plan.rootRequest);
+            }
+        }
+        throw error;
+    }
 
 }
 
