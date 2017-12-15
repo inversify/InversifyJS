@@ -4,7 +4,7 @@ import { Container, inject, injectable } from "../../src/inversify";
 
 describe("issue 543", () => {
 
-    it("Should throw if circular dependencies found with dynamics", () => {
+    it("Should throw correct circular dependency path", () => {
 
         const TYPE = {
             Child: Symbol.for("Child"),

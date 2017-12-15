@@ -1,8 +1,29 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
+import { isStackOverflowExeption } from "../utils/exceptions";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
+
+type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
+
+const invokeFactory = (
+    factoryType: FactoryType,
+    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    fn: () => any
+) => {
+    try {
+        return fn();
+    } catch (error) {
+        if (isStackOverflowExeption(error)) {
+            throw new Error(
+                ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier.toString())
+            );
+        } else {
+            throw error;
+        }
+    }
+};
 
 const _resolveRequest = (requestScope: interfaces.RequestScope) =>
     (request: interfaces.Request): any => {
@@ -56,11 +77,23 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         } else if (binding.type === BindingTypeEnum.Constructor) {
             result = binding.implementationType;
         } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
-            result = binding.dynamicValue(request.parentContext);
+            result = invokeFactory(
+                "toDynamicValue",
+                binding.serviceIdentifier,
+                () => binding.dynamicValue ? binding.dynamicValue(request.parentContext) : undefined
+            );
         } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
-            result = binding.factory(request.parentContext);
+            result = invokeFactory(
+                "toFactory",
+                binding.serviceIdentifier,
+                () => binding.factory ? binding.factory(request.parentContext) : undefined
+            );
         } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
-            result = binding.provider(request.parentContext);
+            result = invokeFactory(
+                "toProvider",
+                binding.serviceIdentifier,
+                () => binding.provider ? binding.provider(request.parentContext) : undefined
+            );
         } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
             result = resolveInstance(
                 binding.implementationType,

@@ -165,6 +165,7 @@ gulp.task("mocha", [ "istanbul:hook" ], function() {
     ])
     .pipe(mocha({ui: "bdd"}))
     .on("error", function (err) {
+        console.log(err);
         process.exit(1);
     })
     .pipe(istanbul.writeReports());
