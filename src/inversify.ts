@@ -1,6 +1,7 @@
 import * as keys from "./constants/metadata_keys";
 export const METADATA_KEY = keys;
 export { Container } from "./container/container";
+export { BindingScopeEnum, BindingTypeEnum, TargetTypeEnum } from "./constants/literal_types";
 export { ContainerModule } from "./container/container_module";
 export { injectable } from "./annotation/injectable";
 export { tagged } from "./annotation/tagged";

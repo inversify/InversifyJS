@@ -2,7 +2,7 @@ import { expect } from "chai";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Container, inject, injectable } from "../../src/inversify";
 
-describe("issue 543", () => {
+describe("Issue 543", () => {
 
     it("Should throw correct circular dependency path", () => {
 

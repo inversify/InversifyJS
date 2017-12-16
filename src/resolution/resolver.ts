@@ -80,19 +80,19 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             result = invokeFactory(
                 "toDynamicValue",
                 binding.serviceIdentifier,
-                () => binding.dynamicValue ? binding.dynamicValue(request.parentContext) : undefined
+                () => (binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
             );
         } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
             result = invokeFactory(
                 "toFactory",
                 binding.serviceIdentifier,
-                () => binding.factory ? binding.factory(request.parentContext) : undefined
+                () => (binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
             );
         } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
             result = invokeFactory(
                 "toProvider",
                 binding.serviceIdentifier,
-                () => binding.provider ? binding.provider(request.parentContext) : undefined
+                () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
             );
         } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
             result = resolveInstance(
