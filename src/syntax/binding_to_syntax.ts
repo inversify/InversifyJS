@@ -77,6 +77,12 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
+    public toService(service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>): void {
+        this.toDynamicValue(
+            (context) => context.container.get<T>(service)
+        );
+    }
+
 }
 
 export { BindingToSyntax };
