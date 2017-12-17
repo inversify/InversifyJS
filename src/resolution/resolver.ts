@@ -28,6 +28,8 @@ const invokeFactory = (
 const _resolveRequest = (requestScope: interfaces.RequestScope) =>
     (request: interfaces.Request): any => {
 
+    request.parentContext.setCurrentRequest(request);
+
     const bindings = request.bindings;
     const childRequests = request.childRequests;
 
