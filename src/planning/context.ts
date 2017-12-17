@@ -6,8 +6,10 @@ class Context implements interfaces.Context {
     public guid: string;
     public container: interfaces.Container;
     public plan: interfaces.Plan;
+    public currentRequest: interfaces.Request;
 
-    public constructor(container: interfaces.Container) {
+    public constructor(
+        container: interfaces.Container) {
         this.guid = guid();
         this.container = container;
     }
@@ -15,6 +17,11 @@ class Context implements interfaces.Context {
     public addPlan(plan: interfaces.Plan) {
         this.plan = plan;
     }
+
+    public setCurrentRequest(currentRequest: interfaces.Request) {
+        this.currentRequest = currentRequest;
+    }
+
 }
 
 export { Context };

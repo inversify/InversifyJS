@@ -88,7 +88,9 @@ namespace interfaces {
         guid: string;
         container: Container;
         plan: Plan;
+        currentRequest: Request;
         addPlan(plan: Plan): void;
+        setCurrentRequest(request: Request): void;
     }
 
     export interface ReflectResult {
