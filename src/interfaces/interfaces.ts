@@ -263,6 +263,7 @@ namespace interfaces {
         toFunction(func: T): BindingWhenOnSyntax<T>;
         toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
         toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
+        toService(service: ServiceIdentifier<T>): void;
     }
 
     export interface ConstraintFunction extends Function {
