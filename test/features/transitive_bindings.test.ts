@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { Container, injectable, multiBindToService } from "../../src/inversify";
 
-describe("toService", () => {
+describe("Transitive bindings", () => {
 
     it("Should be able to bind to a service", () => {
 
