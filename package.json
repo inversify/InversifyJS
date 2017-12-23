@@ -75,6 +75,6 @@
     "tslint": "5.8.0",
     "typescript": "2.6.2",
     "vinyl-buffer": "1.0.0",
-    "vinyl-source-stream": "1.1.0"
+    "vinyl-source-stream": "2.0.0"
   }
 }
