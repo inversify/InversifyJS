@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/chai": "4.0.10",
     "@types/harmony-proxy": "1.0.29",
-    "@types/mocha": " 2.2.44",
+    "@types/mocha": "2.2.45",
     "@types/sinon": "4.1.2",
     "bluebird": "3.5.1",
     "browserify": "14.5.0",
@@ -45,10 +45,10 @@
     "del": "3.0.0",
     "es6-symbol": "3.1.1",
     "gulp": "3.9.1",
-    "gulp-istanbul": "1.1.2",
-    "gulp-mocha": "3.0.1",
+    "gulp-istanbul": "1.1.3",
+    "gulp-mocha": "5.0.0",
     "gulp-rename": "1.2.2",
-    "gulp-sourcemaps": "2.6.2",
+    "gulp-sourcemaps": "2.6.3",
     "gulp-tslint": "8.1.2",
     "gulp-typescript": "3.2.3",
     "gulp-uglify": "3.0.0",
@@ -66,15 +66,15 @@
     "karma-mocha-reporter": "2.2.5",
     "karma-phantomjs-launcher": "1.0.4",
     "karma-sinon": "1.0.5",
-    "mocha": "4.0.1",
+    "mocha": "4.1.0",
     "performance-now": "2.1.0",
     "publish-please": "2.3.1",
     "reflect-metadata": "0.1.10",
-    "run-sequence": "2.2.0",
+    "run-sequence": "2.2.1",
     "sinon": "4.1.3",
     "tslint": "5.8.0",
     "typescript": "2.6.2",
-    "vinyl-buffer": "1.0.0",
-    "vinyl-source-stream": "2.0.0"
+    "vinyl-source-stream": "2.0.0",
+    "vinyl-buffer": "1.0.1"
   }
 }
