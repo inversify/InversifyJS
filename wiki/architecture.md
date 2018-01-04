@@ -104,5 +104,5 @@ The Plan is passed to an instance of the Resolver class. The Resolver will then 
 
 The resolution process can be executed synchronously or asynchronously which can help to boost performance.
 
-### Activation Phase
+### Activation Phase
 Activation takes place after a dependency has been resolved. Just before it is added to the cache (if singleton) and injected. It is possible to add an event handler that is invoked just before activation is completed. This feature allows developers to do things like injecting a proxy to intercept all the calls to the properties or methods of that object.
