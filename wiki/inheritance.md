@@ -129,7 +129,7 @@ container.bind<string>(TYPES.Rank)
 	  .whenTargetNamed("master");
 ```
 
-### WORKAROUND C) Inject into the derived class
+### WORKAROUND D) Inject into the derived class
 
 If we don't want to avoid injecting into the base class we can 
 inject into the derived class and then into the base class using 
