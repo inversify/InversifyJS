@@ -1,6 +1,6 @@
 # Transitive bindings
 
-A transitive type binding allows as to declare a type binding that is resolved by a prviously declared type binding.
+A transitive type binding allows as to declare a type binding that is resolved by a previously declared type binding.
 
 A transitive binding can be declared using the `toService` method:
 
