@@ -10,27 +10,32 @@ import { interfaces } from "../../src/interfaces/interfaces";
 
 interface Katana {}
 interface Shuriken {}
+interface Sword {}
 class Katana implements Katana {}
 class Shuriken implements Shuriken {}
+class Sword implements Sword {}
 
 class DecoratedWarrior {
 
     private _primaryWeapon: Katana;
     private _secondaryWeapon: Shuriken;
+    private _tertiaryWeapon: Sword;
 
     public constructor(
       @inject("Katana") primary: Katana,
-      @inject("Shuriken") secondary: Shuriken
+      @inject("Shuriken") secondary: Shuriken,
+      @inject(() => "Sword") tertiary: Shuriken
     ) {
-
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
+        this._tertiaryWeapon = tertiary;
     }
 
     public debug() {
       return {
         primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
+        secondaryWeapon: this._secondaryWeapon,
+        tertiaryWeapon: this._tertiaryWeapon
       };
     }
 
@@ -83,8 +88,15 @@ describe("@inject", () => {
     expect(m2.value).to.be.eql("Shuriken");
     expect(paramsMetadata["1"][1]).to.eq(undefined);
 
+    // assert metadata for second argument
+    expect(paramsMetadata["2"]).to.be.instanceof(Array);
+    const m3: interfaces.Metadata = paramsMetadata["2"][0];
+    expect(m3.key).to.be.eql(METADATA_KEY.INJECT_TAG);
+    expect(m3.value).to.be.eql("Sword");
+    expect(paramsMetadata["2"][1]).to.eq(undefined);
+
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.eq(undefined);
+    expect(paramsMetadata["3"]).to.eq(undefined);
 
   });
 

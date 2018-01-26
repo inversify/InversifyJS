@@ -4,13 +4,20 @@ import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import { tagParameter, tagProperty } from "./decorator_utils";
 
-function inject(serviceIdentifier: interfaces.ServiceIdentifier<any>) {
-  if (serviceIdentifier === undefined) {
+export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<any> | (() => interfaces.ServiceIdentifier<any>);
+
+function isSimpleFunction<T>(value: any): value is () => T {
+  return typeof value === "function" && value.length === 0;
+}
+
+function inject(serviceIdentifierOrFunc: ServiceIdentifierOrFunc) {
+  if (serviceIdentifierOrFunc === undefined) {
     throw new Error(UNDEFINED_INJECT_ANNOTATION);
   }
 
   return function(target: any, targetKey: string, index?: number): void {
-
+    const serviceIdentifier = isSimpleFunction<interfaces.ServiceIdentifier<any>>(serviceIdentifierOrFunc) ?
+      serviceIdentifierOrFunc() : serviceIdentifierOrFunc;
     const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
 
     if (typeof index === "number") {
