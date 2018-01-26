@@ -112,6 +112,18 @@ describe("@inject", () => {
 
   });
 
+  it("Should throw when applied with undefined", () => {
+
+    // this can happen when there is circular dependency between symbols
+    const useDecoratorWithUndefined = function() {
+      __decorate([ __param(0, inject(undefined as any)) ], InvalidDecoratorUsageWarrior);
+    };
+
+    const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION}`;
+    expect(useDecoratorWithUndefined).to.throw(msg);
+
+  });
+
   it("Should be usable in VanillaJS applications", () => {
 
     interface Shurien {}

@@ -7,6 +7,8 @@ export const CANNOT_UNBIND = "Could not unbind serviceIdentifier:";
 export const NOT_REGISTERED = "No matching bindings found for serviceIdentifier:";
 export const MISSING_INJECTABLE_ANNOTATION = "Missing required @injectable annotation in:";
 export const MISSING_INJECT_ANNOTATION = "Missing required @inject or @multiInject annotation in:";
+export const UNDEFINED_INJECT_ANNOTATION = "@inject called with undefined this could mean that you " +
+    "have circular dependency problem in your code.";
 export const CIRCULAR_DEPENDENCY = "Circular dependency found:";
 export const NOT_IMPLEMENTED = "Sorry, this feature is not fully implemented yet.";
 export const INVALID_BINDING_TYPE = "Invalid binding type:";
