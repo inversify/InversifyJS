@@ -6,7 +6,7 @@ export { ContainerModule } from "./container/container_module";
 export { injectable } from "./annotation/injectable";
 export { tagged } from "./annotation/tagged";
 export { named } from "./annotation/named";
-export { inject } from "./annotation/inject";
+export { inject, LazyServiceIdentifer } from "./annotation/inject";
 export { optional } from "./annotation/optional";
 export { unmanaged } from "./annotation/unmanaged";
 export { multiInject } from "./annotation/multi_inject";

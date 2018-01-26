@@ -3,7 +3,7 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import { inject } from "../../src/annotation/inject";
+import { inject, LazyServiceIdentifer } from "../../src/annotation/inject";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
@@ -15,6 +15,8 @@ class Katana implements Katana {}
 class Shuriken implements Shuriken {}
 class Sword implements Sword {}
 
+const lazySwordId = new LazyServiceIdentifer(() => "Sword");
+
 class DecoratedWarrior {
 
     private _primaryWeapon: Katana;
@@ -24,7 +26,7 @@ class DecoratedWarrior {
     public constructor(
       @inject("Katana") primary: Katana,
       @inject("Shuriken") secondary: Shuriken,
-      @inject(() => "Sword") tertiary: Shuriken
+      @inject(lazySwordId) tertiary: Shuriken
     ) {
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
@@ -92,7 +94,7 @@ describe("@inject", () => {
     expect(paramsMetadata["2"]).to.be.instanceof(Array);
     const m3: interfaces.Metadata = paramsMetadata["2"][0];
     expect(m3.key).to.be.eql(METADATA_KEY.INJECT_TAG);
-    expect(m3.value).to.be.eql("Sword");
+    expect(m3.value).to.be.eql(lazySwordId);
     expect(paramsMetadata["2"][1]).to.eq(undefined);
 
     // no more metadata should be available
@@ -131,7 +133,7 @@ describe("@inject", () => {
       __decorate([ __param(0, inject(undefined as any)) ], InvalidDecoratorUsageWarrior);
     };
 
-    const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION}`;
+    const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("InvalidDecoratorUsageWarrior")}`;
     expect(useDecoratorWithUndefined).to.throw(msg);
 
   });

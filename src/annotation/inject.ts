@@ -4,20 +4,25 @@ import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import { tagParameter, tagProperty } from "./decorator_utils";
 
-export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<any> | (() => interfaces.ServiceIdentifier<any>);
+export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<any> | LazyServiceIdentifer;
 
-function isSimpleFunction<T>(value: any): value is () => T {
-  return typeof value === "function" && value.length === 0;
-}
-
-function inject(serviceIdentifierOrFunc: ServiceIdentifierOrFunc) {
-  if (serviceIdentifierOrFunc === undefined) {
-    throw new Error(UNDEFINED_INJECT_ANNOTATION);
+export class LazyServiceIdentifer<T = any> {
+  private _cb: () => interfaces.ServiceIdentifier<T>;
+  public constructor(cb: () => interfaces.ServiceIdentifier<T>) {
+      this._cb = cb;
   }
 
+  public unwrap() {
+    return this._cb();
+  }
+}
+
+function inject(serviceIdentifier: ServiceIdentifierOrFunc) {
   return function(target: any, targetKey: string, index?: number): void {
-    const serviceIdentifier = isSimpleFunction<interfaces.ServiceIdentifier<any>>(serviceIdentifierOrFunc) ?
-      serviceIdentifierOrFunc() : serviceIdentifierOrFunc;
+    if (serviceIdentifier === undefined) {
+      throw new Error(UNDEFINED_INJECT_ANNOTATION(target.name));
+    }
+
     const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
 
     if (typeof index === "number") {
