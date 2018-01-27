@@ -6,7 +6,7 @@ import * as ERROR_MSGS from "../src/constants/error_msgs";
 import { interfaces } from "../src/interfaces/interfaces";
 import {
     Container, ContainerModule, decorate, inject,
-    injectable, multiInject, named, tagged, targetName,
+    injectable, LazyServiceIdentifer, multiInject, named, tagged, targetName,
     typeConstraint, unmanaged
 } from "../src/inversify";
 
@@ -211,6 +211,72 @@ describe("InversifyJS", () => {
             public constructor(
                 @inject(TYPES.Katana) katana: Katana,
                 @inject(TYPES.Shuriken) shuriken: Shuriken
+            ) {
+                this._katana = katana;
+                this._shuriken = shuriken;
+            }
+
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
+
+        }
+
+        const container = new Container();
+        container.bind<Ninja>(TYPES.Ninja).to(Ninja);
+        container.bind<Katana>(TYPES.Katana).to(Katana);
+        container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+
+        const ninja = container.get<Ninja>(TYPES.Ninja);
+
+        expect(ninja.fight()).eql("cut!");
+        expect(ninja.sneak()).eql("hit!");
+
+    });
+
+    it("Should be able to wrap Symbols with LazyServiceIdentifer", () => {
+
+        interface Ninja {
+            fight(): string;
+            sneak(): string;
+        }
+
+        interface Katana {
+            hit(): string;
+        }
+
+        interface Shuriken {
+            throw(): string;
+        }
+
+        @injectable()
+        class Katana implements Katana {
+            public hit() {
+                return "cut!";
+            }
+        }
+
+        @injectable()
+        class Shuriken implements Shuriken {
+            public throw() {
+                return "hit!";
+            }
+        }
+
+        const TYPES = {
+            Katana: Symbol.for("Katana"),
+            Ninja: Symbol.for("Ninja"),
+            Shuriken: Symbol.for("Shuriken")
+        };
+
+        @injectable()
+        class Ninja implements Ninja {
+
+            private _katana: Katana;
+            private _shuriken: Shuriken;
+
+            public constructor(
+                @inject(new LazyServiceIdentifer(() => TYPES.Katana)) katana: Katana,
+                @inject(new LazyServiceIdentifer(() => TYPES.Shuriken)) shuriken: Shuriken
             ) {
                 this._katana = katana;
                 this._shuriken = shuriken;
