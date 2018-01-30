@@ -1,3 +1,4 @@
+import { LazyServiceIdentifer } from "../annotation/inject";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
@@ -83,6 +84,11 @@ function getConstructorArgsAsTarget(
     let serviceIdentifier = serviceIdentifiers[index];
     const injectIdentifier  = (metadata.inject || metadata.multiInject);
     serviceIdentifier = (injectIdentifier) ? (injectIdentifier) : serviceIdentifier;
+
+    // we unwrap LazyServiceIdentifer wrappers to allow circular dependencies on symbols
+    if (serviceIdentifier instanceof LazyServiceIdentifer) {
+        serviceIdentifier = serviceIdentifier.unwrap();
+    }
 
     // Types Object and Function are too ambiguous to be resolved
     // user needs to generate metadata manually for those
