@@ -50,7 +50,7 @@
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "2.6.3",
     "gulp-tslint": "8.1.2",
-    "gulp-typescript": "4.0.0-alpha.2",
+    "gulp-typescript": "4.0.0",
     "gulp-uglify": "3.0.0",
     "harmonize": "2.0.0",
     "harmony-proxy": "1.0.1",
