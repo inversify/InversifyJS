@@ -100,7 +100,7 @@ class Ninja {
     private _katana: Katana;
 
     public constructor(
-        inject("Katana") katana: Katana
+        @inject("Katana") katana: Katana
     ) {
         this._katana = katana;
     }
