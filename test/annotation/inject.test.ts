@@ -3,34 +3,41 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import { inject } from "../../src/annotation/inject";
+import { inject, LazyServiceIdentifer } from "../../src/annotation/inject";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
 
 interface Katana {}
 interface Shuriken {}
+interface Sword {}
 class Katana implements Katana {}
 class Shuriken implements Shuriken {}
+class Sword implements Sword {}
+
+const lazySwordId = new LazyServiceIdentifer(() => "Sword");
 
 class DecoratedWarrior {
 
     private _primaryWeapon: Katana;
     private _secondaryWeapon: Shuriken;
+    private _tertiaryWeapon: Sword;
 
     public constructor(
       @inject("Katana") primary: Katana,
-      @inject("Shuriken") secondary: Shuriken
+      @inject("Shuriken") secondary: Shuriken,
+      @inject(lazySwordId) tertiary: Shuriken
     ) {
-
         this._primaryWeapon = primary;
         this._secondaryWeapon = secondary;
+        this._tertiaryWeapon = tertiary;
     }
 
     public debug() {
       return {
         primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
+        secondaryWeapon: this._secondaryWeapon,
+        tertiaryWeapon: this._tertiaryWeapon
       };
     }
 
@@ -83,8 +90,15 @@ describe("@inject", () => {
     expect(m2.value).to.be.eql("Shuriken");
     expect(paramsMetadata["1"][1]).to.eq(undefined);
 
+    // assert metadata for second argument
+    expect(paramsMetadata["2"]).to.be.instanceof(Array);
+    const m3: interfaces.Metadata = paramsMetadata["2"][0];
+    expect(m3.key).to.be.eql(METADATA_KEY.INJECT_TAG);
+    expect(m3.value).to.be.eql(lazySwordId);
+    expect(paramsMetadata["2"][1]).to.eq(undefined);
+
     // no more metadata should be available
-    expect(paramsMetadata["2"]).to.eq(undefined);
+    expect(paramsMetadata["3"]).to.eq(undefined);
 
   });
 
@@ -109,6 +123,18 @@ describe("@inject", () => {
 
     const msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
     expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
+
+  });
+
+  it("Should throw when applied with undefined", () => {
+
+    // this can happen when there is circular dependency between symbols
+    const useDecoratorWithUndefined = function() {
+      __decorate([ __param(0, inject(undefined as any)) ], InvalidDecoratorUsageWarrior);
+    };
+
+    const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("InvalidDecoratorUsageWarrior")}`;
+    expect(useDecoratorWithUndefined).to.throw(msg);
 
   });
 
