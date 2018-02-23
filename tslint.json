@@ -42,6 +42,7 @@
     "switch-default": false,
     "trailing-comma": false,
     "typedef": false,
-    "variable-name": false
+    "variable-name": false,
+    "no-this-assignment": false
   }
 }

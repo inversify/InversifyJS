@@ -299,7 +299,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should support Container modules", () => {
+    it("Should support Container modules", async () => {
 
         interface Ninja {
             fight(): string;
@@ -344,11 +344,11 @@ describe("InversifyJS", () => {
 
         }
 
-        const warriors = new ContainerModule((bind: interfaces.Bind) => {
+        const warriors = new ContainerModule(async (bind: interfaces.Bind) => {
             bind<Ninja>("Ninja").to(Ninja);
         });
 
-        const weapons = new ContainerModule((bind: interfaces.Bind) => {
+        const weapons = new ContainerModule(async (bind: interfaces.Bind) => {
             bind<Katana>("Katana").to(Katana);
             bind<Shuriken>("Shuriken").to(Shuriken);
         });
@@ -356,7 +356,7 @@ describe("InversifyJS", () => {
         const container = new Container();
 
         // load
-        container.load(warriors, weapons);
+        await container.load(warriors, weapons);
 
         const ninja = container.get<Ninja>("Ninja");
 

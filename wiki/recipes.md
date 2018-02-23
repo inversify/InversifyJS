@@ -72,11 +72,11 @@ testFunc();
 Sometimes you want to use your binding declarations in your unit test but you need to override some of them. We recommend you to declare your bindings as container modules inside your application:
 
 ```ts
-let warriors = new ContainerModule((bind: Bind) => {
+let warriors = new ContainerModule(async (bind: Bind) => {
     bind<Ninja>("Ninja").to(Ninja);
 });
 
-let weapons = new ContainerModule((bind: Bind) => {
+let weapons = new ContainerModule(async (bind: Bind) => {
     bind<Katana>("Katana").to(Katana);
     bind<Shuriken>("Shuriken").to(Shuriken);
 });
@@ -94,9 +94,9 @@ describe("something", () => {
 
   let container: inversify.Container;
 
-  beforeEach(() => {
+  beforeEach(async () => {
       container = new Container();
-      container.load(warriors, weapons);
+      await container.load(warriors, weapons);
   });
 
   afterEach(() => {

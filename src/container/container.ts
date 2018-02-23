@@ -91,7 +91,7 @@ class Container implements interfaces.Container {
         this._metadataReader = new MetadataReader();
     }
 
-    public load(...modules: interfaces.ContainerModule[]): void {
+    public async load(...modules: interfaces.ContainerModule[]) {
 
         const setModuleId = (bindingToSyntax: any, moduleId: string) => {
             bindingToSyntax._binding.moduleId = moduleId;
@@ -99,7 +99,8 @@ class Container implements interfaces.Container {
 
         const getBindFunction = (moduleId: string) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                const bindingToSyntax = this.bind.call(this, serviceIdentifier);
+                const _bind = this.bind.bind(this);
+                const bindingToSyntax = _bind(serviceIdentifier);
                 setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
@@ -118,19 +119,20 @@ class Container implements interfaces.Container {
 
         const getRebindFunction = (moduleId: string) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                const bindingToSyntax = this.rebind.call(this, serviceIdentifier);
+                const _rebind = this.rebind.bind(this);
+                const bindingToSyntax = _rebind(serviceIdentifier);
                 setModuleId(bindingToSyntax, moduleId);
                 return bindingToSyntax;
             };
 
-        modules.forEach((module) => {
+        modules.forEach(async (module) => {
 
             const bindFunction = getBindFunction(module.guid);
             const unbindFunction = getUnbindFunction(module.guid);
             const isboundFunction = getIsboundFunction(module.guid);
             const rebindFunction = getRebindFunction(module.guid);
 
-            module.registry(
+            await module.registry(
                 bindFunction,
                 unbindFunction,
                 isboundFunction,

@@ -176,7 +176,7 @@ namespace interfaces {
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
-        load(...modules: ContainerModule[]): void;
+        load(...modules: ContainerModule[]): Promise<void>;
         unload(...modules: ContainerModule[]): void;
         applyCustomMetadataReader(metadataReader: MetadataReader): void;
         applyMiddleware(...middleware: Middleware[]): void;
@@ -203,7 +203,7 @@ namespace interfaces {
             unbind: interfaces.Unbind,
             isBound: interfaces.IsBound,
             rebind: interfaces.Rebind
-        ) => void;
+        ) => Promise<void>;
 
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
