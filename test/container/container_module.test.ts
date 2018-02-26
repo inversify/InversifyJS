@@ -93,7 +93,7 @@ describe("ContainerModule", () => {
 
   });
 
-  it("Should be able use await async stuff in container modules", async () => {
+  it("Should be able use await async functions in container modules", async () => {
 
     const container = new Container();
     const someAsyncFactory = () => new Promise<number>((res) => setTimeout(() => res(1), 100));
@@ -105,19 +105,16 @@ describe("ContainerModule", () => {
       bind(A).toConstantValue(val);
     });
 
-    const moduleTwo = new ContainerModule(async (bind, unbind, isBound) => {
+    const moduleTwo = new ContainerModule(async (bind) => {
       bind(B).toConstantValue(2);
-      // moduleOne should be loaded before moduleTwo
-      // included all the async dependencies like
-      // "a", When module 2 is executed, "a" should be
-      // available.
-      const AIsBound = isBound(A);
-      expect(AIsBound).to.eq(true);
-      const a = container.get(A);
-      expect(a).to.eq(1);
     });
 
     await container.load(moduleOne, moduleTwo);
+
+    const AIsBound = container.isBound(A);
+    expect(AIsBound).to.eq(true);
+    const a = container.get(A);
+    expect(a).to.eq(1);
 
   });
 

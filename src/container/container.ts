@@ -125,21 +125,20 @@ class Container implements interfaces.Container {
                 return bindingToSyntax;
             };
 
-        modules.forEach(async (module) => {
+        for (const currentModule of modules) {
 
-            const bindFunction = getBindFunction(module.guid);
-            const unbindFunction = getUnbindFunction(module.guid);
-            const isboundFunction = getIsboundFunction(module.guid);
-            const rebindFunction = getRebindFunction(module.guid);
+            const bindFunction = getBindFunction(currentModule.guid);
+            const unbindFunction = getUnbindFunction(currentModule.guid);
+            const isboundFunction = getIsboundFunction(currentModule.guid);
+            const rebindFunction = getRebindFunction(currentModule.guid);
 
-            await module.registry(
+            await currentModule.registry(
                 bindFunction,
                 unbindFunction,
                 isboundFunction,
                 rebindFunction
             );
-
-        });
+        }
 
     }
 
