@@ -23,7 +23,7 @@ describe("Container", () => {
         sandbox.restore();
     });
 
-    it("Should be able to use modules as configuration", async () => {
+    it("Should be able to use modules as configuration", () => {
 
       interface Ninja {}
       interface Katana {}
