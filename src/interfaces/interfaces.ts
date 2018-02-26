@@ -176,7 +176,8 @@ namespace interfaces {
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
-        load(...modules: ContainerModule[]): Promise<void>;
+        load(...modules: ContainerModule[]): void;
+        loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
         unload(...modules: ContainerModule[]): void;
         applyCustomMetadataReader(metadataReader: MetadataReader): void;
         applyMiddleware(...middleware: Middleware[]): void;
@@ -198,7 +199,19 @@ namespace interfaces {
         registry: ContainerModuleCallBack;
     }
 
+    export interface AsyncContainerModule {
+        guid: string;
+        registry: AsyncContainerModuleCallBack;
+    }
+
     export type ContainerModuleCallBack = (
+            bind: interfaces.Bind,
+            unbind: interfaces.Unbind,
+            isBound: interfaces.IsBound,
+            rebind: interfaces.Rebind
+        ) => void;
+
+    export type AsyncContainerModuleCallBack = (
             bind: interfaces.Bind,
             unbind: interfaces.Unbind,
             isBound: interfaces.IsBound,

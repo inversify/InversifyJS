@@ -52,22 +52,20 @@ import { TYPES } from "./types";
 import { Sequelize, Lodash } from "./interfaces";
 import { SomeClass } from "../entities/some_class";
 
-const thirdPartyDependencies = new ContainerModule(async (bind) => {
+const thirdPartyDependencies = new ContainerModule((bind) => {
     bind<Sequelize>(TYPES.Sequelize).toConstantValue(sequelize);
     bind<Lodash>(TYPES.Lodash).toConstantValue(_);
     // ..
 });
 
-const applicationDependencies = new ContainerModule(async (bind) => {
+const applicationDependencies = new ContainerModule((bind) => {
     bind<SomeClass>(TYPES.SomeClass).to(SomeClass);
     // ..
 });
 
 const container = new Container();
 
-(async () => {
-    await container.load(thirdPartyDependencies, applicationDependencies);
-})();
+container.load(thirdPartyDependencies, applicationDependencies);
 
 export { container };
 

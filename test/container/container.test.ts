@@ -38,17 +38,17 @@ describe("Container", () => {
       @injectable()
       class Ninja implements Ninja {}
 
-      const warriors = new ContainerModule(async (bind: interfaces.Bind) => {
+      const warriors = new ContainerModule((bind: interfaces.Bind) => {
           bind<Ninja>("Ninja").to(Ninja);
       });
 
-      const weapons = new ContainerModule(async (bind: interfaces.Bind) => {
+      const weapons = new ContainerModule((bind: interfaces.Bind) => {
           bind<Katana>("Katana").to(Katana);
           bind<Shuriken>("Shuriken").to(Shuriken);
       });
 
       const container = new Container();
-      await container.load(warriors, weapons);
+      container.load(warriors, weapons);
 
       let map: Dictionary = getBindingDictionary(container).getMap();
       expect(map.has("Ninja")).eql(true);
