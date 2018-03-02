@@ -91,53 +91,41 @@ class Container implements interfaces.Container {
         this._metadataReader = new MetadataReader();
     }
 
-    public load(...modules: interfaces.ContainerModule[]): void {
+    public load(...modules: interfaces.ContainerModule[]) {
 
-        const setModuleId = (bindingToSyntax: any, moduleId: string) => {
-            bindingToSyntax._binding.moduleId = moduleId;
-        };
+        const getHelpers = this._getContainerModuleHelpersFactory();
 
-        const getBindFunction = (moduleId: string) =>
-            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                const bindingToSyntax = this.bind.call(this, serviceIdentifier);
-                setModuleId(bindingToSyntax, moduleId);
-                return bindingToSyntax;
-            };
+        for (const currentModule of modules) {
 
-        const getUnbindFunction = (moduleId: string) =>
-            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                const _unbind = this.unbind.bind(this);
-                _unbind(serviceIdentifier);
-            };
+            const containerModuleHelpers = getHelpers(currentModule.guid);
 
-        const getIsboundFunction = (moduleId: string) =>
-            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                const _isBound = this.isBound.bind(this);
-                return _isBound(serviceIdentifier);
-            };
-
-        const getRebindFunction = (moduleId: string) =>
-            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
-                const bindingToSyntax = this.rebind.call(this, serviceIdentifier);
-                setModuleId(bindingToSyntax, moduleId);
-                return bindingToSyntax;
-            };
-
-        modules.forEach((module) => {
-
-            const bindFunction = getBindFunction(module.guid);
-            const unbindFunction = getUnbindFunction(module.guid);
-            const isboundFunction = getIsboundFunction(module.guid);
-            const rebindFunction = getRebindFunction(module.guid);
-
-            module.registry(
-                bindFunction,
-                unbindFunction,
-                isboundFunction,
-                rebindFunction
+            currentModule.registry(
+                containerModuleHelpers.bindFunction,
+                containerModuleHelpers.unbindFunction,
+                containerModuleHelpers.isboundFunction,
+                containerModuleHelpers.rebindFunction
             );
 
-        });
+        }
+
+    }
+
+    public async loadAsync(...modules: interfaces.AsyncContainerModule[]) {
+
+        const getHelpers = this._getContainerModuleHelpersFactory();
+
+        for (const currentModule of modules) {
+
+            const containerModuleHelpers = getHelpers(currentModule.guid);
+
+            await currentModule.registry(
+                containerModuleHelpers.bindFunction,
+                containerModuleHelpers.unbindFunction,
+                containerModuleHelpers.isboundFunction,
+                containerModuleHelpers.rebindFunction
+            );
+
+        }
 
     }
 
@@ -276,6 +264,49 @@ class Container implements interfaces.Container {
         tempContainer.bind<T>(constructorFunction).toSelf();
         tempContainer.parent = this;
         return tempContainer.get<T>(constructorFunction);
+    }
+
+    private _getContainerModuleHelpersFactory() {
+
+        const setModuleId = (bindingToSyntax: any, moduleId: string) => {
+            bindingToSyntax._binding.moduleId = moduleId;
+        };
+
+        const getBindFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const _bind = this.bind.bind(this);
+                const bindingToSyntax = _bind(serviceIdentifier);
+                setModuleId(bindingToSyntax, moduleId);
+                return bindingToSyntax;
+            };
+
+        const getUnbindFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const _unbind = this.unbind.bind(this);
+                _unbind(serviceIdentifier);
+            };
+
+        const getIsboundFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const _isBound = this.isBound.bind(this);
+                return _isBound(serviceIdentifier);
+            };
+
+        const getRebindFunction = (moduleId: string) =>
+            (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
+                const _rebind = this.rebind.bind(this);
+                const bindingToSyntax = _rebind(serviceIdentifier);
+                setModuleId(bindingToSyntax, moduleId);
+                return bindingToSyntax;
+            };
+
+        return (mId: string) => ({
+            bindFunction: getBindFunction(mId),
+            isboundFunction: getIsboundFunction(mId),
+            rebindFunction: getRebindFunction(mId),
+            unbindFunction: getUnbindFunction(mId)
+        });
+
     }
 
     // Prepares arguments required for resolution and
