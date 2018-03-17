@@ -12,7 +12,7 @@ src/
 └── ioc
     ├── interfaces.ts
     ├── ioc.ts
-    └── types.
+    └── types.ts
 ```
 
 ### /src/ioc/types.ts
