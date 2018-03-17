@@ -109,16 +109,16 @@ Let's start by declaring some interfaces (abstractions).
 ```ts
 // file interfaces.ts
 
-interface Warrior {
+export interface Warrior {
     fight(): string;
     sneak(): string;
 }
 
-interface Weapon {
+export interface Weapon {
     hit(): string;
 }
 
-interface ThrowableWeapon {
+export interface ThrowableWeapon {
     throw(): string;
 }
 ```
