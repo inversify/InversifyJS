@@ -637,6 +637,22 @@ describe("Container", () => {
         expect(child.parent.guid).to.eql(parent.guid);
     });
 
+    it("Should be able to override options to child containers", () => {
+        @injectable()
+        class Warrior { }
+
+        const parent = new Container();
+        parent.bind(Warrior).toSelf();
+
+        const child = parent.createChild({
+            defaultScope: BindingScopeEnum.Singleton,
+        });
+
+        const singletonWarrior1 = child.get(Warrior);
+        const singletonWarrior2 = child.get(Warrior);
+        expect(singletonWarrior1).to.eql(singletonWarrior2);
+    });
+
     it("Should be able check if a named binding is bound", () => {
 
         const zero = "Zero";
