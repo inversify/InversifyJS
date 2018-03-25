@@ -59,11 +59,11 @@ container.bind<Samurai>(Samurai).toSelf();
 
 # 已知局限性: 类作为标识符和循环依赖
 
-这个异常:
+如果在循环依赖中使用类作为标识符会被抛出异常:
 
 > Error: Missing required @Inject or @multiinject annotation in: argument 0 in class Dom.
 
-会被抛出如果在循环依赖中使用类作为标识。 例子:
+例子:
 
 ```ts
 import "reflect-metadata";
@@ -100,7 +100,7 @@ const dom = container.resolve(Test); // Error!
 
 这个错误可能有点误导，因为当使用类作为服务标识，`@inject` 等注解不需要使用，如果我们添加 `@inject(Dom)` 或 `@inject(DomUi)` 的注解，依然会抛出相同的异常。因为装饰器被调用的时候，类还没有被声明，所以装饰器被调用为 `@inject(undefined)`，导致 InversifyJS 认为对应的注解没有被添加。
 
-解决办法是使用 `Symbol`, 比如 `Symbol.for("Dom")` 作为服务标识而不是 `Dom` 这样的类 :
+解决办法是使用 `Symbol`，比如 `Symbol.for("Dom")` 作为服务标识而不是 `Dom` 这样的类 :
 
 ```ts
 import "reflect-metadata";
