@@ -25,7 +25,7 @@ InversifyJS 是一个轻量的 (4KB) 控制反转容器 (IoC)，可用于编写 
 ## 为什么要有 InversifyJS?
 JavaScript 现在支持面向对象编程，基于类的继承。 这些特性不错但事实上它们也是
 [危险的](https://medium.com/@dan_abramov/how-to-use-classes-and-sleep-at-night-9af8de78ccb4)。
-我们需要一个优秀的面向对象设计(比如 [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)), [Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance)等) 来保护我们避免这些威胁。然而，面向对象的设计是复杂的，所以我们创建了 InversifyJS。
+我们需要一个优秀的面向对象设计（比如 [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design))，[Composite Reuse](https://en.wikipedia.org/wiki/Composition_over_inheritance)等）来保护我们避免这些威胁。然而，面向对象的设计是复杂的，所以我们创建了 InversifyJS。
 
 InversifyJS 是一个工具，它能帮助 JavaScript 开发者，写出出色的面向对象设计的代码。
 
@@ -50,13 +50,13 @@ InversifyJS有4个主要目标:
 **[Michel Weststrate](https://twitter.com/mweststrate)** - Author of [MobX](https://github.com/mobxjs/mobx)
 > *Dependency injection like InversifyJS works nicely*
 
-## 使用 InversifyJS 的公司
+## 使用 InversifyJS 的公司
 
 [<img src="https://avatars0.githubusercontent.com/u/6154722?s=200&v=4" width="100" />](https://opensource.microsoft.com/) [<img src="https://pbs.twimg.com/profile_images/827249559046909954/SyaBPcH8_400x400.jpg" width="100" />](http://acia.aon.com/index.php/home/) [<img src="https://avatars3.githubusercontent.com/u/114767?s=200&v=4" width="100" />](https://www.lonelyplanet.com/) [<img src="https://avatars0.githubusercontent.com/u/25283328?s=200&v=4" width="100" />](https://jincor.com/) [<img src="https://avatars1.githubusercontent.com/u/1957282?s=200&v=4" width="100" />](https://www.web-computing.de/) [<img src="https://avatars1.githubusercontent.com/u/17648048?s=200&v=4" width="100" />](https://dcos.io/) [<img src="https://avatars0.githubusercontent.com/u/16970371?s=200&v=4" width="100" />](https://typefox.io/) [<img src="https://avatars0.githubusercontent.com/u/18010308?s=200&v=4" width="100" />](https://code4.ro/) [<img src="https://user-images.githubusercontent.com/10656223/33888109-fae0852e-df43-11e7-97f6-9db543da0bde.png" width="100">](http://www.baidu.com/) [<img src="https://avatars2.githubusercontent.com/u/8085382?s=200&v=4" width="100" />](https://www.imdada.cn/) [<img src="https://avatars2.githubusercontent.com/u/17041151?s=200&v=4" width="100" />](https://www.ato.gov.au/) [<img src="https://avatars1.githubusercontent.com/u/14963540?s=200&v=4" width="100" />](https://www.kaneoh.com/) [<img src="https://avatars0.githubusercontent.com/u/26021686?s=200&v=4" width="100" />](https://particl.io/) [<img src="https://avatars2.githubusercontent.com/u/24523195?s=200&v=4" width="100" />](https://slackmap.com/) [<img src="https://avatars3.githubusercontent.com/u/16556899?s=200&v=4" width="100" />](https://www.go1.com/) [<img src="https://avatars3.githubusercontent.com/u/23475730?s=200&v=4" width="100" />](http://www.stellwagengroup.com/stellwagen-technology/) [<img src="https://avatars1.githubusercontent.com/u/15262567?s=200&v=4" width="100" />](https://www.edrlab.org/) [<img src="https://avatars1.githubusercontent.com/u/10072104?s=200&v=4" width="100" />](https://www.goodgamestudios.com/) [<img src="https://avatars2.githubusercontent.com/u/13613760?s=200&v=4" width="100" />](https://freshfox.at/) [<img src="https://avatars1.githubusercontent.com/u/864482?s=200&v=4" width="100" />](https://schubergphilis.com/)
 
 ## 安装
 
-您可以使用 npm 获得最新的版本和类型定义: 
+您可以使用 npm 获得最新的版本和类型定义：
 
 ```
 $ npm install inversify reflect-metadata --save
@@ -87,11 +87,12 @@ inversifyjs需要现代JavaScript引擎，支持以下特性
 - [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (Only required if using [provider injection](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md))
 - [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) (Only required if using [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md))
 
+
 如果您的运行环境不支持这些特性，您可能需要导入 `shim` 或 `polyfill`
 
-> :警示: **`reflect-metadata` polyfill 应该在您整个应用中只导入一次** 因为 `Reflect` 对象需要成为一个全局的单例。 关于这的更多细节可以在[这里](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844)找到。 
+> ：警示： **`reflect-metadata` `polyfill` 应该在您整个应用中只导入一次** 因为 `Reflect` 对象需要成为一个全局的单例。 更多细节可以在[这里](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844)找到。 
 
-查看 维基中的[开发环境 `polyfills`](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
+查看维基中的[开发环境 `polyfills`](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
 , 还可以从[基本示例](https://github.com/inversify/inversify-basic-example)中去学习.
 
 ## 基础部分
