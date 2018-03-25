@@ -56,7 +56,7 @@ InversifyJS有4个主要目标:
 
 ## 安装
 
-您可以使用 `npm` 获得最新的版本和类型定义：
+您可以使用`npm`获得最新的版本和类型定义：
 
 ```
 $ npm install inversify reflect-metadata --save
