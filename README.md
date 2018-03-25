@@ -17,7 +17,7 @@
 ![](https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/cover.jpg)
 
 A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
-
+Translations: [中文](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/README.md)
 ## About
 InversifyJS is a lightweight inversion of control (IoC) container for TypeScript and JavaScript apps.
 An IoC container uses a class constructor to identify and inject its dependencies.
