@@ -59,11 +59,11 @@ container.bind<Samurai>(Samurai).toSelf();
 
 # 已知局限性: 类作为标识符和循环依赖
 
-如果在循环依赖中使用类作为标识符会被抛出异常:
+如果在循环依赖中使用类作为标识符会被抛出异常：
 
 > Error: Missing required @Inject or @multiinject annotation in: argument 0 in class Dom.
 
-例子:
+例子：
 
 ```ts
 import "reflect-metadata";
