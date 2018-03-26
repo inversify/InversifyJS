@@ -42,15 +42,16 @@ InversifyJS有4个主要目标:
 
 4. 提供[艺术编程体验和生态](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md).
 
-## 名人代言
+## 业内评价
 
-**[Nate Kohari](https://twitter.com/nkohari)** - Author of [Ninject](https://github.com/ninject/Ninject)
+**[Nate Kohari](https://twitter.com/nkohari)** - [Ninject](https://github.com/ninject/Ninject)的作者
 
-> *"Nice work! I've taken a couple shots at creating DI frameworks for JavaScript and TypeScript, but the lack of RTTI really hinders things.* 
-> *The ES7 metadata gets us part of the way there (as you've discovered). Keep up the great work!"*
+> *"非常漂亮！我已经尝试了不少用于创建JavaScript/TypeScript依赖注入的框架，但是由于缺少运行期类型信息(RTTI)，实现时有很大阻碍。* 
 
-**[Michel Weststrate](https://twitter.com/mweststrate)** - Author of [MobX](https://github.com/mobxjs/mobx)
-> *Dependency injection like InversifyJS works nicely*
+> *ES7的元数据已经帮助我们向前进了一大步（正如你所看到）。继续加油保持！*
+
+**[Michel Weststrate](https://twitter.com/mweststrate)** - [MobX](https://github.com/mobxjs/mobx)的作者
+> *像InversifyJS这样的依赖注入框架非常强大*
 
 ## 使用 InversifyJS 的一些公司
 
