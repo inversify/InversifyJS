@@ -63,7 +63,7 @@ container.bind<Samurai>(Samurai).toSelf();
 
 > Error: Missing required @Inject or @multiinject annotation in: argument 0 in class Dom.
 
-例子：
+例子:
 
 ```ts
 import "reflect-metadata";
