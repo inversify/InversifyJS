@@ -11,7 +11,7 @@ container.bind<Warrior>(TYPES.Warrior).to(Ninja).inSingletonScope();
 container.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
 ```
 
-您可以配置容器选项，来更改返回服务的默认生命周期为应用程序级别：
+您可以配置容器选项，来更改默认生命周期为应用程序级别：
 
 ```ts
 let container = new Container({ defaultScope: "Singleton" });

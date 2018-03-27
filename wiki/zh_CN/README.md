@@ -245,9 +245,9 @@ InversifyJS 支持 ES5 和 ES6 而且可以在没有 TypeScript 环境下使用�
 
 - [类作为标识](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/classes_as_id.md)
 - [Symbol作为标识](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/symbols_as_id.md)
-- [container_api](https://github.com/inversify/InversifyJS/blob/master/wiki/container_api.md)
-- [Declaring container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
-- [Container snapshots](https://github.com/inversify/InversifyJS/blob/master/wiki/container_snapshots.md)
+- [容器 API](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/container_api.md)
+- [声明容器模块](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/container_modules.md)
+- [容器快照](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/container_snapshots.md)
 - [Controlling the scope of the dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)
 - [Declaring optional dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/optional_dependencies.md)
 - [Injecting a constant or dynamic value](https://github.com/inversify/InversifyJS/blob/master/wiki/value_injection.md)
