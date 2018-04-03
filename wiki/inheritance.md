@@ -208,6 +208,34 @@ container.bind<string>(TYPES.Rank)
 
 ```
 
+### WORKAROUND E) Skip Base class `@injectable` checks
+
+Setting the `skipBaseClassChecks` option to `true` for the container will disable all checking of base classes. This means it will be completely up to the developer to ensure that the `super()` constructor is called with the correct arguments and at the correct time.
+
+```ts
+// Not injectable
+class UnmanagedBase {
+    public constructor(
+        public unmanagedDependency: string
+    ) {
+    }
+}
+
+@injectable()
+class InjectableDerived extends UnmanagedBase  {
+    public constructor(
+        // Any arguments defined here will be injected like normal
+    ) {
+        super("Don't forget me...");
+    }
+}
+
+const container = new Container({skipBaseClassChecks: true});
+container.bind(InjectableDerived).toSelf();
+```
+
+This will work, and you'll be able to use your `InjectableDerived` class just like normal, including injecting dependencies from elsewhere in the container through the constructor. The one caveat is that you must make sure your `UnmanagedBase` receives the correct arguments.
+
 ## What can I do when my base class is provided by a third party module?
 In some cases, you may get errors about missing annotations in classes 
 provided by a third party module like:

@@ -24,8 +24,8 @@ export const INVALID_TO_SELF_VALUE = "The toSelf function can only be applied wh
 export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and @named decorators " +
     "must be applied to the parameters of a class constructor or a class property.";
 
-export const ARGUMENTS_LENGTH_MISMATCH_1 = "The number of constructor arguments in the derived class ";
-export const ARGUMENTS_LENGTH_MISMATCH_2 = " must be >= than the number of constructor arguments of its base class.";
+export const ARGUMENTS_LENGTH_MISMATCH = (...values: any[]) => "The number of constructor arguments in the derived class " +
+    `${values[0]} must be >= than the number of constructor arguments of its base class.`;
 
 export const CONTAINER_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructor argument. Container options " +
     "must be an object.";
@@ -34,6 +34,9 @@ export const CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE = "Invalid Container option
     "be a string ('singleton' or 'transient').";
 
 export const CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE = "Invalid Container option. Auto bind injectable must " +
+    "be a boolean";
+
+export const CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK = "Invalid Container option. Skip base check must " +
     "be a boolean";
 
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
