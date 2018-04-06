@@ -10,7 +10,7 @@ In some cases there will be some additional operations:
 - Activation
 - Middleware
 
-If we have configured some Middleware it will be executed at some point before ot after the planning, 
+If we have configured some Middleware it will be executed at some point before or after the planning, 
 resolution and activation phases.
 
 Middleware can be used to implement powerful development tools. This kind of tools will help developers 
