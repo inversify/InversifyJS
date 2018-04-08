@@ -39,14 +39,14 @@ let container = new Container();
 container.bind<Katana>("Katana").to(Katana);
 container.bind<Ninja>("Ninja").to(Ninja);
 
-let ninja =  container.get<Ninja>("Ninja");
+let ninja = container.get<Ninja>("Ninja");
 expect(ninja.name).to.eql("Ninja");
 expect(ninja.katana.name).to.eql("Katana");
 expect(ninja.shuriken).to.eql(undefined);
 
 container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-ninja =  container.get<Ninja>("Ninja");
+ninja = container.get<Ninja>("Ninja");
 expect(ninja.name).to.eql("Ninja");
 expect(ninja.katana.name).to.eql("Katana");
 expect(ninja.shuriken.name).to.eql("Shuriken");
