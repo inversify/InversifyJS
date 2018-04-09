@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Container } from "../../src/container/container";
-import { ContainerModule } from "../../src/container/container_module";
+import { AsyncContainerModule, ContainerModule } from "../../src/container/container_module";
 import { interfaces } from "../../src/interfaces/interfaces";
 
 describe("ContainerModule", () => {
@@ -90,6 +90,31 @@ describe("ContainerModule", () => {
     const values2 = container.getAll(TYPES.someType);
     expect(values2[0]).to.eq(3);
     expect(values2[1]).to.eq(undefined);
+
+  });
+
+  it("Should be able use await async functions in container modules", async () => {
+
+    const container = new Container();
+    const someAsyncFactory = () => new Promise<number>((res) => setTimeout(() => res(1), 100));
+    const A = Symbol.for("A");
+    const B = Symbol.for("B");
+
+    const moduleOne = new AsyncContainerModule(async (bind) => {
+      const val = await someAsyncFactory();
+      bind(A).toConstantValue(val);
+    });
+
+    const moduleTwo = new AsyncContainerModule(async (bind) => {
+      bind(B).toConstantValue(2);
+    });
+
+    await container.loadAsync(moduleOne, moduleTwo);
+
+    const AIsBound = container.isBound(A);
+    expect(AIsBound).to.eq(true);
+    const a = container.get(A);
+    expect(a).to.eq(1);
 
   });
 
