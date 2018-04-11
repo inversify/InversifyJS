@@ -84,7 +84,7 @@ function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
 }
 ```
 
-You can extends the default `contextInterceptor` using a function:
+You can extend the default `contextInterceptor` using a function:
 
 ```ts
 function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
@@ -102,7 +102,7 @@ function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
 ## Custom metadata reader
 
 > :warning: Please note that it is not recommended to create your own custom
-> metadata reader. We have included this feature two allow library / framework creators
+> metadata reader. We have included this feature to allow library / framework creators
 > to have a higher level of customization but the average user should not use a custom
 > metadata reader. In general, a custom metadata reader should only be used when
 > developing a framework in order to provide users with an annotation APIs
@@ -172,7 +172,7 @@ A custom metadata reader must implement the `interfaces.MetadataReader` interfac
 
 A full example [can be found in our unit tests](https://github.com/inversify/InversifyJS/blob/master/test/features/metadata_reader.test.ts).
 
-One you have a custom metadata reader you will be ready to apply it:
+Once you have a custom metadata reader you will be ready to apply it:
 
 ```ts
 let container = new Container();
