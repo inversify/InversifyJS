@@ -217,8 +217,8 @@ class Container implements interfaces.Container {
         this._middleware = snapshot.middleware;
     }
 
-    public createChild(): Container {
-        const child = new Container();
+    public createChild(containerOptions?: interfaces.ContainerOptions): Container {
+        const child = new Container(containerOptions);
         child.parent = this;
         return child;
     }
