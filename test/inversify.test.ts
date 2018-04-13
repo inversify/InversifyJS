@@ -1993,7 +1993,7 @@ describe("InversifyJS", () => {
         container.bind<Warrior>(SYMBOLS.SamuraiMaster2).to(SamuraiMaster2);
 
         const errorFunction = () => { container.get<Warrior>(SYMBOLS.SamuraiMaster); };
-        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH("SamuraiMaster");
         expect(errorFunction).to.throw(error);
 
         const samuraiMaster2 = container.get<SamuraiMaster2>(SYMBOLS.SamuraiMaster2);
@@ -2027,7 +2027,7 @@ describe("InversifyJS", () => {
 
         container.bind<Base1>(Base1Id).to(Derived1);
         const tryGet = () => { container.get(Base1Id); };
-        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "Derived1" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH("Derived1");
         expect(tryGet).to.throw(error);
 
         // CASE 2: Use @unmanaged to overcome issue
