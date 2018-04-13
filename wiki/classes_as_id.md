@@ -105,7 +105,7 @@ The solution is to use symbols like `Symbol.for("Dom")` as service identifiers i
 
 ```ts
 import "reflect-metadata";
-import { Container, injectable, injectable } from "inversify";
+import { Container, injectable, inject } from "inversify";
 import getDecorators from "inversify-inject-decorators";
 
 const container = new Container();
