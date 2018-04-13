@@ -50,38 +50,42 @@ class Container implements interfaces.Container {
     }
 
     public constructor(containerOptions?: interfaces.ContainerOptions) {
-
-        if (containerOptions !== undefined) {
-
-            if (typeof containerOptions !== "object") {
-                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
-            } else {
-                if (containerOptions.defaultScope !== undefined &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Transient &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Request
-                ) {
-                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
-                }
-
-                if (containerOptions.autoBindInjectable !== undefined &&
-                    typeof containerOptions.autoBindInjectable !== "boolean"
-                ) {
-                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
-                }
-            }
-
-            this.options = {
-                autoBindInjectable: containerOptions.autoBindInjectable,
-                defaultScope: containerOptions.defaultScope
-            };
-
-        } else {
-            this.options = {
-                autoBindInjectable: false,
-                defaultScope: BindingScopeEnum.Transient
-            };
+        const options = containerOptions || {};
+        if (typeof options !== "object") {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
         }
+
+        if (options.defaultScope === undefined) {
+            options.defaultScope = BindingScopeEnum.Transient;
+        } else if (
+            options.defaultScope !== BindingScopeEnum.Singleton &&
+            options.defaultScope !== BindingScopeEnum.Transient &&
+            options.defaultScope !== BindingScopeEnum.Request
+        ) {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+        }
+
+        if (options.autoBindInjectable === undefined) {
+            options.autoBindInjectable = false;
+        } else if (
+            typeof options.autoBindInjectable !== "boolean"
+        ) {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
+        }
+
+        if (options.skipBaseClassChecks === undefined) {
+            options.skipBaseClassChecks = false;
+        } else if (
+            typeof options.skipBaseClassChecks !== "boolean"
+        ) {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK}`);
+        }
+
+        this.options = {
+            autoBindInjectable: options.autoBindInjectable,
+            defaultScope: options.defaultScope,
+            skipBaseClassChecks: options.skipBaseClassChecks
+        };
 
         this.guid = guid();
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
@@ -213,8 +217,8 @@ class Container implements interfaces.Container {
         this._middleware = snapshot.middleware;
     }
 
-    public createChild(): Container {
-        const child = new Container();
+    public createChild(containerOptions?: interfaces.ContainerOptions): Container {
+        const child = new Container(containerOptions);
         child.parent = this;
         return child;
     }

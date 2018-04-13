@@ -53,17 +53,6 @@ function getTargets(
         ...propertyTargets
     ];
 
-    // Throw if a derived class does not implement its constructor explicitly
-    // We do this to prevent errors when a base class (parent) has dependencies
-    // and one of the derived classes (children) has no dependencies
-    const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, func);
-
-    if (targets.length < baseClassDependencyCount) {
-        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 +
-                    constructorName + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
-        throw new Error(error);
-    }
-
     return targets;
 
 }
@@ -233,4 +222,4 @@ function formatTargetMetadata(targetMetadata: any[]) {
 
 }
 
-export { getDependencies };
+export { getDependencies, getBaseClassDependencyCount, getFunctionName };

@@ -13,7 +13,7 @@ import {
 import { Context } from "./context";
 import { Metadata } from "./metadata";
 import { Plan } from "./plan";
-import { getDependencies } from "./reflection_utils";
+import { getBaseClassDependencyCount, getDependencies, getFunctionName } from "./reflection_utils";
 import { Request } from "./request";
 import { Target } from "./target";
 
@@ -180,6 +180,18 @@ function _createSubRequests(
         if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 
             const dependencies = getDependencies(metadataReader, binding.implementationType);
+
+            if (!context.container.options.skipBaseClassChecks) {
+                // Throw if a derived class does not implement its constructor explicitly
+                // We do this to prevent errors when a base class (parent) has dependencies
+                // and one of the derived classes (children) has no dependencies
+                const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, binding.implementationType);
+
+                if (dependencies.length < baseClassDependencyCount) {
+                    const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(binding.implementationType));
+                    throw new Error(error);
+                }
+            }
 
             dependencies.forEach((dependency: interfaces.Target) => {
                 _createSubRequests(metadataReader, false, dependency.serviceIdentifier, context, subChildRequest, dependency);

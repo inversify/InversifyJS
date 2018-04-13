@@ -39,6 +39,16 @@ container.bind(Ninja).to(Samurai);
 container.get(Ninja);              // returns a Samurai
 ```
 
+### skipBaseClassChecks
+
+You can use this to skip checking base classes for the @injectable property, which is
+especially useful if any of your @injectable classes extend classes that you don't control
+(third party classes). By default, this value is `false`.
+
+```ts
+let container = new Container({ skipBaseClassChecks: true });
+```
+
 ## Container.merge(a: Container, b: Container)
 
 Merges two containers into one:
