@@ -43,7 +43,7 @@ describe("Bugs", () => {
             container.get<SamuraiMaster>(SamuraiMaster);
         };
 
-        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_1 + "SamuraiMaster" + ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH_2;
+        const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH("SamuraiMaster");
         expect(shouldThrow).to.throw(error);
 
     });
