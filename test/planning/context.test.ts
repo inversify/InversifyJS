@@ -17,9 +17,9 @@ describe("Context", () => {
 
       expect(context1.container).not.to.eql(null);
       expect(context2.container).eql(null);
-      expect(context1.guid.length).eql(36);
-      expect(context2.guid.length).eql(36);
-      expect(context1.guid).not.eql(context2.guid);
+      expect(context1.id).to.be.a("number");
+      expect(context2.id).to.be.a("number");
+      expect(context1.id).not.eql(context2.id);
 
   });
 
