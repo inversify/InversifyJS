@@ -1,12 +1,12 @@
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
-import { guid } from "../utils/guid";
+import { id } from "../utils/id";
 import { Metadata } from "./metadata";
 import { QueryableString } from "./queryable_string";
 
 class Target implements interfaces.Target {
 
-    public guid: string;
+    public id: number;
     public type: interfaces.TargetType;
     public serviceIdentifier: interfaces.ServiceIdentifier<any>;
     public name: interfaces.QueryableString;
@@ -19,7 +19,7 @@ class Target implements interfaces.Target {
         namedOrTagged?: (string | Metadata)
     ) {
 
-        this.guid = guid();
+        this.id = id();
         this.type = type;
         this.serviceIdentifier = serviceIdentifier;
         this.name = new QueryableString(name || "");

@@ -8,7 +8,7 @@ describe("ContainerModule", () => {
   it("Should be able to set the registry of a container module", () => {
       const registry = (bind: interfaces.Bind) => { /* do nothing */ };
       const warriors = new ContainerModule(registry);
-      expect(warriors.guid.length).eql(36);
+      expect(warriors.id).to.be.a("number");
       expect(warriors.registry).eql(registry);
   });
 
