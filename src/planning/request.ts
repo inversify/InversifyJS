@@ -1,9 +1,9 @@
 import { interfaces } from "../interfaces/interfaces";
-import { guid } from "../utils/guid";
+import { id } from "../utils/id";
 
 class Request implements interfaces.Request {
 
-    public guid: string;
+    public id: number;
     public serviceIdentifier: interfaces.ServiceIdentifier<any>;
     public parentContext: interfaces.Context;
     public parentRequest: interfaces.Request | null;
@@ -19,7 +19,7 @@ class Request implements interfaces.Request {
         bindings: (interfaces.Binding<any> | interfaces.Binding<any>[]),
         target: interfaces.Target
     ) {
-            this.guid = guid();
+            this.id = id();
             this.serviceIdentifier = serviceIdentifier;
             this.parentContext = parentContext;
             this.parentRequest = parentRequest;

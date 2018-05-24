@@ -13,7 +13,7 @@ describe("Binding", () => {
     expect(fooBinding.implementationType).eql(null);
     expect(fooBinding.cache).eql(null);
     expect(fooBinding.scope).eql(BindingScopeEnum.Transient);
-    expect(fooBinding.guid.length).eql(36);
+    expect(fooBinding.id).to.be.a("number");
   });
 
 });
