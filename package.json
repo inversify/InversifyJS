@@ -35,7 +35,7 @@
   "homepage": "http://inversify.io",
   "engines": {},
   "devDependencies": {
-    "@types/chai": "4.1.3",
+    "@types/chai": "4.1.4",
     "@types/harmony-proxy": "1.0.29",
     "@types/mocha": "5.2.2",
     "@types/sinon": "5.0.1",
