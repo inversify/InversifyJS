@@ -218,7 +218,7 @@ class Container implements interfaces.Container {
     }
 
     public createChild(containerOptions?: interfaces.ContainerOptions): Container {
-        const child = new Container(containerOptions);
+        const child = new Container(containerOptions || this.options);
         child.parent = this;
         return child;
     }

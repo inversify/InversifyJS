@@ -637,6 +637,22 @@ describe("Container", () => {
         expect(child.parent.id).to.equal(parent.id);
     });
 
+    it("Should inherit parent container options", () => {
+        @injectable()
+        class Warrior { }
+
+        const parent = new Container({
+            defaultScope: BindingScopeEnum.Singleton
+        });
+
+        const child = parent.createChild();
+        child.bind(Warrior).toSelf();
+
+        const singletonWarrior1 = child.get(Warrior);
+        const singletonWarrior2 = child.get(Warrior);
+        expect(singletonWarrior1).to.equal(singletonWarrior2);
+    });
+
     it("Should be able to override options to child containers", () => {
         @injectable()
         class Warrior { }
