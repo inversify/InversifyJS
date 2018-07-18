@@ -218,7 +218,7 @@ class Container implements interfaces.Container {
     }
 
     public createChild(containerOptions?: interfaces.ContainerOptions): Container {
-        const child = new Container(containerOptions);
+        const child = new Container(containerOptions || this.options);
         child.parent = this;
         return child;
     }
@@ -264,9 +264,8 @@ class Container implements interfaces.Container {
     }
 
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
-        const tempContainer = new Container();
+        const tempContainer = this.createChild();
         tempContainer.bind<T>(constructorFunction).toSelf();
-        tempContainer.parent = this;
         return tempContainer.get<T>(constructorFunction);
     }
 
