@@ -17,7 +17,7 @@ describe("Container", () => {
     let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
+        sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
@@ -98,9 +98,9 @@ describe("Container", () => {
 
       const container1 = new Container();
       const container2 = new Container();
-      expect(container1.guid.length).eql(36);
-      expect(container2.guid.length).eql(36);
-      expect(container1.guid).not.eql(container2.guid);
+      expect(container1.id).to.be.a("number");
+      expect(container2.id).to.be.a("number");
+      expect(container1.id).not.eql(container2.id);
 
   });
 
@@ -659,7 +659,7 @@ describe("Container", () => {
         if (child.parent === null) {
             throw new Error("Parent should not be null");
         }
-        expect(child.parent.guid).to.eql(parent.guid);
+        expect(child.parent.id).to.eql(parent.id);
     });
 
     it("Should be able to override options to child containers", () => {

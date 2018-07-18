@@ -10,7 +10,7 @@ describe("Middleware", () => {
     let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
+        sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
@@ -25,7 +25,7 @@ describe("Middleware", () => {
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
@@ -49,14 +49,14 @@ describe("Middleware", () => {
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
 
         function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware2: ${args.serviceIdentifier}`);
+                log.push(`Middleware2: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
@@ -88,14 +88,14 @@ describe("Middleware", () => {
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
 
         function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware2: ${args.serviceIdentifier}`);
+                log.push(`Middleware2: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
@@ -126,14 +126,14 @@ describe("Middleware", () => {
 
         function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware1: ${args.serviceIdentifier}`);
+                log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
 
         function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
             return (args: interfaces.NextArgs) => {
-                log.push(`Middleware2: ${args.serviceIdentifier}`);
+                log.push(`Middleware2: ${args.serviceIdentifier.toString()}`);
                 return planAndResolve(args);
             };
         }
@@ -278,7 +278,7 @@ describe("Middleware", () => {
             return (args: interfaces.NextArgs) => {
                 const nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
-                    log.push(`contextInterceptor1: ${args.serviceIdentifier}`);
+                    log.push(`contextInterceptor1: ${args.serviceIdentifier.toString()}`);
                     return nextContextInterceptor !== null ? nextContextInterceptor(context) : context;
                 };
                 return planAndResolve(args);
@@ -289,7 +289,7 @@ describe("Middleware", () => {
             return (args: interfaces.NextArgs) => {
                 const nextContextInterceptor = args.contextInterceptor;
                 args.contextInterceptor = (context: interfaces.Context) => {
-                    log.push(`contextInterceptor2: ${args.serviceIdentifier}`);
+                    log.push(`contextInterceptor2: ${args.serviceIdentifier.toString()}`);
                     return nextContextInterceptor !== null ? nextContextInterceptor(context) : context;
                 };
                 return planAndResolve(args);

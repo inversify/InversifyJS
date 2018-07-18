@@ -89,9 +89,9 @@ describe("Target", () => {
     it("Should contain an unique identifier", () => {
         const target1 = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana", new Metadata("power", 5));
         const target2 = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana", new Metadata("power", 5));
-        expect(target1.guid.length).eql(36);
-        expect(target2.guid.length).eql(36);
-        expect(target1.guid).not.eql(target2.guid);
+        expect(target1.id).to.be.a("number");
+        expect(target2.id).to.be.a("number");
+        expect(target1.id).not.eql(target2.id);
     });
 
 });

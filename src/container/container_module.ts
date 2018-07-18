@@ -1,13 +1,13 @@
 import { interfaces } from "../interfaces/interfaces";
-import { guid } from "../utils/guid";
+import { id } from "../utils/id";
 
 export class ContainerModule implements interfaces.ContainerModule {
 
-    public guid: string;
+    public id: number;
     public registry: interfaces.ContainerModuleCallBack;
 
     public constructor(registry: interfaces.ContainerModuleCallBack) {
-        this.guid = guid();
+        this.id = id();
         this.registry = registry;
     }
 
@@ -15,11 +15,11 @@ export class ContainerModule implements interfaces.ContainerModule {
 
 export class AsyncContainerModule implements interfaces.AsyncContainerModule {
 
-    public guid: string;
+    public id: number;
     public registry: interfaces.AsyncContainerModuleCallBack;
 
     public constructor(registry: interfaces.AsyncContainerModuleCallBack) {
-        this.guid = guid();
+        this.id = id();
         this.registry = registry;
     }
 

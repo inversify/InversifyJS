@@ -51,7 +51,7 @@ function _tagParameterOrProperty(
     } else {
         for (const m of paramOrPropertyMetadata) {
             if (m.key === metadata.key) {
-                throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${m.key}`);
+                throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${m.key.toString()}`);
             }
         }
     }

@@ -64,7 +64,7 @@ An exception:
 
 > Error: Missing required @Inject or @multiinject annotation in: argument 0 in class Dom.
 
-Will be throw if we use classes as identifiers in circular dependencies. For example:
+Will be thrown if we use classes as identifiers in circular dependencies. For example:
 
 ```ts
 import "reflect-metadata";
