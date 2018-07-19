@@ -222,12 +222,12 @@ container.bind<Warrior>(Ninja).to(Ninja);
 container.bind<Warrior>(warriorId).to(Ninja);
 container.bind<Warrior>(warriorSymbol).to(Ninja);
 
-container.isBound(Ninja)).eql(true);
-container.isBound(warriorId)).eql(true);
-container.isBound(warriorSymbol)).eql(true);
-container.isBound(Katana)).eql(false);
-container.isBound(katanaId)).eql(false);
-container.isBound(katanaSymbol)).eql(false);
+expect(container.isBound(Ninja)).to.eql(true);
+expect(container.isBound(warriorId)).to.eql(true);
+expect(container.isBound(warriorSymbol)).to.eql(true);
+expect(container.isBound(Katana)).to.eql(false);
+expect(container.isBound(katanaId)).to.eql(false);
+expect(container.isBound(katanaSymbol)).to.eql(false);
 ```
 
 ## container.isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string)
