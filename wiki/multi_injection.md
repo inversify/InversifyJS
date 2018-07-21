@@ -68,7 +68,7 @@ because multiInject will wrap the injections using an array and the spread
 operator will do the same. As a result the injection is wrapped by an array
 two times.
 
-We tried to solve this problem but the only was was to generate some additional
+We tried to solve this problem but the only way was to generate some additional
 metadata using a `@spread()` decorator.
 
 ```ts
