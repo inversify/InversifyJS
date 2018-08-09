@@ -55,7 +55,7 @@
     "harmonize": "2.0.0",
     "harmony-proxy": "1.0.1",
     "istanbul": "0.4.5",
-    "karma": "2.0.5",
+    "karma": "3.0.0",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-commonjs": "1.0.0",
