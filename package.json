@@ -68,7 +68,7 @@
     "karma-sinon": "1.0.5",
     "mocha": "5.2.0",
     "performance-now": "2.1.0",
-    "publish-please": "3.2.0",
+    "publish-please": "4.0.0",
     "reflect-metadata": "0.1.12",
     "run-sequence": "2.2.1",
     "sinon": "6.0.1",
