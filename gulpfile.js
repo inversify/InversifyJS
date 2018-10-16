@@ -158,24 +158,22 @@ gulp.task("build-test", function() {
     .pipe(gulp.dest("test/"));
 });
 
-gulp.task("mocha", [ "istanbul:hook" ], function() {
-  return gulp.src([
-      "node_modules/reflect-metadata/Reflect.js",
-      "test/**/*.test.js"
-    ])
-    .pipe(mocha({ui: "bdd"}))
-    .on("error", function (err) {
-        console.log(err);
-        process.exit(1);
-    })
-    .pipe(istanbul.writeReports());
-});
-
-gulp.task("istanbul:hook", function() {
-  return gulp.src(["src/**/*.js"])
-      .pipe(istanbul())
-      .pipe(sourcemaps.write("."))
-      .pipe(istanbul.hookRequire());
+gulp.task("mocha", function (cb) {
+    return gulp.src(["src/**/*.js"])
+        .pipe(istanbul())
+        .pipe(sourcemaps.write("."))
+        .pipe(istanbul.hookRequire())
+        .on('finish', function () {
+            return gulp.src([
+                "node_modules/reflect-metadata/Reflect.js",
+                "test/**/*.test.js"
+            ])
+                .pipe(mocha({ ui: "bdd" }))
+                .on("error", function (err) {
+                    process.exit(1);
+                })
+                .pipe(istanbul.writeReports());
+        });
 });
 
 //******************************************************************************
@@ -201,7 +199,7 @@ gulp.task("bundle-test", function() {
                 .pipe(gulp.dest(outputFolder));
 });
 
-gulp.task("karma", ["bundle-test"], function (done) {
+gulp.task("karma", gulp.series("bundle-test"), function (done) {
   new karma.Server({
     configFile: __dirname + "/karma.conf.js"
   }, function(code) {
@@ -217,36 +215,20 @@ gulp.task("karma", ["bundle-test"], function (done) {
 
 // Run browser testings on AppVeyor not in Travis CI
 if (process.env.APPVEYOR) {
-    gulp.task("test", function(cb) {
-        runSequence("mocha", "karma", cb);
+    gulp.task("test", gulp.series("mocha", "karma"), function (cb) {
+        cb();
     });
 } else {
-    gulp.task("test", function(cb) {
-        runSequence("mocha", cb);
+    gulp.task("test", gulp.series("mocha"), function (cb) {
+        cb();
     });
 }
-
 //******************************************************************************
 //* DEFAULT
 //******************************************************************************
-gulp.task("build", function(cb) {
-    runSequence(
-        "lint", 
-        [
-            "build-src",
-            "build-es",
-            "build-lib",
-            "build-amd",
-            "build-dts"
-        ],
-        "build-test", cb
-    );
-});
+gulp.task("build", gulp.series(
+    "lint",
+    gulp.parallel("build-src", "build-es", "build-lib", "build-amd", "build-dts"),
+    "build-test"), (cb) => cb());
 
-gulp.task("default", function (cb) {
-  runSequence(
-    "clean",
-    "build",
-    "test",
-    cb);
-});
+gulp.task("default", gulp.series("clean", "build", "test"), (cb) => cb());
