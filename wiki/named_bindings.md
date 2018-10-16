@@ -22,7 +22,7 @@ class Ninja implements Ninja {
     public katana: Weapon;
     public shuriken: Weapon;
     public constructor(
-        @inject("Weapon") @named("strong")katana: Weapon,
+        @inject("Weapon") @named("strong") katana: Weapon,
         @inject("Weapon") @named("weak") shuriken: Weapon
     ) {
         this.katana = katana;
