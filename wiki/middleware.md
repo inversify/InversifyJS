@@ -21,12 +21,12 @@ to identify problems during the development process.
 ```ts
 import { interfaces, Container } from "inversify";
 
-function logger(planAndResolve: interfaces.PlanAndResolve<any>): interfaces.PlanAndResolve<any> {
-    return (args: interfaces.PlanAndResolveArgs) => {
+function logger(planAndResolve: interfaces.Next): interfaces.Next {
+    return (args: interfaces.NextArgs) => {
         let start = new Date().getTime();
         let result = planAndResolve(args);
         let end = new Date().getTime();
-        console.log(end - start);
+        console.log(`wooooo  ${end - start}`);
         return result;
     };
 }
@@ -76,8 +76,8 @@ In some cases you may want to intercept the resolution plan.
 The default `contextInterceptor` is passed to the middleware as an property of `args`.
 
 ```ts
-function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-    return (args: PlanAndResolveArgs) => {
+function middleware1(planAndResolve: interfaces.Next): interfaces.Next<any> {
+    return (args: interfaces.NextArgs) => {
         // args.nextContextInterceptor
         // ...
     };
@@ -87,8 +87,8 @@ function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
 You can extend the default `contextInterceptor` using a function:
 
 ```ts
-function middleware1(planAndResolve: PlanAndResolve<any>): PlanAndResolve<any> {
-    return (args: PlanAndResolveArgs) => {
+function middleware1(planAndResolve: interfaces.Next<any>): interfaces.Next<any> {
+    return (args: interfaces.NextArgs) => {
         let nextContextInterceptor = args.contextInterceptor;
         args.contextInterceptor = (context: interfaces.Context) => {
             console.log(context);
