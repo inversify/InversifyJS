@@ -70,7 +70,7 @@ let book = container.get<Book>("Book");
 book.print();
 ```
 
-Please refer to our [unit tests](https://github.com/Inversify/InversifyJS/blob/master/wiki/property_injection.md) for additional examples.
+Please refer to our [unit tests](https://github.com/inversify/InversifyJS/blob/master/test/annotation/inject.test.ts) for additional examples.
 
 ## When we CANNOT use InversifyJS to create an instance of a class
 InversifyJS has been designed in a way that facilitates its integration with as many
