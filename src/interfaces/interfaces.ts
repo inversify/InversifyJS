@@ -45,7 +45,7 @@ namespace interfaces {
     }
 
     export interface Binding<T> extends Clonable<Binding<T>> {
-        guid: string;
+        id: number;
         moduleId: string;
         activated: boolean;
         serviceIdentifier: ServiceIdentifier<T>;
@@ -85,7 +85,7 @@ namespace interfaces {
     export type ContextInterceptor = (context: interfaces.Context) => interfaces.Context;
 
     export interface Context {
-        guid: string;
+        id: number;
         container: Container;
         plan: Plan;
         currentRequest: Request;
@@ -122,7 +122,7 @@ namespace interfaces {
     export type RequestScope = Map<any, any> | null;
 
     export interface Request {
-        guid: string;
+        id: number;
         serviceIdentifier: ServiceIdentifier<any>;
         parentContext: Context;
         parentRequest: Request | null;
@@ -138,7 +138,7 @@ namespace interfaces {
     }
 
     export interface Target {
-        guid: string;
+        id: number;
         serviceIdentifier: ServiceIdentifier<any>;
         type: TargetType;
         name: QueryableString;
@@ -162,7 +162,7 @@ namespace interfaces {
     }
 
     export interface Container {
-        guid: string;
+        id: number;
         parent: Container | null;
         options: ContainerOptions;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
@@ -196,12 +196,12 @@ namespace interfaces {
     export type IsBound = <T>(serviceIdentifier: ServiceIdentifier<T>) => boolean;
 
     export interface ContainerModule {
-        guid: string;
+        id: number;
         registry: ContainerModuleCallBack;
     }
 
     export interface AsyncContainerModule {
-        guid: string;
+        id: number;
         registry: AsyncContainerModuleCallBack;
     }
 

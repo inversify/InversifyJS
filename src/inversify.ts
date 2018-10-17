@@ -13,7 +13,7 @@ export { multiInject } from "./annotation/multi_inject";
 export { targetName } from "./annotation/target_name";
 export { postConstruct } from "./annotation/post_construct";
 export { MetadataReader } from "./planning/metadata_reader";
-export { guid } from "./utils/guid";
+export { id } from "./utils/id";
 export { interfaces } from "./interfaces/interfaces";
 export { decorate } from "./annotation/decorator_utils";
 export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";

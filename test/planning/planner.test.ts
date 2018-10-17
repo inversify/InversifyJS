@@ -17,7 +17,7 @@ describe("Planner", () => {
     let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
+        sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
@@ -491,6 +491,16 @@ describe("Planner", () => {
         const container = new Container({skipBaseClassChecks: true});
         container.bind(Test2).toSelf();
         container.get(Test2);
+    });
+
+    it("Should ignore checking base classes for @injectable on resolve when skipBaseClassChecks is set", () => {
+        class Test { }
+
+        @injectable()
+        class Test2 extends Test { }
+
+        const container = new Container({skipBaseClassChecks: true});
+        container.resolve(Test2);
     });
 
     it("Should throw when an class has a missing @inject annotation", () => {
