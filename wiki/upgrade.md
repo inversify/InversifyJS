@@ -1,3 +1,14 @@
+# How to upgrade from 4.x to 5.x
+- the 4.x `guid(): string` method has been replaced by `id(): number`
+- the property `guid: string` has been replaced by `id: number` in the following [interfaces](https://github.com/inversify/InversifyJS/blob/master/src/interfaces/interfaces.ts) and their implementations
+    thub.com/inversify/InversifyJS/blob/master/src/contain* [Binding](https://github.com/inversify/InversifyJS/blob/master/src/bindings/binding.ts)
+    * [Context](https://github.com/inversify/InversifyJS/blob/master/src/planning/context.ts)
+    * [Request](https://github.com/inversify/InversifyJS/blob/master/src/planning/request.ts)
+    * [Target](https://github.com/inversify/InversifyJS/blob/master/src/planning/target.ts)
+    * [Container](https://github.com/inversify/InversifyJS/blob/master/src/container/container.ts)
+    * [ContainerModule](https://github.com/inversify/InversifyJS/blob/master/src/container/container_module.ts)
+    * [AsyncContainerModule](https://gier/container_module.ts)
+
 # How to upgrade from 2.x to 3.x
 
 - The 2.x `Kernel` is named `Container` in 3.x
