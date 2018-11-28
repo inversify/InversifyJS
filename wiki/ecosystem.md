@@ -33,6 +33,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [AssistantJS](http://assistantjs.org) - TypeScript framework to build cross-platform voice applications (alexa, google home, ...)
 - [docs_gm](https://github.com/jhm-ciberman/docs_gm) - The fantastic documentation generator for GameMaker: Studio 1 and GameMaker Studio 2 projects.
 - [Dwatch](https://github.com/Mercateo/dwatch) - Manage your docker containers, images and networks in a nice and clean way.
+- [Frontend Boilerplates](https://boilerplates.js.org) - A collection of boilerplates to use in your projects.
 - [Javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator) - JavaScript obfuscator for Node.js
 - [Ninjagoat](https://www.npmjs.com/package/ninjagoat) - The not so baaaaaaad MVVM framework.
 - [Prettygoat](https://www.npmjs.com/package/prettygoat) - The not so baaaaaaad Event Sourcing Projection Engine.
