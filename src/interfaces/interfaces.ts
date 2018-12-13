@@ -176,6 +176,8 @@ namespace interfaces {
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
+        getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+        getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
