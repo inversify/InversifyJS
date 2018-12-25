@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import { decorate, injectable } from "../../src/inversify";
+import { decorate, ignoreDuplicatedInjectableDecorators, injectable } from "../../src/inversify";
 
 describe("@injectable", () => {
 
@@ -52,13 +52,35 @@ describe("@injectable", () => {
         expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
     });
 
+    describe("When ignoring duplicate injectable decorators", () => {
+        before(() => {
+            ignoreDuplicatedInjectableDecorators(true);
+        });
+
+        after(() => {
+            ignoreDuplicatedInjectableDecorators(false);
+        });
+
+        it("Should not throw when applied multiple times", () => {
+            @injectable()
+            class Test {}
+
+            const useDecoratorMoreThanOnce = function () {
+                decorate(injectable(), Test);
+                decorate(injectable(), Test);
+            };
+
+            expect(useDecoratorMoreThanOnce).not.to.throw();
+        });
+    });
+
     it("Should be usable in VanillaJS applications", () => {
 
         interface Katana {}
         interface Shuriken {}
 
         const VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
-                // ...
+            // ...
         };
 
         decorate(injectable(), VanillaJSWarrior);
@@ -69,4 +91,17 @@ describe("@injectable", () => {
 
     });
 
+});
+
+describe("ignoreDuplicatedInjectableDecorators", () => {
+    it("Should be false by default", () => {
+        expect(ignoreDuplicatedInjectableDecorators()).to.eq(false);
+    });
+
+    it("Should be configurable", () => {
+        expect(ignoreDuplicatedInjectableDecorators(true));
+        expect(ignoreDuplicatedInjectableDecorators()).to.eq(true);
+        ignoreDuplicatedInjectableDecorators(false);
+        expect(ignoreDuplicatedInjectableDecorators()).to.eq(false);
+    });
 });
