@@ -286,7 +286,7 @@ namespace interfaces {
         to(constructor: { new (...args: any[]): T }): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toAsyncValue(func: () => Promise<T>): BindingInWhenOnSyntax<T>;
+        toAsyncValue(func: () => Promise<T>): BindingInSyntax<T>;
         toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
