@@ -26,6 +26,13 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         return this.to(self);
     }
 
+    public toAsyncValue(func: (context: interfaces.Context) => Promise<T>): interfaces.BindingInWhenOnSyntax<T> {
+        this._binding.type = BindingTypeEnum.AsyncValue;
+        this._binding.asyncValue = func;
+        this._binding.implementationType = null;
+        return new BindingInWhenOnSyntax<T>(this._binding);
+    }
+
     public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.ConstantValue;
         this._binding.cache = value;

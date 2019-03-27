@@ -4,8 +4,10 @@ import { interfaces } from "../interfaces/interfaces";
 import { isStackOverflowExeption } from "../utils/exceptions";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
+import { Lazy } from "./lazy";
+import Newable = interfaces.Newable;
 
-type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
+type FactoryType = "toAsyncValue" | "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
 
 const invokeFactory = (
     factoryType: FactoryType,
@@ -78,6 +80,11 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             result = binding.cache;
         } else if (binding.type === BindingTypeEnum.Constructor) {
             result = binding.implementationType;
+        } else if (binding.type === BindingTypeEnum.AsyncValue && binding.asyncValue !== null) {
+            result = invokeFactory(
+              "toAsyncValue",
+              binding.serviceIdentifier,
+              () => new Lazy(() => binding.asyncValue(request.parentContext), request.parentContext, binding.onActivation));
         } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
             result = invokeFactory(
                 "toDynamicValue",
@@ -97,11 +104,45 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
                 () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
             );
         } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-            result = resolveInstance(
-                binding.implementationType,
-                childRequests,
-                _resolveRequest(requestScope)
-            );
+            const lazyChildren = childRequests.filter((child) => child.bindings.some((b) => b.type === BindingTypeEnum.AsyncValue));
+
+            const resolver =  _resolveRequest(requestScope);
+
+            if (lazyChildren.length > 0) {
+                result = new Lazy(
+                  async () => {
+                    const lazies: Record<number, any> = {};
+
+                    await Promise.all(lazyChildren.map(async (child) => {
+                        const value = await child.bindings[0].asyncValue(request.parentContext);
+
+                        lazies[child.id] = value;
+                    }));
+
+                    const lazyResolve = (lazyRequest: interfaces.Request) => {
+                        if (lazies[lazyRequest.id]) {
+                            return lazies[lazyRequest.id];
+                        }
+
+                        return resolver(lazyRequest);
+                    };
+
+                    return resolveInstance(
+                      binding.implementationType as Newable<any>,
+                      childRequests,
+                      lazyResolve,
+                    );
+                  },
+                  request.parentContext,
+                  binding.onActivation
+                );
+            } else {
+                result = resolveInstance(
+                  binding.implementationType,
+                  childRequests,
+                  resolver,
+                );
+            }
         } else {
             // The user probably created a binding but didn't finish it
             // e.g. container.bind<T>("Something"); missing BindingToSyntax

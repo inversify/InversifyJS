@@ -304,6 +304,102 @@ describe("Resolve", () => {
 
   });
 
+  it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
+      interface UseDate {
+          doSomething(): Date;
+      }
+
+      @injectable()
+      class UseDate implements UseDate {
+          public currentDate: Date;
+          public foobar: string;
+
+          public constructor(@inject("Date") currentDate: Date, @inject("Static") foobar: string) {
+              expect(currentDate).instanceOf(Date);
+
+              this.currentDate = currentDate;
+              this.foobar = foobar;
+          }
+      }
+
+      const container = new Container();
+      container.bind<UseDate>("UseDate").to(UseDate);
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date()));
+      container.bind<string>("Static").toConstantValue("foobar");
+
+      const subject1 = await container.getAsync<UseDate>("UseDate");
+      expect(subject1.foobar).eql("foobar");
+  });
+
+  it("Should throw exception if using sync API with async dependencies", async () => {
+      interface UseDate {
+          doSomething(): Date;
+      }
+
+      @injectable()
+      class UseDate implements UseDate {
+          public currentDate: Date;
+          public constructor(@inject("Date") currentDate: Date) {
+              expect(currentDate).instanceOf(Date);
+
+              this.currentDate = currentDate;
+          }
+          public doSomething() {
+              return this.currentDate;
+          }
+      }
+
+      const container = new Container();
+      container.bind<UseDate>("UseDate").to(UseDate);
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date()));
+
+      expect(() => container.get<UseDate>("UseDate")).to.throw(`You are attempting to construct 'UseDate' in a synchronous way
+ but it has asynchronous dependencies.`);
+  });
+
+  it("Should be able to resolve indirect BindingType.AsyncValue bindings", async () => {
+      interface UseDate {
+          doSomething(): Date;
+      }
+
+      @injectable()
+      class UseDate implements UseDate {
+          public currentDate: Date;
+          public constructor(@inject("Date") currentDate: Date) {
+              expect(currentDate).instanceOf(Date);
+
+              this.currentDate = currentDate;
+          }
+          public doSomething() {
+              return this.currentDate;
+          }
+      }
+
+      const container = new Container();
+      container.bind<UseDate>("UseDate").to(UseDate);
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date()));
+
+      const subject1 = await container.getAsync<UseDate>("UseDate");
+      const subject2 = await container.getAsync<UseDate>("UseDate");
+      expect(subject1.doSomething() === subject2.doSomething()).eql(false);
+  });
+
+  it("Should be able to resolve direct BindingType.AsyncValue bindings", async () => {
+      const container = new Container();
+      container.bind<string>("async").toAsyncValue(() => Promise.resolve("foobar"));
+
+      const value = await container.getAsync<string>("async");
+      expect(value).eql("foobar");
+  });
+
+  it("Should error if trying to resolve an BindingType.AsyncValue in sync API", () => {
+      const container = new Container();
+      container.bind<string>("async").toAsyncValue(() => Promise.resolve("foobar"));
+
+      expect(() => container.get<string>("async")).to.throw(`You are attempting to construct 'async' in a synchronous way
+ but it has asynchronous dependencies.`);
+  });
+
   it("Should be able to resolve BindingType.DynamicValue bindings", () => {
 
     interface UseDate {

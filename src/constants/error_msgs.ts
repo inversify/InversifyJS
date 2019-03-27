@@ -17,7 +17,8 @@ export const INVALID_BINDING_TYPE = "Invalid binding type:";
 export const NO_MORE_SNAPSHOTS_AVAILABLE = "No snapshot available to restore.";
 export const INVALID_MIDDLEWARE_RETURN = "Invalid return type in middleware. Middleware must return!";
 export const INVALID_FUNCTION_BINDING = "Value provided to function binding must be a function!";
-
+export const LAZY_IN_SYNC = (key: any) => `You are attempting to construct '${key}' in a synchronous way
+ but it has asynchronous dependencies.`;
 export const INVALID_TO_SELF_VALUE = "The toSelf function can only be applied when a constructor is " +
     "used as service identifier";
 

@@ -2,7 +2,7 @@ namespace interfaces {
 
     export type BindingScope = "Singleton" | "Transient" | "Request";
 
-    export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
+    export type BindingType = "AsyncValue" | "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
                               "Function" | "Instance" | "Invalid" | "Provider";
 
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
@@ -16,6 +16,7 @@ namespace interfaces {
     export interface BindingTypeEnum {
         ConstantValue: interfaces.BindingType;
         Constructor: interfaces.BindingType;
+        AsyncValue: interfaces.BindingType;
         DynamicValue: interfaces.BindingType;
         Factory: interfaces.BindingType;
         Function: interfaces.BindingType;
@@ -44,6 +45,8 @@ namespace interfaces {
         clone(): T;
     }
 
+    export type OnActivation<T> = ((context: interfaces.Context, injectable: T) => T) | null;
+
     export interface Binding<T> extends Clonable<Binding<T>> {
         id: number;
         moduleId: string;
@@ -51,12 +54,13 @@ namespace interfaces {
         serviceIdentifier: ServiceIdentifier<T>;
         constraint: ConstraintFunction;
         dynamicValue: ((context: interfaces.Context) => T) | null;
+        asyncValue: ((context: interfaces.Context) => Promise<T>);
         scope: BindingScope;
         type: BindingType;
         implementationType: Newable<T> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+        onActivation: OnActivation<T>;
         cache: T | null;
     }
 
@@ -74,6 +78,7 @@ namespace interfaces {
         isMultiInject: boolean;
         targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
+        lazy: boolean;
         key?: string | number | symbol;
         value?: any;
     }
@@ -273,6 +278,7 @@ namespace interfaces {
         to(constructor: { new (...args: any[]): T }): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
+        toAsyncValue(func: (context: Context) => Promise<T>): BindingInWhenOnSyntax<T>;
         toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;

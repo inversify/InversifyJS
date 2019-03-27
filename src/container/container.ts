@@ -5,6 +5,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
+import { Lazy } from "../resolution/lazy";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
 import { id } from "../utils/id";
@@ -238,29 +239,65 @@ class Container implements interfaces.Container {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, false) as T;
+    }
+
+    public getAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> {
+        const result = this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, true) as T;
+
+        return this.resultToAsync(result);
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, false, key, value) as T;
+    }
+
+    public getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T> {
+        const result = this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, true, key, value) as T;
+
+        return this.resultToAsync(result);
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
+    public getNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T> {
+        return this.getTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
+        return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier, false) as T[];
+    }
+
+    public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T>[] {
+        const results = this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier, true) as T[];
+
+        return results.map(this.resultToAsync);
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, false, key, value) as T[];
+    }
+
+    public getAllTaggedAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      key: string | number | symbol,
+      value: any
+    ): Promise<T>[] {
+        const results = this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, true, key, value) as T[];
+
+        return results.map(this.resultToAsync);
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
+    public getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[] {
+      return this.getAllTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
@@ -312,6 +349,14 @@ class Container implements interfaces.Container {
 
     }
 
+    private resultToAsync<T>(result: T): Promise<T> {
+        if (result instanceof Lazy) {
+            return result.resolve();
+        }
+
+        return Promise.resolve<T>(result);
+    }
+
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
@@ -320,17 +365,19 @@ class Container implements interfaces.Container {
         isMultiInject: boolean,
         targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        lazy: boolean = false,
         key?: string | number | symbol,
         value?: any
-    ): (T | T[]) {
+    ): (T | T[] | Lazy<T> | Lazy<T>[]) {
 
-        let result: (T | T[]) | null = null;
+        let result: (T | T[] | Lazy<T> | Lazy<T>[]) | null = null;
 
         const defaultArgs: interfaces.NextArgs = {
             avoidConstraints,
             contextInterceptor: (context: interfaces.Context) => context,
             isMultiInject,
             key,
+            lazy,
             serviceIdentifier,
             targetType,
             value
@@ -371,6 +418,11 @@ class Container implements interfaces.Container {
 
             // resolve plan
             const result = resolve<T>(context);
+
+            if (result instanceof Lazy && !args.lazy) {
+              throw new Error(ERROR_MSGS.LAZY_IN_SYNC(args.serviceIdentifier));
+            }
+
             return result;
 
         };

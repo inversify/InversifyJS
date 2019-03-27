@@ -7,6 +7,7 @@ const BindingScopeEnum: interfaces.BindingScopeEnum = {
 };
 
 const BindingTypeEnum: interfaces.BindingTypeEnum = {
+    AsyncValue: "AsyncValue",
     ConstantValue: "ConstantValue",
     Constructor: "Constructor",
     DynamicValue: "DynamicValue",

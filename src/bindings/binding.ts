@@ -24,6 +24,9 @@ class Binding<T> implements interfaces.Binding<T> {
     // Cache used to allow BindingType.DynamicValue bindings
     public dynamicValue: ((context: interfaces.Context) => T) | null;
 
+    // Allow lazy fetching with BindingType.AsyncValue bindings
+    public asyncValue: ((context: interfaces.Context) => Promise<T>);
+
     // The scope mode to be used
     public scope: interfaces.BindingScope;
 
