@@ -304,6 +304,33 @@ describe("Resolve", () => {
 
   });
 
+  it("Should only call async method once if marked as singleton", async () => {
+      interface UseDate {
+          doSomething(): Date;
+      }
+
+      @injectable()
+      class UseDate implements UseDate {
+          public currentDate: Date;
+          public constructor(@inject("Date") currentDate: Date) {
+              expect(currentDate).instanceOf(Date);
+
+              this.currentDate = currentDate;
+          }
+          public doSomething() {
+              return this.currentDate;
+          }
+      }
+
+      const container = new Container();
+      container.bind<UseDate>("UseDate").to(UseDate);
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+      const subject1 = await container.getAsync<UseDate>("UseDate");
+      const subject2 = await container.getAsync<UseDate>("UseDate");
+      expect(subject1.doSomething() === subject2.doSomething()).eql(true);
+  });
+
   it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
       interface UseDate {
           doSomething(): Date;
@@ -382,6 +409,18 @@ describe("Resolve", () => {
       const subject1 = await container.getAsync<UseDate>("UseDate");
       const subject2 = await container.getAsync<UseDate>("UseDate");
       expect(subject1.doSomething() === subject2.doSomething()).eql(false);
+  });
+
+  it("Should be able to modify async return values with onActivation", async () => {
+      const container = new Container();
+      container.bind<string>("async").toAsyncValue(() => Promise.resolve("foobar")).onActivation((context, val) => {
+          expect(val).eql("foobar");
+
+          return "foobaz";
+      });
+
+      const value = await container.getAsync<string>("async");
+      expect(value).eql("foobaz");
   });
 
   it("Should be able to resolve direct BindingType.AsyncValue bindings", async () => {

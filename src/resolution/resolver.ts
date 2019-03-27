@@ -59,19 +59,11 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         }
 
         const binding = bindings[0];
-        const isSingleton = binding.scope === BindingScopeEnum.Singleton;
-        const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
-        if (isSingleton && binding.activated) {
-            return binding.cache;
-        }
+        const exists = findExistingInScope(binding, requestScope);
 
-        if (
-            isRequestSingleton &&
-            requestScope !== null &&
-            requestScope.has(binding.id)
-        ) {
-            return requestScope.get(binding.id);
+        if (exists) {
+            return exists;
         }
 
         if (binding.type === BindingTypeEnum.ConstantValue) {
@@ -114,9 +106,19 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
                     const lazies: Record<number, any> = {};
 
                     await Promise.all(lazyChildren.map(async (child) => {
-                        const value = await child.bindings[0].asyncValue(request.parentContext);
+                        const childBinding = child.bindings[0];
 
-                        lazies[child.id] = value;
+                        const childExists = findExistingInScope(childBinding, requestScope);
+
+                        if (childExists) {
+                            lazies[child.id] = childExists;
+                        } else {
+                            const value = await childBinding.asyncValue(request.parentContext);
+
+                            afterResult(childBinding, value, requestScope);
+
+                            lazies[child.id] = value;
+                        }
                     }));
 
                     const lazyResolve = (lazyRequest: interfaces.Request) => {
@@ -151,28 +153,48 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         }
 
         // use activation handler if available
-        if (typeof binding.onActivation === "function") {
+        if (typeof binding.onActivation === "function" && binding.type !== BindingTypeEnum.AsyncValue) {
             result = binding.onActivation(request.parentContext, result);
         }
 
-        // store in cache if scope is singleton
-        if (isSingleton) {
-            binding.cache = result;
-            binding.activated = true;
-        }
-
-        if (
-            isRequestSingleton &&
-            requestScope !== null &&
-            !requestScope.has(binding.id)
-        ) {
-            requestScope.set(binding.id, result);
-        }
+        afterResult(binding, result, requestScope);
 
         return result;
     }
 
 };
+
+function findExistingInScope<T>(binding: interfaces.Binding<T>, requestScope: interfaces.RequestScope) {
+    if (binding.scope === BindingScopeEnum.Singleton && binding.activated) {
+        return binding.cache;
+    }
+
+    if (
+      binding.scope === BindingScopeEnum.Request &&
+      requestScope !== null &&
+      requestScope.has(binding.id)
+    ) {
+        return requestScope.get(binding.id);
+    }
+
+    return null;
+}
+
+function afterResult<T>(binding: interfaces.Binding<T>, result: T, requestScope: interfaces.RequestScope) {
+    // store in cache if scope is singleton
+    if (binding.scope === BindingScopeEnum.Singleton) {
+        binding.cache = result;
+        binding.activated = true;
+    }
+
+    if (
+      binding.scope === BindingScopeEnum.Request &&
+      requestScope !== null &&
+      !requestScope.has(binding.id)
+    ) {
+        requestScope.set(binding.id, result);
+    }
+}
 
 function resolve<T>(context: interfaces.Context): T {
     const _f = _resolveRequest(context.plan.rootRequest.requestScope);
