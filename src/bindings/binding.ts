@@ -1,5 +1,6 @@
 import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
+import { Lazy } from "../resolution/lazy";
 import { id } from "../utils/id";
 
 class Binding<T> implements interfaces.Binding<T> {
@@ -25,7 +26,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public dynamicValue: ((context: interfaces.Context) => T) | null;
 
     // Allow lazy fetching with BindingType.AsyncValue bindings
-    public asyncValue: ((context: interfaces.Context) => Promise<T>);
+    public asyncValue: Lazy<T>;
 
     // The scope mode to be used
     public scope: interfaces.BindingScope;

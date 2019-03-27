@@ -1,3 +1,5 @@
+import { Lazy } from "../resolution/lazy";
+
 namespace interfaces {
 
     export type BindingScope = "Singleton" | "Transient" | "Request";
@@ -54,7 +56,7 @@ namespace interfaces {
         serviceIdentifier: ServiceIdentifier<T>;
         constraint: ConstraintFunction;
         dynamicValue: ((context: interfaces.Context) => T) | null;
-        asyncValue: ((context: interfaces.Context) => Promise<T>);
+        asyncValue: Lazy<T>;
         scope: BindingScope;
         type: BindingType;
         implementationType: Newable<T> | null;
@@ -284,7 +286,7 @@ namespace interfaces {
         to(constructor: { new (...args: any[]): T }): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toAsyncValue(func: (context: Context) => Promise<T>): BindingInWhenOnSyntax<T>;
+        toAsyncValue(func: () => Promise<T>): BindingInWhenOnSyntax<T>;
         toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;

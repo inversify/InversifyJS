@@ -15,6 +15,7 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import { getBindingDictionary, plan } from "../../src/planning/planner";
 import { resolveInstance } from "../../src/resolution/instantiation";
+import { Lazy } from "../../src/resolution/lazy";
 import { resolve } from "../../src/resolution/resolver";
 
 describe("Resolve", () => {
@@ -308,14 +309,11 @@ describe("Resolve", () => {
     const parent = new Container();
     parent.bind<Date>("Parent").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
 
-    const child1 = parent.createChild();
-    child1.bind<Date>("Child").toAsyncValue((context: interfaces.Context) => context.container.getAsync("Parent"));
+    const [subject1, subject2] = await Promise.all([
+      parent.getAsync<Date>("Parent"),
+      parent.getAsync<Date>("Parent")
+    ]);
 
-    const child2 = parent.createChild();
-    child2.bind<Date>("Child").toAsyncValue((context: interfaces.Context) => context.container.getAsync("Parent"));
-
-    const subject1 = await child1.getAsync<Date>("Child");
-    const subject2 = await child2.getAsync<Date>("Child");
     expect(subject1 === subject2).eql(true);
   });
 
@@ -408,18 +406,6 @@ describe("Resolve", () => {
       const subject1 = await container.getAsync<UseDate>("UseDate");
       const subject2 = await container.getAsync<UseDate>("UseDate");
       expect(subject1.doSomething() === subject2.doSomething()).eql(false);
-  });
-
-  it("Should be able to modify async return values with onActivation", async () => {
-      const container = new Container();
-      container.bind<string>("async").toAsyncValue(() => Promise.resolve("foobar")).onActivation((context, val) => {
-          expect(val).eql("foobar");
-
-          return "foobaz";
-      });
-
-      const value = await container.getAsync<string>("async");
-      expect(value).eql("foobaz");
   });
 
   it("Should be able to resolve direct BindingType.AsyncValue bindings", async () => {

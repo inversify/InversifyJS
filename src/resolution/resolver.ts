@@ -73,10 +73,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         } else if (binding.type === BindingTypeEnum.Constructor) {
             result = binding.implementationType;
         } else if (binding.type === BindingTypeEnum.AsyncValue && binding.asyncValue !== null) {
-            result = invokeFactory(
-              "toAsyncValue",
-              binding.serviceIdentifier,
-              () => new Lazy(() => binding.asyncValue(request.parentContext), request.parentContext, binding.onActivation));
+            result = binding.asyncValue;
         } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
             result = invokeFactory(
                 "toDynamicValue",
@@ -101,8 +98,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             const resolver =  _resolveRequest(requestScope);
 
             if (lazyChildren.length > 0) {
-                result = new Lazy(
-                  async () => {
+                result = new Lazy(async () => {
                     const lazies: Record<number, any> = {};
 
                     await Promise.all(lazyChildren.map(async (child) => {
@@ -113,7 +109,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
                         if (childExists) {
                             lazies[child.id] = childExists;
                         } else {
-                            const value = await childBinding.asyncValue(request.parentContext);
+                            const value = await childBinding.asyncValue.resolve();
 
                             afterResult(childBinding, value, requestScope);
 
@@ -134,10 +130,8 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
                       childRequests,
                       lazyResolve,
                     );
-                  },
-                  request.parentContext,
-                  binding.onActivation
-                );
+                  });
+
             } else {
                 result = resolveInstance(
                   binding.implementationType,
@@ -153,7 +147,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         }
 
         // use activation handler if available
-        if (typeof binding.onActivation === "function" && binding.type !== BindingTypeEnum.AsyncValue) {
+        if (typeof binding.onActivation === "function") {
             result = binding.onActivation(request.parentContext, result);
         }
 

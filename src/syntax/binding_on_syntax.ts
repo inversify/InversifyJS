@@ -10,7 +10,12 @@ class BindingOnSyntax<T> implements interfaces.BindingOnSyntax<T> {
     }
 
     public onActivation(handler: (context: interfaces.Context, injectable: T) => T): interfaces.BindingWhenSyntax<T> {
+        if (this._binding.asyncValue) {
+            throw new Error("onActivation is not supported for async values.");
+        }
+
         this._binding.onActivation = handler;
+
         return new BindingWhenSyntax<T>(this._binding);
     }
 

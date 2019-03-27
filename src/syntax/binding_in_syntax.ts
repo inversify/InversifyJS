@@ -17,6 +17,11 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
 
     public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
         this._binding.scope = BindingScopeEnum.Singleton;
+
+        if (this._binding.asyncValue) {
+            this._binding.asyncValue.singleton = true;
+        }
+
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
