@@ -304,11 +304,22 @@ describe("Resolve", () => {
 
   });
 
-  it("Should only call async method once if marked as singleton", async () => {
-      interface UseDate {
-          doSomething(): Date;
-      }
+  it("Should only call parent async singleton once within child containers", async () => {
+    const parent = new Container();
+    parent.bind<Date>("Parent").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
 
+    const child1 = parent.createChild();
+    child1.bind<Date>("Child").toAsyncValue((context: interfaces.Context) => context.container.getAsync("Parent"));
+
+    const child2 = parent.createChild();
+    child2.bind<Date>("Child").toAsyncValue((context: interfaces.Context) => context.container.getAsync("Parent"));
+
+    const subject1 = await child1.getAsync<Date>("Child");
+    const subject2 = await child2.getAsync<Date>("Child");
+    expect(subject1 === subject2).eql(true);
+  });
+
+  it("Should only call async method once if marked as singleton (indirect)", async () => {
       @injectable()
       class UseDate implements UseDate {
           public currentDate: Date;
@@ -332,10 +343,6 @@ describe("Resolve", () => {
   });
 
   it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
-      interface UseDate {
-          doSomething(): Date;
-      }
-
       @injectable()
       class UseDate implements UseDate {
           public currentDate: Date;
@@ -359,10 +366,6 @@ describe("Resolve", () => {
   });
 
   it("Should throw exception if using sync API with async dependencies", async () => {
-      interface UseDate {
-          doSomething(): Date;
-      }
-
       @injectable()
       class UseDate implements UseDate {
           public currentDate: Date;
@@ -385,10 +388,6 @@ describe("Resolve", () => {
   });
 
   it("Should be able to resolve indirect BindingType.AsyncValue bindings", async () => {
-      interface UseDate {
-          doSomething(): Date;
-      }
-
       @injectable()
       class UseDate implements UseDate {
           public currentDate: Date;
@@ -440,11 +439,6 @@ describe("Resolve", () => {
   });
 
   it("Should be able to resolve BindingType.DynamicValue bindings", () => {
-
-    interface UseDate {
-        doSomething(): Date;
-    }
-
     @injectable()
     class UseDate implements UseDate {
         public currentDate: Date;
