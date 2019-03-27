@@ -47,8 +47,6 @@ namespace interfaces {
         clone(): T;
     }
 
-    export type OnActivation<T> = ((context: interfaces.Context, injectable: T) => T) | null;
-
     export interface Binding<T> extends Clonable<Binding<T>> {
         id: number;
         moduleId: string;
@@ -62,7 +60,7 @@ namespace interfaces {
         implementationType: Newable<T> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: OnActivation<T>;
+        onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
         cache: T | null;
     }
 
