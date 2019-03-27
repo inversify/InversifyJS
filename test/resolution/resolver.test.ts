@@ -15,7 +15,6 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import { getBindingDictionary, plan } from "../../src/planning/planner";
 import { resolveInstance } from "../../src/resolution/instantiation";
-import { Lazy } from "../../src/resolution/lazy";
 import { resolve } from "../../src/resolution/resolver";
 
 describe("Resolve", () => {
