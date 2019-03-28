@@ -51,9 +51,6 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         });
 
     } else {
-
-        let result: any = null;
-
         if (request.target.isOptional() && bindings.length === 0) {
             return undefined;
         }
@@ -66,85 +63,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             return exists;
         }
 
-        if (binding.type === BindingTypeEnum.ConstantValue) {
-            result = binding.cache;
-        } else if (binding.type === BindingTypeEnum.Function) {
-            result = binding.cache;
-        } else if (binding.type === BindingTypeEnum.Constructor) {
-            result = binding.implementationType;
-        } else if (binding.type === BindingTypeEnum.AsyncValue && binding.asyncValue !== null) {
-            result = binding.asyncValue;
-        } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
-            result = invokeFactory(
-                "toDynamicValue",
-                binding.serviceIdentifier,
-                () => (binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
-            );
-        } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
-            result = invokeFactory(
-                "toFactory",
-                binding.serviceIdentifier,
-                () => (binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
-            );
-        } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
-            result = invokeFactory(
-                "toProvider",
-                binding.serviceIdentifier,
-                () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
-            );
-        } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-            const lazyChildren = childRequests.filter((child) => child.bindings.some((b) => b.type === BindingTypeEnum.AsyncValue));
-
-            const resolver =  _resolveRequest(requestScope);
-
-            if (lazyChildren.length > 0) {
-                result = new Lazy(async () => {
-                    const lazies: Record<number, any> = {};
-
-                    await Promise.all(lazyChildren.map(async (child) => {
-                        const childBinding = child.bindings[0];
-
-                        const childExists = findExistingInScope(childBinding, requestScope);
-
-                        if (childExists) {
-                            lazies[child.id] = childExists;
-                        } else {
-                            const value = await childBinding.asyncValue.resolve();
-
-                            afterResult(childBinding, value, requestScope);
-
-                            lazies[child.id] = value;
-                        }
-                    }));
-
-                    const lazyResolve = (lazyRequest: interfaces.Request) => {
-                        if (lazies[lazyRequest.id]) {
-                            return lazies[lazyRequest.id];
-                        }
-
-                        return resolver(lazyRequest);
-                    };
-
-                    return resolveInstance(
-                      binding.implementationType as Newable<any>,
-                      childRequests,
-                      lazyResolve,
-                    );
-                  });
-
-            } else {
-                result = resolveInstance(
-                  binding.implementationType,
-                  childRequests,
-                  resolver,
-                );
-            }
-        } else {
-            // The user probably created a binding but didn't finish it
-            // e.g. container.bind<T>("Something"); missing BindingToSyntax
-            const serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
-            throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
-        }
+        let result = convertBindingToInstance(requestScope, request);
 
         // use activation handler if available
         if (typeof binding.onActivation === "function") {
@@ -157,6 +76,113 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
     }
 
 };
+
+function convertBindingToInstance(requestScope: interfaces.RequestScope, request: interfaces.Request) {
+    const binding = request.bindings[0];
+
+    if (binding.type === BindingTypeEnum.ConstantValue) {
+        return binding.cache;
+    } else if (binding.type === BindingTypeEnum.Function) {
+        return binding.cache;
+    } else if (binding.type === BindingTypeEnum.Constructor) {
+        return binding.implementationType;
+    } else if (binding.type === BindingTypeEnum.AsyncValue && binding.asyncValue !== null) {
+        return binding.asyncValue;
+    } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
+        return invokeFactory(
+          "toDynamicValue",
+          binding.serviceIdentifier,
+          () => (binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
+        );
+    } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
+        return invokeFactory(
+          "toFactory",
+          binding.serviceIdentifier,
+          () => (binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
+        );
+    } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
+        return invokeFactory(
+          "toProvider",
+          binding.serviceIdentifier,
+          () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
+        );
+    } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+        return resolveTypeInstance(requestScope, request);
+    }
+
+    // The user probably created a binding but didn't finish it
+    // e.g. container.bind<T>("Something"); missing BindingToSyntax
+    const serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
+    throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
+}
+
+function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: interfaces.Request): any {
+    const binding = request.bindings[0];
+    const childRequests = request.childRequests;
+
+    const resolver = _resolveRequest(requestScope);
+
+    if (!request.isLazy() && !request.hasLazyChildren()) {
+        return resolveInstance(
+          binding.implementationType as Newable<any>,
+          childRequests,
+          resolver
+        );
+    }
+
+    const lazies: Record<number, any> = {};
+
+    const lazyResolver = (lazyRequest: interfaces.Request) => {
+        if (lazies[lazyRequest.id]) {
+            return lazies[lazyRequest.id];
+        }
+
+        return resolver(lazyRequest);
+    };
+
+    return new Lazy(() => resolveLazy(lazyResolver, requestScope, request, lazies));
+}
+
+async function resolveLazy(
+  resolver: (request: interfaces.Request) => any,
+  requestScope: interfaces.RequestScope,
+  request: interfaces.Request,
+  lazies: Record<number, any>
+) {
+    const binding = request.bindings[0];
+
+    if (request.hasLazyChildren()) {
+        for (const child of request.childRequests) {
+            const childBinding = child.bindings[0];
+
+            let childValue = findExistingInScope(childBinding, requestScope);
+
+            if (!childValue) {
+                childValue = await resolveLazy(resolver, requestScope, child, lazies);
+
+                afterResult(childBinding, childValue, requestScope);
+            }
+
+            lazies[child.id] = childValue;
+        }
+    }
+
+    if (request.isLazy()) {
+        lazies[request.id] = await binding.asyncValue.resolve();
+
+        return lazies[request.id];
+    }
+
+    if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+        return resolveInstance(
+          binding.implementationType,
+          request.childRequests,
+          resolver
+        );
+    }
+
+    return convertBindingToInstance(requestScope, request);
+}
 
 function findExistingInScope<T>(binding: interfaces.Binding<T>, requestScope: interfaces.RequestScope) {
     if (binding.scope === BindingScopeEnum.Singleton && binding.activated) {

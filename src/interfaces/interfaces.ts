@@ -135,6 +135,9 @@ namespace interfaces {
         target: Target;
         bindings: Binding<any>[];
         requestScope: RequestScope;
+
+        isLazy(): boolean;
+        hasLazyChildren(): boolean;
         addChildRequest(
             serviceIdentifier: ServiceIdentifier<any>,
             bindings: (Binding<any> | Binding<any>[]),

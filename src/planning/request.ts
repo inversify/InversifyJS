@@ -1,3 +1,4 @@
+import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { id } from "../utils/id";
 
@@ -31,6 +32,14 @@ class Request implements interfaces.Request {
             this.requestScope = parentRequest === null
                 ? new Map<any, any>()
                 : null;
+    }
+
+    public isLazy(): boolean {
+      return this.bindings.some((b) => b.type === BindingTypeEnum.AsyncValue);
+    }
+
+    public hasLazyChildren(): boolean {
+      return this.childRequests.some((r) => r.isLazy());
     }
 
     public addChildRequest(

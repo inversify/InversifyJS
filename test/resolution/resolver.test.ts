@@ -339,6 +339,38 @@ describe("Resolve", () => {
       expect(subject1.doSomething() === subject2.doSomething()).eql(true);
   });
 
+  it("Should support async dependencies in multiple layers", async () => {
+      @injectable()
+      class AsyncValue {
+          public date: Date;
+          public constructor(@inject("Date") date: Date) {
+              //expect(date).instanceOf(date);
+
+              this.date = date;
+          }
+      }
+
+      @injectable()
+      class MixedDependency {
+          public asyncValue: AsyncValue;
+          public date: Date;
+          public constructor(@inject(AsyncValue) asyncValue: AsyncValue, @inject("Date") date: Date) {
+              expect(asyncValue).instanceOf(AsyncValue);
+              expect(date).instanceOf(Date);
+
+              this.date = date;
+              this.asyncValue = asyncValue;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+      const subject1 = await container.getAsync<MixedDependency>(MixedDependency);
+      expect(subject1.date).instanceOf(Date);
+      expect(subject1.asyncValue).instanceOf(AsyncValue);
+  });
+
   it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
       @injectable()
       class UseDate implements UseDate {
@@ -356,7 +388,7 @@ describe("Resolve", () => {
       const container = new Container();
       container.bind<UseDate>("UseDate").to(UseDate);
       container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date()));
-      container.bind<string>("Static").toConstantValue("foobar");
+      container.bind<String>("Static").toConstantValue("foobar");
 
       const subject1 = await container.getAsync<UseDate>("UseDate");
       expect(subject1.foobar).eql("foobar");
