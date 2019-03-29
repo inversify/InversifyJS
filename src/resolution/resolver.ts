@@ -163,25 +163,35 @@ async function resolveLazy(
                 afterResult(childBinding, childValue, requestScope);
             }
 
+            if (childValue instanceof Lazy) {
+               childValue = await childValue.resolve();
+            }
+
             lazies[child.id] = childValue;
         }
     }
 
+    let value;
+
     if (request.isLazy()) {
         lazies[request.id] = await binding.asyncValue.resolve();
 
-        return lazies[request.id];
-    }
-
-    if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-        return resolveInstance(
+        value = lazies[request.id];
+    } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+        value = resolveInstance(
           binding.implementationType,
           request.childRequests,
           resolver
         );
+    } else {
+        value = convertBindingToInstance(requestScope, request);
     }
 
-    return convertBindingToInstance(requestScope, request);
+    if (value instanceof Lazy) {
+        value = await value.resolve();
+    }
+
+    return value;
 }
 
 function findExistingInScope<T>(binding: interfaces.Binding<T>, requestScope: interfaces.RequestScope) {

@@ -371,6 +371,55 @@ describe("Resolve", () => {
       expect(subject1.asyncValue).instanceOf(AsyncValue);
   });
 
+  it("Should support async values already in cache", async () => {
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+      expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
+      expect(await container.getAsync<Date>("Date")).instanceOf(Date);
+  });
+
+  it("Should support async values already in cache when there dependencies", async () => {
+      @injectable()
+      class HasDependencies {
+          public constructor(@inject("Date") date: Date) {
+              expect(date).instanceOf(Date);
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+      expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
+      await container.getAsync<HasDependencies>(HasDependencies);
+  });
+
+  it("Should support async values already in cache when there are transient dependencies", async () => {
+      @injectable()
+      class Parent {
+          public constructor(@inject("Date") date: Date) {
+              expect(date).instanceOf(Date);
+          }
+      }
+
+      @injectable()
+      class Child {
+          public constructor(
+            @inject(Parent) parent: Parent,
+            @inject("Date") date: Date
+          ) {
+              expect(parent).instanceOf(Parent);
+              expect(date).instanceOf(Date);
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+      expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
+      await container.getAsync<Child>(Child);
+  });
+
   it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
       @injectable()
       class UseDate implements UseDate {
