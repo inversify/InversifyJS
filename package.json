@@ -42,7 +42,7 @@
     "bluebird": "3.5.4",
     "browserify": "16.2.3",
     "chai": "4.1.2",
-    "del": "4.1.0",
+    "del": "4.1.1",
     "es6-symbol": "3.1.1",
     "gulp": "3.9.1",
     "gulp-istanbul": "1.1.3",
