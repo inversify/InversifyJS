@@ -363,7 +363,7 @@ class Container implements interfaces.Container {
         return tempContainer.get<T>(constructorFunction);
     }
 
-    private preDestroy(binding: Binding<any>): Promise<void> | undefined {
+    private preDestroy(binding: Binding<any>): Promise<void> | void {
         if (binding.cache) {
             const constr = binding.cache.constructor;
 

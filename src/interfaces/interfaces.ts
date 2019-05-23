@@ -61,7 +61,7 @@ namespace interfaces {
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
         onActivation: ((context: interfaces.Context, injectable: T) => T | Promise<T>) | null;
-        onDeactivation: ((injectable: T) => T) | null;
+        onDeactivation: ((injectable: T) => Promise<void> | void) | null;
         cache: T | null;
     }
 
@@ -254,7 +254,7 @@ namespace interfaces {
 
     export interface BindingOnSyntax<T> {
         onActivation(fn: (context: Context, injectable: T) => T | Promise<T>): BindingWhenSyntax<T>;
-        onDeactivation(fn: (injectable: T) => T): BindingWhenSyntax<T>;
+        onDeactivation(fn: (injectable: T) => Promise<void> | void): BindingWhenSyntax<T>;
     }
 
     export interface BindingWhenSyntax<T> {

@@ -47,7 +47,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public onActivation: ((context: interfaces.Context, injectable: T) => T | Promise<T>) | null;
 
     // On deactivation handler (invoked just before an instance is unbinded and removed from container)
-    public onDeactivation: ((injectable: T) => T) | null;
+    public onDeactivation: ((injectable: T) => Promise<void> | void) | null;
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, scope: interfaces.BindingScope) {
         this.id = id();
