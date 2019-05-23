@@ -3,6 +3,7 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
+import { Metadata } from "../planning/metadata";
 import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { Lazy } from "../resolution/lazy";
@@ -161,6 +162,34 @@ class Container implements interfaces.Container {
 
     // Removes a type binding from the registry by its key
     public unbind(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
+        if (this._bindingDictionary.hasKey(serviceIdentifier)) {
+            const bindings = this._bindingDictionary.get(serviceIdentifier);
+
+            for (const binding of bindings) {
+                const result = this.preDestroy(binding);
+
+                if (result instanceof Promise) {
+                    throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
+                }
+            }
+        }
+
+        try {
+            this._bindingDictionary.remove(serviceIdentifier);
+        } catch (e) {
+            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
+    }
+
+    public async unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<any>): Promise<void> {
+        if (this._bindingDictionary.hasKey(serviceIdentifier)) {
+            const bindings = this._bindingDictionary.get(serviceIdentifier);
+
+            for (const binding of bindings) {
+                await this.preDestroy(binding);
+            }
+        }
+
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
@@ -170,6 +199,34 @@ class Container implements interfaces.Container {
 
     // Removes all the type bindings from the registry
     public unbindAll(): void {
+        this._bindingDictionary.traverse((key, value) => {
+            for (const binding of value) {
+                const result = this.preDestroy(binding);
+
+                if (result instanceof Promise) {
+                    throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
+                }
+            }
+        });
+
+        this._bindingDictionary = new Lookup<Binding<any>>();
+    }
+
+    public async unbindAllAsync(): Promise<void> {
+        const promises: Promise<any>[] = [];
+
+        this._bindingDictionary.traverse((key, value) => {
+            for (const binding of value) {
+                const result = this.preDestroy(binding);
+
+                if (result instanceof Promise) {
+                    promises.push(result);
+                }
+            }
+        });
+
+        await Promise.all(promises);
+
         this._bindingDictionary = new Lookup<Binding<any>>();
     }
 
@@ -304,6 +361,29 @@ class Container implements interfaces.Container {
         const tempContainer = this.createChild();
         tempContainer.bind<T>(constructorFunction).toSelf();
         return tempContainer.get<T>(constructorFunction);
+    }
+
+    private preDestroy(binding: Binding<any>): Promise<void> | undefined {
+        if (binding.cache) {
+            const constr = binding.cache.constructor;
+
+            if (typeof binding.onDeactivation === "function") {
+                try {
+                    return binding.onDeactivation(binding.cache);
+                } catch (e) {
+                    throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, e.message));
+                }
+            }
+
+            if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
+                const data: Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, binding.cache.constructor);
+                try {
+                    return binding.cache[data.value]();
+                } catch (e) {
+                    throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
+                }
+            }
+        }
     }
 
     private _getContainerModuleHelpersFactory() {

@@ -3,6 +3,7 @@ import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
+import { Lazy } from "./lazy";
 
 function _injectProperties(
     instance: any,
@@ -33,11 +34,11 @@ function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): a
     return new Func(...injections);
 }
 
-function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
+function _postConstruct(constr: interfaces.Newable<any>, result: any): Promise<void> | undefined {
     if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
         const data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
         try {
-            result[data.value]();
+            return result[data.value]();
         } catch (e) {
             throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
         }
@@ -65,7 +66,16 @@ function resolveInstance(
     } else {
         result = new constr();
     }
-    _postConstruct(constr, result);
+
+    const post = _postConstruct(constr, result);
+
+    if (post instanceof Promise) {
+        return new Lazy(async () => {
+            await post;
+
+            return result;
+        });
+    }
 
     return result;
 }

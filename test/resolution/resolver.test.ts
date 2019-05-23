@@ -6,6 +6,7 @@ import { injectable } from "../../src/annotation/injectable";
 import { multiInject } from "../../src/annotation/multi_inject";
 import { named } from "../../src/annotation/named";
 import { postConstruct } from "../../src/annotation/post_construct";
+import { preDestroy } from "../../src/annotation/pre_destroy";
 import { tagged } from "../../src/annotation/tagged";
 import { targetName } from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
@@ -314,6 +315,234 @@ describe("Resolve", () => {
     ]);
 
     expect(subject1 === subject2).eql(true);
+  });
+
+  it("Should wait on deactivation promise before returning unbindAsync()", async () => {
+      let resolved = false;
+
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+        .onDeactivation(() => new Promise((r) => {
+          r();
+
+          resolved = true;
+      }));
+
+      container.get("Destroyable");
+
+      await container.unbindAsync("Destroyable");
+
+      expect(resolved).eql(true);
+  });
+
+  it("Should wait on predestroy promise before returning unbindAsync()", async () => {
+      let resolved = false;
+
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return new Promise((r) => {
+                  r();
+
+                  resolved = true;
+              });
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+      container.get("Destroyable");
+
+      await container.unbindAsync("Destroyable");
+
+      expect(resolved).eql(true);
+  });
+
+  it("Should wait on deactivation promise before returning unbindAllAsync()", async () => {
+      let resolved = false;
+
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+        .onDeactivation(() => new Promise((r) => {
+          r();
+
+          resolved = true;
+      }));
+
+      container.get("Destroyable");
+
+      await container.unbindAllAsync();
+
+      expect(resolved).eql(true);
+  });
+
+  it("Should wait on predestroy promise before returning unbindAllAsync()", async () => {
+      let resolved = false;
+
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return new Promise((r) => {
+                  r();
+
+                  resolved = true;
+              });
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+      container.get("Destroyable");
+
+      await container.unbindAllAsync();
+
+      expect(resolved).eql(true);
+  });
+
+  it("Should not allow transient construction with async preDestroy", async () => {
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return Promise.resolve();
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inTransientScope();
+
+      expect(() => container.get("Destroyable")).to
+        .throw("@preDestroy error in class Destroyable: Class cannot be instantiated in transient scope.");
+  });
+
+  it("Should not allow transient construction with async deactivation", async () => {
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inTransientScope()
+        .onDeactivation(() => Promise.resolve());
+
+      expect(() => container.get("Destroyable")).to
+        .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in transient scope.");
+  });
+
+  it("Should force a class with an async deactivation to use the async unbindAll api", async () => {
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+        .onDeactivation(() => Promise.resolve());
+
+      container.get("Destroyable");
+
+      expect(() => container.unbindAll()).to
+        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+  });
+
+  it("Should force a class with an async pre destroy to use the async unbindAll api", async () => {
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return Promise.resolve();
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+      container.get("Destroyable");
+
+      expect(() => container.unbindAll()).to
+        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+  });
+
+  it("Should force a class with an async deactivation to use the async unbind api", async () => {
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+        .onDeactivation(() => Promise.resolve());
+
+      container.get("Destroyable");
+
+      expect(() => container.unbind("Destroyable")).to
+        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+  });
+
+  it("Should force a class with an async pre destroy to use the async unbind api", async () => {
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return Promise.resolve();
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+      container.get("Destroyable");
+
+      expect(() => container.unbind("Destroyable")).to
+        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+  });
+
+  it("Should force a class with an async post construct to use the async api", async () => {
+      @injectable()
+      class Constructable {
+          @postConstruct()
+          public myPostConstructMethod() {
+              return Promise.resolve();
+          }
+      }
+
+      const container = new Container();
+      container.bind<Constructable>("Constructable").to(Constructable);
+
+      expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
+ but it has asynchronous dependencies.`);
+  });
+
+  it("Should wait until postConstruct promise resolves before returning object", async () => {
+      let resolved = false;
+
+      @injectable()
+      class Constructable {
+          @postConstruct()
+          public myPostConstructMethod() {
+              return new Promise((r) => {
+                  resolved = true;
+                  r();
+              });
+          }
+      }
+
+      const container = new Container();
+      container.bind<Constructable>("Constructable").to(Constructable);
+
+      const result = await container.getAsync("Constructable");
+
+      expect(result).instanceof(Constructable);
+      expect(resolved).eql(true);
   });
 
   it("Should only call async method once if marked as singleton (indirect)", async () => {

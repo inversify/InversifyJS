@@ -1,5 +1,6 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
+import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { isStackOverflowExeption } from "../utils/exceptions";
 import { getServiceIdentifierAsString } from "../utils/serialization";
@@ -116,6 +117,25 @@ function convertBindingToInstance(requestScope: interfaces.RequestScope, request
     throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
 }
 
+function resolveAndCheckInstance(
+  binding: interfaces.Binding<any>,
+  constr: interfaces.Newable<any>,
+  childRequests: interfaces.Request[],
+  resolveRequest: interfaces.ResolveRequestHandler
+): any {
+    if (binding.scope === "Transient") {
+        if (typeof binding.onDeactivation === "function") {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
+        }
+
+        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
+            throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
+        }
+    }
+
+    return resolveInstance(constr, childRequests, resolveRequest);
+}
+
 function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: interfaces.Request): any {
     const binding = request.bindings[0];
     const childRequests = request.childRequests;
@@ -123,7 +143,8 @@ function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: 
     const resolver = _resolveRequest(requestScope);
 
     if (!request.isLazy() && !request.hasLazyChildren()) {
-        return resolveInstance(
+        return resolveAndCheckInstance(
+          binding,
           binding.implementationType as Newable<any>,
           childRequests,
           resolver
@@ -178,7 +199,8 @@ async function resolveLazy(
 
         value = lazies[request.id];
     } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-        value = resolveInstance(
+        value = resolveAndCheckInstance(
+          binding,
           binding.implementationType,
           request.childRequests,
           resolver

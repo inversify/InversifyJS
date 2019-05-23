@@ -40,8 +40,12 @@ export const CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE = "Invalid Container
 export const CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK = "Invalid Container option. Skip base check must " +
     "be a boolean";
 
+export const MULTIPLE_PRE_DESTROY_METHODS = "Cannot apply @preDestroy decorator multiple times in the same class";
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
+export const ASYNC_UNBIND_REQUIRED = "Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)";
 export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
+export const PRE_DESTROY_ERROR = (...values: any[]) => `@preDestroy error in class ${values[0]}: ${values[1]}`;
+export const ON_DEACTIVATION_ERROR = (...values: any[]) => `onDeactivation() error in class ${values[0]}: ${values[1]}`;
 
 export const CIRCULAR_DEPENDENCY_IN_FACTORY = (...values: any[]) =>  "It looks like there is a circular dependency " +
     `in one of the '${values[0]}' bindings. Please investigate bindings with` +
