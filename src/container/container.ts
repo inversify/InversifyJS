@@ -368,6 +368,14 @@ class Container implements interfaces.Container {
             const constr = binding.cache.constructor;
 
             if (typeof binding.onDeactivation === "function") {
+                if (binding.cache instanceof Lazy) {
+                    return binding.cache.resolve().then(async (resolved) => {
+                        if (binding.onDeactivation) {
+                            await binding.onDeactivation(resolved);
+                        }
+                    });
+                }
+
                 try {
                     return binding.onDeactivation(binding.cache);
                 } catch (e) {
@@ -376,7 +384,7 @@ class Container implements interfaces.Container {
             }
 
             if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
-                const data: Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, binding.cache.constructor);
+                const data: Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
                 try {
                     return binding.cache[data.value]();
                 } catch (e) {

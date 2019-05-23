@@ -66,15 +66,27 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
 
         let result = convertBindingToInstance(requestScope, request);
 
-        // use activation handler if available
-        if (typeof binding.onActivation === "function") {
-            result = binding.onActivation(request.parentContext, result);
-        }
+        const old = result;
 
-        if (result instanceof Promise) {
-            const old = result;
+        if (result instanceof Lazy) {
+            result = new Lazy(async () => {
+              let resolved = await old.resolve();
 
-            result = new Lazy(() => old);
+              if (typeof binding.onActivation === "function") {
+                resolved = binding.onActivation(request.parentContext, resolved);
+              }
+
+              return resolved;
+            });
+        } else {
+            // use activation handler if available
+            if (typeof binding.onActivation === "function") {
+                result = binding.onActivation(request.parentContext, result);
+            }
+
+            if (result instanceof Promise) {
+                result = new Lazy(() => old);
+            }
         }
 
         afterResult(binding, result, requestScope);

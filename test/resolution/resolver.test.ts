@@ -317,6 +317,23 @@ describe("Resolve", () => {
     expect(subject1 === subject2).eql(true);
   });
 
+  it("Should return resolved instance to onDeactivation when binding is async", async () => {
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").toAsyncValue(() => Promise.resolve(new Destroyable())).inSingletonScope()
+        .onDeactivation((instance) => new Promise((r) => {
+          expect(instance).instanceof(Destroyable);
+          r();
+      }));
+
+      await container.getAsync("Destroyable");
+
+      await container.unbindAsync("Destroyable");
+  });
+
   it("Should wait on deactivation promise before returning unbindAsync()", async () => {
       let resolved = false;
 
@@ -533,6 +550,22 @@ describe("Resolve", () => {
 
       expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
  but it has asynchronous dependencies.`);
+  });
+
+  it("Should return resolved instance to onActivation when binding is async", async () => {
+      @injectable()
+      class Constructable {
+      }
+
+      const container = new Container();
+      container.bind<Constructable>("Constructable").toAsyncValue(() => Promise.resolve(new Constructable())).inSingletonScope()
+        .onActivation((context, c) => new Promise((r) => {
+            expect(c).instanceof(Constructable);
+
+            r(c);
+        }));
+
+      await container.getAsync("Constructable");
   });
 
   it("Should wait until onActivation promise resolves before returning object", async () => {
