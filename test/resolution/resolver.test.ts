@@ -506,6 +506,19 @@ describe("Resolve", () => {
         .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
   });
 
+  it("Should force a class with an async onActivation to use the async api", async () => {
+      @injectable()
+      class Constructable {
+      }
+
+      const container = new Container();
+      container.bind<Constructable>("Constructable").to(Constructable).inSingletonScope()
+        .onActivation(() => Promise.resolve());
+
+      expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
+ but it has asynchronous dependencies.`);
+  });
+
   it("Should force a class with an async post construct to use the async api", async () => {
       @injectable()
       class Constructable {
@@ -520,6 +533,26 @@ describe("Resolve", () => {
 
       expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
  but it has asynchronous dependencies.`);
+  });
+
+  it("Should wait until onActivation promise resolves before returning object", async () => {
+      let resolved = false;
+
+      @injectable()
+      class Constructable {
+      }
+
+      const container = new Container();
+      container.bind<Constructable>("Constructable").to(Constructable).inSingletonScope()
+        .onActivation((context, c) => new Promise((r) => {
+            resolved = true;
+            r(c);
+        }));
+
+      const result = await container.getAsync("Constructable");
+
+      expect(result).instanceof(Constructable);
+      expect(resolved).eql(true);
   });
 
   it("Should wait until postConstruct promise resolves before returning object", async () => {

@@ -44,7 +44,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public constraint: (request: interfaces.Request) => boolean;
 
     // On activation handler (invoked just before an instance is added to cache and injected)
-    public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+    public onActivation: ((context: interfaces.Context, injectable: T) => T | Promise<T>) | null;
 
     // On deactivation handler (invoked just before an instance is unbinded and removed from container)
     public onDeactivation: ((injectable: T) => T) | null;

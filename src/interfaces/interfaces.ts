@@ -60,7 +60,7 @@ namespace interfaces {
         implementationType: Newable<T> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+        onActivation: ((context: interfaces.Context, injectable: T) => T | Promise<T>) | null;
         onDeactivation: ((injectable: T) => T) | null;
         cache: T | null;
     }
@@ -253,7 +253,7 @@ namespace interfaces {
     }
 
     export interface BindingOnSyntax<T> {
-        onActivation(fn: (context: Context, injectable: T) => T): BindingWhenSyntax<T>;
+        onActivation(fn: (context: Context, injectable: T) => T | Promise<T>): BindingWhenSyntax<T>;
         onDeactivation(fn: (injectable: T) => T): BindingWhenSyntax<T>;
     }
 

@@ -71,6 +71,12 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             result = binding.onActivation(request.parentContext, result);
         }
 
+        if (result instanceof Promise) {
+            const old = result;
+
+            result = new Lazy(() => old);
+        }
+
         afterResult(binding, result, requestScope);
 
         return result;
