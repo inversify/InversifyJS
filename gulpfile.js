@@ -5,7 +5,7 @@
 //******************************************************************************
 
 // Enable ES6
-require("harmonize")(["harmony", "harmony-proxies", "harmony_proxies"]);
+// require("harmonize")(["harmony", "harmony-proxies", "harmony_proxies"]);
 
 var gulp = require("gulp"),
     browserify = require("browserify"),
@@ -165,7 +165,7 @@ gulp.task("istanbul:hook", function () {
         .pipe(istanbul.hookRequire());
 });
 
-gulp.task("mocha", gulp.series("istanbul:hook"), function () {
+gulp.task("mocha", gulp.series("istanbul:hook", function () {
     console.log('Mocha')
     return gulp.src([
         "node_modules/reflect-metadata/Reflect.js",
@@ -178,7 +178,7 @@ gulp.task("mocha", gulp.series("istanbul:hook"), function () {
         })
         .pipe(istanbul.writeReports());
 
-});
+}));
 
 
 
@@ -205,7 +205,7 @@ gulp.task("bundle-test", function () {
         .pipe(gulp.dest(outputFolder));
 });
 
-gulp.task("karma", gulp.series("bundle-test"), function (done) {
+gulp.task("karma", gulp.series("bundle-test", function (done) {
     new karma.Server({
         configFile: __dirname + "/karma.conf.js"
     }, function (code) {
@@ -217,7 +217,7 @@ gulp.task("karma", gulp.series("bundle-test"), function (done) {
             done();
         }
     }).start();
-});
+}));
 
 // Run browser testings on AppVeyor not in Travis CI
 if (process.env.APPVEYOR) {
@@ -234,6 +234,6 @@ gulp.task("build", gulp.series("lint", gulp.parallel(
     "build-es",
     "build-lib",
     "build-amd",
-    "build-dts"), "build-test"))
+    "build-dts"), "build-test"));
 
 gulp.task("default", gulp.series("clean", "build", "test"));
