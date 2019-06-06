@@ -1,7 +1,10 @@
 {
-  "extends": "tslint:all",
+  "extends": "tslint:recommended",
   "rules": {
-    "array-type": [true, "array"],
+    "array-type": [
+      true,
+      "array"
+    ],
     "ban-types": false,
     "comment-format": false,
     "completed-docs": false,
@@ -10,14 +13,20 @@
     "linebreak-style": false,
     "max-classes-per-file": false,
     "max-file-line-count": false,
-    "max-line-length": [true, 140],
+    "max-line-length": [
+      true,
+      140
+    ],
     "member-ordering": false,
     "newline-before-return": false,
     "newline-per-chained-call": false,
     "no-any": false,
     "no-empty-interface": false,
     "no-floating-promises": false,
-    "no-implicit-dependencies": [true, "dev"],
+    "no-implicit-dependencies": [
+      true,
+      "dev"
+    ],
     "no-import-side-effect": false,
     "no-inferred-empty-object-type": false,
     "no-magic-numbers": false,

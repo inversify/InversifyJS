@@ -30,7 +30,7 @@ describe("Bugs", () => {
         }
 
         @injectable()
-        class SamuraiMaster extends Warrior  {
+        class SamuraiMaster extends Warrior {
             public constructor() { // length = 0
                 super("master");
             }
@@ -88,7 +88,7 @@ describe("Bugs", () => {
         const TYPES = { Rank: "Rank" };
 
         @injectable()
-        class SamuraiMaster extends Warrior  {
+        class SamuraiMaster extends Warrior {
             public constructor(
                 @inject(TYPES.Rank) @named("master") rank: string // length = 1
             ) {
@@ -137,14 +137,14 @@ describe("Bugs", () => {
         };
 
         @injectable()
-        class SamuraiMaster extends Warrior  {
+        class SamuraiMaster extends Warrior {
             public weapon: Weapon;
             public constructor(
                 @inject(TYPES.Rank) @named("master") rank: string,
                 @inject(TYPES.Weapon) weapon: Weapon
             ) { // length = 2
-            super(rank);
-            this.weapon = weapon;
+                super(rank);
+                this.weapon = weapon;
             }
         }
 
@@ -163,7 +163,7 @@ describe("Bugs", () => {
 
     it("Should be able to convert a Symbol value to a string", () => {
 
-        interface Weapon {}
+        interface Weapon { }
 
         const TYPES = {
             Weapon: Symbol.for("Weapon")
@@ -177,9 +177,9 @@ describe("Bugs", () => {
 
     it("Should be not require @inject annotation in toConstructor bindings", () => {
 
-        interface ICategorySortingFn {}
-        interface IContentSortingFn {}
-        interface Collection {}
+        interface ICategorySortingFn { }
+        interface IContentSortingFn { }
+        interface Collection { }
 
         @injectable()
         class Category {
@@ -208,12 +208,12 @@ describe("Bugs", () => {
 
         const container = new Container();
 
-        interface Intl {}
+        interface Intl { }
 
         container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
         container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
 
-        const f = function() { container.getTagged<Intl>("Intl", "lang", "fr"); };
+        const f = function () { container.getTagged<Intl>("Intl", "lang", "fr"); };
         expect(f).to.throw();
 
     });
@@ -525,7 +525,7 @@ describe("Bugs", () => {
         const throws = () => { container.getNamed<Weapon>(TYPES.Weapon, "bow"); };
 
         const error = "No matching bindings found for serviceIdentifier: Weapon\n Weapon " +
-                    "- named: bow \n\nRegistered bindings:\n Katana - named: sword ";
+            "- named: bow \n\nRegistered bindings:\n Katana - named: sword ";
 
         expect(throws).to.throw(error);
 
@@ -577,7 +577,7 @@ describe("Bugs", () => {
 
     it("Should be able to inject into an abstract class", () => {
 
-        interface Weapon {}
+        interface Weapon { }
 
         @injectable()
         abstract class BaseSoldier {
@@ -766,7 +766,7 @@ describe("Bugs", () => {
             public constructor(
                 // using @unmanaged() here is right
                 // because entityType is NOT Injected by inversify
-                @unmanaged() entityType: { new (): T }
+                @unmanaged() entityType: new () => T
             ) {
                 this.model = { instance: new entityType() };
             }
@@ -830,12 +830,12 @@ describe("Bugs", () => {
                 this._katana = katana;
             }
 
-            public fight() {return this._katana.hit(); }
+            public fight() { return this._katana.hit(); }
         }
 
         @injectable()
         class Ninja extends Warrior {
-            public constructor (
+            public constructor(
                 @inject("Katana") katana: Katana
             ) {
                 super(katana);
