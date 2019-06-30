@@ -268,7 +268,105 @@ class Container implements interfaces.Container {
         tempContainer.bind<T>(constructorFunction).toSelf();
         return tempContainer.get<T>(constructorFunction);
     }
+    private _lateBoundActivationHandlers: ({
+        handler: interfaces.OnActivationHandler<any>
+    }&Required<Omit<interfaces.GlobalOnActivationOptions<any>, "setAncestors">>)[] = [];
 
+    private _filterAndApplyOnActivation(
+        filter: interfaces.GlobalOnActivationFilter<any>,
+        binding: interfaces.Binding<any>,
+        removeExisting: boolean,
+        handler: interfaces.OnActivationHandler<any>) {
+        const metadata = binding.constraint.metaData;
+        if (filter(
+            binding.serviceIdentifier,
+            binding.scope,
+            binding.type,
+            this._getBindingValue(binding),
+            metadata ? metadata.key : undefined,
+            metadata ? metadata.value : undefined  )
+        ) {
+            if (binding.onActivation && !removeExisting) {
+                const existingHandler = binding.onActivation;
+                binding.onActivation = (context, injectable) => {
+                    return handler(context, existingHandler(context, injectable) );
+                };
+            } else {
+                binding.onActivation = handler;
+            }
+        }
+    }
+    public onActivation<T>(handler: interfaces.OnActivationHandler<T>, {
+        removeExisting = false,
+        filter = () => true,
+        setAncestors = false
+    }: interfaces.GlobalOnActivationOptions<T> = {}) {
+        const setAncestorLevels =  typeof setAncestors === "number" ? setAncestors : 0;
+        let ancestorLevel = 0;
+        let parentContainer: interfaces.Container|null = this;
+        while (parentContainer) {
+            this._lateBoundActivationHandlers.push({
+                filter,
+                handler,
+                removeExisting
+            });
+            getBindingDictionary(parentContainer).traverse((sid, bindings) => {
+                bindings.forEach((b) => {
+                    const metadata = b.constraint.metaData;
+                    if (filter(
+                        b.serviceIdentifier,
+                        b.scope,
+                        b.type,
+                        this._getBindingValue(b),
+                        metadata ? metadata.key : undefined,
+                        metadata ? metadata.value : undefined  )
+                    ) {
+                        if (b.onActivation && !removeExisting) {
+                            const existingHandler = b.onActivation;
+                            b.onActivation = (context, injectable) => {
+                                return handler(context, existingHandler(context, injectable) );
+                            };
+                        } else {
+                            b.onActivation = handler;
+                        }
+                    }
+                });
+            });
+            if (setAncestors === true || ancestorLevel < setAncestorLevels) {
+                parentContainer = parentContainer.parent;
+                ancestorLevel++;
+            } else {
+                parentContainer = null;
+            }
+        }
+    }
+    public autoBind(serviceIdentifier: interfaces.Newable<any>) {
+        this.bind(serviceIdentifier).toSelf();
+        const binding = this._bindingDictionary.get(serviceIdentifier).slice(-1)[0];
+        this._lateBoundActivationHandlers.forEach((h) => {
+            this._filterAndApplyOnActivation(h.filter, binding, h.removeExisting, h.handler);
+        });
+    }
+    private _getBindingValue(binding: interfaces.Binding<any>) {
+        switch (binding.type) {
+            case "ConstantValue":
+                return binding.cache!;
+            case "Constructor":
+                return binding.implementationType!;
+            case "DynamicValue":
+                return binding.dynamicValue!;
+            case "Factory":
+                return binding.factory!;
+            case "Function":
+                return binding.cache!;
+            case "Instance":
+                return binding.implementationType!;
+            case "Provider":
+                return binding.provider!;
+            default:
+                throw new Error("Binding has invalid type");
+        }
+    }
     private _getContainerModuleHelpersFactory() {
 
         const setModuleId = (bindingToSyntax: any, moduleId: number) => {

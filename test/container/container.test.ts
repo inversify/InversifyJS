@@ -804,4 +804,363 @@ describe("Container", () => {
 
     });
 
+    describe("Container onActivation", () => {
+        it("Should set Binding.onActivation for all bindings for default options", () => {
+            class Ninja {
+            }
+            class Katana {
+            }
+            const container = new Container();
+            container.bind(Ninja).toSelf();
+            container.bind(Katana).toSelf();
+
+            const onActivationHandler: interfaces.OnActivationHandler<any> = (c, i) => i;
+            container.onActivation(onActivationHandler);
+            getBindingDictionary(container).traverse((sid, bindings) => {
+                bindings.forEach((b) => {
+                    expect(b.onActivation).equal(onActivationHandler);
+                });
+            });
+        });
+        it("Should overwrite existing handler if removeExisting is true in options", () => {
+            class Ninja {
+            }
+            class Katana {
+            }
+            const container = new Container();
+
+            container.bind(Ninja).toSelf().onActivation((context, ninja) => ninja);
+            container.bind(Katana).toSelf();
+
+            const onActivationHandler: interfaces.OnActivationHandler<any> = (c, i) => i;
+            container.onActivation(onActivationHandler, {removeExisting: true});
+            getBindingDictionary(container).traverse((sid, bindings) => {
+                bindings.forEach((b) => {
+                    expect(b.onActivation).equal(onActivationHandler);
+                });
+            });
+        });
+
+        it("Should wrap Binding.onActivation if removeExisting is not true in options", () => {
+            const mockContext = {} as any;
+
+            const container = new Container();
+
+            const existingOnActivation = sinon.stub();
+            existingOnActivation.withArgs(sinon.match.same(mockContext), "Bound").returns("Existing");
+
+            container.bind<string>("ConstantValue").toConstantValue("Bound").onActivation(existingOnActivation);
+
+            const onActivationHandler = sinon.stub();
+            onActivationHandler.withArgs(sinon.match.same(mockContext), "Existing").returns("Global");
+            container.onActivation(onActivationHandler);
+
+            const constantValueBinding = getBindingDictionary(container).get("ConstantValue")[0] as interfaces.Binding<string>;
+            expect(constantValueBinding.onActivation!(mockContext, "Bound")).eqls("Global");
+            expect(onActivationHandler.calledAfter(existingOnActivation)).eqls(true);
+        });
+        describe("Filter binding values", () => {
+
+            type FilterArgs= [
+                interfaces.ServiceIdentifier<any>,
+                interfaces.BindingScope,
+                interfaces.BindingType,
+                any,
+                number|string|symbol|undefined,
+                any
+            ];
+            interface FilterBindingValuesTest {
+                description: string;
+                bind: (container: interfaces.Container) => void;
+                getExpectedFilterArgs: () => FilterArgs;
+            }
+            const constantValueBindingValueTest: FilterBindingValuesTest = (() => {
+                const constantValue = {some: "value"};
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind("ConstantValue").toConstantValue(constantValue),
+                    description: "Constant value",
+                    getExpectedFilterArgs: () =>  ["ConstantValue", "Transient", "ConstantValue", constantValue, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const functionBindingValueTest: FilterBindingValuesTest = (() => {
+                const functionValue = () => true;
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind("Function").toFunction(functionValue),
+                    description: "Function",
+                    getExpectedFilterArgs: () =>  ["Function", "Transient", "Function", functionValue, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const dynamicValueTest: FilterBindingValuesTest = (() => {
+                const dynamicValue = (c: interfaces.Context) => true;
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind("Dynamic").toDynamicValue(dynamicValue),
+                    description: "Dynamic value",
+                    getExpectedFilterArgs: () => ["Dynamic", "Transient", "DynamicValue", dynamicValue, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const factoryTest: FilterBindingValuesTest = (() => {
+                const factoryCreator: interfaces.FactoryCreator<string> = (context) => (arg: string) => arg;
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind("Factory").toFactory(factoryCreator),
+                    description: "Factory",
+                    getExpectedFilterArgs: () => ["Factory", "Transient", "Factory", factoryCreator, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const providerTest: FilterBindingValuesTest = (() => {
+                const providerCreator: interfaces.ProviderCreator<string> = (context) => (arg: string) => Promise.resolve(arg);
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind("Provider").toProvider(providerCreator),
+                    description: "Provider",
+                    getExpectedFilterArgs: () => ["Provider", "Transient", "Provider", providerCreator, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const instanceTest: FilterBindingValuesTest = (() => {
+                class Ninja {
+                }
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind(Ninja).toSelf(),
+                    description: "Instance",
+                    getExpectedFilterArgs: () => [Ninja, "Transient", "Instance", Ninja, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const autoFactoryTest: FilterBindingValuesTest = (() => {
+                interface IWeapon {}
+                class Katana implements IWeapon {
+                }
+                type IWeaponFactory = () => IWeapon;
+                const IWeaponFactory = Symbol.for("IWeaponFactory");
+                let autoFactoryBinding!: interfaces.Binding<any>;
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => {
+                        container.bind<Katana>(IWeaponFactory).toAutoFactory(Katana);
+                        autoFactoryBinding = getBindingDictionary(container).get(IWeaponFactory)[0];
+                    },
+                    description: "Auto factory",
+                    getExpectedFilterArgs: () => [
+                        IWeaponFactory,
+                        "Transient",
+                        "Factory",
+                        autoFactoryBinding.factory,
+                        undefined,
+                        undefined
+                    ]
+                };
+                return test;
+            })();
+
+            const serviceTest: FilterBindingValuesTest = (() => {
+                interface IWeapon {}
+                class Katana implements IWeapon {
+                }
+                let serviceBinding: interfaces.Binding<any>;
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => {
+                        container.bind<Katana>("Service").toService(Katana);
+                        serviceBinding = getBindingDictionary(container).get("Service")[0];
+                    },
+                    description: "Service",
+                    getExpectedFilterArgs: () => ["Service", "Transient", "DynamicValue", serviceBinding.dynamicValue, undefined, undefined]
+                };
+                return test;
+            })();
+
+            const constructorTest: FilterBindingValuesTest = (() => {
+                interface IWeapon {}
+                class Katana implements IWeapon {
+                }
+
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind<Katana>(Katana).toConstructor(Katana),
+                    description: "Constructor",
+                    getExpectedFilterArgs: () => [Katana, "Transient", "Constructor", Katana, undefined, undefined]
+                };
+                return test;
+            })();
+            const singletonScopeTest: FilterBindingValuesTest = (() => {
+                class Ninja {
+                }
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind(Ninja).toSelf().inSingletonScope(),
+                    description: "Singleton Scope",
+                    getExpectedFilterArgs: () => [Ninja, "Singleton", "Instance", Ninja, undefined, undefined]
+                };
+                return test;
+            })();
+            const requestScopeTest: FilterBindingValuesTest = (() => {
+                class Ninja {
+                }
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind(Ninja).toSelf().inRequestScope(),
+                    description: "Request Scope",
+                    getExpectedFilterArgs: () => [Ninja, "Request", "Instance", Ninja, undefined, undefined]
+                };
+                return test;
+            })();
+            const taggedTest: FilterBindingValuesTest = (() => {
+                class Ninja {
+                }
+                const test: FilterBindingValuesTest = {
+                    bind: (container) => container.bind(Ninja).toSelf().inRequestScope().whenTargetTagged("Key", "Value"),
+                    description: "Tagged",
+                    getExpectedFilterArgs: () => [Ninja, "Request", "Instance", Ninja, "Key", "Value"]
+                };
+                return test;
+            })();
+
+            [
+                constantValueBindingValueTest,
+                functionBindingValueTest,
+                dynamicValueTest,
+                factoryTest,
+                providerTest,
+                instanceTest,
+                autoFactoryTest,
+                serviceTest,
+                constructorTest,
+                singletonScopeTest,
+                requestScopeTest,
+                taggedTest
+            ].forEach( (t) => {
+                it(t.description, () => {
+                    const container = new Container();
+                    t.bind(container);
+                    let filterArgs!: FilterArgs;
+                    const filter: interfaces.GlobalOnActivationOptions<any>["filter"] = (
+                        sid, scope, type, value, metadataKey, metadataValue
+                    ) => {
+                        filterArgs = [sid, scope, type, value, metadataKey, metadataValue];
+                        return true;
+                    };
+                    container.onActivation((i) => i, { filter } );
+                    expect(filterArgs).to.have.members(t.getExpectedFilterArgs());
+                });
+            });
+        });
+        it("Should set Binding.onActivation only for Bindings that pass the filter", () => {
+            class Ninja {
+            }
+            class Katana {
+            }
+            const container = new Container();
+
+            container.bind(Ninja).toSelf();
+            container.bind(Katana).toSelf();
+
+            const onActivation: interfaces.OnActivationHandler<any> = (context, injected) => injected;
+            container.onActivation(onActivation, {filter: (serviceIdentifier) => serviceIdentifier === Katana});
+
+            const bindingDictionary = getBindingDictionary(container);
+            const katanaBinding = bindingDictionary.get(Katana)[0];
+            const ninjaBinding = bindingDictionary.get(Ninja)[0];
+
+            expect(!!ninjaBinding.onActivation).eqls(false);
+            expect(katanaBinding.onActivation).equal(onActivation);
+        });
+
+        describe("Setting onActivation on ancestor container bindings", () => {
+            interface AncestorsTest {
+                description: string;
+                expectParent: boolean;
+                expectGrandParent: boolean;
+                options?: interfaces.GlobalOnActivationOptions<any>;
+            }
+            const notSettingAncestorsTest: AncestorsTest = {
+                description: "Should not set onActivation for ancestor bindings if setAncestors is not true or > 0 in options",
+                expectGrandParent: false,
+                expectParent: false,
+            };
+            const allAncestorsTest: AncestorsTest = {
+                description: "Should set onActivation for all ancestor bindings if setAncestors is true in options",
+                expectGrandParent: true,
+                expectParent: true,
+                options: {setAncestors: true}
+            };
+            const ancestorLevelTest: AncestorsTest = {
+                description: "Should set onActivation for ancestor bindings up to provided level if setAncestors is number greater than 0",
+                expectGrandParent: false,
+                expectParent: true,
+                options: {setAncestors: 1}
+            };
+            [notSettingAncestorsTest, allAncestorsTest, ancestorLevelTest].forEach((t) => {
+                it(t.description, () => {
+                    class Samurai {
+
+                    }
+                    class Ninja {
+                    }
+                    class Katana {
+                    }
+                    const grandParentContainer = new Container();
+                    const parentContainer = grandParentContainer.createChild();
+                    const childContainer = parentContainer.createChild();
+
+                    grandParentContainer.bind(Samurai).toSelf();
+                    parentContainer.bind(Ninja).toSelf();
+                    childContainer.bind(Katana).toSelf();
+
+                    const onActivation: interfaces.OnActivationHandler<any> = (context, injected) => injected;
+                    childContainer.onActivation(onActivation, t.options);
+
+                    const grandParentBinding = getBindingDictionary(grandParentContainer).get(Samurai)[0];
+                    const parentBinding = getBindingDictionary(parentContainer).get(Ninja)[0];
+                    const childBinding = getBindingDictionary(childContainer).get(Katana)[0];
+
+                    if (t.expectGrandParent) {
+                        expect(grandParentBinding.onActivation).equal(onActivation);
+                    } else {
+                        expect(!!grandParentBinding.onActivation).equal(false);
+                    }
+
+                    if (t.expectParent) {
+                        expect(parentBinding.onActivation).equal(onActivation);
+                    } else {
+                        expect(!!parentBinding.onActivation).equal(false);
+                    }
+
+                    expect(childBinding.onActivation).equal(onActivation);
+                });
+            });
+        });
+
+        describe("Late bound - autoBindInjectable", () => {
+            it("Should add onActivation for the container if passes filter", () => {
+                @injectable()
+                class Ninja {}
+                class ActivatedNinja extends Ninja {}
+                const container = new Container({autoBindInjectable: true});
+                const onActivation: interfaces.OnActivationHandler<any> = (context, injected) => new ActivatedNinja();
+                container.onActivation(onActivation);
+
+                const activatedNinja = container.get(Ninja);
+                expect(activatedNinja).instanceOf(ActivatedNinja);
+            });
+            it("Should add onActivation for ancestor if passes filter", () => {
+                @injectable()
+                class Ninja {}
+
+                class ActivatedNinja extends Ninja {}
+                const container = new Container({autoBindInjectable: true});
+
+                const onActivation: interfaces.OnActivationHandler<any> = (context, injected) => new ActivatedNinja();
+                const childContainer = container.createChild();
+                childContainer.bind("ParentAutoBind").toDynamicValue((context) => {
+                    return context.container.parent!.get(Ninja);
+                });
+                childContainer.onActivation(onActivation, { setAncestors: true});
+                expect(childContainer.get("ParentAutoBind")).instanceOf(ActivatedNinja);
+            });
+        });
+    });
 });

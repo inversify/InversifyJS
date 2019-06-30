@@ -60,7 +60,7 @@ function _getActiveBindings(
         typeof target.serviceIdentifier === "function" &&
         metadataReader.getConstructorMetadata(target.serviceIdentifier).compilerGeneratedMetadata
     ) {
-        context.container.bind(target.serviceIdentifier).toSelf();
+        context.container.autoBind(target.serviceIdentifier as interfaces.Newable<any>);
         bindings = getBindings(context.container, target.serviceIdentifier);
     }
 
