@@ -72,7 +72,7 @@ For example, the following binding will inject a factory which will always be a 
 container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toAutoFactory<Katana>("Katana");
 ```
 
-However, the value returned by the factory may or not be a singleton:
+However, the value returned by the factory may or may not be a singleton:
 
 ```ts
 container.bind<Katana>("Katana").to(Katana).inTransientScope();
@@ -82,7 +82,7 @@ container.bind<Katana>("Katana").to(Katana).inSingletonScope();
 
 ## About `inRequestScope`
 
-When we use inRequestScope we are using an special kind of singleton.
+When we use inRequestScope we are using a special kind of singleton.
 
 - The `inSingletonScope` creates a singleton that will last for the entire life cycle of a type binding. This means that the `inSingletonScope` can be cleared up from memory when we unbind a type binding using `container.unbind`.
 
