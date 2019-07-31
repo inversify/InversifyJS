@@ -183,6 +183,8 @@ async function resolveLazy(
           request.childRequests,
           resolver
         );
+
+        afterResult(binding, value, requestScope);
     } else {
         value = convertBindingToInstance(requestScope, request);
     }

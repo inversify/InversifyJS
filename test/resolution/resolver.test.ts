@@ -368,6 +368,35 @@ describe("Resolve", () => {
       expect(object1).eql(object2);
   });
 
+  it("Should support shared async singletons when using autoBindInjectable", async () => {
+      @injectable()
+      class AsyncValue {
+          public date: Date;
+          public constructor(@inject("Date") date: Date) {
+              this.date = date;
+          }
+      }
+
+      @injectable()
+      class MixedDependency {
+          public asyncValue: AsyncValue;
+          public constructor(@inject(AsyncValue) asyncValue: AsyncValue) {
+              expect(asyncValue).instanceOf(AsyncValue);
+
+              this.asyncValue = asyncValue;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true, defaultScope: "Singleton"});
+      container.bind<Date>("Date").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+      const async = await container.getAsync<AsyncValue>(AsyncValue);
+
+      const object1 = await container.getAsync<MixedDependency>(MixedDependency);
+
+      expect(async).eql(object1.asyncValue);
+  });
+
   it("Should support async dependencies in multiple layers", async () => {
       @injectable()
       class AsyncValue {
