@@ -39,7 +39,7 @@ class Request implements interfaces.Request {
     }
 
     public hasLazyChildren(): boolean {
-      return this.childRequests.some((r) => r.isLazy());
+      return this.childRequests.some((r) => r.isLazy() || r.hasLazyChildren());
     }
 
     public addChildRequest(
