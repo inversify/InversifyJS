@@ -1,9 +1,10 @@
+import "reflect-metadata";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Container, inject, injectable } from "../../src/inversify";
 
 describe("Issue 549", () => {
 
-    it("Should throw if circular dependencies found with dynamics", () => {
+    it("Should throw if circular dependencies found with dynamics without singleton", () => {
 
         const TYPE = {
             ADynamicValue: Symbol.for("ADynamicValue"),
@@ -30,7 +31,7 @@ describe("Issue 549", () => {
             }
         }
 
-        const container = new Container({defaultScope: "Singleton"});
+        const container = new Container({defaultScope: "Request"});
         container.bind(A).toSelf();
         container.bind(B).toSelf();
 
@@ -70,6 +71,49 @@ describe("Issue 549", () => {
             }
 
         }
+
+    });
+
+    it("Should not throw if circular dependencies found with dynamics with singleton", () => {
+
+        const TYPE = {
+            ADynamicValue: Symbol.for("ADynamicValue"),
+            BDynamicValue: Symbol.for("BDynamicValue")
+        };
+
+        @injectable()
+        class A {
+            public b: B;
+            public constructor(
+                @inject(TYPE.BDynamicValue)  b: B
+            ) {
+                this.b = b;
+            }
+        }
+
+        @injectable()
+        class B {
+            public a: A;
+            public constructor(
+                @inject(TYPE.ADynamicValue) a: A
+            ) {
+                this.a = a;
+            }
+        }
+
+        const container = new Container({defaultScope: "Singleton"});
+        container.bind(A).toSelf();
+        container.bind(B).toSelf();
+
+        container.bind(TYPE.ADynamicValue).toDynamicValue((ctx) =>
+            ctx.container.get(A)
+        );
+
+        container.bind(TYPE.BDynamicValue).toDynamicValue((ctx) =>
+            ctx.container.get(B)
+        );
+
+        container.get<A>(A);
 
     });
 

@@ -1,6 +1,6 @@
 import { BindingCount } from "../bindings/binding_count";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum, BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { isStackOverflowExeption } from "../utils/exceptions";
@@ -174,8 +174,15 @@ function _createSubRequests(
             if (binding.cache) {
                 return;
             }
+
+            if (binding.scope === BindingScopeEnum.Singleton && binding.request) {
+                return;
+            }
+
             subChildRequest = childRequest;
         }
+
+        binding.request = subChildRequest;
 
         if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 

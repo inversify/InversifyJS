@@ -42,6 +42,9 @@ class Binding<T> implements interfaces.Binding<T> {
     // On activation handler (invoked just before an instance is added to cache and injected)
     public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
 
+    // The request to resolve the binding.
+    public request: interfaces.Request | null;
+
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, scope: interfaces.BindingScope) {
         this.id = id();
         this.activated = false;
@@ -55,6 +58,7 @@ class Binding<T> implements interfaces.Binding<T> {
         this.provider = null;
         this.onActivation = null;
         this.dynamicValue = null;
+        this.request = null;
     }
 
     public clone(): interfaces.Binding<T> {
@@ -69,6 +73,7 @@ class Binding<T> implements interfaces.Binding<T> {
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;
         clone.cache = this.cache;
+        clone.request = this.request;
         return clone;
     }
 
