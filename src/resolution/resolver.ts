@@ -80,33 +80,43 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
 function convertBindingToInstance(requestScope: interfaces.RequestScope, request: interfaces.Request) {
     const binding = request.bindings[0];
 
-    if (binding.type === BindingTypeEnum.ConstantValue) {
+    if (binding.type === BindingTypeEnum.ConstantValue || binding.type === BindingTypeEnum.Function) {
         return binding.cache;
-    } else if (binding.type === BindingTypeEnum.Function) {
-        return binding.cache;
-    } else if (binding.type === BindingTypeEnum.Constructor) {
+    }
+
+    if (binding.type === BindingTypeEnum.Constructor) {
         return binding.implementationType;
-    } else if (binding.type === BindingTypeEnum.AsyncValue && binding.asyncValue !== null) {
+    }
+
+    if (binding.type === BindingTypeEnum.AsyncValue && binding.asyncValue !== null) {
         return binding.asyncValue;
-    } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
+    }
+
+    if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
         return invokeFactory(
           "toDynamicValue",
           binding.serviceIdentifier,
           () => (binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
         );
-    } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
+    }
+
+    if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
         return invokeFactory(
           "toFactory",
           binding.serviceIdentifier,
           () => (binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
         );
-    } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
+    }
+
+    if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
         return invokeFactory(
           "toProvider",
           binding.serviceIdentifier,
           () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
         );
-    } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+    }
+
+    if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
         return resolveTypeInstance(requestScope, request);
     }
 
