@@ -365,7 +365,14 @@ class Container implements interfaces.Container {
 
     private preDestroy(binding: Binding<any>): Promise<void> | void {
         if (binding.cache) {
-            const constr = binding.cache.constructor;
+            let constr;
+
+            try {
+                constr = binding.cache.constructor;
+            } catch (ex) {
+                // if placing mocks in container (eg: TypeMoq), this could blow up as constructor is not stubbed
+                return;
+            }
 
             if (typeof binding.onDeactivation === "function") {
                 if (binding.cache instanceof Lazy) {
