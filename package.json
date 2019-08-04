@@ -71,7 +71,7 @@
     "publish-please": "5.4.3",
     "reflect-metadata": "0.1.13",
     "run-sequence": "2.2.1",
-    "sinon": "7.3.2",
+    "sinon": "7.4.0",
     "tslint": "5.17.0",
     "typescript": "^3.5.1",
     "vinyl-buffer": "1.0.1",
