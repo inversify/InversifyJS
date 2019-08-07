@@ -46,6 +46,7 @@ function _postConstruct(constr: interfaces.Newable<any>, result: any): Promise<v
 }
 
 function resolveInstance(
+    binding: interfaces.Binding<any>,
     constr: interfaces.Newable<any>,
     childRequests: interfaces.Request[],
     resolveRequest: interfaces.ResolveRequestHandler
@@ -70,7 +71,7 @@ function resolveInstance(
     const post = _postConstruct(constr, result);
 
     if (post instanceof Promise) {
-        return new Lazy(async () => {
+        return new Lazy(binding, async () => {
             await post;
 
             return result;

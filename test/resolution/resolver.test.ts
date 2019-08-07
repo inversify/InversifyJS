@@ -1642,7 +1642,7 @@ describe("Resolve", () => {
             }
         }
 
-        expect(resolveInstance.bind(resolveInstance, Katana, [], (request: interfaces.Request) => null))
+        expect(resolveInstance.bind(null, resolveInstance, Katana, [], (request: interfaces.Request) => null))
             .to.throw("@postConstruct error in class Katana: Original Message");
     });
 

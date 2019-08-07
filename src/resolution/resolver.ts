@@ -69,14 +69,14 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         const old = result;
 
         if (result instanceof Lazy) {
-            result = new Lazy(async () => {
-              let resolved = await old.resolve();
+            result = new Lazy(binding, async () => {
+                let resolved = await old.resolve();
 
-              if (typeof binding.onActivation === "function") {
-                resolved = binding.onActivation(request.parentContext, resolved);
-              }
+                if (typeof binding.onActivation === "function") {
+                    resolved = binding.onActivation(request.parentContext, resolved);
+                }
 
-              return resolved;
+                return resolved;
             });
         } else {
             // use activation handler if available
@@ -85,7 +85,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             }
 
             if (result instanceof Promise) {
-                result = new Lazy(() => old);
+                result = new Lazy(binding, () => old);
             }
         }
 
@@ -161,7 +161,7 @@ function resolveAndCheckInstance(
         }
     }
 
-    return resolveInstance(constr, childRequests, resolveRequest);
+    return resolveInstance(binding, constr, childRequests, resolveRequest);
 }
 
 function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: interfaces.Request): any {
