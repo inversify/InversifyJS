@@ -1,5 +1,5 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { Lazy } from "../resolution/lazy";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
@@ -30,6 +30,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     public toAsyncValue(func: () => Promise<T>): interfaces.BindingInWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.AsyncValue;
         this._binding.asyncValue = new Lazy<T>(func);
+        this._binding.asyncValue.singleton = this._binding.scope === BindingScopeEnum.Singleton;
         this._binding.implementationType = null;
         return new BindingInWhenOnSyntax<T>(this._binding);
     }
