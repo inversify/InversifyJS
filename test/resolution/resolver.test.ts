@@ -304,6 +304,16 @@ describe("Resolve", () => {
 
   });
 
+  it("Should support async when default scope is singleton", async () => {
+      const container = new Container({defaultScope: "Singleton"});
+      container.bind("a").toAsyncValue( async () => Math.random());
+
+      const object1 = await container.getAsync("a");
+      const object2 = await container.getAsync("a");
+
+      expect(object1).eql(object2);
+  });
+
   it("Should only call parent async singleton once within child containers", async () => {
     const parent = new Container();
     parent.bind<Date>("Parent").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();
