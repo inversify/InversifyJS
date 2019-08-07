@@ -314,6 +314,16 @@ describe("Resolve", () => {
       expect(object1).eql(object2);
   });
 
+  it("Should return different values if default singleton scope is overriden by bind", async () => {
+      const container = new Container({defaultScope: "Singleton"});
+      container.bind("a").toAsyncValue( async () => Math.random()).inTransientScope();
+
+      const object1 = await container.getAsync("a");
+      const object2 = await container.getAsync("a");
+
+      expect(object1).not.eql(object2);
+  });
+
   it("Should only call parent async singleton once within child containers", async () => {
     const parent = new Container();
     parent.bind<Date>("Parent").toAsyncValue(() => Promise.resolve(new Date())).inSingletonScope();

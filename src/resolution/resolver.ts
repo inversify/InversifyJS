@@ -150,7 +150,7 @@ function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: 
         return resolver(lazyRequest);
     };
 
-    return new Lazy(() => resolveLazy(lazyResolver, requestScope, request, lazies));
+    return new Lazy(binding, () => resolveLazy(lazyResolver, requestScope, request, lazies));
 }
 
 async function resolveLazy(
