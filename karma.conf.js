@@ -1,20 +1,20 @@
 var browsers = [
-    "Firefox",
-    "Chrome",
-    "IE",
-    "PhantomJS"
+  // "Firefox",
+  "Chrome",
+  "IE",
+  "PhantomJS"
 ];
 
 var plugins = [
-    "karma-mocha-reporter",
-    "karma-mocha",
-    "karma-chai",
-    "karma-sinon",
-    "karma-firefox-launcher",
-    "karma-chrome-launcher",
-    "karma-ie-launcher",
-    "karma-phantomjs-launcher",
-    "karma-es6-shim"
+  "karma-mocha-reporter",
+  "karma-mocha",
+  "karma-chai",
+  "karma-sinon",
+  "karma-firefox-launcher",
+  "karma-chrome-launcher",
+  "karma-ie-launcher",
+  "karma-phantomjs-launcher",
+  "karma-es6-shim"
 ];
 
 module.exports = function (config) {
@@ -27,11 +27,11 @@ module.exports = function (config) {
     frameworks: ["mocha", "chai", "sinon", "es6-shim"],
     browsers: browsers,
     reporters: ["mocha"],
-    plugins : plugins,
-    files : [
-        { pattern: "node_modules/reflect-metadata/Reflect.js", include: true },
-        { pattern: "node_modules/bluebird/js/browser/bluebird.js", include: true },
-        { pattern: "temp/bundle.test.js", included: true }
+    plugins: plugins,
+    files: [
+      { pattern: "node_modules/reflect-metadata/Reflect.js", include: true },
+      { pattern: "node_modules/bluebird/js/browser/bluebird.js", include: true },
+      { pattern: "temp/bundle.test.js", included: true }
     ],
     port: 9876,
     colors: true,

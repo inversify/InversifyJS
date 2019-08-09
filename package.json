@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "gulp",
+    "test2": "nyc mocha --opts mocha.opts",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard"
   },
