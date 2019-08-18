@@ -54,7 +54,7 @@ namespace interfaces {
         implementationType: Newable<T> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+        onActivation: OnActivationHandler<T> | null;
         cache: T | null;
     }
 
@@ -185,8 +185,20 @@ namespace interfaces {
         snapshot(): void;
         restore(): void;
         createChild(): Container;
+        onActivation<T>(handler: OnActivationHandler<T>, options?: interfaces.GlobalOnActivationOptions<T>): void;
     }
-
+    export type OnActivationHandler<T> = (context: interfaces.Context, injectable: T) => T;
+    export interface GlobalOnActivationOptions<T> {
+        removeExisting?: boolean;
+        filter?: (
+            serviceIdentifier: interfaces.ServiceIdentifier<T>,
+            scope: interfaces.BindingScope,
+            type: interfaces.BindingType,
+            value: any,
+            metadataKey: number|string|symbol|undefined,
+            metadataValue: any|undefined) => boolean;
+        setAncestors?: number|boolean;
+    }
     export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
 
     export type Rebind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;

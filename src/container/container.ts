@@ -269,6 +269,65 @@ class Container implements interfaces.Container {
         return tempContainer.get<T>(constructorFunction);
     }
 
+    public onActivation<T>(handler: interfaces.OnActivationHandler<T>, {
+        removeExisting = false,
+        filter = () => true,
+        setAncestors = false
+    }: interfaces.GlobalOnActivationOptions<T> = {}) {
+        const setAncestorLevels =  typeof setAncestors === "number" ? setAncestors : 0;
+        let ancestorLevel = 0;
+        let parentContainer: interfaces.Container|null = this;
+        while (parentContainer) {
+            getBindingDictionary(parentContainer).traverse((sid, bindings) => {
+                bindings.forEach((b) => {
+                    const metadata = b.constraint.metaData;
+                    if (filter(
+                        b.serviceIdentifier,
+                        b.scope,
+                        b.type,
+                        this.getBindingValue(b),
+                        metadata ? metadata.key : undefined,
+                        metadata ? metadata.value : undefined  )
+                    ) {
+                        if (b.onActivation && !removeExisting) {
+                            const existingHandler = b.onActivation;
+                            b.onActivation = (context, injectable) => {
+                                return handler(context, existingHandler(context, injectable) );
+                            };
+                        } else {
+                            b.onActivation = handler;
+                        }
+                    }
+                });
+            });
+            if (setAncestors === true || ancestorLevel < setAncestorLevels) {
+                parentContainer = parentContainer.parent;
+                ancestorLevel++;
+            } else {
+                parentContainer = null;
+            }
+        }
+    }
+    private getBindingValue(binding: interfaces.Binding<any>) {
+        switch (binding.type) {
+            case "ConstantValue":
+                return binding.cache!;
+            case "Constructor":
+                return binding.implementationType!;
+            case "DynamicValue":
+                return binding.dynamicValue!;
+            case "Factory":
+                return binding.factory!;
+            case "Function":
+                return binding.cache!;
+            case "Instance":
+                return binding.implementationType!;
+            case "Provider":
+                return binding.provider!;
+            default:
+                throw new Error("Binding type not set");
+        }
+    }
     private _getContainerModuleHelpersFactory() {
 
         const setModuleId = (bindingToSyntax: any, moduleId: number) => {
