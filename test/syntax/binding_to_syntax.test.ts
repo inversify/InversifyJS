@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
 import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
@@ -7,99 +8,113 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
 
 describe("BindingToSyntax", () => {
+    interface Ninja {}
 
-    it("Should set its own properties correctly", () => {
+    @injectable()
+    class Ninja implements Ninja {}
 
-        interface Ninja {}
-        const ninjaIdentifier = "Ninja";
+    const mockBindingWhenOnUnbindRebind = {} as any;
+    const mockBindingInWhenOnUnbindRebind = {} as any;
+    const mockUnbindRebind = {} as any;
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+    function bind() {
+        const b = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
+        const mockBindingSyntaxFactory: Pick<interfaces.BindingSyntaxFactory<Ninja>,
+        "getBindingWhenOnUnbindRebind"|"getBindingInWhenOnUnbindRebind"|"getUnbindRebind"> = {
+            getBindingInWhenOnUnbindRebind: sinon.stub().returns(mockBindingInWhenOnUnbindRebind),
+            getBindingWhenOnUnbindRebind: sinon.stub().returns(mockBindingWhenOnUnbindRebind),
+            getUnbindRebind: sinon.stub().returns(mockUnbindRebind)
+        };
+        const bindTo: BindingToSyntax<Ninja> = new BindingToSyntax<Ninja>(b, mockBindingSyntaxFactory as any);
+        return {binding: b, bindingToSyntax: bindTo};
+    }
+    it(`Should be able to configure the type of a binding
+ and return BindingWhenOnUnbindRebind or BindingInWhenOnUnbindRebind from the BindingSyntaxFactory`, () => {
 
-        // cast to any to be able to access private props
-        const _bindingToSyntax: any = bindingToSyntax;
-
-        expect(_bindingToSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
-
-    });
-
-    it("Should be able to configure the type of a binding", () => {
-
-        interface Ninja {}
-
-        @injectable()
-        class Ninja implements Ninja {}
-        const ninjaIdentifier = "Ninja";
-
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+        let {binding, bindingToSyntax} = bind();
 
         expect(binding.type).eql(BindingTypeEnum.Invalid);
 
-        bindingToSyntax.to(Ninja);
+        expect(bindingToSyntax.to(Ninja)).equal(mockBindingInWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.Instance);
-        expect(binding.implementationType).not.to.eql(null);
+        expect(binding.implementationType).equal(Ninja);
 
-//        (bindingToSyntax as any)._binding = bindingWithClassAsId;
-//        bindingToSyntax.toSelf();
-//        expect(binding.type).eql(BindingTypeEnum.Instance);
-//        expect(binding.implementationType).not.to.eql(null);
+        ({binding, bindingToSyntax} = bind());
+        expect(bindingToSyntax.toSelf()).equal(mockBindingInWhenOnUnbindRebind);
+        expect(binding.type).eql(BindingTypeEnum.Instance);
+        expect(binding.implementationType).equal(Ninja);
 
-        (bindingToSyntax as any)._binding = binding;
-        bindingToSyntax.toConstantValue(new Ninja());
+        ({binding, bindingToSyntax} = bind());
+        const constantNinja = new Ninja();
+        expect(bindingToSyntax.toConstantValue(constantNinja)).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.ConstantValue);
-        expect(binding.cache instanceof Ninja).eql(true);
+        expect(binding.cache).equal(constantNinja);
 
-        bindingToSyntax.toDynamicValue((context: interfaces.Context) => new Ninja());
+        ({binding, bindingToSyntax} = bind());
+        const dynamicValue = (context: interfaces.Context) => new Ninja();
+        expect(bindingToSyntax.toDynamicValue(dynamicValue)).equal(mockBindingInWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.DynamicValue);
-        expect(typeof binding.dynamicValue).eql("function");
+        expect(binding.dynamicValue).equal(dynamicValue);
 
-        const dynamicValueFactory: any = binding.dynamicValue;
-        expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
-
-        bindingToSyntax.toConstructor<Ninja>(Ninja);
+        ({binding, bindingToSyntax} = bind());
+        expect(bindingToSyntax.toConstructor<Ninja>(Ninja)).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.Constructor);
-        expect(binding.implementationType).not.to.eql(null);
+        expect(binding.implementationType).equal(Ninja);
 
-        bindingToSyntax.toFactory<Ninja>((context: interfaces.Context) =>
-            () =>
-                new Ninja());
-
+        ({binding, bindingToSyntax} = bind());
+        const factory = (context: interfaces.Context) => () => new Ninja();
+        expect(bindingToSyntax.toFactory<Ninja>(factory)).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.Factory);
-        expect(binding.factory).not.to.eql(null);
+        expect(binding.factory).equal(factory);
 
+        ({binding, bindingToSyntax} = bind());
         const f = () => "test";
-        bindingToSyntax.toFunction(f);
+        expect(bindingToSyntax.toFunction(f)).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.Function);
         expect(binding.cache === f).eql(true);
 
-        bindingToSyntax.toAutoFactory<Ninja>(ninjaIdentifier);
-
+        ({binding, bindingToSyntax} = bind());
+        expect(bindingToSyntax.toAutoFactory<Ninja>(Ninja)).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.Factory);
-        expect(binding.factory).not.to.eql(null);
 
-        bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) =>
-            () =>
-                new Promise<Ninja>((resolve) => {
-                    resolve(new Ninja());
-                }));
+        const mockNinja = {};
+        let mockGet = sinon.fake.returns(mockNinja);
+        const mockContext = {
+            container: {
+                get: mockGet
+            }
+        };
+        const fromAutoFactory = binding.factory!(mockContext as any)();
+        sinon.assert.calledWithExactly(mockGet, Ninja);
+        expect(fromAutoFactory).equal(mockNinja);
 
+        ({binding, bindingToSyntax} = bind());
+        const provider = (context: interfaces.Context) =>
+        () =>
+            new Promise<Ninja>((resolve) => {
+                resolve(new Ninja());
+            });
+        expect(bindingToSyntax.toProvider<Ninja>(provider)).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.type).eql(BindingTypeEnum.Provider);
-        expect(binding.provider).not.to.eql(null);
+        expect(binding.provider).equal(provider);
 
+        ({binding, bindingToSyntax} = bind());
+        const serviceId = "ServiceId";
+        expect(bindingToSyntax.toService(serviceId)).equal(mockUnbindRebind);
+        const mockService = {};
+        mockGet = sinon.fake.returns(mockService);
+        mockContext.container.get = mockGet;
+        const fromService = binding.dynamicValue!(mockContext as any);
+        sinon.assert.calledWithExactly(mockGet, "ServiceId");
+        expect(fromService).equal(mockService);
     });
 
     it("Should prevent invalid function bindings", () => {
 
-        interface Ninja {}
-
-        @injectable()
-        class Ninja implements Ninja {}
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+        const bindingToSyntax = new BindingToSyntax<Ninja>(binding, undefined as any);
 
         const f = function () {
             bindingToSyntax.toFunction(5);

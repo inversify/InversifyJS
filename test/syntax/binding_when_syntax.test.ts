@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import * as sinon from "sinon";
 import { Binding } from "../../src/bindings/binding";
 import { BindingScopeEnum, TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
@@ -11,32 +12,20 @@ import { BindingWhenSyntax } from "../../src/syntax/binding_when_syntax";
 import { typeConstraint } from "../../src/syntax/constraint_helpers";
 
 describe("BindingWhenSyntax", () => {
-
-    it("Should set its own properties correctly", () => {
-
-        interface Ninja {}
-        const ninjaIdentifier = "Ninja";
-
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
-
-        // cast to any to be able to access private props
-        const _bindingWhenSyntax: any = bindingWhenSyntax;
-
-        expect(_bindingWhenSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
-
-    });
-
+    const mockBindingOnUnbindRebind = {} as any;
+    const mockBindingSyntaxFactory: Pick<interfaces.BindingSyntaxFactory<any>, "getBindingOnUnbindRebind"> = {
+        getBindingOnUnbindRebind: sinon.stub().returns(mockBindingOnUnbindRebind)
+    };
     it("Should be able to configure custom constraint of a binding", () => {
 
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
+        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding, mockBindingSyntaxFactory as any);
 
-        bindingWhenSyntax.when((theRequest: interfaces.Request) =>
-            theRequest.target.name.equals("ninja"));
+        expect(bindingWhenSyntax.when((theRequest: interfaces.Request) =>
+            theRequest.target.name.equals("ninja"))).equal(mockBindingOnUnbindRebind);
 
         const target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier);
         const context = new Context(new Container());
@@ -51,11 +40,11 @@ describe("BindingWhenSyntax", () => {
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
+        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding, mockBindingSyntaxFactory as any);
 
         const named = "primary";
 
-        bindingWhenSyntax.whenTargetNamed(named);
+        expect(bindingWhenSyntax.whenTargetNamed(named)).equals(mockBindingOnUnbindRebind);
         expect(binding.constraint).not.to.eql(null);
 
         const context = new Context(new Container());
@@ -76,9 +65,9 @@ describe("BindingWhenSyntax", () => {
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
+        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding, mockBindingSyntaxFactory as any);
 
-        bindingWhenSyntax.whenTargetTagged("canSwim", true);
+        expect(bindingWhenSyntax.whenTargetTagged("canSwim", true)).equal(mockBindingOnUnbindRebind);
         expect(binding.constraint).not.to.eql(null);
 
         const context = new Context(new Container());
@@ -134,16 +123,16 @@ describe("BindingWhenSyntax", () => {
         const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
 
         const katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding, mockBindingSyntaxFactory as any);
         const katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
         const katanaRequest = new Request("Weapon", context, samuraiRequest, katanaBinding, katanaTarget);
 
         const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding, mockBindingSyntaxFactory as any);
         const shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
         const shurikenRequest = new Request("Weapon", context, ninjaRequest, shurikenBinding, shurikenTarget);
 
-        katanaBindingWhenSyntax.whenInjectedInto(Samurai);
+        expect(katanaBindingWhenSyntax.whenInjectedInto(Samurai)).equals(mockBindingOnUnbindRebind);
         expect(katanaBinding.constraint(katanaRequest)).eql(true);
         expect(katanaBinding.constraint(shurikenRequest)).eql(false);
 
@@ -220,16 +209,16 @@ describe("BindingWhenSyntax", () => {
         const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
 
         const katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding, mockBindingSyntaxFactory as any);
         const katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
         const katanaRequest = new Request("Weapon", context, samuraiRequest, katanaBinding, katanaTarget);
 
         const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding, mockBindingSyntaxFactory as any);
         const shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
         const shurikenRequest = new Request("Weapon", context, ninjaRequest, shurikenBinding, shurikenTarget);
 
-        katanaBindingWhenSyntax.whenParentNamed("chinese");
+        expect(katanaBindingWhenSyntax.whenParentNamed("chinese")).equal(mockBindingOnUnbindRebind);
         shurikenBindingWhenSyntax.whenParentNamed("chinese");
         expect(katanaBinding.constraint(katanaRequest)).eql(false);
         expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
@@ -283,16 +272,16 @@ describe("BindingWhenSyntax", () => {
         const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
 
         const katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding, mockBindingSyntaxFactory as any);
         const katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
         const katanaRequest = new Request("Weapon", context, samuraiRequest, katanaBinding, katanaTarget);
 
         const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding, mockBindingSyntaxFactory as any);
         const shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
         const shurikenRequest = new Request("Weapon", context, ninjaRequest, shurikenBinding, shurikenTarget);
 
-        katanaBindingWhenSyntax.whenParentTagged("sneaky", true);
+        expect(katanaBindingWhenSyntax.whenParentTagged("sneaky", true)).equal(mockBindingOnUnbindRebind);
         shurikenBindingWhenSyntax.whenParentTagged("sneaky", true);
         expect(katanaBinding.constraint(katanaRequest)).eql(false);
         expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
@@ -394,7 +383,7 @@ describe("BindingWhenSyntax", () => {
         // Katana
         const katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         katanaBinding.implementationType = Katana;
-        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding, mockBindingSyntaxFactory as any);
         const katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
         const ironKatanaRequest = new Request("Weapon", context, samuraiMasterRequest, katanaBinding, katanaTarget);
         const woodKatanaRequest = new Request("Weapon", context, samuraiStudentRequest, katanaBinding, katanaTarget);
@@ -402,14 +391,14 @@ describe("BindingWhenSyntax", () => {
         // Shuriken
         const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
         shurikenBinding.implementationType = Shuriken;
-        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+        const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding, mockBindingSyntaxFactory as any);
         const shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
         const ironShurikenRequest = new Request("Weapon", context, ninjaMasterRequest, shurikenBinding, shurikenTarget);
         const woodShurikenRequest = new Request("Weapon", context, ninjaStudentRequest, shurikenBinding, shurikenTarget);
 
         it("Should be able to apply a type constraint to some of its ancestors", () => {
 
-            shurikenBindingWhenSyntax.whenAnyAncestorIs(NinjaMaster);
+            expect(shurikenBindingWhenSyntax.whenAnyAncestorIs(NinjaMaster)).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
 
@@ -429,7 +418,7 @@ describe("BindingWhenSyntax", () => {
 
         it("Should be able to apply a type constraint to none of its ancestors", () => {
 
-            shurikenBindingWhenSyntax.whenNoAncestorIs(NinjaMaster);
+            expect(shurikenBindingWhenSyntax.whenNoAncestorIs(NinjaMaster)).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
 
@@ -449,7 +438,7 @@ describe("BindingWhenSyntax", () => {
 
         it("Should be able to apply a named constraint to some of its ancestors", () => {
 
-            shurikenBindingWhenSyntax.whenAnyAncestorNamed("chinese");
+            expect(shurikenBindingWhenSyntax.whenAnyAncestorNamed("chinese")).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
 
@@ -469,7 +458,7 @@ describe("BindingWhenSyntax", () => {
 
         it("Should be able to apply a named constraint to none of its ancestors", () => {
 
-            shurikenBindingWhenSyntax.whenNoAncestorNamed("chinese");
+            expect(shurikenBindingWhenSyntax.whenNoAncestorNamed("chinese")).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
 
@@ -489,7 +478,7 @@ describe("BindingWhenSyntax", () => {
 
         it("Should be able to apply a tagged constraint to some of its ancestors", () => {
 
-            shurikenBindingWhenSyntax.whenAnyAncestorTagged("sneaky", true);
+            expect(shurikenBindingWhenSyntax.whenAnyAncestorTagged("sneaky", true)).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
 
@@ -509,7 +498,7 @@ describe("BindingWhenSyntax", () => {
 
         it("Should be able to apply a tagged constraint to none of its ancestors", () => {
 
-            shurikenBindingWhenSyntax.whenNoAncestorTagged("sneaky", true);
+            expect(shurikenBindingWhenSyntax.whenNoAncestorTagged("sneaky", true)).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
 
@@ -532,7 +521,7 @@ describe("BindingWhenSyntax", () => {
             const anyAncestorIsNinjaMasterConstraint = typeConstraint(NinjaMaster);
             const anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
 
-            shurikenBindingWhenSyntax.whenAnyAncestorMatches(anyAncestorIsNinjaMasterConstraint);
+            expect(shurikenBindingWhenSyntax.whenAnyAncestorMatches(anyAncestorIsNinjaMasterConstraint)).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
 
@@ -558,7 +547,7 @@ describe("BindingWhenSyntax", () => {
             const anyAncestorIsNinjaMasterConstraint = typeConstraint(NinjaMaster);
             const anyAncestorIsNinjaStudentConstraint = typeConstraint(NinjaStudent);
 
-            shurikenBindingWhenSyntax.whenNoAncestorMatches(anyAncestorIsNinjaMasterConstraint);
+            expect(shurikenBindingWhenSyntax.whenNoAncestorMatches(anyAncestorIsNinjaMasterConstraint)).equal(mockBindingOnUnbindRebind);
             expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
             expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
 

@@ -1,30 +1,31 @@
 import { BindingScopeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
-import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 
 class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
 
     private _binding: interfaces.Binding<T>;
+    private _bindingSyntaxFactory: interfaces.BindingSyntaxFactory<T>;
 
-    public constructor(binding: interfaces.Binding<T>) {
+    public constructor(binding: interfaces.Binding<T>, bindingSyntaxFactory: interfaces.BindingSyntaxFactory<T>) {
         this._binding = binding;
+        this._bindingSyntaxFactory = bindingSyntaxFactory;
     }
 
-    public inRequestScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScopeEnum.Request;
-        return new BindingWhenOnSyntax<T>(this._binding);
+    public inRequestScope(): interfaces.BindingWhenOnUnbindRebindSyntax<T> {
+        return this.setScope(BindingScopeEnum.Request);
     }
 
-    public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+    public inSingletonScope(): interfaces.BindingWhenOnUnbindRebindSyntax<T> {
+        return this.setScope(BindingScopeEnum.Singleton);
     }
 
-    public inTransientScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScopeEnum.Transient;
-        return new BindingWhenOnSyntax<T>(this._binding);
+    public inTransientScope(): interfaces.BindingWhenOnUnbindRebindSyntax<T> {
+        return this.setScope(BindingScopeEnum.Transient);
     }
-
+    private setScope(scope: interfaces.BindingScope): interfaces.BindingWhenOnUnbindRebindSyntax<T> {
+        this._binding.scope = scope;
+        return this._bindingSyntaxFactory.getBindingWhenOnUnbindRebind();
+    }
 }
 
 export { BindingInSyntax };

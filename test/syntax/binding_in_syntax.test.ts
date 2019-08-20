@@ -1,42 +1,39 @@
 import { expect } from "chai";
+import * as sinon from "sinon";
 import { Binding } from "../../src/bindings/binding";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
+import { interfaces } from "../../src/inversify";
 import { BindingInSyntax } from "../../src/syntax/binding_in_syntax";
 
 describe("BindingInSyntax", () => {
 
-    it("Should set its own properties correctly", () => {
+    it("Should be able to configure the scope of a binding and return BindingWhenOnUnbindRebind from the BindingSyntaxFactory", () => {
 
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
-        // cast to any to be able to access private props
-        const _bindingInSyntax: any = bindingInSyntax;
+        const mockBindingWhenOnUnbindRebind = {} as any;
+        const mockBindingSyntaxFactory: Pick<interfaces.BindingSyntaxFactory<Ninja>, "getBindingWhenOnUnbindRebind"> = {
+            getBindingWhenOnUnbindRebind: sinon.stub().returns(mockBindingWhenOnUnbindRebind)
+        };
 
-        expect(_bindingInSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
+        const bindingInSyntax = new BindingInSyntax<Ninja>(binding, mockBindingSyntaxFactory as any);
 
-    });
-
-    it("Should be able to configure the scope of a binding", () => {
-
-        interface Ninja {}
-        const ninjaIdentifier = "Ninja";
-
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
-
-        // default scope is transient
+        //scope from constructor ( default scope)
         expect(binding.scope).eql(BindingScopeEnum.Transient);
 
         // singleton scope
-        bindingInSyntax.inSingletonScope();
+        expect(bindingInSyntax.inSingletonScope()).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.scope).eql(BindingScopeEnum.Singleton);
 
+        //request scope
+        expect(bindingInSyntax.inRequestScope()).equal(mockBindingWhenOnUnbindRebind);
+        expect(binding.scope).eql(BindingScopeEnum.Request);
+
         // set transient scope explicitly
-        bindingInSyntax.inTransientScope();
+        expect(bindingInSyntax.inTransientScope()).equal(mockBindingWhenOnUnbindRebind);
         expect(binding.scope).eql(BindingScopeEnum.Transient);
 
     });

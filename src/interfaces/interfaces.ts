@@ -234,50 +234,66 @@ namespace interfaces {
         clone(): Lookup<T>;
         traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;
     }
+    export interface BindingSyntaxFactory<T> {
+        getBindingInWhenOnUnbindRebind(): BindingInWhenOnUnbindRebindSyntax<T>;
+        getBindingWhenOnUnbindRebind(): BindingWhenOnUnbindRebindSyntax<T>;
+        getBindingWhenUnbindRebind(): BindingWhenUnbindRebindSyntax<T>;
+        getBindingOnUnbindRebind(): BindingOnUnbindRebindSyntax<T>;
+        getBindingTo(): BindingToSyntax<T>;
+        getBindingIn(): BindingInSyntax<T>;
+        getBindingOn(): BindingOnSyntax<T>;
+        getBindingWhen(): BindingWhenSyntax<T>;
+        getUnbindRebind(): BindingUnbindRebindSyntax<T>;
+    }
+
+    export interface BindingUnbindRebindSyntax<T> {
+        unbind(): void;
+        rebind<T2 = T>(): BindingToSyntax<T2>;
+    }
 
     export interface BindingOnSyntax<T> {
-        onActivation(fn: (context: Context, injectable: T) => T): BindingWhenSyntax<T>;
+        onActivation(fn: (context: Context, injectable: T) => T): BindingWhenUnbindRebindSyntax<T>;
     }
 
     export interface BindingWhenSyntax<T> {
-        when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
-        whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
-        whenTargetIsDefault(): BindingOnSyntax<T>;
-        whenTargetTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
-        whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
-        whenParentTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenAnyAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
-        whenNoAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
-        whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-        whenAnyAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-        whenNoAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
-        whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+        when(constraint: (request: Request) => boolean): BindingOnUnbindRebindSyntax<T>;
+        whenTargetNamed(name: string | number | symbol): BindingOnUnbindRebindSyntax<T>;
+        whenTargetIsDefault(): BindingOnUnbindRebindSyntax<T>;
+        whenTargetTagged(tag: string | number | symbol, value: any): BindingOnUnbindRebindSyntax<T>;
+        whenInjectedInto(parent: (Function | string)): BindingOnUnbindRebindSyntax<T>;
+        whenParentNamed(name: string | number | symbol): BindingOnUnbindRebindSyntax<T>;
+        whenParentTagged(tag: string | number | symbol, value: any): BindingOnUnbindRebindSyntax<T>;
+        whenAnyAncestorIs(ancestor: (Function | string)): BindingOnUnbindRebindSyntax<T>;
+        whenNoAncestorIs(ancestor: (Function | string)): BindingOnUnbindRebindSyntax<T>;
+        whenAnyAncestorNamed(name: string | number | symbol): BindingOnUnbindRebindSyntax<T>;
+        whenAnyAncestorTagged(tag: string | number | symbol, value: any): BindingOnUnbindRebindSyntax<T>;
+        whenNoAncestorNamed(name: string | number | symbol): BindingOnUnbindRebindSyntax<T>;
+        whenNoAncestorTagged(tag: string | number | symbol, value: any): BindingOnUnbindRebindSyntax<T>;
+        whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnUnbindRebindSyntax<T>;
+        whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnUnbindRebindSyntax<T>;
     }
-
-    export interface BindingWhenOnSyntax<T> extends BindingWhenSyntax<T>, BindingOnSyntax<T> { }
-
     export interface BindingInSyntax<T> {
-        inSingletonScope(): BindingWhenOnSyntax<T>;
-        inTransientScope(): BindingWhenOnSyntax<T>;
-        inRequestScope(): BindingWhenOnSyntax<T>;
+        inSingletonScope(): BindingWhenOnUnbindRebindSyntax<T>;
+        inTransientScope(): BindingWhenOnUnbindRebindSyntax<T>;
+        inRequestScope(): BindingWhenOnUnbindRebindSyntax<T>;
     }
-
-    export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
+    export interface BindingInWhenOnUnbindRebindSyntax<T> extends BindingInSyntax<T>, BindingWhenOnUnbindRebindSyntax<T> { }
+    export interface BindingWhenOnUnbindRebindSyntax<T> extends
+        BindingWhenUnbindRebindSyntax<T>, BindingOnUnbindRebindSyntax<T> { }
+    export interface BindingWhenUnbindRebindSyntax<T> extends BindingWhenSyntax<T>, BindingUnbindRebindSyntax<T> {}
+    export interface BindingOnUnbindRebindSyntax<T> extends BindingOnSyntax<T>, BindingUnbindRebindSyntax<T> {}
 
     export interface BindingToSyntax<T> {
-        to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
-        toSelf(): BindingInWhenOnSyntax<T>;
-        toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
-        toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-        toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
-        toFunction(func: T): BindingWhenOnSyntax<T>;
-        toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
-        toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
-        toService(service: ServiceIdentifier<T>): void;
+        to(constructor: new (...args: any[]) => T): BindingInWhenOnUnbindRebindSyntax<T>;
+        toSelf(): BindingInWhenOnUnbindRebindSyntax<T>;
+        toConstantValue(value: T): BindingWhenOnUnbindRebindSyntax<T>;
+        toDynamicValue(func: (context: Context) => T): BindingInWhenOnUnbindRebindSyntax<T>;
+        toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnUnbindRebindSyntax<T>;
+        toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnUnbindRebindSyntax<T>;
+        toFunction(func: T): BindingWhenOnUnbindRebindSyntax<T>;
+        toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnUnbindRebindSyntax<T>;
+        toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnUnbindRebindSyntax<T>;
+        toService(service: ServiceIdentifier<T>): BindingUnbindRebindSyntax<T>;
     }
 
     export interface ConstraintFunction extends Function {

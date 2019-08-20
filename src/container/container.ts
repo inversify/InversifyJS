@@ -6,7 +6,7 @@ import { interfaces } from "../interfaces/interfaces";
 import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
-import { BindingToSyntax } from "../syntax/binding_to_syntax";
+import { BindingSyntaxFactory } from "../syntax/bindingSyntaxFactory";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
@@ -150,7 +150,12 @@ class Container implements interfaces.Container {
         const scope = this.options.defaultScope || BindingScopeEnum.Transient;
         const binding = new Binding<T>(serviceIdentifier, scope);
         this._bindingDictionary.add(serviceIdentifier, binding);
-        return new BindingToSyntax<T>(binding);
+        const bindingSyntaxFactory = new BindingSyntaxFactory(
+            binding,
+            () => this._bindingDictionary.removeByCondition((b) => b === binding),
+            this.bind.bind(this)
+            );
+        return bindingSyntaxFactory.getBindingTo();
     }
 
     public rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
