@@ -109,7 +109,8 @@ class Container implements interfaces.Container {
                 containerModuleHelpers.bindFunction,
                 containerModuleHelpers.unbindFunction,
                 containerModuleHelpers.isboundFunction,
-                containerModuleHelpers.rebindFunction
+                containerModuleHelpers.rebindFunction,
+                containerModuleHelpers.onActivationFunction
             );
 
         }
@@ -128,7 +129,8 @@ class Container implements interfaces.Container {
                 containerModuleHelpers.bindFunction,
                 containerModuleHelpers.unbindFunction,
                 containerModuleHelpers.isboundFunction,
-                containerModuleHelpers.rebindFunction
+                containerModuleHelpers.rebindFunction,
+                containerModuleHelpers.onActivationFunction
             );
 
         }
@@ -472,6 +474,7 @@ class Container implements interfaces.Container {
         return (mId: number) => ({
             bindFunction: getBindFunction(mId),
             isboundFunction: getIsboundFunction(mId),
+            onActivationFunction: this.onActivation.bind(this),
             rebindFunction: getRebindFunction(mId),
             unbindFunction: getUnbindFunction(mId)
         });

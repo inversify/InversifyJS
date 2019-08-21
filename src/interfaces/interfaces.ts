@@ -227,14 +227,16 @@ namespace interfaces {
         bind: interfaces.Bind,
         unbind: interfaces.Unbind,
         isBound: interfaces.IsBound,
-        rebind: interfaces.Rebind
+        rebind: interfaces.Rebind,
+        onActivation: interfaces.Container["onActivation"]
     ) => void;
 
     export type AsyncContainerModuleCallBack = (
         bind: interfaces.Bind,
         unbind: interfaces.Unbind,
         isBound: interfaces.IsBound,
-        rebind: interfaces.Rebind
+        rebind: interfaces.Rebind,
+        onActivation: interfaces.Container["onActivation"]
     ) => Promise<void>;
 
     export interface ContainerSnapshot {
