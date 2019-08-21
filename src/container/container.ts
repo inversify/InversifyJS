@@ -21,6 +21,7 @@ class Container implements interfaces.Container {
     public readonly options: interfaces.ContainerOptions;
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
+    private _activations: Map<interfaces.ServiceIdentifier<any>, interfaces.BindingActivation<any>[]>;
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
@@ -91,6 +92,7 @@ class Container implements interfaces.Container {
 
         this.id = id();
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
+        this._activations = new Map<interfaces.ServiceIdentifier<any>, interfaces.BindingActivation<any>[]>();
         this._snapshots = [];
         this._middleware = null;
         this.parent = null;
@@ -233,37 +235,14 @@ class Container implements interfaces.Container {
     }
 
     public onActivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onActivation: interfaces.BindingActivation<T>) {
-        const bound = this._bindingDictionary.get(serviceIdentifier);
+        let list = this._activations.get(serviceIdentifier);
 
-        if (bound) {
-            for (const binding of bound) {
-                const original = binding.onActivation;
-
-                if (original) {
-                    binding.onActivation = (context, injectable) => {
-                        const modified = original(context, injectable);
-
-                        if (modified instanceof Promise) {
-                            return modified.then((resolved) => onActivation(context, resolved));
-                        }
-
-                        return onActivation(context, modified);
-                    };
-                } else {
-                    binding.onActivation = onActivation;
-                }
-            }
-
-            return;
+        if (!list) {
+            list = [];
+            this._activations.set(serviceIdentifier, list);
         }
 
-        if (!bound && this.parent) {
-            this.parent.onActivation(serviceIdentifier, onActivation);
-
-            return;
-        }
-
-        throw new Error(`${ERROR_MSGS.NOT_REGISTERED}`);
+        list.push(onActivation);
     }
 
     // Allows to check if there are bindings available for serviceIdentifier

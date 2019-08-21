@@ -95,6 +95,7 @@ namespace interfaces {
         container: Container;
         plan: Plan;
         currentRequest: Request;
+        onActivation<T>(request: Request, binding: interfaces.Binding<T>, previous: T): any;
         addPlan(plan: Plan): void;
         setCurrentRequest(request: Request): void;
     }

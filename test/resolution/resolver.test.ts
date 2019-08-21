@@ -686,6 +686,57 @@ describe("Resolve", () => {
       expect(result).eql("bumbaz");
   });
 
+  it("Should allow onActivation (sync) of parent (async) through autobind tree", async () => {
+      class Parent {
+      }
+
+      @injectable()
+      class Child {
+          public parent: Parent;
+
+          public constructor(@inject(Parent)parent: Parent) {
+              this.parent = parent;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent()));
+
+      const constructed = new Parent();
+
+      container.onActivation(Parent, () => constructed);
+
+      const result = await container.getAsync(Child);
+
+      expect(result.parent).eql(constructed);
+  });
+
+  it("Should allow onActivation (sync) of child (async) through autobind tree", async () => {
+      class Parent {
+
+      }
+
+      @injectable()
+      class Child {
+          public parent: Parent;
+
+          public constructor(@inject(Parent)parent: Parent) {
+              this.parent = parent;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent()));
+
+      const constructed = new Child(new Parent());
+
+      container.onActivation(Child, () => constructed);
+
+      const result = await container.getAsync(Child);
+
+      expect(result).eql(constructed);
+  });
+
   it("Should wait until onActivation promise resolves before returning object", async () => {
       let resolved = false;
 

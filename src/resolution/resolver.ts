@@ -65,7 +65,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         }
 
         const preActivation = convertBindingToInstance(requestScope, request);
-        const postActivation = onActivation(binding, request.parentContext, preActivation);
+        const postActivation = request.parentContext.onActivation(request, binding, preActivation);
 
         afterResult(binding, postActivation, requestScope);
 
@@ -140,25 +140,6 @@ function resolveAndCheckInstance(
     }
 
     return resolveInstance(binding, constr, childRequests, resolveRequest);
-}
-
-function onActivation(binding: interfaces.Binding<any>, context: interfaces.Context, resolved: any): any {
-    if (resolved instanceof Lazy) {
-        return new Lazy(binding, () => resolved.resolve().then((unlazied) => onActivation(binding, context, unlazied)));
-    }
-
-    let result = resolved;
-
-    // use activation handler if available
-    if (typeof binding.onActivation === "function") {
-        result = binding.onActivation(context, result);
-    }
-
-    if (result instanceof Promise) {
-        return new Lazy(binding, () => result);
-    }
-
-    return result;
 }
 
 function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: interfaces.Request): any {
