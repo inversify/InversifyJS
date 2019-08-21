@@ -242,6 +242,7 @@ namespace interfaces {
 
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
+        activations: Lookup<BindingActivation<any>>;
         middleware: Next | null;
     }
 

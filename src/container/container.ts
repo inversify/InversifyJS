@@ -21,7 +21,7 @@ class Container implements interfaces.Container {
     public readonly options: interfaces.ContainerOptions;
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
-    private _activations: Map<interfaces.ServiceIdentifier<any>, interfaces.BindingActivation<any>[]>;
+    private _activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
@@ -92,7 +92,7 @@ class Container implements interfaces.Container {
 
         this.id = id();
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
-        this._activations = new Map<interfaces.ServiceIdentifier<any>, interfaces.BindingActivation<any>[]>();
+        this._activations = new Lookup<interfaces.BindingActivation<any>>();
         this._snapshots = [];
         this._middleware = null;
         this.parent = null;
@@ -235,14 +235,7 @@ class Container implements interfaces.Container {
     }
 
     public onActivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onActivation: interfaces.BindingActivation<T>) {
-        let list = this._activations.get(serviceIdentifier);
-
-        if (!list) {
-            list = [];
-            this._activations.set(serviceIdentifier, list);
-        }
-
-        list.push(onActivation);
+        this._activations.add(serviceIdentifier, onActivation);
     }
 
     // Allows to check if there are bindings available for serviceIdentifier
@@ -278,7 +271,7 @@ class Container implements interfaces.Container {
     }
 
     public snapshot(): void {
-        this._snapshots.push(ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware));
+        this._snapshots.push(ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware, this._activations.clone()));
     }
 
     public restore(): void {
@@ -287,6 +280,7 @@ class Container implements interfaces.Container {
             throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
         }
         this._bindingDictionary = snapshot.bindings;
+        this._activations = snapshot.activations;
         this._middleware = snapshot.middleware;
     }
 
@@ -538,7 +532,6 @@ class Container implements interfaces.Container {
 
         };
     }
-
 }
 
 export { Container };

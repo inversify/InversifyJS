@@ -201,9 +201,11 @@ async function resolveLazy(
     let value;
 
     if (request.isLazy()) {
-        lazies[request.id] = await binding.asyncValue.resolve();
+        value = await binding.asyncValue.resolve();
 
-        value = lazies[request.id];
+        value = await request.parentContext.onActivation(request, binding, value);
+
+        lazies[request.id] = value;
     } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
         value = resolveAndCheckInstance(
           binding,

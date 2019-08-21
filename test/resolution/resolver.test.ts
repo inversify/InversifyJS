@@ -312,7 +312,7 @@ describe("Resolve", () => {
       const object1 = await container.getAsync("a");
       const object2 = await container.getAsync("a");
 
-      expect(object1).eql(object2);
+      expect(object1).equals(object2);
   });
 
   it("Should return different values if default singleton scope is overriden by bind", async () => {
@@ -322,7 +322,7 @@ describe("Resolve", () => {
       const object1 = await container.getAsync("a");
       const object2 = await container.getAsync("a");
 
-      expect(object1).not.eql(object2);
+      expect(object1).not.equals(object2);
   });
 
   it("Should only call parent async singleton once within child containers", async () => {
@@ -703,12 +703,14 @@ describe("Resolve", () => {
       container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent()));
 
       const constructed = new Parent();
+      // @ts-ignore
+      constructed.foo = "bar";
 
       container.onActivation(Parent, () => constructed);
 
       const result = await container.getAsync(Child);
 
-      expect(result.parent).eql(constructed);
+      expect(result.parent).equals(constructed);
   });
 
   it("Should allow onActivation (sync) of child (async) through autobind tree", async () => {
@@ -734,7 +736,7 @@ describe("Resolve", () => {
 
       const result = await container.getAsync(Child);
 
-      expect(result).eql(constructed);
+      expect(result).equals(constructed);
   });
 
   it("Should allow onActivation (async) of parent (async) through autobind tree", async () => {
@@ -759,7 +761,7 @@ describe("Resolve", () => {
 
       const result = await container.getAsync(Child);
 
-      expect(result.parent).eql(constructed);
+      expect(result.parent).equals(constructed);
   });
 
   it("Should allow onActivation (async) of child (async) through autobind tree", async () => {
@@ -785,7 +787,133 @@ describe("Resolve", () => {
 
       const result = await container.getAsync(Child);
 
-      expect(result).eql(constructed);
+      expect(result).equals(constructed);
+  });
+
+  it("Should allow onActivation of child on parent container", async () => {
+      class Parent {
+
+      }
+
+      @injectable()
+      class Child {
+          public parent: Parent;
+
+          public constructor(@inject(Parent)parent: Parent) {
+              this.parent = parent;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent()));
+
+      const constructed = new Child(new Parent());
+
+      container.onActivation(Child, () => Promise.resolve(constructed));
+
+      const child = container.createChild();
+
+      const result = await child.getAsync(Child);
+
+      expect(result).equals(constructed);
+  });
+
+  it("Should allow onActivation of parent on parent container", async () => {
+      class Parent {
+
+      }
+
+      @injectable()
+      class Child {
+          public parent: Parent;
+
+          public constructor(@inject(Parent)parent: Parent) {
+              this.parent = parent;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent()));
+
+      const constructed = new Parent();
+
+      container.onActivation(Parent, () => Promise.resolve(constructed));
+
+      const child = container.createChild();
+
+      const result = await child.getAsync(Child);
+
+      expect(result.parent).equals(constructed);
+  });
+
+  it("Should allow onActivation of child from child container", async () => {
+      class Parent {
+
+      }
+
+      @injectable()
+      class Child {
+          public parent: Parent;
+
+          public constructor(@inject(Parent)parent: Parent) {
+              this.parent = parent;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent()));
+
+      const constructed = new Child(new Parent());
+
+      const child = container.createChild();
+      child.onActivation(Child, () => Promise.resolve(constructed));
+
+      const result = await child.getAsync(Child);
+
+      expect(result).equals(constructed);
+  });
+
+  it("Should priortize onActivation of parent container over child container", async () => {
+      const container = new Container();
+      container.onActivation("foo", (context, previous) => `${previous}baz`);
+      container.onActivation("foo", (context, previous) => `${previous}1`);
+
+      const child = container.createChild();
+
+      child.bind<string>("foo").toConstantValue("bar").onActivation((c, previous) => `${previous}bah`);
+      child.onActivation("foo", (context, previous) => `${previous}bum`);
+      child.onActivation("foo", (context, previous) => `${previous}2`);
+
+      const result = child.get("foo");
+
+      expect(result).equals("barbahbaz1bum2");
+  });
+
+  it("Should not allow onActivation of parent on child container", async () => {
+      class Parent {
+
+      }
+
+      @injectable()
+      class Child {
+          public parent: Parent;
+
+          public constructor(@inject(Parent)parent: Parent) {
+              this.parent = parent;
+          }
+      }
+
+      const container = new Container({autoBindInjectable: true});
+      container.bind<Parent>(Parent).toAsyncValue(() => Promise.resolve(new Parent())).inSingletonScope();
+
+      const constructed = new Parent();
+
+      const child = container.createChild();
+      child.onActivation(Parent, () => Promise.resolve(constructed));
+
+      const result = await child.getAsync(Child);
+
+      expect(result.parent).not.equals(constructed);
   });
 
   it("Should wait until onActivation promise resolves before returning object", async () => {
@@ -880,7 +1008,7 @@ describe("Resolve", () => {
       const object1 = await container.getAsync<MixedDependency>(MixedDependency);
       const object2 = await container.getAsync<MixedDependency>(MixedDependency);
 
-      expect(object1).eql(object2);
+      expect(object1).equals(object2);
   });
 
   it("Should support shared async singletons when using autoBindInjectable", async () => {
@@ -909,7 +1037,7 @@ describe("Resolve", () => {
 
       const object1 = await container.getAsync<MixedDependency>(MixedDependency);
 
-      expect(async).eql(object1.asyncValue);
+      expect(async).equals(object1.asyncValue);
   });
 
   it("Should support async dependencies in multiple layers", async () => {

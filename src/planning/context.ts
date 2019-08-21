@@ -1,6 +1,7 @@
 import { interfaces } from "../interfaces/interfaces";
 import { Lazy } from "../resolution/lazy";
 import { id } from "../utils/id";
+import { getBindingDictionary } from "./planner";
 
 class Context implements interfaces.Context {
 
@@ -35,10 +36,24 @@ class Context implements interfaces.Context {
       result = binding.onActivation(this, result);
     }
 
-    return this.activationLoop(binding, request.serviceIdentifier, result);
+    const containers = [this.container];
+
+    let parent = this.container.parent;
+
+    while (parent) {
+      containers.unshift(parent);
+
+      parent = parent.parent;
+    }
+
+    const iter = containers.values();
+
+    return this.activationLoop(iter.next().value, iter, binding, request.serviceIdentifier, result);
   }
 
   private activationLoop<T>(
+    container: interfaces.Container,
+    containerIterator: IterableIterator<interfaces.Container>,
     binding: interfaces.Binding<T>,
     identifier: interfaces.ServiceIdentifier<T>,
     previous: T | Promise<T>,
@@ -48,26 +63,22 @@ class Context implements interfaces.Context {
       return new Lazy(binding, async () => {
         const resolved = await previous;
 
-        return this.activationLoop(binding, identifier, resolved);
+        return this.activationLoop(container, containerIterator, binding, identifier, resolved);
       });
     }
+
+    let result = previous;
 
     let iter = iterator;
 
     if (!iter) {
       // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
-      const activations = (this.container as any)._activations.get(identifier);
+      const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
 
-      if (!activations) {
-        return previous;
-      }
-
-      iter = (activations as interfaces.BindingActivation<any>[]).values();
+      iter = activations.hasKey(identifier) ? activations.get(identifier).values() : [].values();
     }
 
     let next = iter.next();
-
-    let result = previous;
 
     while (!next.done) {
       result = next.value(this, result);
@@ -76,11 +87,18 @@ class Context implements interfaces.Context {
         return new Lazy(binding, async () => {
           const resolved = await result;
 
-          return this.activationLoop(binding, identifier, resolved, iter);
+          return this.activationLoop(container, containerIterator, binding, identifier, resolved, iter);
         });
       }
 
       next = iter.next();
+    }
+
+    const nextContainer = containerIterator.next();
+
+    if (nextContainer.value && !getBindingDictionary(container).hasKey(identifier)) {
+      // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
+      return this.activationLoop(nextContainer.value, containerIterator, binding, identifier, result);
     }
 
     return result;
