@@ -588,6 +588,104 @@ describe("Resolve", () => {
       await container.getAsync("Constructable");
   });
 
+  it("Should not allow sync get if an async activation was added to container", async () => {
+      const container = new Container();
+      container.bind("foo").toConstantValue("bar");
+
+      container.onActivation("foo", () => Promise.resolve("baz"));
+
+      expect(() => container.get("foo")).to.throw(`You are attempting to construct 'foo' in a synchronous way
+ but it has asynchronous dependencies.`);
+  });
+
+  it("Should allow onActivation (sync) of a previously binded sync object (without activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toConstantValue("bar");
+
+      container.onActivation("foo", () => "baz");
+
+      const result = container.get("foo");
+
+      expect(result).eql("baz");
+  });
+
+  it("Should allow onActivation (async) of a previously binded sync object (without activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toConstantValue("bar");
+
+      container.onActivation("foo", () => Promise.resolve("baz"));
+
+      const result = await container.getAsync("foo");
+
+      expect(result).eql("baz");
+  });
+
+  it("Should allow onActivation (sync) of a previously binded async object (without activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toAsyncValue(() => Promise.resolve("bar"));
+
+      container.onActivation("foo", () => "baz");
+
+      const result = await container.getAsync("foo");
+
+      expect(result).eql("baz");
+  });
+
+  it("Should allow onActivation (async) of a previously binded async object (without activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toAsyncValue(() => Promise.resolve("bar"));
+
+      container.onActivation("foo", () => Promise.resolve("baz"));
+
+      const result = await container.getAsync("foo");
+
+      expect(result).eql("baz");
+  });
+
+  it("Should allow onActivation (sync) of a previously binded sync object (with activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toConstantValue("bar").onActivation(() => "bum");
+
+      container.onActivation("foo", (context, previous) => `${previous}baz`);
+
+      const result = container.get("foo");
+
+      expect(result).eql("bumbaz");
+  });
+
+  it("Should allow onActivation (async) of a previously binded sync object (with activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toConstantValue("bar").onActivation(() => "bum");
+
+      container.onActivation("foo", (context, previous) => Promise.resolve(`${previous}baz`));
+
+      const result = await container.getAsync("foo");
+
+      expect(result).eql("bumbaz");
+  });
+
+  it("Should allow onActivation (sync) of a previously binded async object (with activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toAsyncValue(() => Promise.resolve("bar")).onActivation(() => "bum");
+
+      container.onActivation("foo", (context, previous) => `${previous}baz`);
+
+      const result = await container.getAsync("foo");
+
+      expect(result).eql("bumbaz");
+  });
+
+  it("Should allow onActivation (async) of a previously binded async object (with activation)", async () => {
+      const container = new Container();
+      container.bind("foo").toAsyncValue(() => Promise.resolve("bar")).onActivation(() => "bum");
+
+      container.onActivation("foo", (context, previous) => Promise.resolve(`${previous}baz`));
+
+      const result = await container.getAsync("foo");
+
+      expect(result).eql("bumbaz");
+  });
+
   it("Should wait until onActivation promise resolves before returning object", async () => {
       let resolved = false;
 

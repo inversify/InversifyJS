@@ -64,34 +64,12 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             return exists;
         }
 
-        let result = convertBindingToInstance(requestScope, request);
+        const preActivation = convertBindingToInstance(requestScope, request);
+        const postActivation = onActivation(binding, request.parentContext, preActivation);
 
-        const old = result;
+        afterResult(binding, postActivation, requestScope);
 
-        if (result instanceof Lazy) {
-            result = new Lazy(binding, async () => {
-                let resolved = await old.resolve();
-
-                if (typeof binding.onActivation === "function") {
-                    resolved = binding.onActivation(request.parentContext, resolved);
-                }
-
-                return resolved;
-            });
-        } else {
-            // use activation handler if available
-            if (typeof binding.onActivation === "function") {
-                result = binding.onActivation(request.parentContext, result);
-            }
-
-            if (result instanceof Promise) {
-                result = new Lazy(binding, () => old);
-            }
-        }
-
-        afterResult(binding, result, requestScope);
-
-        return result;
+        return postActivation;
     }
 
 };
@@ -162,6 +140,25 @@ function resolveAndCheckInstance(
     }
 
     return resolveInstance(binding, constr, childRequests, resolveRequest);
+}
+
+function onActivation(binding: interfaces.Binding<any>, context: interfaces.Context, resolved: any): any {
+    if (resolved instanceof Lazy) {
+        return new Lazy(binding, () => resolved.resolve().then((unlazied) => onActivation(binding, context, unlazied)));
+    }
+
+    let result = resolved;
+
+    // use activation handler if available
+    if (typeof binding.onActivation === "function") {
+        result = binding.onActivation(context, result);
+    }
+
+    if (result instanceof Promise) {
+        return new Lazy(binding, () => result);
+    }
+
+    return result;
 }
 
 function resolveTypeInstance<T>(requestScope: interfaces.RequestScope, request: interfaces.Request): any {

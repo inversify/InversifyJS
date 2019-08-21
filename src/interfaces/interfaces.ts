@@ -45,6 +45,8 @@ namespace interfaces {
         clone(): T;
     }
 
+    export type BindingActivation<T> = (context: interfaces.Context, injectable: T) => T | Promise<T>;
+
     export interface Binding<T> extends Clonable<Binding<T>> {
         id: number;
         moduleId: string;
@@ -58,7 +60,7 @@ namespace interfaces {
         implementationType: Newable<T> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: ((context: interfaces.Context, injectable: T) => T | Promise<T>) | null;
+        onActivation: BindingActivation<T> | null;
         onDeactivation: ((injectable: T) => Promise<void> | void) | null;
         cache: T | null;
     }
@@ -191,6 +193,7 @@ namespace interfaces {
         getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>[];
         getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>[];
         getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[];
+        onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
@@ -287,7 +290,7 @@ namespace interfaces {
         to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toAsyncValue(func: () => Promise<T>): BindingWhenSyntax<T> & BindingInSyntax<T>;
+        toAsyncValue(func: () => Promise<T>): BindingWhenOnSyntax<T> & BindingInSyntax<T>;
         toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;

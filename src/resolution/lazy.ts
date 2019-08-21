@@ -13,14 +13,28 @@ class Lazy<T> {
 
   public resolve(): Promise<T> {
     if (this.binding.scope !== BindingScopeEnum.Singleton) {
-      return this.promise();
+      return this.nested(this.promise());
     }
 
     if (!this.resolved) {
-      this.resolved = this.promise();
+      this.resolved = this.nested(this.promise());
     }
 
     return this.resolved;
+  }
+
+  private nested(value: Promise<T> | T): Promise<T> {
+    if (value instanceof Promise) {
+      return value.then((resolved) => {
+        if (resolved instanceof Lazy) {
+          return this.nested(resolved.resolve());
+        }
+
+        return resolved;
+      });
+    }
+
+    return Promise.resolve(value);
   }
 }
 

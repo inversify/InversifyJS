@@ -230,6 +230,40 @@ class Container implements interfaces.Container {
         this._bindingDictionary = new Lookup<Binding<any>>();
     }
 
+    public onActivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onActivation: interfaces.BindingActivation<T>) {
+        const bound = this._bindingDictionary.get(serviceIdentifier);
+
+        if (bound) {
+            for (const binding of bound) {
+                const original = binding.onActivation;
+
+                if (original) {
+                    binding.onActivation = (context, injectable) => {
+                        const modified = original(context, injectable);
+
+                        if (modified instanceof Promise) {
+                            return modified.then((resolved) => onActivation(context, resolved));
+                        }
+
+                        return onActivation(context, modified);
+                    };
+                } else {
+                    binding.onActivation = onActivation;
+                }
+            }
+
+            return;
+        }
+
+        if (!bound && this.parent) {
+            this.parent.onActivation(serviceIdentifier, onActivation);
+
+            return;
+        }
+
+        throw new Error(`${ERROR_MSGS.NOT_REGISTERED}`);
+    }
+
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
         let bound = this._bindingDictionary.hasKey(serviceIdentifier);
