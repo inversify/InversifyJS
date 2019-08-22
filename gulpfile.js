@@ -21,6 +21,7 @@ var gulp = require("gulp"),
     mocha = require("gulp-mocha"),
     istanbul = require("gulp-istanbul"),
     karma = require("karma"),
+    fs = require('fs'),
     del = require('del');
 
 //******************************************************************************
@@ -102,6 +103,7 @@ gulp.task("build-es", function () {
 var tsDtsProject = tsc.createProject("tsconfig.json", {
     declaration: true,
     noResolve: false,
+
     typescript: require("typescript")
 });
 
@@ -226,6 +228,16 @@ if (process.env.APPVEYOR) {
     gulp.task("test", gulp.series("mocha"));
 }
 
+gulp.task('verify-dts', function(done){
+    const file = fs.readFileSync(`${__dirname}/dts/syntax/constraint_helpers.d.ts`).toString();
+
+    if(file.includes('TimerHandler')){
+        throw new Error('Microsoft/TSJS-lib-generator/issues/559 bug was re-introduced.');
+    }
+
+    done();
+});
+
 //******************************************************************************
 //* DEFAULT
 //******************************************************************************
@@ -234,6 +246,6 @@ gulp.task("build", gulp.series("lint", gulp.parallel(
     "build-es",
     "build-lib",
     "build-amd",
-    "build-dts"), "build-test"));
+    "build-dts"), "verify-dts", "build-test"));
 
 gulp.task("default", gulp.series("clean", "build", "test"));
