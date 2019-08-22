@@ -1,7 +1,7 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { interfaces } from "../interfaces/interfaces";
 
-class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
+class Lookup<T extends interfaces.Clonable<any> | any> implements interfaces.Lookup<T> {
 
     // dictionary used store multiple values for each key <key>
     private _map: Map<interfaces.ServiceIdentifier<any>, T[]>;
@@ -91,7 +91,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         const copy = new Lookup<T>();
 
         this._map.forEach((value, key) => {
-            value.forEach((b) => copy.add(key, b.clone()));
+            value.forEach((b) => copy.add(key, b.clone ? b.clone() : b));
         });
 
         return copy;

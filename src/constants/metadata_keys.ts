@@ -30,3 +30,6 @@ export const DESIGN_PARAM_TYPES = "design:paramtypes";
 
 // used to identify postConstruct functions
 export const POST_CONSTRUCT = "post_construct";
+
+// used to identify preDestroy functions
+export const PRE_DESTROY = "pre_destroy";

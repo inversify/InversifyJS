@@ -19,6 +19,8 @@ class Container implements interfaces.Container {
     public readonly options: interfaces.ContainerOptions;
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
+    private _activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
+    private _deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>;
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
@@ -91,6 +93,8 @@ class Container implements interfaces.Container {
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._snapshots = [];
         this._middleware = null;
+        this._activations = new Lookup<interfaces.BindingActivation<any>>();
+        this._deactivations = new Lookup<interfaces.BindingDeactivation<any>>();
         this.parent = null;
         this._metadataReader = new MetadataReader();
     }
@@ -107,7 +111,9 @@ class Container implements interfaces.Container {
                 containerModuleHelpers.bindFunction,
                 containerModuleHelpers.unbindFunction,
                 containerModuleHelpers.isboundFunction,
-                containerModuleHelpers.rebindFunction
+                containerModuleHelpers.rebindFunction,
+                containerModuleHelpers.onActivationFunction,
+                containerModuleHelpers.onDeactivationFunction
             );
 
         }
@@ -126,7 +132,9 @@ class Container implements interfaces.Container {
                 containerModuleHelpers.bindFunction,
                 containerModuleHelpers.unbindFunction,
                 containerModuleHelpers.isboundFunction,
-                containerModuleHelpers.rebindFunction
+                containerModuleHelpers.rebindFunction,
+                containerModuleHelpers.onActivationFunction,
+                containerModuleHelpers.onDeactivationFunction
             );
 
         }
@@ -160,6 +168,34 @@ class Container implements interfaces.Container {
 
     // Removes a type binding from the registry by its key
     public unbind(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
+        if (this._bindingDictionary.hasKey(serviceIdentifier)) {
+            const bindings = this._bindingDictionary.get(serviceIdentifier);
+
+            for (const binding of bindings) {
+                const result = this.preDestroy(binding);
+
+                if (result instanceof Promise) {
+                    throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
+                }
+            }
+        }
+
+        try {
+            this._bindingDictionary.remove(serviceIdentifier);
+        } catch (e) {
+            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
+    }
+
+    public async unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<any>): Promise<void> {
+        if (this._bindingDictionary.hasKey(serviceIdentifier)) {
+            const bindings = this._bindingDictionary.get(serviceIdentifier);
+
+            for (const binding of bindings) {
+                await this.preDestroy(binding);
+            }
+        }
+
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
@@ -169,7 +205,43 @@ class Container implements interfaces.Container {
 
     // Removes all the type bindings from the registry
     public unbindAll(): void {
+        this._bindingDictionary.traverse((key, value) => {
+            for (const binding of value) {
+                const result = this.preDestroy(binding);
+
+                if (result instanceof Promise) {
+                    throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
+                }
+            }
+        });
+
         this._bindingDictionary = new Lookup<Binding<any>>();
+    }
+
+    public async unbindAllAsync(): Promise<void> {
+        const promises: Promise<any>[] = [];
+
+        this._bindingDictionary.traverse((key, value) => {
+            for (const binding of value) {
+                const result = this.preDestroy(binding);
+
+                if (result instanceof Promise) {
+                    promises.push(result);
+                }
+            }
+        });
+
+        await Promise.all(promises);
+
+        this._bindingDictionary = new Lookup<Binding<any>>();
+    }
+
+    public onActivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onActivation: interfaces.BindingActivation<T>) {
+        this._activations.add(serviceIdentifier, onActivation);
+    }
+
+    public onDeactivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onDeactivation: interfaces.BindingDeactivation<T>) {
+        this._deactivations.add(serviceIdentifier, onDeactivation);
     }
 
     // Allows to check if there are bindings available for serviceIdentifier
@@ -205,7 +277,12 @@ class Container implements interfaces.Container {
     }
 
     public snapshot(): void {
-        this._snapshots.push(ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware));
+        this._snapshots.push(ContainerSnapshot.of(
+          this._bindingDictionary.clone(),
+          this._middleware,
+          this._activations.clone(),
+          this._deactivations.clone()
+        ));
     }
 
     public restore(): void {
@@ -214,6 +291,8 @@ class Container implements interfaces.Container {
             throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
         }
         this._bindingDictionary = snapshot.bindings;
+        this._activations = snapshot.activations;
+        this._deactivations = snapshot.deactivations;
         this._middleware = snapshot.middleware;
     }
 
@@ -238,35 +317,143 @@ class Container implements interfaces.Container {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
+        return this._get<T>(false, false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
+    }
+
+    public getAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> {
+        return this._get<T>(true, false, false, TargetTypeEnum.Variable, serviceIdentifier) as Promise<T>;
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+        return this._get<T>(false, false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+    }
+
+    public getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T> {
+        return this._get<T>(true, false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as Promise<T>;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
+    public getNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T> {
+        return this.getTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
+        return this._get<T>(false, true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
+    }
+
+    public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T>[] {
+        return this._get<T>(true, true, true, TargetTypeEnum.Variable, serviceIdentifier) as Promise<T>[];
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+        return this._get<T>(false, false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+    }
+
+    public getAllTaggedAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      key: string | number | symbol,
+      value: any
+    ): Promise<T>[] {
+        return this._get<T>(true, false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as Promise<T>[];
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
+    public getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[] {
+        return this.getAllTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
         const tempContainer = this.createChild();
         tempContainer.bind<T>(constructorFunction).toSelf();
         return tempContainer.get<T>(constructorFunction);
+    }
+
+    private preDestroy(binding: Binding<any>): Promise<void> | void {
+        if (!binding.cache) {
+            return;
+        }
+
+        if (binding.cache instanceof Promise) {
+            return binding.cache.then(async (resolved) => this.doDeactivation(binding, resolved));
+        }
+
+        return this.doDeactivation(binding, binding.cache);
+    }
+
+    private doDeactivation<T>(
+      binding: Binding<T>,
+      instance: T,
+      iter?: IterableIterator<[number, interfaces.BindingDeactivation<any>]>
+    ): void | Promise<void> {
+        let constr: any;
+
+        try {
+            constr = (instance as any).constructor;
+        } catch (ex) {
+            // if placing mocks in container (eg: TypeMoq), this could blow up as constructor is not stubbed
+            return;
+        }
+
+        try {
+            if (this._deactivations.hasKey(binding.serviceIdentifier)) {
+                const deactivations = iter || this._deactivations.get(binding.serviceIdentifier).entries();
+
+                let deact = deactivations.next();
+
+                while (deact.value) {
+                    const result = deact.value[1](instance);
+
+                    if (result instanceof Promise) {
+                        return result.then(() => {
+                            this.doDeactivation(binding, instance, deactivations);
+                        }).catch((ex) => {
+                            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+                        });
+                    }
+
+                    deact = deactivations.next();
+                }
+            }
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+        }
+
+        if (this.parent) {
+            return this.doDeactivation.bind(this.parent)(binding, instance);
+        }
+
+        try {
+            if (typeof binding.onDeactivation === "function") {
+                const result = binding.onDeactivation(instance);
+
+                if (result instanceof Promise) {
+                    return result.then(() => this.destroyMetadata(constr, instance));
+                }
+            }
+
+            return this.destroyMetadata(constr, instance);
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+        }
+    }
+
+    private destroyMetadata(constr: any, instance: any) {
+        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
+            const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
+            try {
+                return instance[data.value]();
+            } catch (e) {
+                throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
+            }
+        }
     }
 
     private _getContainerModuleHelpersFactory() {
@@ -306,6 +493,8 @@ class Container implements interfaces.Container {
         return (mId: number) => ({
             bindFunction: getBindFunction(mId),
             isboundFunction: getIsboundFunction(mId),
+            onActivationFunction: this.onActivation.bind(this),
+            onDeactivationFunction: this.onDeactivation.bind(this),
             rebindFunction: getRebindFunction(mId),
             unbindFunction: getUnbindFunction(mId)
         });
@@ -316,13 +505,14 @@ class Container implements interfaces.Container {
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
     private _get<T>(
+        async: boolean,
         avoidConstraints: boolean,
         isMultiInject: boolean,
         targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         key?: string | number | symbol,
         value?: any
-    ): (T | T[]) {
+    ): (T | T[] | Promise<T> | Promise<T>[]) {
 
         let result: (T | T[]) | null = null;
 
@@ -343,6 +533,10 @@ class Container implements interfaces.Container {
             }
         } else {
             result = this._planAndResolve<T>()(defaultArgs);
+        }
+
+        if (result instanceof Promise && !async) {
+            throw new Error(ERROR_MSGS.LAZY_IN_SYNC(serviceIdentifier));
         }
 
         return result;
@@ -371,6 +565,7 @@ class Container implements interfaces.Container {
 
             // resolve plan
             const result = resolve<T>(context);
+
             return result;
 
         };

@@ -1,6 +1,7 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
+import { getBindingDictionary } from "../planning/planner";
 import { isStackOverflowExeption } from "../utils/exceptions";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
@@ -98,6 +99,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             );
         } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
             result = resolveInstance(
+                binding,
                 binding.implementationType,
                 childRequests,
                 _resolveRequest(requestScope)
@@ -109,10 +111,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
         }
 
-        // use activation handler if available
-        if (typeof binding.onActivation === "function") {
-            result = binding.onActivation(request.parentContext, result);
-        }
+        result = onActivation(request, binding, result);
 
         // store in cache if scope is singleton
         if (isSingleton) {
@@ -132,6 +131,78 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
     }
 
 };
+
+function onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, resolved: T): T | Promise<T> {
+  if (resolved instanceof Promise) {
+    return resolved.then((unpromised) => onActivation(request, binding, unpromised));
+  }
+
+  let result: T | Promise<T> = resolved;
+
+  // use activation handler if available
+  if (typeof binding.onActivation === "function") {
+    result = binding.onActivation(request.parentContext, result);
+  }
+
+  const containers = [request.parentContext.container];
+
+  let parent = request.parentContext.container.parent;
+
+  while (parent) {
+    containers.unshift(parent);
+
+    parent = parent.parent;
+  }
+
+  const iter = containers.entries();
+
+  return activationLoop(iter.next().value[1], iter, binding, request.serviceIdentifier, result);
+}
+
+function activationLoop<T>(
+    container: interfaces.Container,
+    containerIterator: IterableIterator<[number, interfaces.Container]>,
+    binding: interfaces.Binding<T>,
+    identifier: interfaces.ServiceIdentifier<T>,
+    previous: T | Promise<T>,
+    iterator?: IterableIterator<[number, interfaces.BindingActivation<any>]>
+  ): T | Promise<T> {
+    if (previous instanceof Promise) {
+        return previous.then((unpromised) => activationLoop(container, containerIterator, binding, identifier, unpromised));
+    }
+
+    let result = previous;
+
+    let iter = iterator;
+
+    if (!iter) {
+      // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
+      const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
+
+      iter = activations.hasKey(identifier) ? activations.get(identifier).entries() : [].entries();
+    }
+
+    let next = iter.next();
+
+    while (!next.done) {
+      result = next.value[1](this, result);
+
+      if (result instanceof Promise) {
+          return result.then((unpromised) => activationLoop(container, containerIterator, binding, identifier, unpromised, iter));
+      }
+
+      next = iter.next();
+    }
+
+    const nextContainer = containerIterator.next();
+
+    if (nextContainer.value && !getBindingDictionary(container).hasKey(identifier)) {
+      // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
+      return activationLoop(nextContainer.value[1], containerIterator, binding, identifier, result);
+    }
+
+    return result;
+  }
 
 function resolve<T>(context: interfaces.Context): T {
     const _f = _resolveRequest(context.plan.rootRequest.requestScope);

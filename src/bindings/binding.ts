@@ -40,7 +40,10 @@ class Binding<T> implements interfaces.Binding<T> {
     public constraint: (request: interfaces.Request) => boolean;
 
     // On activation handler (invoked just before an instance is added to cache and injected)
-    public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+    public onActivation: ((context: interfaces.Context, injectable: T) => T | Promise<T>) | null;
+
+    // On deactivation handler (invoked just before an instance is unbinded and removed from container)
+    public onDeactivation: ((injectable: T) => Promise<void> | void) | null;
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, scope: interfaces.BindingScope) {
         this.id = id();
@@ -54,6 +57,7 @@ class Binding<T> implements interfaces.Binding<T> {
         this.factory = null;
         this.provider = null;
         this.onActivation = null;
+        this.onDeactivation = null;
         this.dynamicValue = null;
     }
 
@@ -68,6 +72,7 @@ class Binding<T> implements interfaces.Binding<T> {
         clone.provider = this.provider;
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;
+        clone.onDeactivation = this.onDeactivation;
         clone.cache = this.cache;
         return clone;
     }

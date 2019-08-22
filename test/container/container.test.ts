@@ -804,4 +804,85 @@ describe("Container", () => {
 
     });
 
+    it("Should be able to resolve named multi-injection (async)", async () => {
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "au revoir" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetNamed("es");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "adios" })).whenTargetNamed("es");
+
+        const fr = await Promise.all(container.getAllNamedAsync<Intl>("Intl", "fr"));
+        expect(fr.length).to.equal(2);
+        expect(fr[0].hello).to.equal("bonjour");
+        expect(fr[1].goodbye).to.equal("au revoir");
+
+        const es = await Promise.all(container.getAllNamedAsync<Intl>("Intl", "es"));
+        expect(es.length).to.equal(2);
+        expect(es[0].hello).to.equal("hola");
+        expect(es[1].goodbye).to.equal("adios");
+
+    });
+
+    it("Should be able to resolve named (async)", async () => {
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetNamed("es");
+
+        const fr = await container.getNamedAsync<Intl>("Intl", "fr");
+        expect(fr.hello).to.equal("bonjour");
+
+        const es = await container.getNamedAsync<Intl>("Intl", "es");
+        expect(es.hello).to.equal("hola");
+    });
+
+    it("Should be able to resolve tagged multi-injection (async)", async () => {
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "au revoir" })).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetTagged("lang", "es");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "adios" })).whenTargetTagged("lang", "es");
+
+        const fr = await Promise.all(container.getAllTaggedAsync<Intl>("Intl", "lang", "fr"));
+        expect(fr.length).to.equal(2);
+        expect(fr[0].hello).to.equal("bonjour");
+        expect(fr[1].goodbye).to.equal("au revoir");
+
+        const es = await Promise.all(container.getAllTaggedAsync<Intl>("Intl", "lang", "es"));
+        expect(es.length).to.equal(2);
+        expect(es[0].hello).to.equal("hola");
+        expect(es[1].goodbye).to.equal("adios");
+
+    });
+
+    it("Should be able to get a tagged binding (async)", async () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        const container = new Container();
+
+        container.bind<number>(zero).toDynamicValue(() => Promise.resolve(0)).whenTargetTagged(isValidDivisor, false);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, false)).to.equal(0);
+
+        container.bind<number>(zero).toDynamicValue(() => Promise.resolve(1)).whenTargetTagged(isValidDivisor, true);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, false)).to.equal(0);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, true)).to.equal(1);
+
+    });
 });

@@ -42,6 +42,10 @@ namespace interfaces {
         clone(): T;
     }
 
+    export type BindingActivation<T> = (context: interfaces.Context, injectable: T) => T | Promise<T>;
+
+    export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
+
     export interface Binding<T> extends Clonable<Binding<T>> {
         id: number;
         moduleId: string;
@@ -54,7 +58,8 @@ namespace interfaces {
         implementationType: Newable<T> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+        onActivation: BindingActivation<T> | null;
+        onDeactivation: BindingDeactivation<T> | null;
         cache: T | null;
     }
 
@@ -176,6 +181,14 @@ namespace interfaces {
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
         getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
         getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
+        getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>;
+        getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>;
+        getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>;
+        getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>[];
+        getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>[];
+        getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[];
+        onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
+        onDeactivation<T>(serviceIdentifier: ServiceIdentifier<T>, onDeactivation: BindingDeactivation<T>): void;
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
@@ -209,18 +222,24 @@ namespace interfaces {
         bind: interfaces.Bind,
         unbind: interfaces.Unbind,
         isBound: interfaces.IsBound,
-        rebind: interfaces.Rebind
+        rebind: interfaces.Rebind,
+        onActivation: interfaces.Container["onActivation"],
+        onDeactivation: interfaces.Container["onDeactivation"]
     ) => void;
 
     export type AsyncContainerModuleCallBack = (
         bind: interfaces.Bind,
         unbind: interfaces.Unbind,
         isBound: interfaces.IsBound,
-        rebind: interfaces.Rebind
+        rebind: interfaces.Rebind,
+        onActivation: interfaces.Container["onActivation"],
+        onDeactivation: interfaces.Container["onDeactivation"]
     ) => Promise<void>;
 
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
+        activations: Lookup<BindingActivation<any>>;
+        deactivations: Lookup<BindingDeactivation<any>>;
         middleware: Next | null;
     }
 
@@ -236,7 +255,8 @@ namespace interfaces {
     }
 
     export interface BindingOnSyntax<T> {
-        onActivation(fn: (context: Context, injectable: T) => T): BindingWhenSyntax<T>;
+        onActivation(fn: (context: Context, injectable: T) => T | Promise<T>): BindingWhenSyntax<T>;
+        onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
     }
 
     export interface BindingWhenSyntax<T> {
@@ -271,7 +291,7 @@ namespace interfaces {
         to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
+        toDynamicValue(func: (context: Context) => T | Promise<T>): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;
