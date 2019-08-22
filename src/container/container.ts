@@ -21,6 +21,7 @@ class Container implements interfaces.Container {
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
+    private _appliedMiddleware: interfaces.Middleware[] = [];
 
     public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
 
@@ -224,6 +225,7 @@ class Container implements interfaces.Container {
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
+        this._appliedMiddleware = this._appliedMiddleware.concat(middlewares);
         const initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
         this._middleware = middlewares.reduce(
             (prev, curr) => curr(prev),
@@ -266,6 +268,10 @@ class Container implements interfaces.Container {
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
         const tempContainer = this.createChild();
         tempContainer.bind<T>(constructorFunction).toSelf();
+        this._appliedMiddleware.forEach((m) => {
+            tempContainer.applyMiddleware(m);
+        });
+
         return tempContainer.get<T>(constructorFunction);
     }
 
