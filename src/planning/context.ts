@@ -75,23 +75,27 @@ class Context implements interfaces.Context {
       // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
       const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
 
-      iter = activations.hasKey(identifier) ? activations.get(identifier).values() : [].values();
+      if (activations.hasKey(identifier)) {
+        iter = activations.get(identifier).values();
+      }
     }
 
-    let next = iter.next();
+    if (iter) {
+      let next = iter.next();
 
-    while (!next.done) {
-      result = next.value(this, result);
+      while (!next.done) {
+        result = next.value(this, result);
 
-      if (result instanceof Promise) {
-        return new Lazy(binding, async () => {
-          const resolved = await result;
+        if (result instanceof Promise) {
+          return new Lazy(binding, async () => {
+            const resolved = await result;
 
-          return this.activationLoop(container, containerIterator, binding, identifier, resolved, iter);
-        });
+            return this.activationLoop(container, containerIterator, binding, identifier, resolved, iter);
+          });
+        }
+
+        next = iter.next();
       }
-
-      next = iter.next();
     }
 
     const nextContainer = containerIterator.next();
