@@ -751,6 +751,46 @@ describe("Resolve", () => {
       expect(result).eql("baz");
   });
 
+  it("Should allow onActivation to replace objects in async autoBindInjectable chain", async () => {
+      class Level1 {
+
+      }
+
+      @injectable()
+      class Level2 {
+          public level1: Level1;
+
+          constructor(@inject(Level1) l1: Level1) {
+              this.level1 = l1;
+          }
+      }
+
+      @injectable()
+      class Level3 {
+          public level2: Level2;
+
+          constructor(@inject(Level2) l2: Level2) {
+              this.level2 = l2;
+          }
+      }
+
+      const constructedLevel2 = new Level2(new Level1());
+
+      const container = new Container({autoBindInjectable: true, defaultScope: "Singleton"});
+      container.bind(Level1).toAsyncValue(() => Promise.resolve(new Level1()));
+      container.onActivation(Level2, () => {
+          return Promise.resolve(constructedLevel2);
+      });
+
+      const level2 = await container.getAsync(Level2);
+
+      expect(level2).equals(constructedLevel2);
+
+      const level3 = await container.getAsync(Level3);
+
+      expect(level3.level2).equals(constructedLevel2);
+  });
+
   it("Should allow onActivation (async) of a previously binded sync object (without activation)", async () => {
       const container = new Container();
       container.bind("foo").toConstantValue("bar");

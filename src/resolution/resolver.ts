@@ -187,6 +187,8 @@ async function resolveLazy(
             if (!childValue) {
                 childValue = await resolveLazy(resolver, requestScope, child, lazies);
 
+                childValue = await request.parentContext.onActivation(child, childBinding, childValue);
+
                 afterResult(childBinding, childValue, requestScope);
             }
 
@@ -203,8 +205,6 @@ async function resolveLazy(
     if (request.isLazy()) {
         value = await binding.asyncValue.resolve();
 
-        value = await request.parentContext.onActivation(request, binding, value);
-
         lazies[request.id] = value;
     } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
         value = resolveAndCheckInstance(
@@ -213,6 +213,8 @@ async function resolveLazy(
           request.childRequests,
           resolver
         );
+
+        value = await request.parentContext.onActivation(request, binding, value);
 
         afterResult(binding, value, requestScope);
     } else {

@@ -23,15 +23,13 @@ class Lazy<T> {
     return this.resolved;
   }
 
-  private nested(value: Promise<T> | T): Promise<T> {
-    if (value instanceof Promise) {
-      return value.then((resolved) => {
-        if (resolved instanceof Lazy) {
-          return this.nested(resolved.resolve());
-        }
+  private nested(value: Promise<T> | Lazy<T> | T): Promise<T> {
+    if (value instanceof Lazy) {
+      return value.resolve().then((unlazied) => this.nested(unlazied));
+    }
 
-        return resolved;
-      });
+    if (value instanceof Promise) {
+      return value.then((resolved) => this.nested(resolved));
     }
 
     return Promise.resolve(value);

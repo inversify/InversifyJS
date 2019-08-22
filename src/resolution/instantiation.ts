@@ -43,6 +43,8 @@ function _postConstruct(constr: interfaces.Newable<any>, result: any): Promise<v
             throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
         }
     }
+
+    return result;
 }
 
 function resolveInstance(
@@ -60,6 +62,18 @@ function resolveInstance(
             (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ConstructorArgument));
 
         const constructorInjections = constructorInjectionsRequests.map(resolveRequest);
+
+        if (constructorInjections.some((ci) => ci instanceof Lazy)) {
+            return new Lazy(binding, async () => {
+                const resolved = await Promise.all(constructorInjections.map((ci) => ci instanceof Lazy ? ci.resolve() : ci));
+
+                result = _createInstance(constr, resolved);
+                result = _injectProperties(result, childRequests, resolveRequest);
+                result = await _postConstruct(constr, result);
+
+                return result;
+            });
+        }
 
         result = _createInstance(constr, constructorInjections);
         result = _injectProperties(result, childRequests, resolveRequest);
