@@ -51,7 +51,7 @@ namespace interfaces {
         dynamicValue: ((context: interfaces.Context) => T) | null;
         scope: BindingScope;
         type: BindingType;
-        implementationType: Newable<T> | null;
+        implementationType: Newable<any> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
         onActivation: ((context: interfaces.Context, injectable: T) => T) | null;

@@ -15,8 +15,8 @@ class Binding<T> implements interfaces.Binding<T> {
     // A runtime identifier because at runtime we don't have interfaces
     public serviceIdentifier: interfaces.ServiceIdentifier<T>;
 
-    // The constructor of a class which must implement T
-    public implementationType: interfaces.Newable<T> | null;
+    // The constructor of a class
+    public implementationType: interfaces.Newable<any> | null;
 
     // Cache used to allow singleton scope and BindingType.ConstantValue bindings
     public cache: T | null;

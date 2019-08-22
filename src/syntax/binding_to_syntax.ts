@@ -44,7 +44,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Constructor;
-        this._binding.implementationType = constructor as any;
+        this._binding.implementationType = constructor;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
