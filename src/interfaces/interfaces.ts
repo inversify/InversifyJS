@@ -47,6 +47,8 @@ namespace interfaces {
 
     export type BindingActivation<T> = (context: interfaces.Context, injectable: T) => T | Promise<T>;
 
+    export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
+
     export interface Binding<T> extends Clonable<Binding<T>> {
         id: number;
         moduleId: string;
@@ -195,6 +197,7 @@ namespace interfaces {
         getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>[];
         getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[];
         onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
+        onDeactivation<T>(serviceIdentifier: ServiceIdentifier<T>, onDeactivation: BindingDeactivation<T>): void;
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
@@ -243,6 +246,7 @@ namespace interfaces {
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
         activations: Lookup<BindingActivation<any>>;
+        deactivations: Lookup<BindingDeactivation<any>>;
         middleware: Next | null;
     }
 

@@ -13,6 +13,7 @@ import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
+import BindingDeactivation = interfaces.BindingDeactivation;
 
 class Container implements interfaces.Container {
 
@@ -22,6 +23,7 @@ class Container implements interfaces.Container {
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
+    private _deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>;
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
@@ -93,6 +95,7 @@ class Container implements interfaces.Container {
         this.id = id();
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._activations = new Lookup<interfaces.BindingActivation<any>>();
+        this._deactivations = new Lookup<interfaces.BindingDeactivation<any>>();
         this._snapshots = [];
         this._middleware = null;
         this.parent = null;
@@ -238,6 +241,10 @@ class Container implements interfaces.Container {
         this._activations.add(serviceIdentifier, onActivation);
     }
 
+    public onDeactivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onDeactivation: interfaces.BindingDeactivation<T>) {
+        this._deactivations.add(serviceIdentifier, onDeactivation);
+    }
+
     // Allows to check if there are bindings available for serviceIdentifier
     public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
         let bound = this._bindingDictionary.hasKey(serviceIdentifier);
@@ -271,7 +278,12 @@ class Container implements interfaces.Container {
     }
 
     public snapshot(): void {
-        this._snapshots.push(ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware, this._activations.clone()));
+        this._snapshots.push(ContainerSnapshot.of(
+          this._bindingDictionary.clone(),
+          this._middleware,
+          this._activations.clone(),
+          this._deactivations.clone()
+        ));
     }
 
     public restore(): void {
@@ -281,6 +293,7 @@ class Container implements interfaces.Container {
         }
         this._bindingDictionary = snapshot.bindings;
         this._activations = snapshot.activations;
+        this._deactivations = snapshot.deactivations;
         this._middleware = snapshot.middleware;
     }
 
@@ -373,39 +386,81 @@ class Container implements interfaces.Container {
     }
 
     private preDestroy(binding: Binding<any>): Promise<void> | void {
-        if (binding.cache) {
-            let constr;
+        if (!binding.cache) {
+            return;
+        }
 
-            try {
-                constr = binding.cache.constructor;
-            } catch (ex) {
-                // if placing mocks in container (eg: TypeMoq), this could blow up as constructor is not stubbed
-                return;
+        if (binding.cache instanceof Lazy) {
+            return binding.cache.resolve().then(async (resolved) => this.doDeactivation(binding, resolved));
+        }
+
+        return this.doDeactivation(binding, binding.cache);
+    }
+
+    private doDeactivation<T>(
+      binding: Binding<T>,
+      instance: T,
+      iter?: IterableIterator<[number, BindingDeactivation<any>]>
+    ): void | Promise<void> {
+        let constr: any;
+
+        try {
+            constr = (instance as any).constructor;
+        } catch (ex) {
+            // if placing mocks in container (eg: TypeMoq), this could blow up as constructor is not stubbed
+            return;
+        }
+
+        try {
+            if (this._deactivations.hasKey(binding.serviceIdentifier)) {
+                const deactivations = iter || this._deactivations.get(binding.serviceIdentifier).entries();
+
+                let deact = deactivations.next();
+
+                while (deact.value) {
+                    const result = deact.value[1](instance);
+
+                    if (result instanceof Promise) {
+                        return result.then(() => {
+                            this.doDeactivation(binding, instance, deactivations);
+                        }).catch((ex) => {
+                            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+                        });
+                    }
+
+                    deact = deactivations.next();
+                }
             }
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+        }
 
+        if (this.parent) {
+            return this.doDeactivation.bind(this.parent)(binding, instance);
+        }
+
+        try {
             if (typeof binding.onDeactivation === "function") {
-                if (binding.cache instanceof Lazy) {
-                    return binding.cache.resolve().then(async (resolved) => {
-                        if (binding.onDeactivation) {
-                            await binding.onDeactivation(resolved);
-                        }
-                    });
-                }
+                const result = binding.onDeactivation(instance);
 
-                try {
-                    return binding.onDeactivation(binding.cache);
-                } catch (e) {
-                    throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, e.message));
+                if (result instanceof Promise) {
+                    return result.then(() => this.destroyMetadata(constr, instance));
                 }
             }
 
-            if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
-                const data: Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
-                try {
-                    return binding.cache[data.value]();
-                } catch (e) {
-                    throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
-                }
+            return this.destroyMetadata(constr, instance);
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+        }
+    }
+
+    private destroyMetadata(constr: any, instance: any) {
+        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
+            const data: Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
+            try {
+                return instance[data.value]();
+            } catch (e) {
+                throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
             }
         }
     }

@@ -525,6 +525,148 @@ describe("Resolve", () => {
         .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
   });
 
+  it("Should invoke destory in order (all async): child container, parent container, binding, class", async () => {
+      let roll = 1;
+      let binding = null;
+      let klass = null;
+      let parent = null;
+      let child = null;
+
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return new Promise((presolve) => {
+                  klass = roll;
+                  roll += 1;
+                  presolve();
+              });
+          }
+      }
+
+      const container = new Container();
+      container.onDeactivation("Destroyable", () => {
+          return new Promise((presolve) => {
+              parent = roll;
+              roll += 1;
+              presolve();
+          });
+      });
+
+      const childContainer = container.createChild();
+      childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => new Promise((presolve) => {
+          binding = roll;
+          roll += 1;
+          presolve();
+      }));
+      childContainer.onDeactivation("Destroyable", () => {
+          return new Promise((presolve) => {
+              child = roll;
+              roll += 1;
+              presolve();
+          });
+      });
+
+      childContainer.get("Destroyable");
+      await childContainer.unbindAsync("Destroyable");
+
+      expect(roll).eql(5);
+      expect(child).eql(1);
+      expect(parent).eql(2);
+      expect(binding).eql(3);
+      expect(klass).eql(4);
+  });
+
+  it("Should invoke destory in order (sync + async): child container, parent container, binding, class", async () => {
+      let roll = 1;
+      let binding = null;
+      let klass = null;
+      let parent = null;
+      let child = null;
+
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return new Promise((presolve) => {
+                  klass = roll;
+                  roll += 1;
+                  presolve();
+              });
+          }
+      }
+
+      const container = new Container();
+      container.onDeactivation("Destroyable", () => {
+          parent = roll;
+          roll += 1;
+      });
+
+      const childContainer = container.createChild();
+      childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => {
+          binding = roll;
+          roll += 1;
+      });
+      childContainer.onDeactivation("Destroyable", () => {
+          return new Promise((presolve) => {
+              child = roll;
+              roll += 1;
+              presolve();
+          });
+      });
+
+      childContainer.get("Destroyable");
+      await childContainer.unbindAsync("Destroyable");
+
+      expect(roll).eql(5);
+      expect(child).eql(1);
+      expect(parent).eql(2);
+      expect(binding).eql(3);
+      expect(klass).eql(4);
+  });
+
+  it("Should invoke destory in order (all sync): child container, parent container, binding, class", () => {
+      let roll = 1;
+      let binding = null;
+      let klass = null;
+      let parent = null;
+      let child = null;
+
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              klass = roll;
+              roll += 1;
+          }
+      }
+
+      const container = new Container();
+      container.onDeactivation("Destroyable", () => {
+          parent = roll;
+          roll += 1;
+      });
+
+      const childContainer = container.createChild();
+      childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => {
+          binding = roll;
+          roll += 1;
+      });
+      childContainer.onDeactivation("Destroyable", () => {
+          child = roll;
+          roll += 1;
+      });
+
+      childContainer.get("Destroyable");
+      childContainer.unbind("Destroyable");
+
+      expect(roll).eql(5);
+      expect(child).eql(1);
+      expect(parent).eql(2);
+      expect(binding).eql(3);
+      expect(klass).eql(4);
+  });
+
   it("Should force a class with an async pre destroy to use the async unbind api", async () => {
       @injectable()
       class Destroyable {
