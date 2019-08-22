@@ -57,7 +57,7 @@ class Context implements interfaces.Context {
     binding: interfaces.Binding<T>,
     identifier: interfaces.ServiceIdentifier<T>,
     previous: T | Promise<T>,
-    iterator?: IterableIterator<interfaces.BindingActivation<any>>
+    iterator?: IterableIterator<[number, interfaces.BindingActivation<any>]>
   ): T | Lazy<any> {
     if (previous instanceof Promise) {
       return new Lazy(binding, async () => {
@@ -75,27 +75,23 @@ class Context implements interfaces.Context {
       // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
       const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
 
-      if (activations.hasKey(identifier)) {
-        iter = activations.get(identifier).values();
-      }
+      iter = activations.hasKey(identifier) ? activations.get(identifier).entries() : [].entries();
     }
 
-    if (iter) {
-      let next = iter.next();
+    let next = iter.next();
 
-      while (!next.done) {
-        result = next.value(this, result);
+    while (!next.done) {
+      result = next.value[1](this, result);
 
-        if (result instanceof Promise) {
-          return new Lazy(binding, async () => {
-            const resolved = await result;
+      if (result instanceof Promise) {
+        return new Lazy(binding, async () => {
+          const resolved = await result;
 
-            return this.activationLoop(container, containerIterator, binding, identifier, resolved, iter);
-          });
-        }
-
-        next = iter.next();
+          return this.activationLoop(container, containerIterator, binding, identifier, resolved, iter);
+        });
       }
+
+      next = iter.next();
     }
 
     const nextContainer = containerIterator.next();
