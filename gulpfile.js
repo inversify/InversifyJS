@@ -214,7 +214,8 @@ gulp.task("karma", gulp.series("bundle-test", function (done) {
             done('Browser test Failures');
         } else {
             console.log('Browser tests passed');
-            done();
+
+            process.exit(); // for some reason, AppVeyor hangs, so doing this instead of done();
         }
     }).start();
 }));
