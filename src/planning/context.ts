@@ -46,14 +46,14 @@ class Context implements interfaces.Context {
       parent = parent.parent;
     }
 
-    const iter = containers.values();
+    const iter = containers.entries();
 
-    return this.activationLoop(iter.next().value, iter, binding, request.serviceIdentifier, result);
+    return this.activationLoop(iter.next().value[1], iter, binding, request.serviceIdentifier, result);
   }
 
   private activationLoop<T>(
     container: interfaces.Container,
-    containerIterator: IterableIterator<interfaces.Container>,
+    containerIterator: IterableIterator<[number, interfaces.Container]>,
     binding: interfaces.Binding<T>,
     identifier: interfaces.ServiceIdentifier<T>,
     previous: T | Promise<T>,
@@ -98,7 +98,7 @@ class Context implements interfaces.Context {
 
     if (nextContainer.value && !getBindingDictionary(container).hasKey(identifier)) {
       // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
-      return this.activationLoop(nextContainer.value, containerIterator, binding, identifier, result);
+      return this.activationLoop(nextContainer.value[1], containerIterator, binding, identifier, result);
     }
 
     return result;
