@@ -1,5 +1,5 @@
 var browsers = [
-    "Firefox",
+    //"Firefox",
     "Chrome",
     "IE",
     "PhantomJS"

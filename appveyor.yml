@@ -31,4 +31,4 @@ test_script:
   # Output useful info for debugging.
   - node --version && npm --version
   - ps: "npm --version # PowerShell" # Pass comment to PS for easier debugging
-  - cmd: ./node_modules/.bin/gulp clean
+  - cmd: npm run test
