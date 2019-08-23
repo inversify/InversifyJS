@@ -3,7 +3,7 @@ namespace interfaces {
     export type BindingScope = "Singleton" | "Transient" | "Request";
 
     export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
-                              "Function" | "Instance" | "Invalid" | "Provider";
+        "Function" | "Instance" | "Invalid" | "Provider";
 
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
 
@@ -30,12 +30,10 @@ namespace interfaces {
         Variable: interfaces.TargetType;
     }
 
-    export interface Newable<T> {
-        new (...args: any[]): T;
-    }
+    export type Newable<T> = new (...args: any[]) => T;
 
     export interface Abstract<T> {
-         prototype: T;
+        prototype: T;
     }
 
     export type ServiceIdentifier<T> = (string | symbol | Newable<T> | Abstract<T>);
@@ -176,6 +174,8 @@ namespace interfaces {
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
+        getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+        getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
@@ -206,18 +206,18 @@ namespace interfaces {
     }
 
     export type ContainerModuleCallBack = (
-            bind: interfaces.Bind,
-            unbind: interfaces.Unbind,
-            isBound: interfaces.IsBound,
-            rebind: interfaces.Rebind
-        ) => void;
+        bind: interfaces.Bind,
+        unbind: interfaces.Unbind,
+        isBound: interfaces.IsBound,
+        rebind: interfaces.Rebind
+    ) => void;
 
     export type AsyncContainerModuleCallBack = (
-            bind: interfaces.Bind,
-            unbind: interfaces.Unbind,
-            isBound: interfaces.IsBound,
-            rebind: interfaces.Rebind
-        ) => Promise<void>;
+        bind: interfaces.Bind,
+        unbind: interfaces.Unbind,
+        isBound: interfaces.IsBound,
+        rebind: interfaces.Rebind
+    ) => Promise<void>;
 
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
@@ -268,7 +268,7 @@ namespace interfaces {
     export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
 
     export interface BindingToSyntax<T> {
-        to(constructor: { new (...args: any[]): T }): BindingInWhenOnSyntax<T>;
+        to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
         toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
