@@ -222,7 +222,7 @@ gulp.task("karma", gulp.series("bundle-test", function (done) {
 
 // Run browser testings on AppVeyor not in Travis CI
 if (process.env.APPVEYOR) {
-    gulp.task("test", gulp.series("mocha"));
+    gulp.task("test", gulp.series("mocha", "karma"));
 } else {
     gulp.task("test", gulp.series("mocha"));
 }
