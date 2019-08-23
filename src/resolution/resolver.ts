@@ -156,10 +156,11 @@ function onActivation<T>(request: interfaces.Request, binding: interfaces.Bindin
 
   const iter = containers.entries();
 
-  return activationLoop(iter.next().value[1], iter, binding, request.serviceIdentifier, result);
+  return activationLoop(request.parentContext, iter.next().value[1], iter, binding, request.serviceIdentifier, result);
 }
 
 function activationLoop<T>(
+    context: interfaces.Context,
     container: interfaces.Container,
     containerIterator: IterableIterator<[number, interfaces.Container]>,
     binding: interfaces.Binding<T>,
@@ -168,7 +169,7 @@ function activationLoop<T>(
     iterator?: IterableIterator<[number, interfaces.BindingActivation<any>]>
   ): T | Promise<T> {
     if (previous instanceof Promise) {
-        return previous.then((unpromised) => activationLoop(container, containerIterator, binding, identifier, unpromised));
+        return previous.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised));
     }
 
     let result = previous;
@@ -185,10 +186,10 @@ function activationLoop<T>(
     let next = iter.next();
 
     while (!next.done) {
-      result = next.value[1](this, result);
+      result = next.value[1](context, result);
 
       if (result instanceof Promise) {
-          return result.then((unpromised) => activationLoop(container, containerIterator, binding, identifier, unpromised, iter));
+          return result.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised, iter));
       }
 
       next = iter.next();
@@ -198,7 +199,7 @@ function activationLoop<T>(
 
     if (nextContainer.value && !getBindingDictionary(container).hasKey(identifier)) {
       // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
-      return activationLoop(nextContainer.value[1], containerIterator, binding, identifier, result);
+      return activationLoop(context, nextContainer.value[1], containerIterator, binding, identifier, result);
     }
 
     return result;
