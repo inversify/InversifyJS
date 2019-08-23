@@ -166,7 +166,6 @@ gulp.task("istanbul:hook", function () {
 });
 
 gulp.task("mocha", gulp.series("istanbul:hook", function () {
-    console.log('Mocha')
     return gulp.src([
         "node_modules/reflect-metadata/Reflect.js",
         "test/**/*.test.js"
@@ -229,11 +228,22 @@ if (process.env.APPVEYOR) {
 //******************************************************************************
 //* DEFAULT
 //******************************************************************************
-gulp.task("build", gulp.series("lint", gulp.parallel(
-    "build-src",
-    "build-es",
-    "build-lib",
-    "build-amd",
-    "build-dts"), "build-test"));
+gulp.task("build",
+    gulp.series(
+        "lint",
+        gulp.parallel(
+            "build-src",
+            "build-es",
+            "build-lib",
+            "build-amd",
+            "build-dts"),
+        "build-test",
+    ));
 
-gulp.task("default", gulp.series("clean", "build", "test"));
+gulp.task(
+    "default",
+    gulp.series(
+        "clean",
+        "build",
+        "test",
+    ));
