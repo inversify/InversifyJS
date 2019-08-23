@@ -26,17 +26,15 @@ function _createTarget(
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     name: string,
-    key?: string | number | symbol,
-    value?: any
+    metadata?: interfaces.Metadata[]
 ): interfaces.Target {
 
     const metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
     const injectMetadata = new Metadata(metadataKey, serviceIdentifier);
     const target = new Target(targetType, name, serviceIdentifier, injectMetadata);
 
-    if (key !== undefined) {
-        const tagMetadata = new Metadata(key, value);
-        target.metadata.push(tagMetadata);
+    if (metadata !== undefined) {
+        metadata.forEach((m) => target.metadata.push(new Metadata(m.key, m.value)));
     }
 
     return target;
@@ -231,13 +229,12 @@ function plan(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    key?: string | number | symbol,
-    value?: any,
+    metadata?: interfaces.Metadata[],
     avoidConstraints = false
 ): interfaces.Context {
 
     const context = new Context(container);
-    const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
+    const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", metadata);
 
     try {
         _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);

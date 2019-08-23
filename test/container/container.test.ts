@@ -727,6 +727,92 @@ describe("Container", () => {
         expect(container.getTagged(zero, isValidDivisor, true)).to.equal(1);
 
     });
+    it("Should be able to get a multi tagged binding", () => {
+        function createWhenTargetMultiTagged(tags: interfaces.Metadata[]) {
+            return ( request: interfaces.Request ) => {
+                return request !== null && request.target !== null && tags.every((tag) => {
+                    return request.target.matchesTag(tag.key)(tag.value);
+                });
+            };
+        }
+        interface IWeapon {}
+        const IWeapon = Symbol.for("Iweapon");
+        @injectable()
+        class Nunchuck implements IWeapon {}
+        @injectable()
+        class Shuriken implements IWeapon {}
+        const container = new Container();
+        const stealthTag: interfaces.Metadata = {
+            key: "Attack_Style",
+            value: "Stealth"
+        };
+        const highDamageTag: interfaces.Metadata = {
+            key: "Damage",
+            value: "High"
+        };
+        const mediumDamageTag: interfaces.Metadata = {
+            key: "Damage",
+            value: "Medium"
+        };
+
+        container.bind<Shuriken>(IWeapon).to(Shuriken).
+            when(createWhenTargetMultiTagged([highDamageTag, stealthTag]));
+        container.bind<Nunchuck>(IWeapon).to(Nunchuck).
+            when(createWhenTargetMultiTagged([mediumDamageTag, stealthTag]));
+
+        const highDamageStealthWeapon = container.getMultiTagged(IWeapon, highDamageTag, stealthTag);
+        expect(highDamageStealthWeapon).instanceOf(Shuriken);
+
+        const mediumDamageStealthWeapon = container.getMultiTagged(IWeapon, mediumDamageTag, stealthTag);
+        expect(mediumDamageStealthWeapon).instanceOf(Nunchuck);
+    });
+    it("Should be able to get all multi tagged bindings", () => {
+        function createWhenTargetMultiTagged(tags: interfaces.Metadata[]) {
+            return ( request: interfaces.Request ) => {
+                return request !== null && request.target !== null && tags.every((tag) => {
+                    return request.target.matchesTag(tag.key)(tag.value);
+                });
+            };
+        }
+        interface IWeapon {}
+        const IWeapon = Symbol.for("Iweapon");
+        @injectable()
+        class Nunchuck implements IWeapon {}
+
+        @injectable()
+        class Bow implements IWeapon {}
+        @injectable()
+        class Shuriken implements IWeapon {}
+
+        const container = new Container();
+        const stealthTag: interfaces.Metadata = {
+            key: "Attack_Style",
+            value: "Stealth"
+        };
+        const highDamageTag: interfaces.Metadata = {
+            key: "Damage",
+            value: "High"
+        };
+        const mediumDamageTag: interfaces.Metadata = {
+            key: "Damage",
+            value: "Medium"
+        };
+
+        container.bind<Shuriken>(IWeapon).to(Shuriken).
+            when(createWhenTargetMultiTagged([highDamageTag, stealthTag]));
+        container.bind<Nunchuck>(IWeapon).to(Nunchuck).
+            when(createWhenTargetMultiTagged([mediumDamageTag, stealthTag]));
+        container.bind<Bow>(IWeapon).to(Bow).
+            when(createWhenTargetMultiTagged([mediumDamageTag, stealthTag]));
+
+        const highDamageStealthWeapons = container.getAllMultiTagged(IWeapon, highDamageTag, stealthTag);
+        expect(highDamageStealthWeapons.length).eqls(1);
+        expect(highDamageStealthWeapons[0]).instanceOf(Shuriken);
+
+        const mediumDamageStealthWeapons = container.getAllMultiTagged(IWeapon, mediumDamageTag, stealthTag);
+        expect(mediumDamageStealthWeapons[0]).instanceOf(Nunchuck);
+        expect(mediumDamageStealthWeapons[1]).instanceOf(Bow);
+    });
 
     it("Should be able to get a tagged binding from parent container", () => {
 

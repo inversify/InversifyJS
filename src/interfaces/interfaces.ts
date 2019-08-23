@@ -74,6 +74,7 @@ namespace interfaces {
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
         key?: string | number | symbol;
         value?: any;
+        metadata?: interfaces.Metadata[];
     }
 
     export type Next = (args: NextArgs) => (any | any[]);
@@ -175,6 +176,7 @@ namespace interfaces {
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
         getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+        getAllMultiTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Metadata[]): T[];
         getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;

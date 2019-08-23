@@ -242,11 +242,15 @@ class Container implements interfaces.Container {
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, [{key, value}]) as T;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    }
+
+    public getMultiTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Metadata[]): T {
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, tags) as T;
     }
 
     // Resolves a dependency by its runtime identifier
@@ -256,7 +260,11 @@ class Container implements interfaces.Container {
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, [{key, value}]) as T[];
+    }
+
+    public getAllMultiTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Metadata[]): T[] {
+        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, tags) as T[];
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
@@ -320,17 +328,26 @@ class Container implements interfaces.Container {
         isMultiInject: boolean,
         targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        key?: string | number | symbol,
-        value?: any
+        metadata?: interfaces.Metadata[]
     ): (T | T[]) {
 
         let result: (T | T[]) | null = null;
 
+        //backwards compatibility with middleware
+        let key: string | number | symbol | undefined;
+        let value: any | undefined;
+        if (metadata !== undefined) {
+            if (metadata.length === 1) {
+                key = metadata[0].key;
+                value = metadata[0].value;
+            }
+        }
         const defaultArgs: interfaces.NextArgs = {
             avoidConstraints,
             contextInterceptor: (context: interfaces.Context) => context,
             isMultiInject,
             key,
+            metadata,
             serviceIdentifier,
             targetType,
             value
@@ -361,8 +378,7 @@ class Container implements interfaces.Container {
                 args.isMultiInject,
                 args.targetType,
                 args.serviceIdentifier,
-                args.key,
-                args.value,
+                args.metadata,
                 args.avoidConstraints
             );
 
