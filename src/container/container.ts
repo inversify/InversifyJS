@@ -241,16 +241,22 @@ class Container implements interfaces.Container {
         return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
     }
 
-    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, [{key, value}]) as T;
-    }
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
 
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, tags: interfaces.Metadata[]): T;
+    public getTagged<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        keyOrTags: interfaces.Metadata[]|string | number | symbol,
+        value?: any): T {
+
+        if (Array.isArray(keyOrTags)) {
+            return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, keyOrTags) as T;
+        } else {
+            return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, [{key: keyOrTags, value}]) as T;
+        }
+    }
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
         return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
-    }
-
-    public getMultiTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Metadata[]): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, tags) as T;
     }
 
     // Resolves a dependency by its runtime identifier
@@ -259,12 +265,18 @@ class Container implements interfaces.Container {
         return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
     }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, [{key, value}]) as T[];
-    }
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
 
-    public getAllMultiTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Metadata[]): T[] {
-        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, tags) as T[];
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, tags: interfaces.Metadata[]): T[];
+    public getAllTagged<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        keyOrTags: interfaces.Metadata[]|string | number | symbol,
+        value?: any): T[] {
+        if (Array.isArray(keyOrTags)) {
+            return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, keyOrTags) as T[];
+        } else {
+            return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, [{key: keyOrTags, value}]) as T[];
+        }
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {

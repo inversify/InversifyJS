@@ -760,10 +760,10 @@ describe("Container", () => {
         container.bind<Nunchuck>(IWeapon).to(Nunchuck).
             when(createWhenTargetMultiTagged([mediumDamageTag, stealthTag]));
 
-        const highDamageStealthWeapon = container.getMultiTagged(IWeapon, highDamageTag, stealthTag);
+        const highDamageStealthWeapon = container.getTagged(IWeapon, [highDamageTag, stealthTag]);
         expect(highDamageStealthWeapon).instanceOf(Shuriken);
 
-        const mediumDamageStealthWeapon = container.getMultiTagged(IWeapon, mediumDamageTag, stealthTag);
+        const mediumDamageStealthWeapon = container.getTagged(IWeapon, [mediumDamageTag, stealthTag]);
         expect(mediumDamageStealthWeapon).instanceOf(Nunchuck);
     });
     it("Should be able to get all multi tagged bindings", () => {
@@ -805,11 +805,11 @@ describe("Container", () => {
         container.bind<Bow>(IWeapon).to(Bow).
             when(createWhenTargetMultiTagged([mediumDamageTag, stealthTag]));
 
-        const highDamageStealthWeapons = container.getAllMultiTagged(IWeapon, highDamageTag, stealthTag);
+        const highDamageStealthWeapons = container.getAllTagged(IWeapon, [highDamageTag, stealthTag]);
         expect(highDamageStealthWeapons.length).eqls(1);
         expect(highDamageStealthWeapons[0]).instanceOf(Shuriken);
 
-        const mediumDamageStealthWeapons = container.getAllMultiTagged(IWeapon, mediumDamageTag, stealthTag);
+        const mediumDamageStealthWeapons = container.getAllTagged(IWeapon, [mediumDamageTag, stealthTag]);
         expect(mediumDamageStealthWeapons[0]).instanceOf(Nunchuck);
         expect(mediumDamageStealthWeapons[1]).instanceOf(Bow);
     });
