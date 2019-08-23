@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { Metadata } from "../../dts/planning/metadata";
 import { postConstruct } from "../../src/annotation/post_construct";
 import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { decorate } from "../../src/inversify";
+import { Metadata } from "../../src/planning/metadata";
 
 describe("@postConstruct", () => {
 
@@ -31,10 +31,10 @@ describe("@postConstruct", () => {
         function setup() {
             class Katana {
                 @postConstruct()
-                public testMethod1() {/* ... */}
+                public testMethod1() {/* ... */ }
 
                 @postConstruct()
-                public testMethod2() {/* ... */}
+                public testMethod2() {/* ... */ }
             }
             Katana.toString();
         }
@@ -44,7 +44,7 @@ describe("@postConstruct", () => {
     it("Should be usable in VanillaJS applications", () => {
 
         const VanillaJSWarrior = function () {
-                   // ...
+            // ...
         };
         VanillaJSWarrior.prototype.testMethod = function () {
             // ...
