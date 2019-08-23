@@ -64,5 +64,4 @@ test/**/*.js.map
 src/**/*.js.map
 src/*.js.map
 type_definitions/**/*.js
-package-lock.json
 .idea
