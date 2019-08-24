@@ -39,6 +39,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Prettygoat](https://www.npmjs.com/package/prettygoat) - The not so baaaaaaad Event Sourcing Projection Engine.
 - [Retax](https://github.com/retaxJS) - Universal React Redux Framework.
 - [RobotlegsJS](https://github.com/GoodgameStudios/RobotlegsJS) - An architecture-based framework for JavaScript/TypeScript canvas applications.
+- [SugoiJS](https://github.com/sugoiJS/Demo) - TypeScript modular framework for building web server, also using inversify-express-utils.
 
 
 
