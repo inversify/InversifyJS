@@ -29,7 +29,7 @@ const taggedConstraint = (key: string | number | symbol) => (value: any) => {
 
 const namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
-const typeConstraint = (type: (Function | string)) => (request: interfaces.Request | null) => {
+const typeConstraint = (type: (Function | string | symbol)) => (request: interfaces.Request | null) => {
 
     // Using index 0 because constraints are applied
     // to one binding at a time (see Planner class)
@@ -37,11 +37,11 @@ const typeConstraint = (type: (Function | string)) => (request: interfaces.Reque
 
     if (request !== null) {
         binding = request.bindings[0];
-        if (typeof type === "string") {
+        if (typeof type === "string" || typeof type === "symbol") {
             const serviceIdentifier = binding.serviceIdentifier;
             return serviceIdentifier === type;
         } else {
-            const constructor = request.bindings[0].implementationType;
+            const constructor = binding.implementationType;
             return type === constructor;
         }
     }
@@ -49,4 +49,37 @@ const typeConstraint = (type: (Function | string)) => (request: interfaces.Reque
     return false;
 };
 
-export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint };
+const notConstraint = (constraint: interfaces.ConstraintFunction) => {
+    const not: interfaces.ConstraintFunction =  (request: interfaces.Request | null) => {
+        return !constraint(request);
+    };
+    return not;
+};
+const andConstraint = (...constraints: interfaces.ConstraintFunction[]) => {
+    const and: interfaces.ConstraintFunction =  (request: interfaces.Request | null) => {
+        let passed = true;
+        for (const constraint of constraints) {
+            passed = constraint(request);
+            if (!passed) {
+                break;
+            }
+        }
+        return passed;
+    };
+    return and;
+};
+const orConstraint = (...constraints: interfaces.ConstraintFunction[]) => {
+    const or: interfaces.ConstraintFunction =  (request: interfaces.Request | null) => {
+        let passed = false;
+        for (const constraint of constraints) {
+            passed = constraint(request);
+            if (passed) {
+                break;
+            }
+        }
+        return passed;
+    };
+    return or;
+};
+
+export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint, notConstraint, andConstraint, orConstraint };

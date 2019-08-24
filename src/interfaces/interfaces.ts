@@ -302,11 +302,11 @@ namespace interfaces {
         whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
         whenTargetIsDefault(): BindingOnSyntax<T>;
         whenTargetTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
+        whenInjectedInto(parent: (Function | string | symbol) | (Function | string | symbol)[]): BindingOnSyntax<T>;
         whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
         whenParentTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenAnyAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
-        whenNoAncestorIs(ancestor: (Function | string)): BindingOnSyntax<T>;
+        whenAnyAncestorIs(ancestor: (Function | string | symbol) | (Function | string | symbol)[]): BindingOnSyntax<T>;
+        whenNoAncestorIs(ancestor: (Function | string | symbol) | (Function | string | symbol)[]): BindingOnSyntax<T>;
         whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
         whenAnyAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
         whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
