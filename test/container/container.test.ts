@@ -814,6 +814,50 @@ describe("Container", () => {
         expect(mediumDamageStealthWeapons[1]).instanceOf(Bow);
     });
 
+    it("Should be able to get all tagged bindings without service identifier", () => {
+        const parentContainer = new Container();
+
+        const parentOnlyIdentifier = Symbol.for("ParentOnly");
+        const childAndParentIdentifier = Symbol.for("ChildAndParent");
+        const childIdentifier = Symbol.for("ChildOnly");
+        parentContainer.bind(parentOnlyIdentifier).toConstantValue("From Parent").whenTargetTagged("Match", true);
+        parentContainer.bind(childAndParentIdentifier).toConstantValue("Child Prevents Parent - Issue 954").whenTargetTagged("Match", true);
+        const childContainer = parentContainer.createChild();
+        childContainer.bind(childAndParentIdentifier).
+            toConstantValue("Does not match target but blocks parent - Issue 954").whenTargetTagged("Matched", false);
+        childContainer.bind(childIdentifier).toConstantValue("From Child").whenTargetTagged("Match", true);
+
+        const allTaggedWithoutIdentifier = childContainer.getAllTagged(undefined, "Match", true);
+        expect(allTaggedWithoutIdentifier).contains("From Parent");
+        expect(allTaggedWithoutIdentifier).contains("From Child");
+
+    });
+
+    it("Should be able to get all multi tagged bindings without service identifier", () => {
+        const container = new Container();
+
+        function createWhenTargetMultiTagged(tags: interfaces.Metadata[]) {
+            const constraint =  ( request: interfaces.Request ) => {
+                return request !== null && request.target !== null && tags.every((tag) => {
+                    return request.target.matchesTag(tag.key)(tag.value);
+                });
+            };
+            (constraint as any).metaDatas = tags;
+            return constraint;
+        }
+
+        const metadata1: interfaces.Metadata = { key: "Key1",  value: "Value1"};
+        const metadata2: interfaces.Metadata = { key: "Key2",  value: "Value2"};
+        const metadata3: interfaces.Metadata = { key: "Key3",  value: "Value3"};
+
+        container.bind("sid1").toConstantValue("Match").when(createWhenTargetMultiTagged([metadata1, metadata2]));
+        container.bind("sid2").toConstantValue("No match").when(createWhenTargetMultiTagged([metadata1, metadata3]));
+
+        const allMultiTagged = container.getAllTagged(undefined, [metadata1, metadata2]);
+        expect(allMultiTagged.length).eql(1);
+        expect(allMultiTagged[0]).eql("Match");
+    });
+
     it("Should be able to get a tagged binding from parent container", () => {
 
         const zero = "Zero";

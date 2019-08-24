@@ -176,8 +176,8 @@ namespace interfaces {
         getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
         getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, tags: interfaces.Metadata[]): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-        getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
-        getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, tags: interfaces.Metadata[]): T[];
+        getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T> | undefined, key: string | number | symbol, value: any): T[];
+        getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T> | undefined, tags: interfaces.Metadata[]): T[];
         getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;

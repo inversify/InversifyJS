@@ -264,19 +264,72 @@ class Container implements interfaces.Container {
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
         return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
     }
+    private _bindingMatchesTarget(binding: interfaces.Binding<any>, metadata: interfaces.Metadata[]) {
+        let found = false;
+        if (binding.constraint && binding.constraint.metaData || (binding.constraint as any).metaDatas) {
+            const firstMetadata: interfaces.Metadata = metadata[0];
+            const request = createMockRequest(this, binding.serviceIdentifier, firstMetadata.key, firstMetadata.value);
+            metadata.slice(1).forEach((m) => request.target.metadata.push(m));
+            found = binding.constraint(request);
+        }
+        return found;
+    }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+    private getAllTaggedByTags<T>(
+        keyOrTags: interfaces.Metadata[]|string | number | symbol,
+        value?: any): T[] {
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, tags: interfaces.Metadata[]): T[];
+            let tags: interfaces.Metadata[];
+            if (Array.isArray(keyOrTags)) {
+                tags = keyOrTags;
+            } else {
+                tags = [{key: keyOrTags, value}];
+            }
+            let parentContainer: interfaces.Container | null = this;
+            let taggedWithoutIdentifier: T[] = [];
+            const sidsWithTag: interfaces.ServiceIdentifier<any>[] = [];
+            while (parentContainer) {
+                const bindingDictionary = getBindingDictionary(parentContainer);
+                bindingDictionary.traverse((sid, bindings) => {
+                    if (sidsWithTag.indexOf(sid) === -1) {
+                        for (const binding of bindings) {
+                            if (this._bindingMatchesTarget(binding, tags)) {
+                                sidsWithTag.push(sid);
+                                break;
+                            }
+                        }
+                    }
+                });
+                parentContainer = parentContainer.parent;
+            }
+            //https://github.com/inversify/InversifyJS/issues/954
+            tags.push({key: METADATA_KEY.OPTIONAL_TAG, value: true});
+
+            taggedWithoutIdentifier = sidsWithTag.reduce((accumulator, sid) => {
+                const allTagged = this.getAllTagged(sid, tags);
+                return accumulator.concat(allTagged);
+            }, taggedWithoutIdentifier);
+
+            return taggedWithoutIdentifier;
+
+    }
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T> | undefined, key: string | number | symbol, value: any): T[];
+
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T> | undefined, tags: interfaces.Metadata[]): T[];
     public getAllTagged<T>(
         serviceIdentifier: interfaces.ServiceIdentifier<T>,
         keyOrTags: interfaces.Metadata[]|string | number | symbol,
         value?: any): T[] {
-        if (Array.isArray(keyOrTags)) {
-            return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, keyOrTags) as T[];
-        } else {
-            return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, [{key: keyOrTags, value}]) as T[];
-        }
+
+            if (serviceIdentifier === undefined) {
+                return this.getAllTaggedByTags(keyOrTags, value);
+            } else {
+                if (Array.isArray(keyOrTags)) {
+                    return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, keyOrTags) as T[];
+                } else {
+                    return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, [{key: keyOrTags, value}]) as T[];
+                }
+            }
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
