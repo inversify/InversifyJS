@@ -105,10 +105,10 @@ Named bindings:
 
 ```ts
 let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japonese");
+container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japanese");
 container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
 
-let katana = container.getNamed<Weapon>("Weapon", "japonese");
+let katana = container.getNamed<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 

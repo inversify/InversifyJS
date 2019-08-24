@@ -14,7 +14,7 @@ class Ninja implements Ninja {
     private _shuriken: Shuriken;
 
     public constructor(
-	    @inject("Newable<Katana>") Katana: Newable<Katana>, 
+	    @inject("Newable<Katana>") Katana: interfaces.Newable<Katana>, 
 	    @inject("Shuriken") shuriken: Shuriken
 	) {
         this._katana = new Katana();
