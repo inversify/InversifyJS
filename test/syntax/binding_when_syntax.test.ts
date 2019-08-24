@@ -175,6 +175,91 @@ describe("BindingWhenSyntax", () => {
         expect(shurikenBinding.constraint(katanaRequest)).eql(false);
         expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
 
+        //Symbol type constraint
+        const samuraiSymbol = Symbol.for("Samurai");
+        const samuraiSymbolBinding = new Binding<Samurai>(samuraiSymbol, BindingScopeEnum.Transient);
+        samuraiSymbolBinding.implementationType = Samurai;
+        const samuraiSymbolRequest = new Request("Samurai", context, null, samuraiSymbolBinding, samuraiTarget);
+
+        const ninjaSymbol = Symbol.for("Ninja");
+        const ninjaSymbolBinding = new Binding<Ninja>(ninjaSymbol, BindingScopeEnum.Transient);
+        ninjaBinding.implementationType = Ninja;
+        const ninjaSymbolRequest = new Request("Ninja", context, null, ninjaSymbolBinding, ninjaTarget);
+
+        const katanaSymbolRequest = new Request("Weapon", context, samuraiSymbolRequest, katanaBinding, katanaTarget);
+
+        const shurikenSymbolRequest = new Request("Weapon", context, ninjaSymbolRequest, shurikenBinding, shurikenTarget);
+        katanaBindingWhenSyntax.whenInjectedInto(samuraiSymbol);
+        expect(katanaBinding.constraint(katanaSymbolRequest)).eql(true);
+        expect(katanaBinding.constraint(shurikenSymbolRequest)).eql(false);
+
+    });
+    it("Should be able to constraint a binding to its parent, multiple service identifiers", () => {
+        interface Weapon {
+            name: string;
+        }
+
+        interface JaponeseWarrior {
+            katana: Weapon;
+        }
+
+        interface ChineseWarrior {
+            shuriken: Weapon;
+        }
+
+        class Ninja implements ChineseWarrior {
+            public shuriken: Weapon;
+            public constructor(shuriken: Weapon) {
+                this.shuriken = shuriken;
+            }
+        }
+
+        class Samurai implements JaponeseWarrior {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
+                this.katana = katana;
+            }
+        }
+
+        class KatanaMaster implements JaponeseWarrior {
+            public katana: Weapon;
+            public constructor(katana: Weapon) {
+                this.katana = katana;
+            }
+        }
+
+        const context = new Context(new Container());
+
+        const samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
+        samuraiBinding.implementationType = Samurai;
+        const samuraiTarget = new Target(TargetTypeEnum.Variable, "", "Samurai");
+        const samuraiRequest = new Request("Samurai", context, null, samuraiBinding, samuraiTarget);
+
+        const katanaMasterBinding = new Binding<KatanaMaster>("KatanaMaster", BindingScopeEnum.Transient);
+        katanaMasterBinding.implementationType = KatanaMaster;
+        const katanaMasterTarget = new Target(TargetTypeEnum.Variable, "", "KatanaMaster");
+        const katanaMasterRequest = new Request("KatanaMaster", context, null, katanaMasterBinding, katanaMasterTarget);
+
+        const ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
+        ninjaBinding.implementationType = Ninja;
+        const ninjaTarget = new Target(TargetTypeEnum.Variable, "", "Ninja");
+        const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
+
+        const katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
+        const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
+        const katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
+        const katanaSamuraiRequest = new Request("Weapon", context, samuraiRequest, katanaBinding, katanaTarget);
+
+        const katanaKatanaMasterRequest = new Request("Weapon", context, katanaMasterRequest, katanaBinding, katanaTarget);
+
+        const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
+        const shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
+        const shurikenRequest = new Request("Weapon", context, ninjaRequest, shurikenBinding, shurikenTarget);
+
+        katanaBindingWhenSyntax.whenInjectedInto([Samurai, KatanaMaster]);
+        expect(katanaBinding.constraint(katanaSamuraiRequest)).eql(true);
+        expect(katanaBinding.constraint(katanaKatanaMasterRequest)).eql(true);
+        expect(katanaBinding.constraint(shurikenRequest)).eql(false);
     });
 
     it("Should be able to constraint a binding to a named parent", () => {
@@ -426,6 +511,13 @@ describe("BindingWhenSyntax", () => {
             expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
 
         });
+        it("Should be able to apply a type constraint to some of its ancestors, multiple service identifiers", () => {
+
+            shurikenBindingWhenSyntax.whenAnyAncestorIs([SamuraiMaster, NinjaMaster]);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
+
+        });
 
         it("Should be able to apply a type constraint to none of its ancestors", () => {
 
@@ -444,6 +536,14 @@ describe("BindingWhenSyntax", () => {
             katanaBindingWhenSyntax.whenNoAncestorIs(SamuraiStudent);
             expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
             expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
+
+        });
+
+        it("Should be able to apply a type constraint to none of its ancestors, multiple service identifiers", () => {
+
+            shurikenBindingWhenSyntax.whenNoAncestorIs([SamuraiMaster, NinjaMaster]);
+            expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
+            expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
 
         });
 
