@@ -92,7 +92,7 @@ InversifyJS requires a modern JavaScript engine with support for:
 
 If your environment doesn't support one of these you will need to import a shim or polyfill.
 
-> :warning: **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is mean to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
+> :warning: **The `reflect-metadata` polyfill should be imported only once in your entire application** because the Reflect object is meant to be a global singleton. More details about this can be found [here](https://github.com/inversify/InversifyJS/issues/262#issuecomment-227593844).
 
 Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
 page in the wiki and the [Basic example](https://github.com/inversify/inversify-basic-example) to learn more.
@@ -150,7 +150,7 @@ When a class has a  dependency on an interface we also need to use the `@inject`
 
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
-import { Weapon, ThrowableWeapon, Warrior } from "./interfaces"
+import { Weapon, ThrowableWeapon, Warrior } from "./interfaces";
 import { TYPES } from "./types";
 
 @injectable()
