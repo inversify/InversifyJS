@@ -150,7 +150,7 @@ When a class has a  dependency on an interface we also need to use the `@inject`
 
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
-import { Weapon, ThrowableWeapon, Warrior } from "./interfaces"
+import { Weapon, ThrowableWeapon, Warrior } from "./interfaces";
 import { TYPES } from "./types";
 
 @injectable()
