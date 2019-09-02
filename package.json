@@ -73,7 +73,7 @@
     "publish-please": "5.5.1",
     "reflect-metadata": "0.1.13",
     "run-sequence": "2.2.1",
-    "sinon": "7.4.1",
+    "sinon": "7.4.2",
     "tslint": "5.19.0",
     "typescript": "^3.5.3",
     "updates": "8.5.3",
