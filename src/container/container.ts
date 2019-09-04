@@ -347,7 +347,8 @@ class Container implements interfaces.Container {
 
         return result;
     }
-
+    private resolvingCount = 0;
+    private parentContext: interfaces.Context|undefined;
     // Planner creates a plan and Resolver resolves a plan
     // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
@@ -368,9 +369,18 @@ class Container implements interfaces.Container {
 
             // apply context interceptor
             context = args.contextInterceptor(context);
+            if (this.resolvingCount !== 0) {
+                context.parentContext = this.parentContext;
+            }
+            this.parentContext = context;
+            this.resolvingCount++;
 
             // resolve plan
             const result = resolve<T>(context);
+            this.resolvingCount--;
+            if (this.resolvingCount === 0) {
+                this.parentContext = undefined;
+            }
             return result;
 
         };

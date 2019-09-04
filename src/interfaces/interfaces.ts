@@ -1,6 +1,6 @@
 namespace interfaces {
 
-    export type BindingScope = "Singleton" | "Transient" | "Request";
+    export type BindingScope = "Singleton" | "Transient" | "Request" | "RootRequest";
 
     export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
         "Function" | "Instance" | "Invalid" | "Provider";
@@ -11,6 +11,7 @@ namespace interfaces {
         Request: interfaces.BindingScope;
         Singleton: interfaces.BindingScope;
         Transient: interfaces.BindingScope;
+        RootRequest: interfaces.BindingScope;
     }
 
     export interface BindingTypeEnum {
@@ -87,6 +88,8 @@ namespace interfaces {
         container: Container;
         plan: Plan;
         currentRequest: Request;
+        parentContext: Context|undefined;
+        rootRequestScope: Map<number, any>|undefined;
         addPlan(plan: Plan): void;
         setCurrentRequest(request: Request): void;
     }
@@ -263,6 +266,7 @@ namespace interfaces {
         inSingletonScope(): BindingWhenOnSyntax<T>;
         inTransientScope(): BindingWhenOnSyntax<T>;
         inRequestScope(): BindingWhenOnSyntax<T>;
+        inRootRequestScope(): BindingWhenOnSyntax<T>;
     }
 
     export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }

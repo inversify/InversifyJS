@@ -8,6 +8,9 @@ class Context implements interfaces.Context {
     public plan: interfaces.Plan;
     public currentRequest: interfaces.Request;
 
+    public parentContext: Context|undefined;
+    public rootRequestScope: Map<number, any>|undefined;
+
     public constructor(
         container: interfaces.Container) {
         this.id = id();

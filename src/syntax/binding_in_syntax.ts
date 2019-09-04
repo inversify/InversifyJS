@@ -25,6 +25,11 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 
+    public inRootRequestScope(): interfaces.BindingWhenOnSyntax<T> {
+        this._binding.scope = BindingScopeEnum.RootRequest;
+        return new BindingWhenOnSyntax<T>(this._binding);
+    }
+
 }
 
 export { BindingInSyntax };

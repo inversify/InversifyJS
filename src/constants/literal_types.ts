@@ -2,8 +2,9 @@ import { interfaces } from "../interfaces/interfaces";
 
 const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Request: "Request",
+    RootRequest: "RootRequest",
     Singleton: "Singleton",
-    Transient: "Transient"
+    Transient: "Transient",
 };
 
 const BindingTypeEnum: interfaces.BindingTypeEnum = {

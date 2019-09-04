@@ -39,6 +39,10 @@ describe("BindingInSyntax", () => {
         bindingInSyntax.inTransientScope();
         expect(binding.scope).eql(BindingScopeEnum.Transient);
 
+        // root request scope
+        bindingInSyntax.inRootRequestScope();
+        expect(binding.scope).eql(BindingScopeEnum.RootRequest);
+
     });
 
 });

@@ -24,7 +24,17 @@ const invokeFactory = (
         }
     }
 };
-
+const _getRootContext = (request: interfaces.Request) => {
+    let parentContext = request.parentContext;
+    while (true) {
+        if (parentContext.parentContext) {
+            parentContext = parentContext.parentContext;
+        } else {
+            break;
+        }
+    }
+    return parentContext;
+};
 const _resolveRequest = (requestScope: interfaces.RequestScope) =>
     (request: interfaces.Request): any => {
 
@@ -59,6 +69,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         const binding = bindings[0];
         const isSingleton = binding.scope === BindingScopeEnum.Singleton;
         const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
+        const isRootRequestSingleton = binding.scope  === BindingScopeEnum.RootRequest;
 
         if (isSingleton && binding.activated) {
             return binding.cache;
@@ -70,6 +81,13 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             requestScope.has(binding.id)
         ) {
             return requestScope.get(binding.id);
+        }
+
+        if (isRootRequestSingleton) {
+            const rootContext = _getRootContext(request);
+            if (rootContext.rootRequestScope && rootContext.rootRequestScope.has(binding.id)) {
+                return rootContext.rootRequestScope.get(binding.id)!;
+            }
         }
 
         if (binding.type === BindingTypeEnum.ConstantValue) {
@@ -126,6 +144,14 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             !requestScope.has(binding.id)
         ) {
             requestScope.set(binding.id, result);
+        }
+
+        if (isRootRequestSingleton) {
+            const rootContext = _getRootContext(request);
+            if (rootContext.rootRequestScope === undefined) {
+                rootContext.rootRequestScope = new Map();
+            }
+            rootContext.rootRequestScope.set(binding.id, result);
         }
 
         return result;
