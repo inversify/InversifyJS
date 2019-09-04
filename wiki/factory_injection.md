@@ -64,7 +64,7 @@ class DieselCarFactory implements CarFactory {
     constructor(
         @inject("Factory<Engine>") factory: (category: string) => (displacement: number) => Engine // Injecting an engine factory
     ) {
-        this._dieselFactory = factory("diesel"); // Creating a diesel engine facotry
+        this._dieselFactory = factory("diesel"); // Creating a diesel engine factory
     }
     public createEngine(displacement: number): Engine {
         return this._dieselFactory(displacement); // Creating a concrete diesel engine
