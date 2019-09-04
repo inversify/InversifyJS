@@ -72,7 +72,7 @@ For example, the following binding will inject a factory which will always be a 
 container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toAutoFactory<Katana>("Katana");
 ```
 
-However, the value returned by the factory may or not be a singleton:
+However, the value returned by the factory may or may not be a singleton:
 
 ```ts
 container.bind<Katana>("Katana").to(Katana).inTransientScope();
@@ -82,8 +82,8 @@ container.bind<Katana>("Katana").to(Katana).inSingletonScope();
 
 ## About `inRequestScope`
 
-When we use inRequestScope we are using an special kind of singleton.
+When we use inRequestScope we are using a special kind of singleton.
 
 - The `inSingletonScope` creates a singleton that will last for the entire life cycle of a type binding. This means that the `inSingletonScope` can be cleared up from memory when we unbind a type binding using `container.unbind`.
 
-- The `inRequestScope` creates a singleton that will last for the entire life cycle of one call to the `contaner.get`, `container.getTagged` or `container.getNamed` methods. Each call to one of this methods will resolve a root dependency and all its sub-dependencies. Internally, a dependency graph known as the "resolution plan" is created by InversifyJS. The `inRequestScope` scope will use one single instance for objects that appear multiple times in the resolution plan. This reduces the number of required resolutions and it can be used as a performance optimization in some cases.
+- The `inRequestScope` creates a singleton that will last for the entire life cycle of one call to the `container.get`, `container.getTagged` or `container.getNamed` methods. Each call to one of this methods will resolve a root dependency and all its sub-dependencies. Internally, a dependency graph known as the "resolution plan" is created by InversifyJS. The `inRequestScope` scope will use one single instance for objects that appear multiple times in the resolution plan. This reduces the number of required resolutions and it can be used as a performance optimization in some cases.
