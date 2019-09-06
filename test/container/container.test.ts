@@ -309,6 +309,118 @@ describe("Container", () => {
         expect(() => container.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
     });
 
+    describe("singleton snapshot deep clone", () => {
+        it("has issue - https://github.com/inversify/InversifyJS/issues/715 - " +
+        "get activated singleton when restore does not return activated singleton", () => {
+            @injectable()
+            class Katana {}
+            const container = new Container();
+            let onActivationCount = 0;
+            container.bind(Katana).toSelf().inSingletonScope().onActivation((c, k) => {
+                onActivationCount++;
+                return k;
+            });
+            const singletonKata = container.get<Katana>(Katana);
+            const singletonKata2 = container.get<Katana>(Katana);
+            expect(singletonKata).to.equal(singletonKata2);
+
+            container.snapshot();
+            container.restore();
+            const lostSingletonKatana = container.get<Katana>(Katana);
+            expect(lostSingletonKatana).not.to.equal(singletonKata);
+            expect(onActivationCount).to.equal(2);
+        });
+        it("should use clone deep function in options when binding is cached - singleton", () => {
+            @injectable()
+            class Katana { }
+
+            const clonedKatana = new Katana();
+            const cloneDeep = (katana: Katana) => {
+                return clonedKatana;
+            };
+            const container = new Container({
+                snapshotSingletonCloneDeep: cloneDeep
+            });
+            let onActivationCount = 0;
+            container.bind(Katana).toSelf().inSingletonScope().onActivation((c, k) => {
+                onActivationCount++;
+                return k;
+            });
+            const singletonKatana = container.get<Katana>(Katana);
+            const singletonKatana2 = container.get<Katana>(Katana);
+            expect(singletonKatana).to.equal(singletonKatana2);
+
+            container.snapshot();
+            container.restore();
+            const restoredKatana = container.get<Katana>(Katana);
+            expect(restoredKatana).to.equal(clonedKatana);
+            expect(onActivationCount).to.equal(1);
+        });
+
+        it("should use clone deep function in options when binding is cached - constant value", () => {
+            @injectable()
+            class Katana {}
+            const constantKatana = new Katana();
+            const clonedKatana = new Katana();
+            const cloneDeep = (katana: Katana) => {
+                return clonedKatana;
+            };
+            const container = new Container({
+                snapshotSingletonCloneDeep: cloneDeep
+            });
+            container.bind(Katana).toConstantValue(constantKatana).onActivation((c, k) => {
+                return clonedKatana;
+            });
+            const katana1 = container.get<Katana>(Katana);
+            const katana2 = container.get<Katana>(Katana);
+            expect(katana1).to.equal(katana2);
+
+            container.snapshot();
+            container.restore();
+            const restoredKatana = container.get<Katana>(Katana);
+            expect(restoredKatana).to.equal(clonedKatana);
+        });
+        it("should not use clone deep function in options when binding is cached - constant value is function", () => {
+            let cloneDeepCalled = false;
+            const cloneDeep = (_: any) => {
+                return cloneDeepCalled = true;
+            };
+            const container = new Container({
+                snapshotSingletonCloneDeep: cloneDeep
+            });
+            const constantValueFunction = function () {
+                //
+            };
+            container.bind("CVF").toConstantValue(constantValueFunction);
+
+            const cvf1 = container.get("CVF");
+            container.snapshot();
+            container.restore();
+            const restoredCVF = container.get("CVF");
+            expect(restoredCVF).to.equal(cvf1);
+            expect(cloneDeepCalled).to.equal(false);
+        });
+        it("should not use clone deep function in options when binding is cached - toFunction value", () => {
+            let cloneDeepCalled = false;
+            const cloneDeep = (_: any) => {
+                return cloneDeepCalled = true;
+            };
+            const container = new Container({
+                snapshotSingletonCloneDeep: cloneDeep
+            });
+            const constantValueFunction = function () {
+                //
+            };
+            container.bind("CVF").toFunction(constantValueFunction);
+
+            const cvf1 = container.get("CVF");
+            container.snapshot();
+            container.restore();
+            const restoredCVF = container.get("CVF");
+            expect(restoredCVF).to.equal(cvf1);
+            expect(cloneDeepCalled).to.equal(false);
+        });
+    });
     it("Should be able to check is there are bindings available for a given identifier", () => {
 
         interface Warrior {}

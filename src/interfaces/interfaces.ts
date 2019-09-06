@@ -43,6 +43,7 @@ namespace interfaces {
     }
 
     export interface Binding<T> extends Clonable<Binding<T>> {
+        _singletonCloneDeep: interfaces.CloneDeep<any> | undefined;
         id: number;
         moduleId: string;
         activated: boolean;
@@ -152,11 +153,15 @@ namespace interfaces {
         matchesNamedTag(name: string): boolean;
         matchesTag(key: string | number | symbol): (value: any) => boolean;
     }
+    export type CloneDeep<T> = (t: T) => T;
+    export type SnapshotSingletonCustomCloneDeep<T> = CloneDeep<T>;
 
+    type SnapshotSingletonCloneDeep<T> = SnapshotSingletonCustomCloneDeep<T>;
     export interface ContainerOptions {
         autoBindInjectable?: boolean;
         defaultScope?: BindingScope;
         skipBaseClassChecks?: boolean;
+        snapshotSingletonCloneDeep?: SnapshotSingletonCloneDeep<any>;
     }
 
     export interface Container {

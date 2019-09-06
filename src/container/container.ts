@@ -22,6 +22,8 @@ class Container implements interfaces.Container {
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
+    private _snapshotSingletonCloneDeep: interfaces.SnapshotSingletonCustomCloneDeep<any> | undefined;
+
     public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
 
         const container = new Container();
@@ -51,6 +53,9 @@ class Container implements interfaces.Container {
 
     public constructor(containerOptions?: interfaces.ContainerOptions) {
         const options = containerOptions || {};
+        if (options.snapshotSingletonCloneDeep !== undefined) {
+            this._snapshotSingletonCloneDeep = options.snapshotSingletonCloneDeep;
+        }
         if (typeof options !== "object") {
             throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
         }
@@ -148,7 +153,7 @@ class Container implements interfaces.Container {
     // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         const scope = this.options.defaultScope || BindingScopeEnum.Transient;
-        const binding = new Binding<T>(serviceIdentifier, scope);
+        const binding = new Binding<T>(serviceIdentifier, scope, this._snapshotSingletonCloneDeep);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }
