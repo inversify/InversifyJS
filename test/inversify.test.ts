@@ -454,7 +454,220 @@ describe("InversifyJS", () => {
         expect(ninja2.sneak()).eql("Only 9 items left!");
 
     });
+    it("Should support refreshing a singleton with Container.get", () => {
+        interface Ninja {
+            fight(): string;
+            sneak(): string;
+        }
 
+        interface Katana {
+            hit(): string;
+        }
+
+        interface Shuriken {
+            throw(): string;
+        }
+
+        @injectable()
+        class Katana implements Katana {
+            private _usageCount: number;
+            public constructor() {
+                this._usageCount = 0;
+            }
+            public hit() {
+                this._usageCount = this._usageCount + 1;
+                return `This katana was used ${this._usageCount} times!`;
+            }
+        }
+
+        @injectable()
+        class Shuriken implements Shuriken {
+            private _shurikenCount: number;
+            public constructor() {
+                this._shurikenCount = 10;
+            }
+            public throw() {
+                this._shurikenCount = this._shurikenCount - 1;
+                return `Only ${this._shurikenCount} items left!`;
+            }
+        }
+
+        @injectable()
+        class Ninja implements Ninja {
+
+            private _katana: Katana;
+            private _shuriken: Shuriken;
+
+            public constructor(
+                @inject("Katana") katana: Katana,
+                @inject("RefreshedShuriken") shuriken: Shuriken
+            ) {
+                this._katana = katana;
+                this._shuriken = shuriken;
+            }
+
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
+
+        }
+
+        const container = new Container();
+        container.bind<Ninja>("Ninja").to(Ninja);
+        container.bind<Katana>("Katana").to(Katana).inSingletonScope();
+        container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
+        container.bind<Shuriken>("RefreshedShuriken").toDynamicValue((context) => {
+            return context.container.get<Shuriken>("Shuriken", {refreshSingleton: true});
+        });
+
+        const ninja1 = container.get<Ninja>("Ninja");
+        expect(ninja1.fight()).eql("This katana was used 1 times!");
+        expect(ninja1.fight()).eql("This katana was used 2 times!");
+        expect(ninja1.sneak()).eql("Only 9 items left!");
+        expect(ninja1.sneak()).eql("Only 8 items left!");
+
+        const ninja2 = container.get<Ninja>("Ninja");
+        expect(ninja2.fight()).eql("This katana was used 3 times!");
+        expect(ninja2.sneak()).eql("Only 9 items left!");
+
+    });
+
+    it("Should support refreshing a singleton with Container.getTagged", () => {
+        interface Ninja {
+            fight(): string;
+            sneak(): string;
+        }
+
+        interface Katana {
+            hit(): string;
+        }
+
+        interface Shuriken {
+            throw(): string;
+        }
+
+        @injectable()
+        class Katana implements Katana {
+            private _usageCount: number;
+            public constructor() {
+                this._usageCount = 0;
+            }
+            public hit() {
+                this._usageCount = this._usageCount + 1;
+                return `This katana was used ${this._usageCount} times!`;
+            }
+        }
+
+        @injectable()
+        class Shuriken implements Shuriken {
+            private _shurikenCount: number;
+            public constructor() {
+                this._shurikenCount = 10;
+            }
+            public throw() {
+                this._shurikenCount = this._shurikenCount - 1;
+                return `Only ${this._shurikenCount} items left!`;
+            }
+        }
+
+        @injectable()
+        class Ninja implements Ninja {
+
+            private _katana: Katana;
+            private _shuriken: Shuriken;
+
+            public constructor(
+                @inject("Katana") katana: Katana,
+                @inject("RefreshedShuriken") shuriken: Shuriken
+            ) {
+                this._katana = katana;
+                this._shuriken = shuriken;
+            }
+
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
+
+        }
+
+        const container = new Container();
+        container.bind<Ninja>("Ninja").to(Ninja);
+        container.bind<Katana>("Katana").to(Katana).inSingletonScope();
+        container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope().whenTargetTagged("Singleton", "Shuriken");
+        container.bind<Shuriken>("RefreshedShuriken").toDynamicValue((context) => {
+            return context.container.getTagged<Shuriken>("Shuriken", "Singleton", "Shuriken", {refreshSingleton: true});
+        });
+
+        const ninja1 = container.get<Ninja>("Ninja");
+        expect(ninja1.fight()).eql("This katana was used 1 times!");
+        expect(ninja1.fight()).eql("This katana was used 2 times!");
+        expect(ninja1.sneak()).eql("Only 9 items left!");
+        expect(ninja1.sneak()).eql("Only 8 items left!");
+
+        const ninja2 = container.get<Ninja>("Ninja");
+        expect(ninja2.fight()).eql("This katana was used 3 times!");
+        expect(ninja2.sneak()).eql("Only 9 items left!");
+    });
+
+    it("Should support refreshing singletons for multi inject", () => {
+        interface Ninja {
+            fight(): string;
+        }
+        interface Weapon {
+            attack(): string;
+        }
+
+        @injectable()
+        class Katana implements Weapon {
+            private _usageCount: number;
+            public constructor() {
+                this._usageCount = 0;
+            }
+            public attack() {
+                this._usageCount = this._usageCount + 1;
+                return `This katana was used ${this._usageCount} times!`;
+            }
+        }
+
+        @injectable()
+        class Shuriken implements Shuriken {
+            private _shurikenCount: number;
+            public constructor() {
+                this._shurikenCount = 10;
+            }
+            public attack() {
+                this._shurikenCount = this._shurikenCount - 1;
+                return `Only ${this._shurikenCount} shuriken left!`;
+            }
+        }
+
+        @injectable()
+        class NinjaMaster implements Ninja {
+            private _weapons: Weapon[];
+
+            public constructor(
+                @inject("RefreshedWeapons") weapons: Weapon[]
+            ) {
+               this._weapons = weapons;
+            }
+
+            public fight() { return this._weapons.map((w) => w.attack()).join(""); }
+
+        }
+
+        const container = new Container();
+        container.bind<NinjaMaster>("Ninja").to(NinjaMaster);
+        container.bind<Weapon>("Weapon").to(Katana).inSingletonScope();
+        container.bind<Weapon>("Weapon").to(Shuriken).inSingletonScope();
+        container.bind<Weapon[]>("RefreshedWeapons").toDynamicValue((context) => {
+            return context.container.getAll<Weapon>("Weapon", {refreshSingleton: true});
+        });
+
+        const ninja1 = container.get<NinjaMaster>("Ninja");
+        expect(ninja1.fight()).eql("This katana was used 1 times!Only 9 shuriken left!");
+        expect(ninja1.fight()).eql("This katana was used 2 times!Only 8 shuriken left!");
+
+        const ninja2 = container.get<NinjaMaster>("Ninja");
+        expect(ninja2.fight()).eql("This katana was used 1 times!Only 9 shuriken left!");
+    });
     it("Should support the injection of classes to itself", () => {
 
         const heroName = "superman";

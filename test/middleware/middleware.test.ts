@@ -150,6 +150,38 @@ describe("Middleware", () => {
 
     });
 
+    it("Should be instructable from Container get methods", () => {
+
+        interface Ninja {}
+
+        @injectable()
+        class Ninja implements Ninja {}
+
+        const container = new Container();
+
+        const log: string[] = [];
+
+        function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
+            return (args: interfaces.NextArgs) => {
+                if (args.getInstruction && args.getInstruction.logServiceIdentifier) {
+                    log.push(`Middleware: ${args.serviceIdentifier.toString()}`);
+                } else {
+                    log.push("Middleware");
+                }
+                return planAndResolve(args);
+            };
+        }
+
+        container.applyMiddleware(middleware1);
+        container.bind<Ninja>("Ninja").to(Ninja);
+
+        container.get<Ninja>("Ninja", {logServiceIdentifier: true});
+        container.get<Ninja>("Ninja", {logServiceIdentifier: false});
+
+        expect(log[0]).to.eql("Middleware: Ninja");
+        expect(log[1]).to.eql("Middleware");
+    });
+
     it("Should be able to use middleware to catch errors during pre-planning phase", () => {
 
         interface Ninja {}

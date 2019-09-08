@@ -74,6 +74,7 @@ namespace interfaces {
         serviceIdentifier: interfaces.ServiceIdentifier<any>;
         key?: string | number | symbol;
         value?: any;
+        getInstruction?: GetInstruction;
     }
 
     export type Next = (args: NextArgs) => (any | any[]);
@@ -158,7 +159,11 @@ namespace interfaces {
         defaultScope?: BindingScope;
         skipBaseClassChecks?: boolean;
     }
+    export interface GetInstruction {
+        refreshSingleton?: boolean;
+        [key: string]: any;
 
+    }
     export interface Container {
         id: number;
         parent: Container | null;
@@ -170,10 +175,11 @@ namespace interfaces {
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
         isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
         isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
-        get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-        getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
-        getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
-        getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
+        get<T>(serviceIdentifier: ServiceIdentifier<T>, getInstruction?: GetInstruction): T;
+        getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol, getInstruction?: GetInstruction): T;
+        getTagged<T>(
+            serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any, getInstruction?: GetInstruction): T;
+        getAll<T>(serviceIdentifier: ServiceIdentifier<T>, getInstruction?: GetInstruction): T[];
         getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
         getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;

@@ -237,30 +237,42 @@ class Container implements interfaces.Container {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
-    public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
+    public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, getInstruction?: interfaces.GetInstruction): T {
+        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, getInstruction) as T;
     }
 
-    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+    public getTagged<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        key: string | number | symbol, value: any,
+        getInstruction?: interfaces.GetInstruction): T {
+            return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, getInstruction, key, value) as T;
     }
 
-    public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
-        return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    public getNamed<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        named: string | number | symbol,
+        getInstruction?: interfaces.GetInstruction): T {
+            return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named, getInstruction);
     }
 
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
-    public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
+    public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, getInstruction?: interfaces.GetInstruction): T[] {
+        return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier, getInstruction) as T[];
     }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+    public getAllTagged<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        key: string | number | symbol, value: any,
+        getInstruction?: interfaces.GetInstruction): T[] {
+            return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, getInstruction, key, value) as T[];
     }
 
-    public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
-        return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+    public getAllNamed<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        named: string | number | symbol,
+        getInstruction?: interfaces.GetInstruction): T[] {
+        return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named, getInstruction);
     }
 
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
@@ -320,6 +332,7 @@ class Container implements interfaces.Container {
         isMultiInject: boolean,
         targetType: interfaces.TargetType,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        getInstruction?: interfaces.GetInstruction,
         key?: string | number | symbol,
         value?: any
     ): (T | T[]) {
@@ -329,11 +342,12 @@ class Container implements interfaces.Container {
         const defaultArgs: interfaces.NextArgs = {
             avoidConstraints,
             contextInterceptor: (context: interfaces.Context) => context,
+            getInstruction,
             isMultiInject,
             key,
             serviceIdentifier,
             targetType,
-            value
+            value,
         };
 
         if (this._middleware) {
@@ -347,7 +361,23 @@ class Container implements interfaces.Container {
 
         return result;
     }
-
+    private _refreshSingleton(context: interfaces.Context, args: interfaces.NextArgs) {
+        if (args.getInstruction !== undefined && args.getInstruction.refreshSingleton) {
+            if (context.plan.rootRequest.target.isArray()) {
+                context.plan.rootRequest.childRequests.forEach((childRequest) => {
+                    const binding = childRequest.bindings[0];
+                    if (binding.scope === BindingScopeEnum.Singleton && binding.activated) {
+                        binding.activated = false;
+                    }
+                });
+            } else {
+                const binding = context.plan.rootRequest.bindings[0];
+                if (binding.scope === BindingScopeEnum.Singleton && binding.activated) {
+                    binding.activated = false;
+                }
+            }
+        }
+    }
     // Planner creates a plan and Resolver resolves a plan
     // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
@@ -368,7 +398,7 @@ class Container implements interfaces.Container {
 
             // apply context interceptor
             context = args.contextInterceptor(context);
-
+            this._refreshSingleton(context, args);
             // resolve plan
             const result = resolve<T>(context);
             return result;
