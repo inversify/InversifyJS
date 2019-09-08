@@ -72,6 +72,44 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should be able to to do setter injection and property injection", () => {
+        @injectable()
+        class Shuriken {
+            public throw() {
+                return "hit!";
+            }
+        }
+        @injectable()
+        class Katana implements Katana {
+            public hit() {
+                return "cut!";
+            }
+        }
+
+        @injectable()
+        class Ninja {
+
+            private _shuriken: Shuriken;
+            @inject(Shuriken)
+            public set Shuriken(shuriken: Shuriken) {
+                this._shuriken = shuriken;
+            }
+            @inject(Katana)
+            public katana!: Katana;
+            public sneak() { return this._shuriken.throw(); }
+            public fight()  {return this.katana.hit(); }
+
+        }
+
+        const container = new Container();
+        container.bind<Ninja>("Ninja").to(Ninja);
+        container.bind(Shuriken).toSelf();
+        container.bind(Katana).toSelf();
+
+        const ninja = container.get<Ninja>("Ninja");
+        expect(ninja.sneak()).to.eql("hit!");
+        expect(ninja.fight()).to.eql("cut!");
+    });
     it("Should be able to resolve and inject dependencies in VanillaJS", () => {
 
         const TYPES = {
