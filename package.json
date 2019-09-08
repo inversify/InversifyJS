@@ -76,7 +76,7 @@
     "sinon": "7.4.1",
     "tslint": "5.19.0",
     "typescript": "^3.5.3",
-    "updates": "8.5.3",
+    "updates": "9.0.0",
     "vinyl-buffer": "1.0.1",
     "vinyl-source-stream": "2.0.0"
   }
