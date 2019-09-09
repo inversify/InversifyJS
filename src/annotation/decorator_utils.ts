@@ -1,6 +1,7 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
+import { getMethodParameterKey } from "../resolution/methodInjection";
 
 function tagParameter(
     annotationTarget: any,
@@ -31,11 +32,11 @@ function _tagParameterOrProperty(
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
     const isParameterDecorator = (typeof parameterIndex === "number");
-    const key: string = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
-
-    // if the decorator is used as a parameter decorator, the property name must be provided
-    if (isParameterDecorator && propertyName !== undefined) {
-        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
+    let key: string;
+    if (isParameterDecorator && propertyName) {
+        key = getMethodParameterKey(propertyName, parameterIndex!);
+    } else {
+        key = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
     }
 
     // read metadata if available

@@ -1073,8 +1073,8 @@ describe("Resolve", () => {
                 throw new Error("Original Message");
             }
         }
-
-        expect(resolveInstance.bind(resolveInstance, Katana, [], (request: interfaces.Request) => null))
+        const container = new Container();
+        expect(resolveInstance.bind(resolveInstance, Katana, [], (request: interfaces.Request) => null, container))
             .to.throw("@postConstruct error in class Katana: Original Message");
     });
 
