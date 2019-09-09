@@ -19,3 +19,5 @@ export { decorate } from "./annotation/decorator_utils";
 export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 export { getServiceIdentifierAsString } from "./utils/serialization";
 export { multiBindToService } from "./utils/binding_utils";
+export { MethodInjectedType1, MethodInjectedType2, MethodInjectedType3,
+    MethodInjectedType4, MethodInjectedType5, MethodInjectedType6} from "./resolution/methodInjection";

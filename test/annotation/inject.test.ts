@@ -113,19 +113,6 @@ describe("@inject", () => {
 
   });
 
-  it("Should throw when not applayed to a constructor", () => {
-
-    const useDecoratorOnMethodThatIsNotAConstructor = function() {
-      __decorate([ __param(0, inject("Katana")) ],
-                 InvalidDecoratorUsageWarrior.prototype,
-                 "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
-    };
-
-    const msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
-    expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
-
-  });
-
   it("Should throw when applied with undefined", () => {
 
     // this can happen when there is circular dependency between symbols

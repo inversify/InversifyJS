@@ -3,7 +3,7 @@ import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
-
+import { methodInjection } from "./methodInjection";
 function _injectProperties(
     instance: any,
     childRequests: interfaces.Request[],
@@ -47,7 +47,8 @@ function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
 function resolveInstance(
     constr: interfaces.Newable<any>,
     childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler
+    resolveRequest: interfaces.ResolveRequestHandler,
+    container: interfaces.Container
 ): any {
 
     let result: any = null;
@@ -65,6 +66,7 @@ function resolveInstance(
     } else {
         result = new constr();
     }
+    methodInjection(container, constr, result);
     _postConstruct(constr, result);
 
     return result;

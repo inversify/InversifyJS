@@ -286,6 +286,7 @@ namespace interfaces {
     }
 
     export interface MetadataReader {
+        getMethodMetadata?(classPrototype: any): MetadataMap;
         getConstructorMetadata(constructorFunc: Function): ConstructorMetadata;
         getPropertiesMetadata(constructorFunc: Function): MetadataMap;
     }
