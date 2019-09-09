@@ -168,19 +168,6 @@ describe("@Tagged", () => {
 
   });
 
-  it("Should throw when not applied to a constructor", () => {
-
-    const useDecoratorOnMethodThatIsNotAConstructor = function() {
-      __decorate([ __param(0, tagged("a", 1)) ],
-                 InvalidDecoratorUsageWarrior.prototype,
-                 "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
-    };
-
-    const msg = ERRORS_MSGS.INVALID_DECORATOR_OPERATION;
-    expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
-
-  });
-
   it("Should be usable in VanillaJS applications", () => {
 
     interface Katana {}

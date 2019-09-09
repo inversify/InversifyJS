@@ -23,6 +23,10 @@ class MetadataReader implements interfaces.MetadataReader {
         const userGeneratedMetadata =  Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, constructorFunc) || [];
         return userGeneratedMetadata;
     }
+    public getMethodMetadata?(classPrototype: any): interfaces.MetadataMap {
+        // User generated method parameter annotations
+        return Reflect.getMetadata(METADATA_KEY.TAGGED, classPrototype) || {};
+    }
 
 }
 

@@ -100,7 +100,8 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             result = resolveInstance(
                 binding.implementationType,
                 childRequests,
-                _resolveRequest(requestScope)
+                _resolveRequest(requestScope),
+                request.parentContext.container
             );
         } else {
             // The user probably created a binding but didn't finish it
