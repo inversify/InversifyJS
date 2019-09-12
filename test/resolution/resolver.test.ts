@@ -1579,6 +1579,33 @@ describe("Resolve", () => {
  but it has asynchronous dependencies.`);
   });
 
+  it("Should retry promise if first time failed", async () => {
+      @injectable()
+      class Constructable {
+      }
+
+      let attemped = false;
+
+      const container = new Container();
+      container.bind<Constructable>("Constructable").toDynamicValue(() => {
+          if (attemped) {
+              return Promise.resolve(new Constructable());
+          }
+
+          attemped = true;
+
+          return Promise.reject("break");
+      }).inSingletonScope();
+
+      try {
+          await container.getAsync("Constructable");
+
+          throw new Error("should have thrown exception.");
+      } catch (ex) {
+          await container.getAsync("Constructable");
+      }
+  });
+
   it("Should return resolved instance to onActivation when binding is async", async () => {
       @injectable()
       class Constructable {

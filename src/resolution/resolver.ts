@@ -117,6 +117,15 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         if (isSingleton) {
             binding.cache = result;
             binding.activated = true;
+
+            if (result instanceof Promise) {
+                result.catch((ex) => {
+                    // allow binding to retry in future
+                    binding.cache = null;
+
+                    throw ex;
+                });
+            }
         }
 
         if (
