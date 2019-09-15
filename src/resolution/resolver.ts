@@ -2,6 +2,7 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
+import { isPromise } from "../utils/async";
 import { isStackOverflowExeption } from "../utils/exceptions";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
@@ -118,8 +119,8 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             binding.cache = result;
             binding.activated = true;
 
-            if (result instanceof Promise) {
-                result.catch((ex) => {
+            if (isPromise(result)) {
+              (result as Promise<any>).catch((ex) => {
                     // allow binding to retry in future
                     binding.cache = null;
 
@@ -141,16 +142,16 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
 
 };
 
-function onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, resolved: T): T | Promise<T> {
-  if (resolved instanceof Promise) {
-    return resolved.then((unpromised) => onActivation(request, binding, unpromised));
+function onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, resolved: T | Promise<T>): T | Promise<T> {
+  if (isPromise(resolved)) {
+    return (resolved as Promise<T>).then((unpromised) => onActivation(request, binding, unpromised));
   }
 
   let result: T | Promise<T> = resolved;
 
   // use activation handler if available
   if (typeof binding.onActivation === "function") {
-    result = binding.onActivation(request.parentContext, result);
+    result = binding.onActivation(request.parentContext, result as T);
   }
 
   const containers = [request.parentContext.container];
@@ -177,8 +178,9 @@ function activationLoop<T>(
     previous: T | Promise<T>,
     iterator?: IterableIterator<[number, interfaces.BindingActivation<any>]>
   ): T | Promise<T> {
-    if (previous instanceof Promise) {
-        return previous.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised));
+    if (isPromise(previous)) {
+        return (previous as Promise<any>)
+          .then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised));
     }
 
     let result = previous;
@@ -197,8 +199,9 @@ function activationLoop<T>(
     while (!next.done) {
       result = next.value[1](context, result);
 
-      if (result instanceof Promise) {
-          return result.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised, iter));
+      if (isPromise(result)) {
+          return (result as Promise<any>)
+            .then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised, iter));
       }
 
       next = iter.next();

@@ -7,6 +7,7 @@ import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
+import { isPromise } from "../utils/async";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
@@ -174,7 +175,7 @@ class Container implements interfaces.Container {
             for (const binding of bindings) {
                 const result = this.preDestroy(binding);
 
-                if (result instanceof Promise) {
+                if (isPromise(result)) {
                     throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
                 }
             }
@@ -209,7 +210,7 @@ class Container implements interfaces.Container {
             for (const binding of value) {
                 const result = this.preDestroy(binding);
 
-                if (result instanceof Promise) {
+                if (isPromise(result)) {
                     throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
                 }
             }
@@ -225,8 +226,8 @@ class Container implements interfaces.Container {
             for (const binding of value) {
                 const result = this.preDestroy(binding);
 
-                if (result instanceof Promise) {
-                    promises.push(result);
+                if (isPromise(result)) {
+                    promises.push(result as Promise<any>);
                 }
             }
         });
@@ -381,8 +382,8 @@ class Container implements interfaces.Container {
             return;
         }
 
-        if (binding.cache instanceof Promise) {
-            return binding.cache.then(async (resolved) => this.doDeactivation(binding, resolved));
+        if (isPromise(binding.cache)) {
+            return binding.cache.then((resolved: any) => this.doDeactivation(binding, resolved));
         }
 
         return this.doDeactivation(binding, binding.cache);
@@ -411,8 +412,8 @@ class Container implements interfaces.Container {
                 while (deact.value) {
                     const result = deact.value[1](instance);
 
-                    if (result instanceof Promise) {
-                        return result.then(() => {
+                    if (isPromise(result)) {
+                        return (result as Promise<any>).then(() => {
                             this.doDeactivation(binding, instance, deactivations);
                         }).catch((ex) => {
                             throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
@@ -434,8 +435,8 @@ class Container implements interfaces.Container {
             if (typeof binding.onDeactivation === "function") {
                 const result = binding.onDeactivation(instance);
 
-                if (result instanceof Promise) {
-                    return result.then(() => this.destroyMetadata(constr, instance));
+                if (isPromise(result)) {
+                    return (result as Promise<any>).then(() => this.destroyMetadata(constr, instance));
                 }
             }
 
@@ -535,7 +536,7 @@ class Container implements interfaces.Container {
             result = this._planAndResolve<T>()(defaultArgs);
         }
 
-        if (result instanceof Promise && !async) {
+        if (isPromise(result) && !async) {
             throw new Error(ERROR_MSGS.LAZY_IN_SYNC(serviceIdentifier));
         }
 

@@ -3,6 +3,7 @@ import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
+import { isPromise } from "../utils/async";
 
 function _injectProperties(
     instance: any,
@@ -67,7 +68,7 @@ function resolveInstance(
 
         const constructorInjections = constructorInjectionsRequests.map(resolveRequest);
 
-        if (constructorInjections.some((ci) => ci instanceof Promise)) {
+        if (constructorInjections.some(isPromise)) {
             return new Promise( async (resolve, reject) => {
                 try {
                     const resolved = await Promise.all(constructorInjections);
@@ -93,8 +94,8 @@ function resolveInstance(
 
     const post = _postConstruct(constr, result);
 
-    if (post instanceof Promise) {
-        return post.then(() => result);
+    if (isPromise(post)) {
+        return (post as Promise<any>).then(() => result);
     }
 
     return result;
