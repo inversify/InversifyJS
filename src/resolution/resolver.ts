@@ -120,7 +120,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             binding.activated = true;
 
             if (isPromise(result)) {
-              (result as Promise<any>).catch((ex) => {
+              result = (result as Promise<any>).catch((ex) => {
                     // allow binding to retry in future
                     binding.cache = null;
 
