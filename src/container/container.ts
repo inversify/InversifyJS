@@ -227,7 +227,7 @@ class Container implements interfaces.Container {
                 const result = this.preDestroy(binding);
 
                 if (isPromise(result)) {
-                    promises.push(result as Promise<any>);
+                    promises.push(result);
                 }
             }
         });
@@ -413,7 +413,7 @@ class Container implements interfaces.Container {
                     const result = deact.value[1](instance);
 
                     if (isPromise(result)) {
-                        return (result as Promise<any>).then(() => {
+                        return result.then(() => {
                             this.doDeactivation(binding, instance, deactivations);
                         }).catch((ex) => {
                             throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
@@ -436,7 +436,7 @@ class Container implements interfaces.Container {
                 const result = binding.onDeactivation(instance);
 
                 if (isPromise(result)) {
-                    return (result as Promise<any>).then(() => this.destroyMetadata(constr, instance));
+                    return result.then(() => this.destroyMetadata(constr, instance));
                 }
             }
 

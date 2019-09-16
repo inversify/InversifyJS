@@ -120,7 +120,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             binding.activated = true;
 
             if (isPromise(result)) {
-              result = (result as Promise<any>).catch((ex) => {
+              result = result.catch((ex) => {
                     // allow binding to retry in future
                     binding.cache = null;
 
@@ -144,7 +144,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
 
 function onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, resolved: T | Promise<T>): T | Promise<T> {
   if (isPromise(resolved)) {
-    return (resolved as Promise<T>).then((unpromised) => onActivation(request, binding, unpromised));
+    return resolved.then((unpromised) => onActivation(request, binding, unpromised));
   }
 
   let result: T | Promise<T> = resolved;
@@ -179,8 +179,7 @@ function activationLoop<T>(
     iterator?: IterableIterator<[number, interfaces.BindingActivation<any>]>
   ): T | Promise<T> {
     if (isPromise(previous)) {
-        return (previous as Promise<any>)
-          .then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised));
+        return previous.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised));
     }
 
     let result = previous;
@@ -200,8 +199,7 @@ function activationLoop<T>(
       result = next.value[1](context, result);
 
       if (isPromise(result)) {
-          return (result as Promise<any>)
-            .then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised, iter));
+          return result.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised, iter));
       }
 
       next = iter.next();

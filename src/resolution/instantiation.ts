@@ -95,7 +95,7 @@ function resolveInstance(
     const post = _postConstruct(constr, result);
 
     if (isPromise(post)) {
-        return (post as Promise<any>).then(() => result);
+        return post.then(() => result);
     }
 
     return result;
