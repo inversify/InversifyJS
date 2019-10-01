@@ -40,7 +40,7 @@
     "@types/chai": "4.2.0",
     "@types/harmony-proxy": "1.0.29",
     "@types/mocha": "5.2.7",
-    "@types/sinon": "7.0.13",
+    "@types/sinon": "7.5.0",
     "bluebird": "3.5.5",
     "browserify": "16.5.0",
     "chai": "4.2.0",
