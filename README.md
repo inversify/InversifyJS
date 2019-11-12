@@ -123,7 +123,7 @@ export interface ThrowableWeapon {
 }
 ```
 
-InversifyJS need to use the type as identifiers at runtime. We use symbols as identifiers but you can also use classes and or string literals.
+InversifyJS needs to use the type as an identifier at runtime. We use symbols as identifiers but you can also use classes and or string literals.
  
 ```ts
 // file types.ts
@@ -138,12 +138,12 @@ export { TYPES };
 
 ```
 
-> **Note**: It is recommended to use Symbols but InversifyJS also support the usage of Classes and string literals (please refer to the features section to learn more).
+> **Note**: It is recommended to use Symbols but InversifyJS also supports the usage of Classes and string literals (please refer to the features section to learn more).
 
 ### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
 Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
 
-When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol.for("Weapon")` and `Symbol.for("ThrowableWeapon")` as runtime identifiers.
+When a class has a dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol.for("Weapon")` and `Symbol.for("ThrowableWeapon")` as runtime identifiers.
 
 ```ts
 // file entities.ts
@@ -242,7 +242,7 @@ InversifyJS supports ES5 and ES6 and can work without TypeScript.
 Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!
 
 ## The InversifyJS Features and API
-Let's take a look to the InversifyJS features!
+Let's take a look at the InversifyJS features!
 
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
 - [Support for Symbols](https://github.com/inversify/InversifyJS/blob/master/wiki/symbols_as_id.md)
@@ -282,7 +282,7 @@ In order to provide a state of the art development experience we are also workin
 Please refer to the [ecosystem wiki page](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md) to learn more.
 
 ## Support
-If you are experience any kind of issues we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
+If you experience any kind of issue we will be happy to help. You can report an issue using the [issues page](https://github.com/inversify/InversifyJS/issues) or the [chat](https://gitter.im/inversify/InversifyJS). You can also ask questions at [Stack overflow](http://stackoverflow.com/tags/inversifyjs) using the `inversifyjs` tag.
 
 If you want to share your thoughts with the development team or join us you will be able to do so using the [official the mailing list](https://groups.google.com/forum/#!forum/inversifyjs). You can check out the
 [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) to learn more about InversifyJS internals.
