@@ -123,6 +123,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
               result = result.catch((ex) => {
                     // allow binding to retry in future
                     binding.cache = null;
+                    binding.activated = false;
 
                     throw ex;
                 });

@@ -1170,6 +1170,48 @@ describe("Resolve", () => {
 
   });
 
+  it("Should not cache bindings if a dependency in the async chain fails", async () => {
+    let level2Attempts = 0;
+
+    @injectable()
+    class Level2 {
+        public value: string;
+
+        public constructor(@inject("level1")value: string) {
+          level2Attempts += 1;
+          this.value = value;
+        }
+    }
+
+    let level1Attempts = 0;
+
+    const container = new Container({defaultScope: "Singleton", autoBindInjectable: true});
+    container.bind("level1").toDynamicValue(async (context) => {
+        level1Attempts += 1;
+
+        if (level1Attempts === 1) {
+          throw new Error("first try failed.");
+        }
+
+        return "foobar";
+    });
+    container.bind("a").to(Level2);
+
+    try {
+      await container.getAsync("a");
+
+      throw new Error("should have failed on first invocation.");
+    } catch (ex) {
+      // ignore
+    }
+
+    const level2 = await container.getAsync<Level2>("a");
+    expect(level2.value).equals("foobar");
+
+    expect(level1Attempts).equals(2);
+    expect(level2Attempts).equals(1);
+  });
+
   it("Should support async when default scope is singleton", async () => {
       const container = new Container({defaultScope: "Singleton"});
       container.bind("a").toDynamicValue( async () => Math.random());
