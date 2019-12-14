@@ -146,7 +146,12 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
         const targetName = metadata.targetName || key;
 
         // Take types to be injected from user-generated metadata
-        const serviceIdentifier = (metadata.inject || metadata.multiInject);
+        let serviceIdentifier = (metadata.inject || metadata.multiInject);
+
+        // We unwrap LazyServiceIdentifer wrappers to get the actual serviceIdentifier, allowing forward reference class
+        if (serviceIdentifier instanceof LazyServiceIdentifer) {
+            serviceIdentifier = serviceIdentifier.unwrap();
+        }
 
         // The property target
         const target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIdentifier);

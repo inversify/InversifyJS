@@ -13,7 +13,8 @@
                 "--require",
                 "reflect-metadata",
                 "-u",
-                "tdd",
+                // https://github.com/mochajs/mocha/issues/2940#issuecomment-319557442
+                "bdd",
                 "--timeout",
                 "999999",
                 "--colors",
