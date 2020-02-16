@@ -5,6 +5,8 @@
   "main": "lib/inversify.js",
   "jsnext:main": "es/inversify.js",
   "types": "./dts/inversify.d.ts",
+  "sideEffects": false,
+  "module": "es/inversify.js",
   "directories": {
     "test": "gulp"
   },
