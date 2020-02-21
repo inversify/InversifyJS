@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "gulp",
+    "build:umd": "webpack --config webpack.config.js",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard",
     "update": "updates --update --minor && npm install",
@@ -78,6 +79,10 @@
     "typescript": "^3.5.3",
     "updates": "8.5.3",
     "vinyl-buffer": "1.0.1",
-    "vinyl-source-stream": "2.0.0"
+    "vinyl-source-stream": "2.0.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "clean-webpack-plugin": "^3.0.0",
+    "webpack": "^4.33.0",
+    "webpack-cli": "^3.3.3"
   }
 }
