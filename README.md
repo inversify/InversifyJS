@@ -230,10 +230,10 @@ import { myContainer } from "./inversify.config";
 import { TYPES } from "./types";
 import { Warrior } from "./interfaces";
 
-const ninja = myContainer.get<Warrior>(TYPES.Warrior);
+const warrior = myContainer.get<Warrior>(TYPES.Warrior);
 
-expect(ninja.fight()).eql("cut!"); // true
-expect(ninja.sneak()).eql("hit!"); // true
+expect(warrior.fight()).eql("cut!"); // true
+expect(warrior.sneak()).eql("hit!"); // true
 ```
 
 As we can see the `Katana` and `Shuriken` were successfully resolved and injected into `Ninja`.
