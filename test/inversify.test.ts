@@ -5,7 +5,7 @@ import "es6-symbol/implement";
 import * as ERROR_MSGS from "../src/constants/error_msgs";
 import { interfaces } from "../src/interfaces/interfaces";
 import {
-    Container, ContainerModule, decorate, inject,
+    Container, ContainerModule, createSymbolForInterface, decorate, inject,
     injectable, LazyServiceIdentifer, multiInject, named, tagged, targetName,
     typeConstraint, unmanaged
 } from "../src/inversify";
@@ -2791,6 +2791,25 @@ describe("InversifyJS", () => {
 
         expect(throws).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Samurai`);
 
+    });
+
+    it("Should be able to get a symbol that associate with the interface", () => {
+        const Warrior = createSymbolForInterface<Warrior>();
+        interface Warrior {
+            getName(): string;
+        }
+
+        @injectable()
+        class Samurai implements Warrior {
+            public getName() {
+                return "Samurai";
+            }
+        }
+
+        const container = new Container();
+
+        container.bind(Warrior).to(Samurai);
+        expect(container.get(Warrior).getName()).to.eql("Samurai");
     });
 
 });

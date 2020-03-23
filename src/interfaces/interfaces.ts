@@ -36,7 +36,16 @@ namespace interfaces {
         prototype: T;
     }
 
-    export type ServiceIdentifier<T> = (string | symbol | Newable<T> | Abstract<T>);
+    export interface TypeAssociatedSymbol<T> extends Symbol {
+    }
+
+    export type ServiceIdentifier<T> = (
+        string
+        | symbol
+        | TypeAssociatedSymbol<T>
+        | Newable<T>
+        | Abstract<T>
+    );
 
     export interface Clonable<T> {
         clone(): T;
