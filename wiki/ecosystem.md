@@ -29,7 +29,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Express](https://github.com/inversify/inversify-express-example)
 - [Hapi](https://github.com/inversify/inversify-hapi-example)
 - [InversifyJS Binding Decorators](https://github.com/inversify/inversify-express-example/tree/master/BindingDecorators)
-- Apollo GraphQL [minimal](https://github.com/oguimbal/inversify-graphql/tree/master/sample/complex-types) or [advanced](https://github.com/oguimbal/inversify-graphql/tree/master/sample/minimal)
+- Apollo GraphQL [minimal](https://github.com/oguimbal/inversify-graphql/tree/master/sample/minimal) or [advanced](https://github.com/oguimbal/inversify-graphql/tree/master/sample/complex-types)
 
 ### Open Source Projects using InversifyJS
 <!-- The links are ordered alphabetically acording to the name -->
