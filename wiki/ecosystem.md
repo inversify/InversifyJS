@@ -15,6 +15,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-components](https://github.com/webcomputing/inversify-components) - Layer on top of InversifyJS that enables you to split your application into several components.
 - [inversify-token](https://github.com/mscharley/inversify-token) - Token based layer for InversifyJS to enable strong type-safe guarantees for injection in TypeScript.
 - [inversify-agenda](https://github.com/lautarobock/inversify-agenda) - Some utilities for the development of agenda workers with Inversify
+- [@routex/inversify](https://github.com/routexjs/routex-inversify) - Utilities Some utilities for the developer of Routex applications with Inversify
 
 ### Middleware
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
