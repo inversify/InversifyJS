@@ -16,6 +16,8 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-token](https://github.com/mscharley/inversify-token) - Token based layer for InversifyJS to enable strong type-safe guarantees for injection in TypeScript.
 - [inversify-agenda](https://github.com/lautarobock/inversify-agenda) - Some utilities for the development of agenda workers with Inversify
 - [inversify-graphql](https://github.com/oguimbal/inversify-graphql) - Some tools to allow developpers to inject services in their Apollo GraphQL implementations
+- [react-inversify](https://github.com/org-redtea/react-inversify) - Collection of decorators and hooks for interaction with InversifyJS container within React components
+- [@routex/inversify](https://github.com/routexjs/routex-inversify) - Utilities Some utilities for the developer of Routex applications with Inversify
 
 ### Middleware
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
