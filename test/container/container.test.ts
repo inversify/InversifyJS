@@ -580,7 +580,7 @@ describe("Container", () => {
 
     });
 
-    it("Should be able to merge multiple containers", () => {
+    it("Should be able to merge two containers", () => {
 
         @injectable()
         class Ninja {
@@ -626,6 +626,73 @@ describe("Container", () => {
         expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.equal("Samurai");
         expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.equal("Katana");
 
+    });
+
+    it("Should be able to merge multiple containers", () => {
+        @injectable()
+        class Ninja {
+            public name = "Ninja";
+        }
+
+        @injectable()
+        class Shuriken {
+            public name = "Shuriken";
+        }
+
+        const CHINA_EXPANSION_TYPES = {
+            Ninja: "Ninja",
+            Shuriken: "Shuriken"
+        };
+
+        const chinaExpansionContainer = new Container();
+        chinaExpansionContainer.bind<Ninja>(CHINA_EXPANSION_TYPES.Ninja).to(Ninja);
+        chinaExpansionContainer.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shuriken);
+
+        @injectable()
+        class Samurai {
+            public name = "Samurai";
+        }
+
+        @injectable()
+        class Katana {
+            public name = "Katana";
+        }
+
+        const JAPAN_EXPANSION_TYPES = {
+            Katana: "Katana",
+            Samurai: "Samurai"
+        };
+
+        const japanExpansionContainer = new Container();
+        japanExpansionContainer.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai);
+        japanExpansionContainer.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
+
+        @injectable()
+        class Sheriff {
+            public name = "Sheriff";
+        }
+
+        @injectable()
+        class Revolver {
+            public name = "Revolver";
+        }
+
+        const USA_EXPANSION_TYPES = {
+            Revolver: "Revolver",
+            Sheriff: "Sheriff"
+        };
+
+        const usaExpansionContainer = new Container();
+        usaExpansionContainer.bind<Sheriff>(USA_EXPANSION_TYPES.Sheriff).to(Sheriff);
+        usaExpansionContainer.bind<Revolver>(USA_EXPANSION_TYPES.Revolver).to(Revolver);
+
+        const gameContainer = Container.merge(chinaExpansionContainer, japanExpansionContainer, usaExpansionContainer);
+        expect(gameContainer.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.equal("Ninja");
+        expect(gameContainer.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.equal("Shuriken");
+        expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.equal("Samurai");
+        expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.equal("Katana");
+        expect(gameContainer.get<Sheriff>(USA_EXPANSION_TYPES.Sheriff).name).to.equal("Sheriff");
+        expect(gameContainer.get<Revolver>(USA_EXPANSION_TYPES.Revolver).name).to.equal("Revolver");
     });
 
     it("Should be able create a child containers", () => {
