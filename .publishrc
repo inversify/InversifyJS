@@ -1,6 +1,6 @@
 {
   "validations": {
-    "vulnerableDependencies": false,
+    "vulnerableDependencies": true,
     "uncommittedChanges": true,
     "untrackedFiles": true,
     "sensitiveData": true,

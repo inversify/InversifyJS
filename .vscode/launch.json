@@ -41,7 +41,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
             "stopOnEntry": false,
-            "args": [],
+            "args": ["karma"],
             "cwd": "${workspaceRoot}",
             "runtimeArgs": [
                 "--nolazy"

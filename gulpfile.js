@@ -7,21 +7,18 @@
 // Enable ES6
 // require("harmonize")(["harmony", "harmony-proxies", "harmony_proxies"]);
 
-var gulp = require("gulp"),
-    browserify = require("browserify"),
-    source = require("vinyl-source-stream"),
-    buffer = require("vinyl-buffer"),
-    gulpTslint = require("gulp-tslint"),
-    tslint = require("tslint"),
-    tsc = require("gulp-typescript"),
-    sourcemaps = require("gulp-sourcemaps"),
-    uglify = require("gulp-uglify"),
-    rename = require("gulp-rename"),
-    runSequence = require("run-sequence"),
-    mocha = require("gulp-mocha"),
-    istanbul = require("gulp-istanbul"),
-    karma = require("karma"),
-    del = require('del');
+var gulp = require("gulp");
+var browserify = require("browserify");
+var source = require("vinyl-source-stream");
+var tsify = require("tsify");
+var gulpTslint = require("gulp-tslint");
+var tslint = require("tslint");
+var tsc = require("gulp-typescript");
+var sourcemaps = require("gulp-sourcemaps");
+var mocha = require("gulp-mocha");
+var istanbul = require("gulp-istanbul");
+var karma = require("karma");
+var del = require('del');
 
 //******************************************************************************
 //* CLEAN
@@ -196,12 +193,12 @@ gulp.task("bundle-test", function () {
     });
 
     return bundler.add(mainJsFilePath)
+        .plugin(tsify)
         .bundle()
         .pipe(source(outputFileName))
-        .pipe(buffer())
-        .pipe(sourcemaps.init({ loadMaps: true }))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest(outputFolder));
+        // .pipe(sourcemaps.init({ loadMaps: true }))
+        // .pipe(sourcemaps.write("."))
+        // .pipe(gulp.dest(outputFolder));
 });
 
 gulp.task("karma", gulp.series("bundle-test", function (done) {
