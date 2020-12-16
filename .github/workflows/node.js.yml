@@ -10,6 +10,23 @@ on:
     branches: [ master ]
 
 jobs:
+  e2e-ie:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: nuget/setup-nuget@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: npm install
+      - run: nuget install Selenium.WebDriver.IEDriver -Version 3.150.0
+      - run: npm run build
+      - run: npm run build:test
+      - run: npm run bundle:test
+      - run: npm run test:browser
+        env:
+          BROWSER: ie
+
   build:
 
     runs-on: ubuntu-latest

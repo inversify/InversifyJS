@@ -9,8 +9,11 @@
     "test": "gulp"
   },
   "scripts": {
-    "pretest": "tslint --project . && gulp",
+    "build": "tsc",
     "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test:browser": "karma start",
+    "build:test": "tsc --project tsconfig-test.json",
+    "bundle:test": "browserify test/inversify.test.js -d -s inversify -o temp/bundle.test.js",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard",
     "update": "updates --update --minor && npm install",
