@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
+import { postConstruct } from "../../src/annotation/post_construct";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
@@ -307,6 +308,30 @@ describe("Container", () => {
         expect(container.get(Ninja)).to.be.instanceOf(Ninja);
 
         expect(() => container.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
+    });
+
+    it("Should maintain the activation state of a singleton when doing a snapshot of a container", () => {
+
+        let timesCalled = 0;
+
+        @injectable()
+        class Ninja {
+            @postConstruct()
+            public postConstruct () {
+                timesCalled ++;
+            }
+        }
+
+        const container = new Container();
+
+        container.bind<Ninja>(Ninja).to(Ninja).inSingletonScope();
+
+        container.get<Ninja>(Ninja);
+        container.snapshot();
+        container.restore();
+        container.get<Ninja>(Ninja);
+
+        expect(timesCalled).to.be.equal(1);
     });
 
     it("Should be able to check is there are bindings available for a given identifier", () => {
