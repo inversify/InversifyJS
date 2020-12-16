@@ -14,6 +14,10 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-tracer](https://github.com/tiagomestre/inversify-tracer) - Tool that allows the developer to trace methods of objects created by InversifyJS.
 - [inversify-components](https://github.com/webcomputing/inversify-components) - Layer on top of InversifyJS that enables you to split your application into several components.
 - [inversify-token](https://github.com/mscharley/inversify-token) - Token based layer for InversifyJS to enable strong type-safe guarantees for injection in TypeScript.
+- [inversify-agenda](https://github.com/lautarobock/inversify-agenda) - Some utilities for the development of agenda workers with Inversify
+- [inversify-graphql](https://github.com/oguimbal/inversify-graphql) - Some tools to allow developpers to inject services in their Apollo GraphQL implementations
+- [react-inversify](https://github.com/org-redtea/react-inversify) - Collection of decorators and hooks for interaction with InversifyJS container within React components
+- [@routex/inversify](https://github.com/routexjs/routex-inversify) - Utilities Some utilities for the developer of Routex applications with Inversify
 
 ### Middleware
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
@@ -27,6 +31,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Express](https://github.com/inversify/inversify-express-example)
 - [Hapi](https://github.com/inversify/inversify-hapi-example)
 - [InversifyJS Binding Decorators](https://github.com/inversify/inversify-express-example/tree/master/BindingDecorators)
+- Apollo GraphQL [minimal](https://github.com/oguimbal/inversify-graphql/tree/master/sample/minimal) or [advanced](https://github.com/oguimbal/inversify-graphql/tree/master/sample/complex-types)
 
 ### Open Source Projects using InversifyJS
 <!-- The links are ordered alphabetically acording to the name -->
@@ -39,6 +44,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Prettygoat](https://www.npmjs.com/package/prettygoat) - The not so baaaaaaad Event Sourcing Projection Engine.
 - [Retax](https://github.com/retaxJS) - Universal React Redux Framework.
 - [RobotlegsJS](https://github.com/GoodgameStudios/RobotlegsJS) - An architecture-based framework for JavaScript/TypeScript canvas applications.
+- [SugoiJS](https://github.com/sugoiJS/Demo) - TypeScript modular framework for building web server, also using inversify-express-utils.
 
 
 
