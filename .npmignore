@@ -18,7 +18,9 @@ PULL_REQUEST_TEMPLATE.md
 tslint.json
 wallaby.js
 .travis.yml
+.github
 .gitignore
 .vscode
 .publishrc
 type_definitions
+appveyor.yml

@@ -92,7 +92,7 @@ import { Container } from "inversify";
 
 describe("something", () => {
 
-  let container: inversify.Container;
+  let container: Container;
 
   beforeEach(() => {
       container = new Container();
