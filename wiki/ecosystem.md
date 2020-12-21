@@ -5,9 +5,9 @@ On this page we will only feature a few of them that the InversifyJS maintainers
 Don’t let this discourage you from trying the rest of them!
 Consider these the “staff picks”, and don’t hesitate to submit a PR if you’ve built something wonderful with InversifyJS.
 
-### Utilitites
-- [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - Allows developers to declare lazy evaluated property injection using decorators.
-- [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - Allows developers to declare InversifyJS bindings using decorators.
+### Utilities
+- [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - Allows developers to declare InversifyJS bindings using decorators.
+- [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - Allows developers to declare lazy evaluated property injection using decorators.
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 - [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 - [inversify-vanillajs-helpers](https://github.com/inversify/inversify-vanillajs-helpers) - Some helpers for the development of InversifyJS applications with VanillaJS or Babel.

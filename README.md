@@ -1,8 +1,8 @@
 # InversifyJS
 
 [![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://secure.travis-ci.org/inversify/InversifyJS.svg?branch=master)](https://travis-ci.org/inversify/InversifyJS)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/cd9ekn86p8y2t7h4/branch/master?svg=true)](https://ci.appveyor.com/project/remojansen/inversifyjs/branch/master)
+![Build Status](https://github.com/inversify/InversifyJS/actions/workflows/node.js.yml/badge.svg)
+
 [![Test Coverage](https://codeclimate.com/github/inversify/InversifyJS/badges/coverage.svg)](https://codeclimate.com/github/inversify/InversifyJS/coverage)
 [![npm version](https://badge.fury.io/js/inversify.svg)](http://badge.fury.io/js/inversify)
 [![Dependencies](https://david-dm.org/inversify/InversifyJS.svg)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
@@ -46,7 +46,7 @@ InversifyJS has been developed with 4 main goals:
 
 **[Nate Kohari](https://twitter.com/nkohari)** - Author of [Ninject](https://github.com/ninject/Ninject)
 
-> *"Nice work! I've taken a couple shots at creating DI frameworks for JavaScript and TypeScript, but the lack of RTTI really hinders things.* 
+> *"Nice work! I've taken a couple shots at creating DI frameworks for JavaScript and TypeScript, but the lack of RTTI really hinders things.*
 > *The ES7 metadata gets us part of the way there (as you've discovered). Keep up the great work!"*
 
 **[Michel Weststrate](https://twitter.com/mweststrate)** - Author of [MobX](https://github.com/mobxjs/mobx)
@@ -64,9 +64,9 @@ You can get the latest release and the type definitions using npm:
 $ npm install inversify reflect-metadata --save
 ```
 
-The InversifyJS type definitions are included in the inversify npm package. 
+The InversifyJS type definitions are included in the inversify npm package.
 
-> :warning: **Important!** InversifyJS requires TypeScript >= 2.0 and the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib` 
+> :warning: **Important!** InversifyJS requires TypeScript >= 2.0 and the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib`
 compilation options in your `tsconfig.json` file.
 
 ```js
@@ -102,8 +102,8 @@ Let’s take a look at the basic usage and APIs of InversifyJS with TypeScript:
 
 ### Step 1: Declare your interfaces and types
 
-Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle). 
-This means that we should "depend upon Abstractions and do not depend upon concretions". 
+Our goal is to write code that adheres to the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle).
+This means that we should "depend upon Abstractions and do not depend upon concretions".
 Let's start by declaring some interfaces (abstractions).
 
 ```ts
@@ -124,7 +124,7 @@ export interface ThrowableWeapon {
 ```
 
 InversifyJS needs to use the type as identifiers at runtime. We use symbols as identifiers but you can also use classes and or string literals.
- 
+
 ```ts
 // file types.ts
 
@@ -141,7 +141,7 @@ export { TYPES };
 > **Note**: It is recommended to use Symbols but InversifyJS also support the usage of Classes and string literals (please refer to the features section to learn more).
 
 ### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
-Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator. 
+Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator.
 
 When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol.for("Weapon")` and `Symbol.for("ThrowableWeapon")` as runtime identifiers.
 
@@ -301,6 +301,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
