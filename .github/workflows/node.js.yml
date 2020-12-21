@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  e2e-ie:
+  browser:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,9 +20,6 @@ jobs:
           node-version: 12
       - run: npm install
       - run: nuget install Selenium.WebDriver.IEDriver -Version 3.150.0
-      - run: npm run build
-      - run: npm run build:test
-      - run: npm run bundle:test
       - run: npm run test:browser
         env:
           BROWSER: ie
