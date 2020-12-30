@@ -1,6 +1,6 @@
 # Wiki
 
-Welcome to the InversifyJS wiki!
+Welcome to the InversifyJS wiki! [中文简体](./zh_CN/README.md)
 
 ## Installation and environment support
 

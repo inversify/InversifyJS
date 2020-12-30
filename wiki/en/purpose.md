@@ -88,7 +88,7 @@ that is in the hands of the TC39 committee for the moment.
 
 Some "old" JavaScript IoC container like the angular 1.x `$injector` have some problems:
 
-![](http://i.imgur.com/Y2lRw4N.png)
+![](https://i.imgur.com/Y2lRw4N.png)
 
 [Source](https://angular.io/docs/ts/latest/guide/dependency-injection.html)
 
@@ -114,7 +114,7 @@ You may think that you don't need an IoC container.
 If the [preceding argument](http://stackoverflow.com/questions/871405/why-do-i-need-an-ioc-container-as-opposed-to-straightforward-di-code) is not enough you may want to read the following:
 
 - [The current state of dependency inversion in JavaScript](http://blog.wolksoftware.com/the-current-state-of-dependency-inversion-in-javascript)
-- [About object-oriented design and the “class” & “extends” keywords in TypeScript / ES6](http://blog.wolksoftware.com/about-classes-inheritance-and-object-oriented-design-in-typescript-and-es6)
+- [About object-oriented design and the “class” & “extends” keywords in TypeScript / ES6](https://blog.wolksoftware.com/about-classes-inheritance-and-object-oriented-design-in-typescript-and-es6)
 
 ## 5. Type safety
 
@@ -127,4 +127,4 @@ expects an implementation of `Shuriken` you will get a compilation error.
 We are working hard to provide you with a great IoC container for your JavaScript apps but also a great development experience. 
 We have spend a lot of time trying to make the InversifyJS as user friendly as possible and are working on development tools for chrome and we have already developed a logger middleware to help you to debug in Node.js.
 
-![](http://inversify.io/img/devtools1.png)
+![](https://inversify.io/img/devtools1.png)

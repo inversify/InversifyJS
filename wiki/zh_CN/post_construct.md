@@ -1,13 +1,9 @@
-# Post Construct Decorator
+# 构造器后置装饰器
 
-It is possible to add a **@postConstruct** decorator for a class method. This decorator 
-will run after an object is instantiated and before any activation handlers. This 
-is useful in situations when the constructor has been called but the component has not
-yet initialized or in cases you want to perform an initialization logic after the constructor call. 
+可以添加一个 **@postContruct** 装饰器到一个类或者方法。这个装饰器将在一个对象被示例化之后，以及在所有激活句柄之前运行。
+当构造器已经被调用但是组件还没有初始化或者你想在构造器被调用后执行一个初始化逻辑时非常有用。
 
-Its some other cases it gives you a contract that guarantees 
-that this method will be invoked only once in the lifetime
-of the object when used in singleton scope. See the following examples for usage.
+另外它给了你一个契约保证这个方法在该对象被用作单例时的生命周期里只会被调用一次。请看下面的使用示例。
 
 
 ```ts
@@ -43,8 +39,7 @@ let catana = container.get<Katana>();
 > Used Katana!
 ```
 
-Note that you cannot use more than one @postConstruct decorators 
-on the same class. It will throw an error.
+注意你不能在同一个类上使用多个 `@postConstruct` 装饰器，会抛错。
 
 ```ts
 class Katana {
@@ -59,7 +54,7 @@ Katana.toString();
 > Error("Cannot apply @postConstruct decorator multiple times in the same class")
 ```
 
-Usage in basic Javascript
+在基础 JavaScript 中的用法
 
 ```js
 inversify.decorate(inversify.postConstruct(), Katana.prototype, "testMethod");

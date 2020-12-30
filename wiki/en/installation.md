@@ -28,7 +28,7 @@ InversifyJS requires a modern JavaScript engine with support for:
 - [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (Only required if using [provider injection](https://github.com/inversify/InversifyJS#injecting-a-provider-asynchronous-factory))
 - [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) (Only required if using [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md))
 
-If your environment don't support one of these you will need to import a shim or polyfill.
+If your environment doesn't support one of these you will need to import a shim or polyfill.
 
 **Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
 page in the wiki to learn more.**

@@ -1,4 +1,5 @@
 # Glossary for users
+
 - Container
 - Binding
 - Service
@@ -14,6 +15,7 @@
 - Contextual bindings
 
 # Glossary for contributors
+
 - Activation process
 - Binding process
 - Resolution process

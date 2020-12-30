@@ -114,7 +114,7 @@ describe("something", () => {
 
 As you can see you can then override specific bindings in each test case.
 
-## Using request scope and activation handlers to avoid factories when working with circular dependenies
+## Using request scope and activation handlers to avoid factories when working with circular dependencies
 
 If we have a case with a circular dependency like for example:
 
@@ -187,7 +187,7 @@ class Character implements IWeaponHolder {
 
 const container = new Container();
 
-// We inject a string just to demostrate that we can inject stuff into Weapon
+// We inject a string just to demonstrate that we can inject stuff into Weapon
 container.bind<string>(TYPE.WeaponName).toConstantValue("Katana");
 
 // We declare a binding for Weapon so we can use it within the factory
@@ -274,13 +274,13 @@ class Character implements IWeaponHolder {
 
 const container = new Container();
 
-// We inject a string just to demostrate that we can inject stuff into Weapon
+// We inject a string just to demonstrate that we can inject stuff into Weapon
 container.bind<string>(TYPE.WeaponName).toConstantValue("Katana");
 
 // The inRequestScope is important here
 container.bind<IWeapon>(TYPE.Weapon).to(Weapon).inRequestScope();
 
-// We can use onActivation adn search for Weapon in the inRequestScope
+// We can use onActivation and search for Weapon in the inRequestScope
 container.bind<IWeaponHolder>(TYPE.WeaponHolder)
     .to(Character)
     .onActivation((ctx: interfaces.Context, weaponHolderInstance: IWeaponHolder) => {

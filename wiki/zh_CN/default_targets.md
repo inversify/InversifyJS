@@ -1,42 +1,37 @@
 # whenTargetIsDefault
-When multiple bindings are available for a given service identifier, we can use 
-one of the following features to resolve the potential `AMBIGUOUS_MATCH` exception:
+当一个给定的服务识别器存在多个绑定可用时，我们可以使用如下特性来解决潜在的 `模糊匹配` 异常：
 
-- [Named bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/named_bindings.md)
-- [Tagged bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/tagged_bindings.md)
-- [Contextual bindings](https://github.com/inversify/InversifyJS/blob/master/wiki/contextual_bindings.md)
-- Default targets
+- [命名绑定](named_bindings.md)
+- [标签绑定](tagged_bindings.md)
+- [上下文绑定](contextual_bindings.md)
+- 默认目标
 
-In this section we will explain how to use default targets.
+在这一节我们来解释如何使用默认目标：
 
-We can resolve an `AMBIGUOUS_MATCH` exception using a named constraint:
+我们可以使用一个命名限制来解决 `模糊匹配` 异常：
 
 ```ts
 container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
 container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("weak");
 ```
 
-Or a tagged constraint:
+或者一个标签限制：
 
 ```ts
 container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("strong", true);
 container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("strong", false);
 ```
 
-The problem with this solution is that we will have to annotate using
-the `@named("strong")`/`@named("weak")` or `@tagged("strong", true)`/`@tagged("strong", false)`
-every single injection.
+这种解决方案的问题是我们不得不在每一次地注入时使用 `@named("strong")`/`@named("weak")` 或者 `@tagged("strong", true)`/`@tagged("strong", false)` 来标记。
 
-A better solution is to use a default target:
+更好的方案是使用默认目标：
 
 ```ts
 container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
 container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 ```
 
-We can use the `whenTargetIsDefault` to indicate which binding should be used as default
-to resolve an `AMBIGUOUS_MATCH` exception when no `@named` or `@tagged` annotations 
-are available.
+当没有 `@named` 或者 `@tagged` 标记可用时，我们可以使用 `whenTargetIsDefault` 来指示哪个绑定应该被用作默认，从而解决 `模糊匹配` 异常。
 
 ```ts
 let TYPES = {

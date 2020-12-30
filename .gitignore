@@ -67,3 +67,6 @@ type_definitions/**/*.js
 .idea
 
 .nyc_output
+_book
+# Local Netlify folder
+.netlify
