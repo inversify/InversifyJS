@@ -87,3 +87,19 @@ When we use inRequestScope we are using a special kind of singleton.
 - The `inSingletonScope` creates a singleton that will last for the entire life cycle of a type binding. This means that the `inSingletonScope` can be cleared up from memory when we unbind a type binding using `container.unbind`.
 
 - The `inRequestScope` creates a singleton that will last for the entire life cycle of one call to the `container.get`, `container.getTagged` or `container.getNamed` methods. Each call to one of this methods will resolve a root dependency and all its sub-dependencies. Internally, a dependency graph known as the "resolution plan" is created by InversifyJS. The `inRequestScope` scope will use one single instance for objects that appear multiple times in the resolution plan. This reduces the number of required resolutions and it can be used as a performance optimization in some cases.
+
+A 'Request scope' is not bound to a 'http request', but to a 'container request', which is a container.get or container.resolve call.
+
+Suppose you have dependencies like this:
+
+```
+A -> B -> R
+-> C -> R
+```
+
+So A has a dependency on B and C, and B and C both have a dependency on R.
+
+Using only transient scope, if you get A from the container, B and C will both receive a different instance of R.
+If you bind R to RequestScope, B and C will both receive a reference to the same instance, as in a.b.r === a.c.r
+
+If you resolve A again in the container, this will create a new instance of R, just like it will create new instances of A, B and C.

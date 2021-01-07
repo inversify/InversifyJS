@@ -88,3 +88,20 @@ container.bind<Katana>("Katana").to(Katana).inSingletonScope();
 - `inSingletonScope` 创建一个在整个绑定类型的生命周期中存活的单例。这意味着当我们使用 `container.unbind` 解绑时该 `inSingletonScope` 可以从内存中清除。
 
 - `inRequestScope` 创建一个在 `container.get`、`container.getTagged` 或者 `container.getNamed` 方法被调用时的生命周期中存活的单例。每次调用会解决一个根依赖及其所有子依赖。内部有一个称为“解决计划”的依赖关系图被 InversifyJS 创建。即使在解决计划中出现多次，该 `inRequestScope` 也只会使用一份对象的单例实例。这减少了解决的次数因此可以作为某些场景下性能优化的手段。
+
+注意，'Request scope' 并不是绑定到 'http request' 的，而是指对 `container` 的一次请求，即一次 `container.get` 或者 `container.resolve` 的调用。
+
+假设你有如下的依赖关系：
+
+```
+A -> B -> R
+-> C -> R
+```
+
+即 A 依赖 B 和 C，而 B 与 C 都依赖 R。
+
+当只使用默认的短暂的生命周期时，如果你从容器里获取 A，那么 B 和 C 将都收到一个不同的 R 的实例。
+
+如果将 R 绑定到了请求的生命周期，那么 B 和 C 将都收到指向同一个实例的引用，即 a.b.r === a.c.r。
+
+如果你再一次地从容器中解决 A，那么这将会创建 R 的一个新的实例，就像它将创建 A、B 和 C 的新实例一样。
