@@ -40,9 +40,9 @@ describe("Request", () => {
       expect(request1.serviceIdentifier).eql(identifiers.Ninja);
       expect(Array.isArray(request1.bindings)).eql(true);
       expect(Array.isArray(request2.bindings)).eql(true);
-      expect(request1.guid.length).eql(36);
-      expect(request2.guid.length).eql(36);
-      expect(request1.guid).not.eql(request2.guid);
+      expect(request1.id).to.be.a("number");
+      expect(request2.id).to.be.a("number");
+      expect(request1.id).not.eql(request2.id);
 
   });
 

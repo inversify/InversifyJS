@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-- 9.3.0
-- 8.9.3
-- 7.10.1
+- 10
+- 11
+- 12
 before_install:
 - npm install -g codeclimate-test-reporter
 after_success:

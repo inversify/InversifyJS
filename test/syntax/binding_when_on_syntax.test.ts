@@ -11,7 +11,7 @@ describe("BindingWhenOnSyntax", () => {
     let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
+        sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {

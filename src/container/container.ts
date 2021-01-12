@@ -7,14 +7,14 @@ import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
-import { guid } from "../utils/guid";
+import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 
 class Container implements interfaces.Container {
 
-    public guid: string;
+    public id: number;
     public parent: interfaces.Container | null;
     public readonly options: interfaces.ContainerOptions;
     private _middleware: interfaces.Next | null;
@@ -50,40 +50,44 @@ class Container implements interfaces.Container {
     }
 
     public constructor(containerOptions?: interfaces.ContainerOptions) {
-
-        if (containerOptions !== undefined) {
-
-            if (typeof containerOptions !== "object") {
-                throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
-            } else {
-                if (containerOptions.defaultScope !== undefined &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Singleton &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Transient &&
-                    containerOptions.defaultScope !== BindingScopeEnum.Request
-                ) {
-                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
-                }
-
-                if (containerOptions.autoBindInjectable !== undefined &&
-                    typeof containerOptions.autoBindInjectable !== "boolean"
-                ) {
-                    throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
-                }
-            }
-
-            this.options = {
-                autoBindInjectable: containerOptions.autoBindInjectable,
-                defaultScope: containerOptions.defaultScope
-            };
-
-        } else {
-            this.options = {
-                autoBindInjectable: false,
-                defaultScope: BindingScopeEnum.Transient
-            };
+        const options = containerOptions || {};
+        if (typeof options !== "object") {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
         }
 
-        this.guid = guid();
+        if (options.defaultScope === undefined) {
+            options.defaultScope = BindingScopeEnum.Transient;
+        } else if (
+            options.defaultScope !== BindingScopeEnum.Singleton &&
+            options.defaultScope !== BindingScopeEnum.Transient &&
+            options.defaultScope !== BindingScopeEnum.Request
+        ) {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+        }
+
+        if (options.autoBindInjectable === undefined) {
+            options.autoBindInjectable = false;
+        } else if (
+            typeof options.autoBindInjectable !== "boolean"
+        ) {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
+        }
+
+        if (options.skipBaseClassChecks === undefined) {
+            options.skipBaseClassChecks = false;
+        } else if (
+            typeof options.skipBaseClassChecks !== "boolean"
+        ) {
+            throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK}`);
+        }
+
+        this.options = {
+            autoBindInjectable: options.autoBindInjectable,
+            defaultScope: options.defaultScope,
+            skipBaseClassChecks: options.skipBaseClassChecks
+        };
+
+        this.id = id();
         this._bindingDictionary = new Lookup<interfaces.Binding<any>>();
         this._snapshots = [];
         this._middleware = null;
@@ -97,7 +101,7 @@ class Container implements interfaces.Container {
 
         for (const currentModule of modules) {
 
-            const containerModuleHelpers = getHelpers(currentModule.guid);
+            const containerModuleHelpers = getHelpers(currentModule.id);
 
             currentModule.registry(
                 containerModuleHelpers.bindFunction,
@@ -116,7 +120,7 @@ class Container implements interfaces.Container {
 
         for (const currentModule of modules) {
 
-            const containerModuleHelpers = getHelpers(currentModule.guid);
+            const containerModuleHelpers = getHelpers(currentModule.id);
 
             await currentModule.registry(
                 containerModuleHelpers.bindFunction,
@@ -135,7 +139,7 @@ class Container implements interfaces.Container {
             item.moduleId === expected;
 
         modules.forEach((module) => {
-            const condition = conditionFactory(module.guid);
+            const condition = conditionFactory(module.id);
             this._bindingDictionary.removeByCondition(condition);
         });
 
@@ -213,8 +217,8 @@ class Container implements interfaces.Container {
         this._middleware = snapshot.middleware;
     }
 
-    public createChild(): Container {
-        const child = new Container();
+    public createChild(containerOptions?: interfaces.ContainerOptions): Container {
+        const child = new Container(containerOptions || this.options);
         child.parent = this;
         return child;
     }
@@ -260,19 +264,18 @@ class Container implements interfaces.Container {
     }
 
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
-        const tempContainer = new Container();
+        const tempContainer = this.createChild();
         tempContainer.bind<T>(constructorFunction).toSelf();
-        tempContainer.parent = this;
         return tempContainer.get<T>(constructorFunction);
     }
 
     private _getContainerModuleHelpersFactory() {
 
-        const setModuleId = (bindingToSyntax: any, moduleId: string) => {
+        const setModuleId = (bindingToSyntax: any, moduleId: number) => {
             bindingToSyntax._binding.moduleId = moduleId;
         };
 
-        const getBindFunction = (moduleId: string) =>
+        const getBindFunction = (moduleId: number) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 const _bind = this.bind.bind(this);
                 const bindingToSyntax = _bind(serviceIdentifier);
@@ -280,19 +283,19 @@ class Container implements interfaces.Container {
                 return bindingToSyntax;
             };
 
-        const getUnbindFunction = (moduleId: string) =>
+        const getUnbindFunction = (moduleId: number) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 const _unbind = this.unbind.bind(this);
                 _unbind(serviceIdentifier);
             };
 
-        const getIsboundFunction = (moduleId: string) =>
+        const getIsboundFunction = (moduleId: number) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 const _isBound = this.isBound.bind(this);
                 return _isBound(serviceIdentifier);
             };
 
-        const getRebindFunction = (moduleId: string) =>
+        const getRebindFunction = (moduleId: number) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>) => {
                 const _rebind = this.rebind.bind(this);
                 const bindingToSyntax = _rebind(serviceIdentifier);
@@ -300,7 +303,7 @@ class Container implements interfaces.Container {
                 return bindingToSyntax;
             };
 
-        return (mId: string) => ({
+        return (mId: number) => ({
             bindFunction: getBindFunction(mId),
             isboundFunction: getIsboundFunction(mId),
             rebindFunction: getRebindFunction(mId),

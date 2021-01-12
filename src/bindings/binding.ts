@@ -1,10 +1,10 @@
-import { BindingTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
-import { guid } from "../utils/guid";
+import { id } from "../utils/id";
 
 class Binding<T> implements interfaces.Binding<T> {
 
-    public guid: string;
+    public id: number;
     public moduleId: string;
 
     // Determines weather the bindings has been already activated
@@ -43,7 +43,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, scope: interfaces.BindingScope) {
-        this.guid = guid();
+        this.id = id();
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
         this.scope = scope;
@@ -59,7 +59,7 @@ class Binding<T> implements interfaces.Binding<T> {
 
     public clone(): interfaces.Binding<T> {
         const clone = new Binding(this.serviceIdentifier, this.scope);
-        clone.activated = false;
+        clone.activated = (clone.scope === BindingScopeEnum.Singleton) ? this.activated : false;
         clone.implementationType = this.implementationType;
         clone.dynamicValue = this.dynamicValue;
         clone.scope = this.scope;

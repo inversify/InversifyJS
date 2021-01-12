@@ -243,6 +243,7 @@ InversifyJS 支持 ES5 和 ES6 而且可以在没有 TypeScript 环境下使用�
 ## InversifyJS 特性 和 API
 让我们一起看看 InversifyJS 的特性!
 
+
 - [类作为标识](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/classes_as_id.md)
 - [Symbol作为标识](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/symbols_as_id.md)
 - [容器 API](https://github.com/liveabean/InversifyJS/blob/feature/translate_chinese/wiki/zh_CN/container_api.md)
@@ -268,6 +269,7 @@ InversifyJS 支持 ES5 和 ES6 而且可以在没有 TypeScript 环境下使用�
 - [property_injection](https://github.com/inversify/InversifyJS/blob/master/wiki/property_injection.md)
 - [circular_dependencies](https://github.com/inversify/InversifyJS/blob/master/wiki/circular_dependencies.md)
 - [Inheritance](https://github.com/inversify/InversifyJS/blob/master/wiki/inheritance.md)
+
 
 请查阅 [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) 获取更多细节。
 

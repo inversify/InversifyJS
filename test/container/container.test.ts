@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
+import { postConstruct } from "../../src/annotation/post_construct";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
@@ -16,7 +17,7 @@ describe("Container", () => {
     let sandbox: sinon.SinonSandbox;
 
     beforeEach(() => {
-        sandbox = sinon.sandbox.create();
+        sandbox = sinon.createSandbox();
     });
 
     afterEach(() => {
@@ -51,10 +52,10 @@ describe("Container", () => {
       container.load(warriors, weapons);
 
       let map: Dictionary = getBindingDictionary(container).getMap();
-      expect(map.has("Ninja")).eql(true);
-      expect(map.has("Katana")).eql(true);
-      expect(map.has("Shuriken")).eql(true);
-      expect(map.size).eql(3);
+      expect(map.has("Ninja")).equal(true);
+      expect(map.has("Katana")).equal(true);
+      expect(map.has("Shuriken")).equal(true);
+      expect(map.size).equal(3);
 
       const tryGetNinja = () => { container.get("Ninja"); };
       const tryGetKatana = () => { container.get("Katana"); };
@@ -62,14 +63,14 @@ describe("Container", () => {
 
       container.unload(warriors);
       map = getBindingDictionary(container).getMap();
-      expect(map.size).eql(2);
+      expect(map.size).equal(2);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).not.to.throw();
       expect(tryGetShuruken).not.to.throw();
 
       container.unload(weapons);
       map = getBindingDictionary(container).getMap();
-      expect(map.size).eql(0);
+      expect(map.size).equal(0);
       expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
       expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
@@ -88,8 +89,8 @@ describe("Container", () => {
       container.bind<Ninja>(ninjaId).to(Ninja);
 
       const map: Dictionary = getBindingDictionary(container).getMap();
-      expect(map.size).eql(1);
-      expect(map.has(ninjaId)).eql(true);
+      expect(map.size).equal(1);
+      expect(map.has(ninjaId)).equal(true);
 
   });
 
@@ -97,9 +98,9 @@ describe("Container", () => {
 
       const container1 = new Container();
       const container2 = new Container();
-      expect(container1.guid.length).eql(36);
-      expect(container2.guid.length).eql(36);
-      expect(container1.guid).not.eql(container2.guid);
+      expect(container1.id).to.be.a("number");
+      expect(container2.id).to.be.a("number");
+      expect(container1.id).not.equal(container2.id);
 
   });
 
@@ -115,11 +116,11 @@ describe("Container", () => {
       container.bind<Ninja>(ninjaId).to(Ninja);
 
       const map: Dictionary = getBindingDictionary(container).getMap();
-      expect(map.has(ninjaId)).eql(true);
+      expect(map.has(ninjaId)).equal(true);
 
       container.unbind(ninjaId);
-      expect(map.has(ninjaId)).eql(false);
-      expect(map.size).eql(0);
+      expect(map.has(ninjaId)).equal(false);
+      expect(map.size).equal(0);
 
   });
 
@@ -150,13 +151,13 @@ describe("Container", () => {
 
       let map: Dictionary = getBindingDictionary(container).getMap();
 
-      expect(map.size).eql(2);
-      expect(map.has(ninjaId)).eql(true);
-      expect(map.has(samuraiId)).eql(true);
+      expect(map.size).equal(2);
+      expect(map.has(ninjaId)).equal(true);
+      expect(map.has(samuraiId)).equal(true);
 
       container.unbind(ninjaId);
       map = getBindingDictionary(container).getMap();
-      expect(map.size).eql(1);
+      expect(map.size).equal(1);
 
   });
 
@@ -181,13 +182,13 @@ describe("Container", () => {
 
       let map: Dictionary = getBindingDictionary(container).getMap();
 
-      expect(map.size).eql(2);
-      expect(map.has(ninjaId)).eql(true);
-      expect(map.has(samuraiId)).eql(true);
+      expect(map.size).equal(2);
+      expect(map.has(ninjaId)).equal(true);
+      expect(map.has(samuraiId)).equal(true);
 
       container.unbindAll();
       map = getBindingDictionary(container).getMap();
-      expect(map.size).eql(0);
+      expect(map.size).equal(0);
 
   });
 
@@ -223,10 +224,10 @@ describe("Container", () => {
 
       const dictionary: Dictionary = getBindingDictionary(container).getMap();
 
-      expect(dictionary.size).eql(1);
+      expect(dictionary.size).equal(1);
       dictionary.forEach((value, key) => {
-          expect(key).eql(warriorId);
-          expect(value.length).eql(2);
+          expect(key).equal(warriorId);
+          expect(value.length).equal(2);
       });
 
       const throwFunction = () => { container.get<Warrior>(warriorId); };
@@ -252,19 +253,19 @@ describe("Container", () => {
     it("Should be able to get a string literal identifier as a string", () => {
         const Katana = "Katana";
         const KatanaStr = getServiceIdentifierAsString(Katana);
-        expect(KatanaStr).to.eql("Katana");
+        expect(KatanaStr).to.equal("Katana");
     });
 
     it("Should be able to get a symbol identifier as a string", () => {
         const KatanaSymbol = Symbol.for("Katana");
         const KatanaStr = getServiceIdentifierAsString(KatanaSymbol);
-        expect(KatanaStr).to.eql("Symbol(Katana)");
+        expect(KatanaStr).to.equal("Symbol(Katana)");
     });
 
     it("Should be able to get a class identifier as a string", () => {
         class Katana {}
         const KatanaStr = getServiceIdentifierAsString(Katana);
-        expect(KatanaStr).to.eql("Katana");
+        expect(KatanaStr).to.equal("Katana");
     });
 
     it("Should be able to snapshot and restore container", () => {
@@ -309,6 +310,30 @@ describe("Container", () => {
         expect(() => container.restore()).to.throw(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
     });
 
+    it("Should maintain the activation state of a singleton when doing a snapshot of a container", () => {
+
+        let timesCalled = 0;
+
+        @injectable()
+        class Ninja {
+            @postConstruct()
+            public postConstruct () {
+                timesCalled ++;
+            }
+        }
+
+        const container = new Container();
+
+        container.bind<Ninja>(Ninja).to(Ninja).inSingletonScope();
+
+        container.get<Ninja>(Ninja);
+        container.snapshot();
+        container.restore();
+        container.get<Ninja>(Ninja);
+
+        expect(timesCalled).to.be.equal(1);
+    });
+
     it("Should be able to check is there are bindings available for a given identifier", () => {
 
         interface Warrior {}
@@ -323,9 +348,9 @@ describe("Container", () => {
         container.bind<Warrior>(warriorId).to(Ninja);
         container.bind<Warrior>(warriorSymbol).to(Ninja);
 
-        expect(container.isBound(Ninja)).eql(true);
-        expect(container.isBound(warriorId)).eql(true);
-        expect(container.isBound(warriorSymbol)).eql(true);
+        expect(container.isBound(Ninja)).equal(true);
+        expect(container.isBound(warriorId)).equal(true);
+        expect(container.isBound(warriorSymbol)).equal(true);
 
         interface Katana {}
         const katanaId = "Katana";
@@ -334,9 +359,9 @@ describe("Container", () => {
         @injectable()
         class Katana implements Katana {}
 
-        expect(container.isBound(Katana)).eql(false);
-        expect(container.isBound(katanaId)).eql(false);
-        expect(container.isBound(katanaSymbol)).eql(false);
+        expect(container.isBound(Katana)).equal(false);
+        expect(container.isBound(katanaId)).equal(false);
+        expect(container.isBound(katanaSymbol)).equal(false);
 
     });
 
@@ -412,14 +437,14 @@ describe("Container", () => {
         container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
 
         const fr = container.getAllNamed<Intl>("Intl", "fr");
-        expect(fr.length).to.eql(2);
-        expect(fr[0].hello).to.eql("bonjour");
-        expect(fr[1].goodbye).to.eql("au revoir");
+        expect(fr.length).to.equal(2);
+        expect(fr[0].hello).to.equal("bonjour");
+        expect(fr[1].goodbye).to.equal("au revoir");
 
         const es = container.getAllNamed<Intl>("Intl", "es");
-        expect(es.length).to.eql(2);
-        expect(es[0].hello).to.eql("hola");
-        expect(es[1].goodbye).to.eql("adios");
+        expect(es.length).to.equal(2);
+        expect(es[0].hello).to.equal("hola");
+        expect(es[1].goodbye).to.equal("adios");
 
     });
 
@@ -437,14 +462,14 @@ describe("Container", () => {
         container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
         const fr = container.getAllTagged<Intl>("Intl", "lang", "fr");
-        expect(fr.length).to.eql(2);
-        expect(fr[0].hello).to.eql("bonjour");
-        expect(fr[1].goodbye).to.eql("au revoir");
+        expect(fr.length).to.equal(2);
+        expect(fr[0].hello).to.equal("bonjour");
+        expect(fr[1].goodbye).to.equal("au revoir");
 
         const es = container.getAllTagged<Intl>("Intl", "lang", "es");
-        expect(es.length).to.eql(2);
-        expect(es[0].hello).to.eql("hola");
-        expect(es[1].goodbye).to.eql("adios");
+        expect(es.length).to.equal(2);
+        expect(es[0].hello).to.equal("hola");
+        expect(es[1].goodbye).to.equal("adios");
 
     });
 
@@ -474,27 +499,27 @@ describe("Container", () => {
         container1.bind<Warrior>(TYPES.Warrior).to(Ninja);
 
         const transientNinja1 = container1.get<Warrior>(TYPES.Warrior);
-        expect(transientNinja1.health).to.eql(100);
+        expect(transientNinja1.health).to.equal(100);
         transientNinja1.takeHit(10);
-        expect(transientNinja1.health).to.eql(90);
+        expect(transientNinja1.health).to.equal(90);
 
         const transientNinja2 = container1.get<Warrior>(TYPES.Warrior);
-        expect(transientNinja2.health).to.eql(100);
+        expect(transientNinja2.health).to.equal(100);
         transientNinja2.takeHit(10);
-        expect(transientNinja2.health).to.eql(90);
+        expect(transientNinja2.health).to.equal(90);
 
         const container2 = new Container({ defaultScope: BindingScopeEnum.Singleton });
         container2.bind<Warrior>(TYPES.Warrior).to(Ninja);
 
         const singletonNinja1 = container2.get<Warrior>(TYPES.Warrior);
-        expect(singletonNinja1.health).to.eql(100);
+        expect(singletonNinja1.health).to.equal(100);
         singletonNinja1.takeHit(10);
-        expect(singletonNinja1.health).to.eql(90);
+        expect(singletonNinja1.health).to.equal(90);
 
         const singletonNinja2 = container2.get<Warrior>(TYPES.Warrior);
-        expect(singletonNinja2.health).to.eql(90);
+        expect(singletonNinja2.health).to.equal(90);
         singletonNinja2.takeHit(10);
-        expect(singletonNinja2.health).to.eql(80);
+        expect(singletonNinja2.health).to.equal(80);
 
     });
 
@@ -621,10 +646,10 @@ describe("Container", () => {
         japanExpansionContainer.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
 
         const gameContainer = Container.merge(chinaExpansionContainer, japanExpansionContainer);
-        expect(gameContainer.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
-        expect(gameContainer.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
-        expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
-        expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
+        expect(gameContainer.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.equal("Ninja");
+        expect(gameContainer.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.equal("Shuriken");
+        expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.equal("Samurai");
+        expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.equal("Katana");
 
     });
 
@@ -634,7 +659,41 @@ describe("Container", () => {
         if (child.parent === null) {
             throw new Error("Parent should not be null");
         }
-        expect(child.parent.guid).to.eql(parent.guid);
+        expect(child.parent.id).to.equal(parent.id);
+    });
+
+    it("Should inherit parent container options", () => {
+        @injectable()
+        class Warrior { }
+
+        const parent = new Container({
+            defaultScope: BindingScopeEnum.Singleton
+        });
+
+        const child = parent.createChild();
+        child.bind(Warrior).toSelf();
+
+        const singletonWarrior1 = child.get(Warrior);
+        const singletonWarrior2 = child.get(Warrior);
+        expect(singletonWarrior1).to.equal(singletonWarrior2);
+    });
+
+    it("Should be able to override options to child containers", () => {
+        @injectable()
+        class Warrior { }
+
+        const parent = new Container({
+            defaultScope: BindingScopeEnum.Request
+        });
+
+        const child = parent.createChild({
+            defaultScope: BindingScopeEnum.Singleton
+        });
+        child.bind(Warrior).toSelf();
+
+        const singletonWarrior1 = child.get(Warrior);
+        const singletonWarrior2 = child.get(Warrior);
+        expect(singletonWarrior1).to.equal(singletonWarrior2);
     });
 
     it("Should be able check if a named binding is bound", () => {
@@ -644,19 +703,19 @@ describe("Container", () => {
         const validDivisor = "ValidDivisor";
         const container = new Container();
 
-        expect(container.isBound(zero)).to.eql(false);
+        expect(container.isBound(zero)).to.equal(false);
         container.bind<number>(zero).toConstantValue(0);
-        expect(container.isBound(zero)).to.eql(true);
+        expect(container.isBound(zero)).to.equal(true);
 
         container.unbindAll();
-        expect(container.isBound(zero)).to.eql(false);
+        expect(container.isBound(zero)).to.equal(false);
         container.bind<number>(zero).toConstantValue(0).whenTargetNamed(invalidDivisor);
-        expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
-        expect(container.isBoundNamed(zero, validDivisor)).to.eql(false);
+        expect(container.isBoundNamed(zero, invalidDivisor)).to.equal(true);
+        expect(container.isBoundNamed(zero, validDivisor)).to.equal(false);
 
         container.bind<number>(zero).toConstantValue(1).whenTargetNamed(validDivisor);
-        expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
-        expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
+        expect(container.isBoundNamed(zero, invalidDivisor)).to.equal(true);
+        expect(container.isBoundNamed(zero, validDivisor)).to.equal(true);
 
     });
 
@@ -670,12 +729,12 @@ describe("Container", () => {
         const secondChildContainer = childContainer.createChild();
 
         container.bind<number>(zero).toConstantValue(0).whenTargetNamed(invalidDivisor);
-        expect(secondChildContainer.isBoundNamed(zero, invalidDivisor)).to.eql(true);
-        expect(secondChildContainer.isBoundNamed(zero, validDivisor)).to.eql(false);
+        expect(secondChildContainer.isBoundNamed(zero, invalidDivisor)).to.equal(true);
+        expect(secondChildContainer.isBoundNamed(zero, validDivisor)).to.equal(false);
 
         container.bind<number>(zero).toConstantValue(1).whenTargetNamed(validDivisor);
-        expect(secondChildContainer.isBoundNamed(zero, invalidDivisor)).to.eql(true);
-        expect(secondChildContainer.isBoundNamed(zero, validDivisor)).to.eql(true);
+        expect(secondChildContainer.isBoundNamed(zero, invalidDivisor)).to.equal(true);
+        expect(secondChildContainer.isBoundNamed(zero, validDivisor)).to.equal(true);
 
     });
 
@@ -686,11 +745,11 @@ describe("Container", () => {
         const container = new Container();
 
         container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
-        expect(container.getTagged(zero, isValidDivisor, false)).to.eql(0);
+        expect(container.getTagged(zero, isValidDivisor, false)).to.equal(0);
 
         container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
-        expect(container.getTagged(zero, isValidDivisor, false)).to.eql(0);
-        expect(container.getTagged(zero, isValidDivisor, true)).to.eql(1);
+        expect(container.getTagged(zero, isValidDivisor, false)).to.equal(0);
+        expect(container.getTagged(zero, isValidDivisor, true)).to.equal(1);
 
     });
 
@@ -704,8 +763,8 @@ describe("Container", () => {
 
         container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
         container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
-        expect(secondChildContainer.getTagged(zero, isValidDivisor, false)).to.eql(0);
-        expect(secondChildContainer.getTagged(zero, isValidDivisor, true)).to.eql(1);
+        expect(secondChildContainer.getTagged(zero, isValidDivisor, false)).to.equal(0);
+        expect(secondChildContainer.getTagged(zero, isValidDivisor, true)).to.equal(1);
 
     });
 
@@ -715,19 +774,19 @@ describe("Container", () => {
         const isValidDivisor = "IsValidDivisor";
         const container = new Container();
 
-        expect(container.isBound(zero)).to.eql(false);
+        expect(container.isBound(zero)).to.equal(false);
         container.bind<number>(zero).toConstantValue(0);
-        expect(container.isBound(zero)).to.eql(true);
+        expect(container.isBound(zero)).to.equal(true);
 
         container.unbindAll();
-        expect(container.isBound(zero)).to.eql(false);
+        expect(container.isBound(zero)).to.equal(false);
         container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
-        expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
-        expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(false);
+        expect(container.isBoundTagged(zero, isValidDivisor, false)).to.equal(true);
+        expect(container.isBoundTagged(zero, isValidDivisor, true)).to.equal(false);
 
         container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
-        expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
-        expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
+        expect(container.isBoundTagged(zero, isValidDivisor, false)).to.equal(true);
+        expect(container.isBoundTagged(zero, isValidDivisor, true)).to.equal(true);
 
     });
 
@@ -740,12 +799,12 @@ describe("Container", () => {
         const secondChildContainer = childContainer.createChild();
 
         container.bind<number>(zero).toConstantValue(0).whenTargetTagged(isValidDivisor, false);
-        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
-        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, true)).to.eql(false);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, false)).to.equal(true);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, true)).to.equal(false);
 
         container.bind<number>(zero).toConstantValue(1).whenTargetTagged(isValidDivisor, true);
-        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
-        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, false)).to.equal(true);
+        expect(secondChildContainer.isBoundTagged(zero, isValidDivisor, true)).to.equal(true);
 
     });
 

@@ -67,9 +67,9 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         if (
             isRequestSingleton &&
             requestScope !== null &&
-            requestScope.has(binding.guid)
+            requestScope.has(binding.id)
         ) {
-            return requestScope.get(binding.guid);
+            return requestScope.get(binding.id);
         }
 
         if (binding.type === BindingTypeEnum.ConstantValue) {
@@ -123,9 +123,9 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         if (
             isRequestSingleton &&
             requestScope !== null &&
-            !requestScope.has(binding.guid)
+            !requestScope.has(binding.id)
         ) {
-            requestScope.set(binding.guid, result);
+            requestScope.set(binding.id, result);
         }
 
         return result;
