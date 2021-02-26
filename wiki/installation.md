@@ -3,7 +3,12 @@
 You can get the latest release and the type definitions using npm:
 
 ```
-npm install inversify@2.0.0-rc.14 reflect-metadata --save
+npm install inversify@5.0.5 reflect-metadata --save
+```
+
+Or using yarn:
+```
+yarn add inversify@5.0.5 reflect-metadata
 ```
 
 The InversifyJS type definitions are included in the inversify npm package. InversifyJS requires the `experimentalDecorators`, `emitDecoratorMetadata`and `lib` compilation options in your `tsconfig.json` file.
