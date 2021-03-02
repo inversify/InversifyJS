@@ -48,7 +48,8 @@ src/**/*.js
 src/*.js.map
 src/**/*.js.map
 
-src/*.d.ts
+*.d.ts
+*.tsbuildinfo
 src/annotation/*.d.ts
 src/bindings/*.d.ts
 src/constants/*.d.ts
