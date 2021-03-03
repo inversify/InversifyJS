@@ -20,868 +20,868 @@ import { resolve } from "../../src/resolution/resolver";
 
 describe("Resolve", () => {
 
-  let sandbox: sinon.SinonSandbox;
+    let sandbox: sinon.SinonSandbox;
 
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-  });
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+    });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+    afterEach(() => {
+        sandbox.restore();
+    });
 
-  it("Should be able to resolve BindingType.Instance bindings", () => {
+    it("Should be able to resolve BindingType.Instance bindings", () => {
 
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaId = "Katana";
-      const katanaHandlerId = "KatanaHandler";
-      const katanaBladeId = "KatanaBlade";
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaId = "Katana";
+        const katanaHandlerId = "KatanaHandler";
+        const katanaBladeId = "KatanaBlade";
 
-      interface Blade {}
+        interface Blade { }
 
-      @injectable()
-      class KatanaBlade implements Blade {}
+        @injectable()
+        class KatanaBlade implements Blade { }
 
-      interface Handler {}
+        interface Handler { }
 
-      @injectable()
-      class KatanaHandler implements Handler {}
+        @injectable()
+        class KatanaHandler implements Handler { }
 
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: Handler;
-          public blade: Blade;
-          public constructor(
-              @inject(katanaHandlerId) @targetName("handler") handler: Handler,
-              @inject(katanaBladeId) @targetName("blade") blade: Blade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(katanaId) @targetName("katana") katana: Katana,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana);
-      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should store singleton type bindings in cache", () => {
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaId = "Katana";
-      const katanaHandlerId = "KatanaHandler";
-      const katanaBladeId = "KatanaBlade";
-
-      interface Blade {}
-
-      @injectable()
-      class KatanaBlade implements Blade {}
-
-      interface Handler {}
-
-      @injectable()
-      class KatanaHandler implements Handler {}
-
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: Handler;
-          public blade: Blade;
-          public constructor(
-              @inject(katanaHandlerId) @targetName("handler") handler: Handler,
-              @inject(katanaBladeId) @targetName("blade") blade: Blade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(katanaId) @targetName("katana") katana: Katana,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
-      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
-
-      const bindingDictionary = getBindingDictionary(container);
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
-      const ninja = resolve<Ninja>(context);
-      expect(ninja instanceof Ninja).eql(true);
-
-      const ninja2 = resolve<Ninja>(context);
-      expect(ninja2 instanceof Ninja).eql(true);
-
-      expect(bindingDictionary.get(katanaId)[0].cache instanceof Katana).eql(true);
-
-  });
-
-  it("Should throw when an invalid BindingType is detected", () => {
-
-      interface Katana {}
-
-      @injectable()
-      class Katana implements Katana {}
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject("Katana") @targetName("katana") katana: Katana,
-              @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      // container and bindings
-      const ninjaId = "Ninja";
-      const container = new Container();
-      container.bind<Ninja>(ninjaId); // IMPORTANT! (Invalid binding)
-
-      // context and plan
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const throwFunction = () => {
-          resolve(context);
-      };
-
-      expect(context.plan.rootRequest.bindings[0].type).eql(BindingTypeEnum.Invalid);
-      expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
-
-  });
-
-  it("Should be able to resolve BindingType.ConstantValue bindings", () => {
-
-      interface KatanaBlade {}
-
-      @injectable()
-      class KatanaBlade implements KatanaBlade {}
-
-      interface KatanaHandler {}
-
-      @injectable()
-      class KatanaHandler implements KatanaHandler {}
-
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: KatanaHandler;
-          public blade: KatanaBlade;
-          public constructor(handler: KatanaHandler, blade: KatanaBlade) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject("Katana") @targetName("katana") katana: Katana,
-              @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaId = "Katana";
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should be able to resolve BindingType.DynamicValue bindings", () => {
-
-    interface UseDate {
-        doSomething(): Date;
-    }
-
-    @injectable()
-    class UseDate implements UseDate {
-        public currentDate: Date;
-        public constructor(@inject("Date") currentDate: Date) {
-            this.currentDate = currentDate;
+        interface Sword {
+            handler: KatanaHandler;
+            blade: KatanaBlade;
         }
-        public doSomething() {
-            return this.currentDate;
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: Handler;
+            public blade: Blade;
+            public constructor(
+                @inject(katanaHandlerId) @targetName("handler") handler: Handler,
+                @inject(katanaBladeId) @targetName("blade") blade: Blade
+            ) {
+                this.handler = handler;
+                this.blade = blade;
+            }
         }
-    }
-
-    const container = new Container();
-    container.bind<UseDate>("UseDate").to(UseDate);
-    container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => new Date());
-
-    const subject1 = container.get<UseDate>("UseDate");
-    const subject2 = container.get<UseDate>("UseDate");
-    expect(subject1.doSomething() === subject2.doSomething()).eql(false);
-
-    container.unbind("Date");
-    container.bind<Date>("Date").toConstantValue(new Date());
-
-    const subject3 = container.get<UseDate>("UseDate");
-    const subject4 = container.get<UseDate>("UseDate");
-    expect(subject3.doSomething() === subject4.doSomething()).eql(true);
-
-  });
-
-  it("Should be able to resolve BindingType.Constructor bindings", () => {
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaId = "Katana";
-      const newableKatanaId = "Newable<Katana>";
-      const katanaHandlerId = "KatanaHandler";
-      const katanaBladeId = "KatanaBlade";
-
-      interface KatanaBlade {}
-
-      @injectable()
-      class KatanaBlade implements KatanaBlade {}
-
-      interface KatanaHandler {}
-
-      @injectable()
-      class KatanaHandler implements KatanaHandler {}
-
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: KatanaHandler;
-          public blade: KatanaBlade;
-          public constructor(
-              @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
-              @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(newableKatanaId) @targetName("katana") katana: Katana,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = new Katana(new KatanaHandler(), new KatanaBlade());  // IMPORTANT!
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana);
-      container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should be able to resolve BindingType.Factory bindings", () => {
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const swordFactoryId = "Factory<Sword>";
-      const katanaId = "Katana";
-      const handlerId = "Handler";
-      const bladeId = "Blade";
-
-      interface Blade {}
-
-      @injectable()
-      class KatanaBlade implements Blade {}
-
-      interface Handler {}
-
-      @injectable()
-      class KatanaHandler implements Handler {}
-
-      interface Sword {
-          handler: Handler;
-          blade: Blade;
-      }
-
-      type SwordFactory = () => Sword;
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: Handler;
-          public blade: Blade;
-          public constructor(
-              @inject(handlerId) @targetName("handler") handler: Handler,
-              @inject(bladeId) @targetName("blade") blade: Blade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(swordFactoryId) @targetName("makeKatana") makeKatana: SwordFactory,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = makeKatana(); // IMPORTANT!
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana);
-      container.bind<KatanaBlade>(bladeId).to(KatanaBlade);
-      container.bind<KatanaHandler>(handlerId).to(KatanaHandler);
-
-      container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((theContext: interfaces.Context) =>
-          () =>
-              theContext.container.get<Katana>(katanaId));
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should be able to resolve bindings with auto factory", () => {
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaFactoryId = "Factory<Sword>";
-      const katanaId = "Katana";
-      const katanaHandlerId = "KatanaHandler";
-      const katanaBladeId = "KatanaBlade";
-
-      interface KatanaBlade {}
-
-      @injectable()
-      class KatanaBlade implements KatanaBlade {}
-
-      interface KatanaHandler {}
-
-      @injectable()
-      class KatanaHandler implements KatanaHandler {}
-
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      type SwordFactory = () => Sword;
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: KatanaHandler;
-          public blade: KatanaBlade;
-          public constructor(
-              @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
-              @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(katanaFactoryId) @targetName("makeKatana") makeKatana: SwordFactory,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = makeKatana(); // IMPORTANT!
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana);
-      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
-      container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should be able to resolve BindingType.Provider bindings", (done) => {
-
-      type SwordProvider = () => Promise<Sword>;
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const swordProviderId = "Provider<Sword>";
-      const swordId = "Sword";
-      const handlerId = "Handler";
-      const bladeId = "Blade";
-
-      interface Blade {}
-
-      @injectable()
-      class KatanaBlade implements Blade {}
-
-      interface Handler {}
-
-      @injectable()
-      class KatanaHandler implements Handler {}
-
-      interface Sword {
-          handler: Handler;
-          blade: Blade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: Handler;
-          public blade: Blade;
-          public constructor(
-              @inject(handlerId) @targetName("handler") handler: Handler,
-              @inject(bladeId) @targetName("handler") blade: Blade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken {}
-
-      @injectable()
-      class Shuriken implements Shuriken {}
-
-      interface Warrior {
-          katana: Katana | null;
-          katanaProvider: SwordProvider;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana | null;
-          public katanaProvider: SwordProvider;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(swordProviderId) @targetName("katanaProvider") katanaProvider: SwordProvider,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = null;
-              this.katanaProvider = katanaProvider;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Warrior>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Sword>(swordId).to(Katana);
-      container.bind<Blade>(bladeId).to(KatanaBlade);
-      container.bind<Handler>(handlerId).to(KatanaHandler);
-
-      container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((theContext: interfaces.Context) =>
-          () =>
-              new Promise<Sword>((resolveFunc) => {
-                  // Using setTimeout to simulate complex initialization
-                  setTimeout(() => { resolveFunc(theContext.container.get<Sword>(swordId)); }, 100);
-              }));
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Warrior>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-      ninja.katanaProvider().then((katana) => {
-          ninja.katana = katana;
-          expect(ninja.katana instanceof Katana).eql(true);
-          expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-          expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-          done();
-      });
-
-  });
-
-  it("Should be able to resolve plans with constraints on tagged targets", () => {
-
-      interface Weapon {}
-
-      @injectable()
-      class Katana implements Weapon { }
-
-      @injectable()
-      class Shuriken implements Weapon {}
-
-      interface Warrior {
-          katana: Weapon;
-          shuriken: Weapon;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Weapon;
-          public shuriken: Weapon;
-          public constructor(
-              @inject("Weapon") @targetName("katana") @tagged("canThrow", false) katana: Weapon,
-              @inject("Weapon") @targetName("shuriken") @tagged("canThrow", true) shuriken: Weapon
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const ninjaId = "Ninja";
-      const weaponId = "Weapon";
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
-      container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should be able to resolve plans with constraints on named targets", () => {
-
-      interface Weapon {}
-
-      @injectable()
-      class Katana implements Weapon {}
-
-      @injectable()
-      class Shuriken implements Weapon {}
-
-      interface Warrior {
-          katana: Weapon;
-          shuriken: Weapon;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Weapon;
-          public shuriken: Weapon;
-          public constructor(
-              @inject("Weapon") @targetName("katana") @named("strong")katana: Weapon,
-              @inject("Weapon") @targetName("shuriken") @named("weak") shuriken: Weapon
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const ninjaId = "Ninja";
-      const weaponId = "Weapon";
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
-      container.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should be able to resolve plans with custom contextual constraints", () => {
-
-      interface Weapon {}
-
-      @injectable()
-      class Katana implements Weapon {}
-
-      @injectable()
-      class Shuriken implements Weapon {}
-
-      interface Warrior {
-          katana: Weapon;
-          shuriken: Weapon;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Weapon;
-          public shuriken: Weapon;
-          public constructor(
-              @inject("Weapon") @targetName("katana") katana: Weapon,
-              @inject("Weapon") @targetName("shuriken") shuriken: Weapon
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const ninjaId = "Ninja";
-      const weaponId = "Weapon";
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-
-      container.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) =>
-          request.target.name.equals("katana"));
-
-      container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) =>
-        request.target.name.equals("shuriken"));
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-  });
-
-  it("Should be able to resolve plans with multi-injections", () => {
-
-      interface Weapon {
-          name: string;
-      }
-
-      @injectable()
-      class Katana implements Weapon {
-          public name = "Katana";
-      }
-
-      @injectable()
-      class Shuriken implements Weapon {
-          public name = "Shuriken";
-      }
-
-      interface Warrior {
-          katana: Weapon;
-          shuriken: Weapon;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Weapon;
-          public shuriken: Weapon;
-          public constructor(
-              @multiInject("Weapon") @targetName("weapons") weapons: Weapon[]
-          ) {
-              this.katana = weapons[0];
-              this.shuriken = weapons[1];
-          }
-      }
-
-      const ninjaId = "Ninja";
-      const weaponId = "Weapon";
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Weapon>(weaponId).to(Katana);
-      container.bind<Weapon>(weaponId).to(Shuriken);
-
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja = resolve<Ninja>(context);
-
-      expect(ninja instanceof Ninja).eql(true);
-      expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-      // if only one value is bound to weaponId
-      const container2 = new Container();
-      container2.bind<Ninja>(ninjaId).to(Ninja);
-      container2.bind<Weapon>(weaponId).to(Katana);
-
-      const context2 = plan(new MetadataReader(), container2, false, TargetTypeEnum.Variable, ninjaId);
-
-      const ninja2 = resolve<Ninja>(context2);
-
-      expect(ninja2 instanceof Ninja).eql(true);
-      expect(ninja2.katana instanceof Katana).eql(true);
-
-  });
-
-  it("Should be able to resolve plans with activation handlers", () => {
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject(katanaId) @targetName("katana") katana: Katana,
+                @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).to(Katana);
+        container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+        container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should store singleton type bindings in cache", () => {
+
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaId = "Katana";
+        const katanaHandlerId = "KatanaHandler";
+        const katanaBladeId = "KatanaBlade";
+
+        interface Blade { }
+
+        @injectable()
+        class KatanaBlade implements Blade { }
+
+        interface Handler { }
+
+        @injectable()
+        class KatanaHandler implements Handler { }
+
+        interface Sword {
+            handler: KatanaHandler;
+            blade: KatanaBlade;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: Handler;
+            public blade: Blade;
+            public constructor(
+                @inject(katanaHandlerId) @targetName("handler") handler: Handler,
+                @inject(katanaBladeId) @targetName("blade") blade: Blade
+            ) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject(katanaId) @targetName("katana") katana: Katana,
+                @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
+        container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+        container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
+
+        const bindingDictionary = getBindingDictionary(container);
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
+        const ninja = resolve<Ninja>(context);
+        expect(ninja instanceof Ninja).eql(true);
+
+        const ninja2 = resolve<Ninja>(context);
+        expect(ninja2 instanceof Ninja).eql(true);
+
+        expect(bindingDictionary.get(katanaId)[0].cache instanceof Katana).eql(true);
+
+    });
+
+    it("Should throw when an invalid BindingType is detected", () => {
+
+        interface Katana { }
+
+        @injectable()
+        class Katana implements Katana { }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject("Katana") @targetName("katana") katana: Katana,
+                @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        // container and bindings
+        const ninjaId = "Ninja";
+        const container = new Container();
+        container.bind<Ninja>(ninjaId); // IMPORTANT! (Invalid binding)
+
+        // context and plan
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const throwFunction = () => {
+            resolve(context);
+        };
+
+        expect(context.plan.rootRequest.bindings[0].type).eql(BindingTypeEnum.Invalid);
+        expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
+
+    });
+
+    it("Should be able to resolve BindingType.ConstantValue bindings", () => {
+
+        interface KatanaBlade { }
+
+        @injectable()
+        class KatanaBlade implements KatanaBlade { }
+
+        interface KatanaHandler { }
+
+        @injectable()
+        class KatanaHandler implements KatanaHandler { }
+
+        interface Sword {
+            handler: KatanaHandler;
+            blade: KatanaBlade;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: KatanaHandler;
+            public blade: KatanaBlade;
+            public constructor(handler: KatanaHandler, blade: KatanaBlade) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject("Katana") @targetName("katana") katana: Katana,
+                @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaId = "Katana";
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).toConstantValue(new Katana(new KatanaHandler(), new KatanaBlade())); // IMPORTANT!
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should be able to resolve BindingType.DynamicValue bindings", () => {
+
+        interface UseDate {
+            doSomething(): Date;
+        }
+
+        @injectable()
+        class UseDate implements UseDate {
+            public currentDate: Date;
+            public constructor(@inject("Date") currentDate: Date) {
+                this.currentDate = currentDate;
+            }
+            public doSomething() {
+                return this.currentDate;
+            }
+        }
+
+        const container = new Container();
+        container.bind<UseDate>("UseDate").to(UseDate);
+        container.bind<Date>("Date").toDynamicValue((context: interfaces.Context) => new Date());
+
+        const subject1 = container.get<UseDate>("UseDate");
+        const subject2 = container.get<UseDate>("UseDate");
+        expect(subject1.doSomething() === subject2.doSomething()).eql(false);
+
+        container.unbind("Date");
+        container.bind<Date>("Date").toConstantValue(new Date());
+
+        const subject3 = container.get<UseDate>("UseDate");
+        const subject4 = container.get<UseDate>("UseDate");
+        expect(subject3.doSomething() === subject4.doSomething()).eql(true);
+
+    });
+
+    it("Should be able to resolve BindingType.Constructor bindings", () => {
+
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaId = "Katana";
+        const newableKatanaId = "Newable<Katana>";
+        const katanaHandlerId = "KatanaHandler";
+        const katanaBladeId = "KatanaBlade";
+
+        interface KatanaBlade { }
+
+        @injectable()
+        class KatanaBlade implements KatanaBlade { }
+
+        interface KatanaHandler { }
+
+        @injectable()
+        class KatanaHandler implements KatanaHandler { }
+
+        interface Sword {
+            handler: KatanaHandler;
+            blade: KatanaBlade;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: KatanaHandler;
+            public blade: KatanaBlade;
+            public constructor(
+                @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
+                @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
+            ) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject(newableKatanaId) @targetName("katana") katana: Katana,
+                @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = new Katana(new KatanaHandler(), new KatanaBlade());  // IMPORTANT!
+                this.shuriken = shuriken;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).to(Katana);
+        container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should be able to resolve BindingType.Factory bindings", () => {
+
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const swordFactoryId = "Factory<Sword>";
+        const katanaId = "Katana";
+        const handlerId = "Handler";
+        const bladeId = "Blade";
+
+        interface Blade { }
+
+        @injectable()
+        class KatanaBlade implements Blade { }
+
+        interface Handler { }
+
+        @injectable()
+        class KatanaHandler implements Handler { }
+
+        interface Sword {
+            handler: Handler;
+            blade: Blade;
+        }
+
+        type SwordFactory = () => Sword;
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: Handler;
+            public blade: Blade;
+            public constructor(
+                @inject(handlerId) @targetName("handler") handler: Handler,
+                @inject(bladeId) @targetName("blade") blade: Blade
+            ) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject(swordFactoryId) @targetName("makeKatana") makeKatana: SwordFactory,
+                @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = makeKatana(); // IMPORTANT!
+                this.shuriken = shuriken;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).to(Katana);
+        container.bind<KatanaBlade>(bladeId).to(KatanaBlade);
+        container.bind<KatanaHandler>(handlerId).to(KatanaHandler);
+
+        container.bind<interfaces.Factory<Katana>>(swordFactoryId).toFactory<Katana>((theContext: interfaces.Context) =>
+            () =>
+                theContext.container.get<Katana>(katanaId));
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should be able to resolve bindings with auto factory", () => {
+
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaFactoryId = "Factory<Sword>";
+        const katanaId = "Katana";
+        const katanaHandlerId = "KatanaHandler";
+        const katanaBladeId = "KatanaBlade";
+
+        interface KatanaBlade { }
+
+        @injectable()
+        class KatanaBlade implements KatanaBlade { }
+
+        interface KatanaHandler { }
+
+        @injectable()
+        class KatanaHandler implements KatanaHandler { }
+
+        interface Sword {
+            handler: KatanaHandler;
+            blade: KatanaBlade;
+        }
+
+        type SwordFactory = () => Sword;
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: KatanaHandler;
+            public blade: KatanaBlade;
+            public constructor(
+                @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
+                @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
+            ) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject(katanaFactoryId) @targetName("makeKatana") makeKatana: SwordFactory,
+                @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = makeKatana(); // IMPORTANT!
+                this.shuriken = shuriken;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Katana>(katanaId).to(Katana);
+        container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
+        container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
+        container.bind<interfaces.Factory<Katana>>(katanaFactoryId).toAutoFactory<Katana>(katanaId);
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should be able to resolve BindingType.Provider bindings", (done) => {
+
+        type SwordProvider = () => Promise<Sword>;
+
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const swordProviderId = "Provider<Sword>";
+        const swordId = "Sword";
+        const handlerId = "Handler";
+        const bladeId = "Blade";
+
+        interface Blade { }
+
+        @injectable()
+        class KatanaBlade implements Blade { }
+
+        interface Handler { }
+
+        @injectable()
+        class KatanaHandler implements Handler { }
+
+        interface Sword {
+            handler: Handler;
+            blade: Blade;
+        }
+
+        @injectable()
+        class Katana implements Sword {
+            public handler: Handler;
+            public blade: Blade;
+            public constructor(
+                @inject(handlerId) @targetName("handler") handler: Handler,
+                @inject(bladeId) @targetName("handler") blade: Blade
+            ) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
+
+        interface Shuriken { }
+
+        @injectable()
+        class Shuriken implements Shuriken { }
+
+        interface Warrior {
+            katana: Katana | null;
+            katanaProvider: SwordProvider;
+            shuriken: Shuriken;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Katana | null;
+            public katanaProvider: SwordProvider;
+            public shuriken: Shuriken;
+            public constructor(
+                @inject(swordProviderId) @targetName("katanaProvider") katanaProvider: SwordProvider,
+                @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+            ) {
+                this.katana = null;
+                this.katanaProvider = katanaProvider;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Warrior>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
+        container.bind<Sword>(swordId).to(Katana);
+        container.bind<Blade>(bladeId).to(KatanaBlade);
+        container.bind<Handler>(handlerId).to(KatanaHandler);
+
+        container.bind<SwordProvider>(swordProviderId).toProvider<Sword>((theContext: interfaces.Context) =>
+            () =>
+                new Promise<Sword>((resolveFunc) => {
+                    // Using setTimeout to simulate complex initialization
+                    setTimeout(() => { resolveFunc(theContext.container.get<Sword>(swordId)); }, 100);
+                }));
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Warrior>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+        ninja.katanaProvider().then((katana) => {
+            ninja.katana = katana;
+            expect(ninja.katana instanceof Katana).eql(true);
+            expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
+            expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
+            done();
+        });
+
+    });
+
+    it("Should be able to resolve plans with constraints on tagged targets", () => {
+
+        interface Weapon { }
+
+        @injectable()
+        class Katana implements Weapon { }
+
+        @injectable()
+        class Shuriken implements Weapon { }
+
+        interface Warrior {
+            katana: Weapon;
+            shuriken: Weapon;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Weapon;
+            public shuriken: Weapon;
+            public constructor(
+                @inject("Weapon") @targetName("katana") @tagged("canThrow", false) katana: Weapon,
+                @inject("Weapon") @targetName("shuriken") @tagged("canThrow", true) shuriken: Weapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const ninjaId = "Ninja";
+        const weaponId = "Weapon";
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
+        container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should be able to resolve plans with constraints on named targets", () => {
+
+        interface Weapon { }
+
+        @injectable()
+        class Katana implements Weapon { }
+
+        @injectable()
+        class Shuriken implements Weapon { }
+
+        interface Warrior {
+            katana: Weapon;
+            shuriken: Weapon;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Weapon;
+            public shuriken: Weapon;
+            public constructor(
+                @inject("Weapon") @targetName("katana") @named("strong") katana: Weapon,
+                @inject("Weapon") @targetName("shuriken") @named("weak") shuriken: Weapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const ninjaId = "Ninja";
+        const weaponId = "Weapon";
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Weapon>(weaponId).to(Katana).whenTargetNamed("strong");
+        container.bind<Weapon>(weaponId).to(Shuriken).whenTargetNamed("weak");
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+    });
+
+    it("Should be able to resolve plans with custom contextual constraints", () => {
+
+        interface Weapon { }
+
+        @injectable()
+        class Katana implements Weapon { }
+
+        @injectable()
+        class Shuriken implements Weapon { }
+
+        interface Warrior {
+            katana: Weapon;
+            shuriken: Weapon;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Weapon;
+            public shuriken: Weapon;
+            public constructor(
+                @inject("Weapon") @targetName("katana") katana: Weapon,
+                @inject("Weapon") @targetName("shuriken") shuriken: Weapon
+            ) {
+                this.katana = katana;
+                this.shuriken = shuriken;
+            }
+        }
+
+        const ninjaId = "Ninja";
+        const weaponId = "Weapon";
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+
+        container.bind<Weapon>(weaponId).to(Katana).when((request: interfaces.Request) =>
+            request.target.name.equals("katana"));
+
+        container.bind<Weapon>(weaponId).to(Shuriken).when((request: interfaces.Request) =>
+            request.target.name.equals("shuriken"));
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+    });
+
+    it("Should be able to resolve plans with multi-injections", () => {
+
+        interface Weapon {
+            name: string;
+        }
+
+        @injectable()
+        class Katana implements Weapon {
+            public name = "Katana";
+        }
+
+        @injectable()
+        class Shuriken implements Weapon {
+            public name = "Shuriken";
+        }
+
+        interface Warrior {
+            katana: Weapon;
+            shuriken: Weapon;
+        }
+
+        @injectable()
+        class Ninja implements Warrior {
+            public katana: Weapon;
+            public shuriken: Weapon;
+            public constructor(
+                @multiInject("Weapon") @targetName("weapons") weapons: Weapon[]
+            ) {
+                this.katana = weapons[0];
+                this.shuriken = weapons[1];
+            }
+        }
+
+        const ninjaId = "Ninja";
+        const weaponId = "Weapon";
+
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Weapon>(weaponId).to(Katana);
+        container.bind<Weapon>(weaponId).to(Shuriken);
+
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja = resolve<Ninja>(context);
+
+        expect(ninja instanceof Ninja).eql(true);
+        expect(ninja.katana instanceof Katana).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+        // if only one value is bound to weaponId
+        const container2 = new Container();
+        container2.bind<Ninja>(ninjaId).to(Ninja);
+        container2.bind<Weapon>(weaponId).to(Katana);
+
+        const context2 = plan(new MetadataReader(), container2, false, TargetTypeEnum.Variable, ninjaId);
+
+        const ninja2 = resolve<Ninja>(context2);
+
+        expect(ninja2 instanceof Ninja).eql(true);
+        expect(ninja2.katana instanceof Katana).eql(true);
+
+    });
+
+    it("Should be able to resolve plans with activation handlers", () => {
 
         interface Sword {
             use(): void;
@@ -940,84 +940,84 @@ describe("Resolve", () => {
         expect(Array.isArray(timeTracker)).eql(true);
         expect(timeTracker.length).eql(2);
 
-  });
+    });
 
-  it("Should be able to resolve BindingType.Function bindings", () => {
+    it("Should be able to resolve BindingType.Function bindings", () => {
 
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaFactoryId = "KatanaFactory";
+        const ninjaId = "Ninja";
+        const shurikenId = "Shuriken";
+        const katanaFactoryId = "KatanaFactory";
 
-      type KatanaFactory = () => Katana;
+        type KatanaFactory = () => Katana;
 
-      interface KatanaBlade {}
+        interface KatanaBlade { }
 
-      @injectable()
-      class KatanaBlade implements KatanaBlade {}
+        @injectable()
+        class KatanaBlade implements KatanaBlade { }
 
-      interface KatanaHandler {}
+        interface KatanaHandler { }
 
-      @injectable()
-      class KatanaHandler implements KatanaHandler {}
+        @injectable()
+        class KatanaHandler implements KatanaHandler { }
 
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
+        interface Sword {
+            handler: KatanaHandler;
+            blade: KatanaBlade;
+        }
 
-      @injectable()
-      class Katana implements Sword {
-          public handler: KatanaHandler;
-          public blade: KatanaBlade;
-          public constructor(handler: KatanaHandler, blade: KatanaBlade) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
+        @injectable()
+        class Katana implements Sword {
+            public handler: KatanaHandler;
+            public blade: KatanaBlade;
+            public constructor(handler: KatanaHandler, blade: KatanaBlade) {
+                this.handler = handler;
+                this.blade = blade;
+            }
+        }
 
-      interface Shuriken {}
+        interface Shuriken { }
 
-      @injectable()
-      class Shuriken implements Shuriken {}
+        @injectable()
+        class Shuriken implements Shuriken { }
 
-      interface Warrior {
-          katanaFactory: KatanaFactory;
-          shuriken: Shuriken;
-      }
+        interface Warrior {
+            katanaFactory: KatanaFactory;
+            shuriken: Shuriken;
+        }
 
-      @injectable()
-      class Ninja implements Warrior {
-          public constructor(
-              @inject(katanaFactoryId) @targetName("katana") public katanaFactory: KatanaFactory,
-              @inject(shurikenId) @targetName("shuriken") public shuriken: Shuriken
-          ) {
-          }
-      }
+        @injectable()
+        class Ninja implements Warrior {
+            public constructor(
+                @inject(katanaFactoryId) @targetName("katana") public katanaFactory: KatanaFactory,
+                @inject(shurikenId) @targetName("shuriken") public shuriken: Shuriken
+            ) {
+            }
+        }
 
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Shuriken>(shurikenId).to(Shuriken);
 
-      const katanaFactoryInstance = function() {
-          return new Katana(new KatanaHandler(), new KatanaBlade());
-      };
+        const katanaFactoryInstance = function () {
+            return new Katana(new KatanaHandler(), new KatanaBlade());
+        };
 
-      container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
+        container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
 
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
+        const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      const ninja = resolve<Ninja>(context);
+        const ninja = resolve<Ninja>(context);
 
-      expect(ninja instanceof Ninja).eql(true);
-      expect(typeof ninja.katanaFactory === "function").eql(true);
-      expect(ninja.katanaFactory() instanceof Katana).eql(true);
-      expect(ninja.katanaFactory().handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
+        expect(ninja instanceof Ninja).eql(true);
+        expect(typeof ninja.katanaFactory === "function").eql(true);
+        expect(ninja.katanaFactory() instanceof Katana).eql(true);
+        expect(ninja.katanaFactory().handler instanceof KatanaHandler).eql(true);
+        expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
+        expect(ninja.shuriken instanceof Shuriken).eql(true);
 
     });
 
-  it("Should run the @PostConstruct method", () => {
+    it("Should run the @PostConstruct method", () => {
 
         interface Sword {
             use(): string;
@@ -1032,7 +1032,7 @@ describe("Resolve", () => {
             }
 
             @postConstruct()
-            public postConstruct () {
+            public postConstruct() {
                 this.useMessage = "Used Katana!";
             }
         }
@@ -1064,7 +1064,7 @@ describe("Resolve", () => {
 
     });
 
-  it("Should throw an error if the @postConstruct method throws an error", () => {
+    it("Should throw an error if the @postConstruct method throws an error", () => {
 
         @injectable()
         class Katana {
@@ -1079,7 +1079,7 @@ describe("Resolve", () => {
             .to.throw("@postConstruct error in class Katana: Original Message");
     });
 
-  it("Should run the @PostConstruct method of parent class", () => {
+    it("Should run the @PostConstruct method of parent class", () => {
 
         interface Weapon {
             use(): string;
@@ -1090,7 +1090,7 @@ describe("Resolve", () => {
             protected useMessage: string;
 
             @postConstruct()
-            public postConstruct () {
+            public postConstruct() {
                 this.useMessage = "Used Weapon!";
             }
 
@@ -1131,13 +1131,13 @@ describe("Resolve", () => {
 
     });
 
-  it("Should run the @PostConstruct method once in the singleton scope", () => {
+    it("Should run the @PostConstruct method once in the singleton scope", () => {
         let timesCalled = 0;
         @injectable()
         class Katana {
             @postConstruct()
-            public postConstruct () {
-                timesCalled ++;
+            public postConstruct() {
+                timesCalled++;
             }
         }
 
@@ -1150,7 +1150,7 @@ describe("Resolve", () => {
         }
 
         @injectable()
-        class Samurai  {
+        class Samurai {
             public katana: Katana;
             public constructor(@inject("Katana") katana: Katana) {
                 this.katana = katana;
@@ -1168,1158 +1168,1158 @@ describe("Resolve", () => {
         container.get(samuraiId);
         expect(timesCalled).to.be.equal(1);
 
-  });
-
-  it("Should not cache bindings if a dependency in the async chain fails", async () => {
-    let level2Attempts = 0;
-
-    @injectable()
-    class Level2 {
-        public value: string;
-
-        public constructor(@inject("level1")value: string) {
-          level2Attempts += 1;
-          this.value = value;
-        }
-    }
-
-    let level1Attempts = 0;
-
-    const container = new Container({defaultScope: "Singleton", autoBindInjectable: true});
-    container.bind("level1").toDynamicValue(async (context) => {
-        level1Attempts += 1;
-
-        if (level1Attempts === 1) {
-          throw new Error("first try failed.");
-        }
-
-        return "foobar";
     });
-    container.bind("a").to(Level2);
 
-    try {
-      await container.getAsync("a");
+    it("Should not cache bindings if a dependency in the async chain fails", async () => {
+        let level2Attempts = 0;
 
-      throw new Error("should have failed on first invocation.");
-    } catch (ex) {
-      // ignore
-    }
+        @injectable()
+        class Level2 {
+            public value: string;
 
-    const level2 = await container.getAsync<Level2>("a");
-    expect(level2.value).equals("foobar");
+            public constructor(@inject("level1") value: string) {
+                level2Attempts += 1;
+                this.value = value;
+            }
+        }
 
-    expect(level1Attempts).equals(2);
-    expect(level2Attempts).equals(1);
-  });
+        let level1Attempts = 0;
 
-  it("Should support async when default scope is singleton", async () => {
-      const container = new Container({defaultScope: "Singleton"});
-      container.bind("a").toDynamicValue( async () => Math.random());
+        const container = new Container({ defaultScope: "Singleton", autoBindInjectable: true });
+        container.bind("level1").toDynamicValue(async (context) => {
+            level1Attempts += 1;
 
-      const object1 = await container.getAsync("a");
-      const object2 = await container.getAsync("a");
+            if (level1Attempts === 1) {
+                throw new Error("first try failed.");
+            }
 
-      expect(object1).equals(object2);
-  });
+            return "foobar";
+        });
+        container.bind("a").to(Level2);
 
-  it("Should return different values if default singleton scope is overriden by bind", async () => {
-      const container = new Container({defaultScope: "Singleton"});
-      container.bind("a").toDynamicValue( async () => Math.random()).inTransientScope();
+        try {
+            await container.getAsync("a");
 
-      const object1 = await container.getAsync("a");
-      const object2 = await container.getAsync("a");
+            throw new Error("should have failed on first invocation.");
+        } catch (ex) {
+            // ignore
+        }
 
-      expect(object1).not.equals(object2);
-  });
+        const level2 = await container.getAsync<Level2>("a");
+        expect(level2.value).equals("foobar");
 
-  it("Should only call parent async singleton once within child containers", async () => {
-    const parent = new Container();
-    parent.bind<Date>("Parent").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+        expect(level1Attempts).equals(2);
+        expect(level2Attempts).equals(1);
+    });
 
-    const [subject1, subject2] = await Promise.all([
-      parent.getAsync<Date>("Parent"),
-      parent.getAsync<Date>("Parent")
-    ]);
+    it("Should support async when default scope is singleton", async () => {
+        const container = new Container({ defaultScope: "Singleton" });
+        container.bind("a").toDynamicValue(async () => Math.random());
 
-    expect(subject1 === subject2).eql(true);
-  });
+        const object1 = await container.getAsync("a");
+        const object2 = await container.getAsync("a");
 
-  it("Should return resolved instance to onDeactivation when binding is async", async () => {
-      @injectable()
-      class Destroyable {
-      }
+        expect(object1).equals(object2);
+    });
 
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").toDynamicValue(() => Promise.resolve(new Destroyable())).inSingletonScope()
-        .onDeactivation((instance) => new Promise((r) => {
-          expect(instance).instanceof(Destroyable);
-          r();
-      }));
+    it("Should return different values if default singleton scope is overriden by bind", async () => {
+        const container = new Container({ defaultScope: "Singleton" });
+        container.bind("a").toDynamicValue(async () => Math.random()).inTransientScope();
 
-      await container.getAsync("Destroyable");
+        const object1 = await container.getAsync("a");
+        const object2 = await container.getAsync("a");
 
-      await container.unbindAsync("Destroyable");
-  });
+        expect(object1).not.equals(object2);
+    });
 
-  it("Should wait on deactivation promise before returning unbindAsync()", async () => {
-      let resolved = false;
+    it("Should only call parent async singleton once within child containers", async () => {
+        const parent = new Container();
+        parent.bind<Date>("Parent").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
 
-      @injectable()
-      class Destroyable {
-      }
+        const [subject1, subject2] = await Promise.all([
+            parent.getAsync<Date>("Parent"),
+            parent.getAsync<Date>("Parent")
+        ]);
 
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
-        .onDeactivation(() => new Promise((r) => {
-          r();
+        expect(subject1 === subject2).eql(true);
+    });
 
-          resolved = true;
-      }));
+    it("Should return resolved instance to onDeactivation when binding is async", async () => {
+        @injectable()
+        class Destroyable {
+        }
 
-      container.get("Destroyable");
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").toDynamicValue(() => Promise.resolve(new Destroyable())).inSingletonScope()
+            .onDeactivation((instance) => new Promise((r) => {
+                expect(instance).instanceof(Destroyable);
+                r();
+            }));
 
-      await container.unbindAsync("Destroyable");
+        await container.getAsync("Destroyable");
 
-      expect(resolved).eql(true);
-  });
+        await container.unbindAsync("Destroyable");
+    });
 
-  it("Should wait on predestroy promise before returning unbindAsync()", async () => {
-      let resolved = false;
+    it("Should wait on deactivation promise before returning unbindAsync()", async () => {
+        let resolved = false;
 
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return new Promise((r) => {
-                  r();
+        @injectable()
+        class Destroyable {
+        }
 
-                  resolved = true;
-              });
-          }
-      }
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+            .onDeactivation(() => new Promise((r) => {
+                r();
 
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+                resolved = true;
+            }));
 
-      container.get("Destroyable");
+        container.get("Destroyable");
 
-      await container.unbindAsync("Destroyable");
+        await container.unbindAsync("Destroyable");
 
-      expect(resolved).eql(true);
-  });
+        expect(resolved).eql(true);
+    });
 
-  it("Should wait on deactivation promise before returning unbindAllAsync()", async () => {
-      let resolved = false;
+    it("Should wait on predestroy promise before returning unbindAsync()", async () => {
+        let resolved = false;
 
-      @injectable()
-      class Destroyable {
-      }
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return new Promise((r) => {
+                    r({});
 
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
-        .onDeactivation(() => new Promise((r) => {
-          r();
+                    resolved = true;
+                });
+            }
+        }
 
-          resolved = true;
-      }));
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
 
-      container.get("Destroyable");
+        container.get("Destroyable");
 
-      await container.unbindAllAsync();
+        await container.unbindAsync("Destroyable");
 
-      expect(resolved).eql(true);
-  });
+        expect(resolved).eql(true);
+    });
 
-  it("Should wait on predestroy promise before returning unbindAllAsync()", async () => {
-      let resolved = false;
+    it("Should wait on deactivation promise before returning unbindAllAsync()", async () => {
+        let resolved = false;
 
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return new Promise((r) => {
-                  r();
+        @injectable()
+        class Destroyable {
+        }
 
-                  resolved = true;
-              });
-          }
-      }
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+            .onDeactivation(() => new Promise((r) => {
+                r();
 
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+                resolved = true;
+            }));
 
-      container.get("Destroyable");
-
-      await container.unbindAllAsync();
+        container.get("Destroyable");
 
-      expect(resolved).eql(true);
-  });
-
-  it("Should not allow transient construction with async preDestroy", async () => {
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return Promise.resolve();
-          }
-      }
-
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inTransientScope();
-
-      expect(() => container.get("Destroyable")).to
-        .throw("@preDestroy error in class Destroyable: Class cannot be instantiated in transient scope.");
-  });
-
-  it("Should not allow transient construction with async deactivation", async () => {
-      @injectable()
-      class Destroyable {
-      }
-
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inTransientScope()
-        .onDeactivation(() => Promise.resolve());
-
-      expect(() => container.get("Destroyable")).to
-        .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in transient scope.");
-  });
-
-  it("Should force a class with an async deactivation to use the async unbindAll api", async () => {
-      @injectable()
-      class Destroyable {
-      }
-
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
-        .onDeactivation(() => Promise.resolve());
-
-      container.get("Destroyable");
-
-      expect(() => container.unbindAll()).to
-        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
-  });
-
-  it("Should force a class with an async pre destroy to use the async unbindAll api", async () => {
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return Promise.resolve();
-          }
-      }
-
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
-
-      container.get("Destroyable");
-
-      expect(() => container.unbindAll()).to
-        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
-  });
-
-  it("Should force a class with an async deactivation to use the async unbind api", async () => {
-      @injectable()
-      class Destroyable {
-      }
-
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
-        .onDeactivation(() => Promise.resolve());
-
-      container.get("Destroyable");
-
-      expect(() => container.unbind("Destroyable")).to
-        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
-  });
-
-  it("Should invoke destory in order (all async): child container, parent container, binding, class", async () => {
-      let roll = 1;
-      let binding = null;
-      let klass = null;
-      let parent = null;
-      let child = null;
-
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return new Promise((presolve) => {
-                  klass = roll;
-                  roll += 1;
-                  presolve();
-              });
-          }
-      }
-
-      const container = new Container();
-      container.onDeactivation("Destroyable", () => {
-          return new Promise((presolve) => {
-              parent = roll;
-              roll += 1;
-              presolve();
-          });
-      });
-
-      const childContainer = container.createChild();
-      childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => new Promise((presolve) => {
-          binding = roll;
-          roll += 1;
-          presolve();
-      }));
-      childContainer.onDeactivation("Destroyable", () => {
-          return new Promise((presolve) => {
-              child = roll;
-              roll += 1;
-              presolve();
-          });
-      });
-
-      childContainer.get("Destroyable");
-      await childContainer.unbindAsync("Destroyable");
-
-      expect(roll).eql(5);
-      expect(child).eql(1);
-      expect(parent).eql(2);
-      expect(binding).eql(3);
-      expect(klass).eql(4);
-  });
-
-  it("Should invoke destory in order (sync + async): child container, parent container, binding, class", async () => {
-      let roll = 1;
-      let binding = null;
-      let klass = null;
-      let parent = null;
-      let child = null;
-
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return new Promise((presolve) => {
-                  klass = roll;
-                  roll += 1;
-                  presolve();
-              });
-          }
-      }
-
-      const container = new Container();
-      container.onDeactivation("Destroyable", () => {
-          parent = roll;
-          roll += 1;
-      });
-
-      const childContainer = container.createChild();
-      childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => {
-          binding = roll;
-          roll += 1;
-      });
-      childContainer.onDeactivation("Destroyable", () => {
-          return new Promise((presolve) => {
-              child = roll;
-              roll += 1;
-              presolve();
-          });
-      });
-
-      childContainer.get("Destroyable");
-      await childContainer.unbindAsync("Destroyable");
-
-      expect(roll).eql(5);
-      expect(child).eql(1);
-      expect(parent).eql(2);
-      expect(binding).eql(3);
-      expect(klass).eql(4);
-  });
-
-  it("Should invoke destory in order (all sync): child container, parent container, binding, class", () => {
-      let roll = 1;
-      let binding = null;
-      let klass = null;
-      let parent = null;
-      let child = null;
-
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              klass = roll;
-              roll += 1;
-          }
-      }
-
-      const container = new Container();
-      container.onDeactivation("Destroyable", () => {
-          parent = roll;
-          roll += 1;
-      });
-
-      const childContainer = container.createChild();
-      childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => {
-          binding = roll;
-          roll += 1;
-      });
-      childContainer.onDeactivation("Destroyable", () => {
-          child = roll;
-          roll += 1;
-      });
-
-      childContainer.get("Destroyable");
-      childContainer.unbind("Destroyable");
-
-      expect(roll).eql(5);
-      expect(child).eql(1);
-      expect(parent).eql(2);
-      expect(binding).eql(3);
-      expect(klass).eql(4);
-  });
-
-  it("Should force a class with an async pre destroy to use the async unbind api", async () => {
-      @injectable()
-      class Destroyable {
-          @preDestroy()
-          public myPreDestroyMethod() {
-              return Promise.resolve();
-          }
-      }
-
-      const container = new Container();
-      container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
-
-      container.get("Destroyable");
-
-      expect(() => container.unbind("Destroyable")).to
-        .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
-  });
-
-  it("Should force a class with an async onActivation to use the async api", async () => {
-      @injectable()
-      class Constructable {
-      }
-
-      const container = new Container();
-      container.bind<Constructable>("Constructable").to(Constructable).inSingletonScope()
-        .onActivation(() => Promise.resolve());
-
-      expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
- but it has asynchronous dependencies.`);
-  });
-
-  it("Should force a class with an async post construct to use the async api", async () => {
-      @injectable()
-      class Constructable {
-          @postConstruct()
-          public myPostConstructMethod() {
-              return Promise.resolve();
-          }
-      }
-
-      const container = new Container();
-      container.bind<Constructable>("Constructable").to(Constructable);
-
-      expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
- but it has asynchronous dependencies.`);
-  });
-
-  it("Should retry promise if first time failed", async () => {
-      @injectable()
-      class Constructable {
-      }
-
-      let attemped = false;
-
-      const container = new Container();
-      container.bind<Constructable>("Constructable").toDynamicValue(() => {
-          if (attemped) {
-              return Promise.resolve(new Constructable());
-          }
-
-          attemped = true;
-
-          return Promise.reject("break");
-      }).inSingletonScope();
-
-      try {
-          await container.getAsync("Constructable");
-
-          throw new Error("should have thrown exception.");
-      } catch (ex) {
-          await container.getAsync("Constructable");
-      }
-  });
-
-  it("Should return resolved instance to onActivation when binding is async", async () => {
-      @injectable()
-      class Constructable {
-      }
-
-      const container = new Container();
-      container.bind<Constructable>("Constructable").toDynamicValue(() => Promise.resolve(new Constructable())).inSingletonScope()
-        .onActivation((context, c) => new Promise((r) => {
-            expect(c).instanceof(Constructable);
-
-            r(c);
+        await container.unbindAllAsync();
+
+        expect(resolved).eql(true);
+    });
+
+    it("Should wait on predestroy promise before returning unbindAllAsync()", async () => {
+        let resolved = false;
+
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return new Promise((r) => {
+                    r({});
+
+                    resolved = true;
+                });
+            }
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+        container.get("Destroyable");
+
+        await container.unbindAllAsync();
+
+        expect(resolved).eql(true);
+    });
+
+    it("Should not allow transient construction with async preDestroy", async () => {
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return Promise.resolve();
+            }
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inTransientScope();
+
+        expect(() => container.get("Destroyable")).to
+            .throw("@preDestroy error in class Destroyable: Class cannot be instantiated in transient scope.");
+    });
+
+    it("Should not allow transient construction with async deactivation", async () => {
+        @injectable()
+        class Destroyable {
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inTransientScope()
+            .onDeactivation(() => Promise.resolve());
+
+        expect(() => container.get("Destroyable")).to
+            .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in transient scope.");
+    });
+
+    it("Should force a class with an async deactivation to use the async unbindAll api", async () => {
+        @injectable()
+        class Destroyable {
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+            .onDeactivation(() => Promise.resolve());
+
+        container.get("Destroyable");
+
+        expect(() => container.unbindAll()).to
+            .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+    });
+
+    it("Should force a class with an async pre destroy to use the async unbindAll api", async () => {
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return Promise.resolve();
+            }
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+        container.get("Destroyable");
+
+        expect(() => container.unbindAll()).to
+            .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+    });
+
+    it("Should force a class with an async deactivation to use the async unbind api", async () => {
+        @injectable()
+        class Destroyable {
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+            .onDeactivation(() => Promise.resolve());
+
+        container.get("Destroyable");
+
+        expect(() => container.unbind("Destroyable")).to
+            .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+    });
+
+    it("Should invoke destroy in order (all async): child container, parent container, binding, class", async () => {
+        let roll = 1;
+        let binding = null;
+        let klass = null;
+        let parent = null;
+        let child = null;
+
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return new Promise((presolve) => {
+                    klass = roll;
+                    roll += 1;
+                    presolve({});
+                });
+            }
+        }
+
+        const container = new Container();
+        container.onDeactivation("Destroyable", () => {
+            return new Promise((presolve) => {
+                parent = roll;
+                roll += 1;
+                presolve();
+            });
+        });
+
+        const childContainer = container.createChild();
+        childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => new Promise((presolve) => {
+            binding = roll;
+            roll += 1;
+            presolve();
         }));
+        childContainer.onDeactivation("Destroyable", () => {
+            return new Promise((presolve) => {
+                child = roll;
+                roll += 1;
+                presolve();
+            });
+        });
 
-      await container.getAsync("Constructable");
-  });
+        childContainer.get("Destroyable");
+        await childContainer.unbindAsync("Destroyable");
 
-  it("Should not allow sync get if an async activation was added to container", async () => {
-      const container = new Container();
-      container.bind("foo").toConstantValue("bar");
+        expect(roll).eql(5);
+        expect(child).eql(1);
+        expect(parent).eql(2);
+        expect(binding).eql(3);
+        expect(klass).eql(4);
+    });
 
-      container.onActivation("foo", () => Promise.resolve("baz"));
+    it("Should invoke destory in order (sync + async): child container, parent container, binding, class", async () => {
+        let roll = 1;
+        let binding = null;
+        let klass = null;
+        let parent = null;
+        let child = null;
 
-      expect(() => container.get("foo")).to.throw(`You are attempting to construct 'foo' in a synchronous way
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return new Promise((presolve) => {
+                    klass = roll;
+                    roll += 1;
+                    presolve({});
+                });
+            }
+        }
+
+        const container = new Container();
+        container.onDeactivation("Destroyable", () => {
+            parent = roll;
+            roll += 1;
+        });
+
+        const childContainer = container.createChild();
+        childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => {
+            binding = roll;
+            roll += 1;
+        });
+        childContainer.onDeactivation("Destroyable", () => {
+            return new Promise((presolve) => {
+                child = roll;
+                roll += 1;
+                presolve();
+            });
+        });
+
+        childContainer.get("Destroyable");
+        await childContainer.unbindAsync("Destroyable");
+
+        expect(roll).eql(5);
+        expect(child).eql(1);
+        expect(parent).eql(2);
+        expect(binding).eql(3);
+        expect(klass).eql(4);
+    });
+
+    it("Should invoke destory in order (all sync): child container, parent container, binding, class", () => {
+        let roll = 1;
+        let binding = null;
+        let klass = null;
+        let parent = null;
+        let child = null;
+
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                klass = roll;
+                roll += 1;
+            }
+        }
+
+        const container = new Container();
+        container.onDeactivation("Destroyable", () => {
+            parent = roll;
+            roll += 1;
+        });
+
+        const childContainer = container.createChild();
+        childContainer.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope().onDeactivation(() => {
+            binding = roll;
+            roll += 1;
+        });
+        childContainer.onDeactivation("Destroyable", () => {
+            child = roll;
+            roll += 1;
+        });
+
+        childContainer.get("Destroyable");
+        childContainer.unbind("Destroyable");
+
+        expect(roll).eql(5);
+        expect(child).eql(1);
+        expect(parent).eql(2);
+        expect(binding).eql(3);
+        expect(klass).eql(4);
+    });
+
+    it("Should force a class with an async pre destroy to use the async unbind api", async () => {
+        @injectable()
+        class Destroyable {
+            @preDestroy()
+            public myPreDestroyMethod() {
+                return Promise.resolve();
+            }
+        }
+
+        const container = new Container();
+        container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
+
+        container.get("Destroyable");
+
+        expect(() => container.unbind("Destroyable")).to
+            .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
+    });
+
+    it("Should force a class with an async onActivation to use the async api", async () => {
+        @injectable()
+        class Constructable {
+        }
+
+        const container = new Container();
+        container.bind<Constructable>("Constructable").to(Constructable).inSingletonScope()
+            .onActivation(() => Promise.resolve());
+
+        expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
  but it has asynchronous dependencies.`);
-  });
-
-  it("Should allow onActivation (sync) of a previously binded sync object (without activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toConstantValue("bar");
-
-      container.onActivation("foo", () => "baz");
-
-      const result = container.get("foo");
-
-      expect(result).eql("baz");
-  });
-
-  it("Should allow onActivation to replace objects in async autoBindInjectable chain", async () => {
-      class Level1 {
-
-      }
-
-      @injectable()
-      class Level2 {
-          public level1: Level1;
-
-          constructor(@inject(Level1) l1: Level1) {
-              this.level1 = l1;
-          }
-      }
-
-      @injectable()
-      class Level3 {
-          public level2: Level2;
-
-          constructor(@inject(Level2) l2: Level2) {
-              this.level2 = l2;
-          }
-      }
-
-      const constructedLevel2 = new Level2(new Level1());
-
-      const container = new Container({autoBindInjectable: true, defaultScope: "Singleton"});
-      container.bind(Level1).toDynamicValue(() => Promise.resolve(new Level1()));
-      container.onActivation(Level2, () => {
-          return Promise.resolve(constructedLevel2);
-      });
-
-      const level2 = await container.getAsync(Level2);
-
-      expect(level2).equals(constructedLevel2);
-
-      const level3 = await container.getAsync(Level3);
-
-      expect(level3.level2).equals(constructedLevel2);
-  });
-
-  it("Should allow onActivation (async) of a previously binded sync object (without activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toConstantValue("bar");
-
-      container.onActivation("foo", () => Promise.resolve("baz"));
-
-      const result = await container.getAsync("foo");
-
-      expect(result).eql("baz");
-  });
-
-  it("Should allow onActivation (sync) of a previously binded async object (without activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toDynamicValue(() => Promise.resolve("bar"));
-
-      container.onActivation("foo", () => "baz");
-
-      const result = await container.getAsync("foo");
-
-      expect(result).eql("baz");
-  });
-
-  it("Should allow onActivation (async) of a previously binded async object (without activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toDynamicValue(() => Promise.resolve("bar"));
-
-      container.onActivation("foo", () => Promise.resolve("baz"));
-
-      const result = await container.getAsync("foo");
-
-      expect(result).eql("baz");
-  });
-
-  it("Should allow onActivation (sync) of a previously binded sync object (with activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toConstantValue("bar").onActivation(() => "bum");
-
-      container.onActivation("foo", (context, previous) => `${previous}baz`);
-
-      const result = container.get("foo");
-
-      expect(result).eql("bumbaz");
-  });
-
-  it("Should allow onActivation (async) of a previously binded sync object (with activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toConstantValue("bar").onActivation(() => "bum");
-
-      container.onActivation("foo", (context, previous) => Promise.resolve(`${previous}baz`));
-
-      const result = await container.getAsync("foo");
-
-      expect(result).eql("bumbaz");
-  });
-
-  it("Should allow onActivation (sync) of a previously binded async object (with activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toDynamicValue(() => Promise.resolve("bar")).onActivation(() => "bum");
-
-      container.onActivation("foo", (context, previous) => `${previous}baz`);
-
-      const result = await container.getAsync("foo");
-
-      expect(result).eql("bumbaz");
-  });
-
-  it("Should allow onActivation (async) of a previously binded async object (with activation)", async () => {
-      const container = new Container();
-      container.bind("foo").toDynamicValue(() => Promise.resolve("bar")).onActivation(() => "bum");
-
-      container.onActivation("foo", (context, previous) => Promise.resolve(`${previous}baz`));
-
-      const result = await container.getAsync("foo");
-
-      expect(result).eql("bumbaz");
-  });
-
-  it("Should allow onActivation (sync) of parent (async) through autobind tree", async () => {
-      class Parent {
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Parent();
-      // @ts-ignore
-      constructed.foo = "bar";
-
-      container.onActivation(Parent, () => constructed);
-
-      const result = await container.getAsync(Child);
-
-      expect(result.parent).equals(constructed);
-  });
-
-  it("Should allow onActivation (sync) of child (async) through autobind tree", async () => {
-      class Parent {
-
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Child(new Parent());
-
-      container.onActivation(Child, () => constructed);
-
-      const result = await container.getAsync(Child);
-
-      expect(result).equals(constructed);
-  });
-
-  it("Should allow onActivation (async) of parent (async) through autobind tree", async () => {
-      class Parent {
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Parent();
-
-      container.onActivation(Parent, () => Promise.resolve(constructed));
-
-      const result = await container.getAsync(Child);
-
-      expect(result.parent).equals(constructed);
-  });
-
-  it("Should allow onActivation (async) of child (async) through autobind tree", async () => {
-      class Parent {
-
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Child(new Parent());
-
-      container.onActivation(Child, () => Promise.resolve(constructed));
-
-      const result = await container.getAsync(Child);
-
-      expect(result).equals(constructed);
-  });
-
-  it("Should allow onActivation of child on parent container", async () => {
-      class Parent {
-
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Child(new Parent());
-
-      container.onActivation(Child, () => Promise.resolve(constructed));
-
-      const child = container.createChild();
-
-      const result = await child.getAsync(Child);
-
-      expect(result).equals(constructed);
-  });
-
-  it("Should allow onActivation of parent on parent container", async () => {
-      class Parent {
-
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Parent();
-
-      container.onActivation(Parent, () => Promise.resolve(constructed));
-
-      const child = container.createChild();
-
-      const result = await child.getAsync(Child);
-
-      expect(result.parent).equals(constructed);
-  });
-
-  it("Should allow onActivation of child from child container", async () => {
-      class Parent {
-
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
-
-      const constructed = new Child(new Parent());
-
-      const child = container.createChild();
-      child.onActivation(Child, () => Promise.resolve(constructed));
-
-      const result = await child.getAsync(Child);
-
-      expect(result).equals(constructed);
-  });
-
-  it("Should priortize onActivation of parent container over child container", async () => {
-      const container = new Container();
-      container.onActivation("foo", (context, previous) => `${previous}baz`);
-      container.onActivation("foo", (context, previous) => `${previous}1`);
-
-      const child = container.createChild();
-
-      child.bind<string>("foo").toConstantValue("bar").onActivation((c, previous) => `${previous}bah`);
-      child.onActivation("foo", (context, previous) => `${previous}bum`);
-      child.onActivation("foo", (context, previous) => `${previous}2`);
-
-      const result = child.get("foo");
-
-      expect(result).equals("barbahbaz1bum2");
-  });
-
-  it("Should not allow onActivation of parent on child container", async () => {
-      class Parent {
-
-      }
-
-      @injectable()
-      class Child {
-          public parent: Parent;
-
-          public constructor(@inject(Parent)parent: Parent) {
-              this.parent = parent;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent())).inSingletonScope();
-
-      const constructed = new Parent();
-
-      const child = container.createChild();
-      child.onActivation(Parent, () => Promise.resolve(constructed));
-
-      const result = await child.getAsync(Child);
-
-      expect(result.parent).not.equals(constructed);
-  });
-
-  it("Should wait until onActivation promise resolves before returning object", async () => {
-      let resolved = false;
-
-      @injectable()
-      class Constructable {
-      }
-
-      const container = new Container();
-      container.bind<Constructable>("Constructable").to(Constructable).inSingletonScope()
-        .onActivation((context, c) => new Promise((r) => {
-            resolved = true;
-            r(c);
-        }));
-
-      const result = await container.getAsync("Constructable");
-
-      expect(result).instanceof(Constructable);
-      expect(resolved).eql(true);
-  });
-
-  it("Should wait until postConstruct promise resolves before returning object", async () => {
-      let resolved = false;
-
-      @injectable()
-      class Constructable {
-          @postConstruct()
-          public myPostConstructMethod() {
-              return new Promise((r) => {
-                  resolved = true;
-                  r();
-              });
-          }
-      }
-
-      const container = new Container();
-      container.bind<Constructable>("Constructable").to(Constructable);
-
-      const result = await container.getAsync("Constructable");
-
-      expect(result).instanceof(Constructable);
-      expect(resolved).eql(true);
-  });
-
-  it("Should only call async method once if marked as singleton (indirect)", async () => {
-      @injectable()
-      class UseDate implements UseDate {
-          public currentDate: Date;
-          public constructor(@inject("Date") currentDate: Date) {
-              expect(currentDate).instanceOf(Date);
-
-              this.currentDate = currentDate;
-          }
-          public doSomething() {
-              return this.currentDate;
-          }
-      }
-
-      const container = new Container();
-      container.bind<UseDate>("UseDate").to(UseDate);
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      const subject1 = await container.getAsync<UseDate>("UseDate");
-      const subject2 = await container.getAsync<UseDate>("UseDate");
-      expect(subject1.doSomething() === subject2.doSomething()).eql(true);
-  });
-
-  it("Should support async singletons when using autoBindInjectable", async () => {
-      @injectable()
-      class AsyncValue {
-          public date: Date;
-          public constructor(@inject("Date") date: Date) {
-              this.date = date;
-          }
-      }
-
-      @injectable()
-      class MixedDependency {
-          public asyncValue: AsyncValue;
-          public date: Date;
-          public constructor(@inject(AsyncValue) asyncValue: AsyncValue) {
-              expect(asyncValue).instanceOf(AsyncValue);
-
-              this.asyncValue = asyncValue;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true, defaultScope: "Singleton"});
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      const object1 = await container.getAsync<MixedDependency>(MixedDependency);
-      const object2 = await container.getAsync<MixedDependency>(MixedDependency);
-
-      expect(object1).equals(object2);
-  });
-
-  it("Should support shared async singletons when using autoBindInjectable", async () => {
-      @injectable()
-      class AsyncValue {
-          public date: Date;
-          public constructor(@inject("Date") date: Date) {
-              this.date = date;
-          }
-      }
-
-      @injectable()
-      class MixedDependency {
-          public asyncValue: AsyncValue;
-          public constructor(@inject(AsyncValue) asyncValue: AsyncValue) {
-              expect(asyncValue).instanceOf(AsyncValue);
-
-              this.asyncValue = asyncValue;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true, defaultScope: "Singleton"});
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      const async = await container.getAsync<AsyncValue>(AsyncValue);
-
-      const object1 = await container.getAsync<MixedDependency>(MixedDependency);
-
-      expect(async).equals(object1.asyncValue);
-  });
-
-  it("Should support async dependencies in multiple layers", async () => {
-      @injectable()
-      class AsyncValue {
-          public date: Date;
-          public constructor(@inject("Date") date: Date) {
-              //expect(date).instanceOf(date);
-
-              this.date = date;
-          }
-      }
-
-      @injectable()
-      class MixedDependency {
-          public asyncValue: AsyncValue;
-          public date: Date;
-          public constructor(@inject(AsyncValue) asyncValue: AsyncValue, @inject("Date") date: Date) {
-              expect(asyncValue).instanceOf(AsyncValue);
-              expect(date).instanceOf(Date);
-
-              this.date = date;
-              this.asyncValue = asyncValue;
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      const subject1 = await container.getAsync<MixedDependency>(MixedDependency);
-      expect(subject1.date).instanceOf(Date);
-      expect(subject1.asyncValue).instanceOf(AsyncValue);
-  });
-
-  it("Should support async values already in cache", async () => {
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
-      expect(await container.getAsync<Date>("Date")).instanceOf(Date);
-  });
-
-  it("Should support async values already in cache when there dependencies", async () => {
-      @injectable()
-      class HasDependencies {
-          public constructor(@inject("Date") date: Date) {
-              expect(date).instanceOf(Date);
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
-      await container.getAsync<HasDependencies>(HasDependencies);
-  });
-
-  it("Should support async values already in cache when there are transient dependencies", async () => {
-      @injectable()
-      class Parent {
-          public constructor(@inject("Date") date: Date) {
-              expect(date).instanceOf(Date);
-          }
-      }
-
-      @injectable()
-      class Child {
-          public constructor(
-            @inject(Parent) parent: Parent,
-            @inject("Date") date: Date
-          ) {
-              expect(parent).instanceOf(Parent);
-              expect(date).instanceOf(Date);
-          }
-      }
-
-      const container = new Container({autoBindInjectable: true});
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
-      expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
-      await container.getAsync<Child>(Child);
-  });
-
-  it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
-      @injectable()
-      class UseDate implements UseDate {
-          public currentDate: Date;
-          public foobar: string;
-
-          public constructor(@inject("Date") currentDate: Date, @inject("Static") foobar: string) {
-              expect(currentDate).instanceOf(Date);
-
-              this.currentDate = currentDate;
-              this.foobar = foobar;
-          }
-      }
-
-      const container = new Container();
-      container.bind<UseDate>("UseDate").to(UseDate);
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date()));
-      container.bind<String>("Static").toConstantValue("foobar");
-
-      const subject1 = await container.getAsync<UseDate>("UseDate");
-      expect(subject1.foobar).eql("foobar");
-  });
-
-  it("Should throw exception if using sync API with async dependencies", async () => {
-      @injectable()
-      class UseDate implements UseDate {
-          public currentDate: Date;
-          public constructor(@inject("Date") currentDate: Date) {
-              expect(currentDate).instanceOf(Date);
-
-              this.currentDate = currentDate;
-          }
-          public doSomething() {
-              return this.currentDate;
-          }
-      }
-
-      const container = new Container();
-      container.bind<UseDate>("UseDate").to(UseDate);
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date()));
-
-      expect(() => container.get<UseDate>("UseDate")).to.throw(`You are attempting to construct 'UseDate' in a synchronous way
+    });
+
+    it("Should force a class with an async post construct to use the async api", async () => {
+        @injectable()
+        class Constructable {
+            @postConstruct()
+            public myPostConstructMethod() {
+                return Promise.resolve();
+            }
+        }
+
+        const container = new Container();
+        container.bind<Constructable>("Constructable").to(Constructable);
+
+        expect(() => container.get("Constructable")).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
  but it has asynchronous dependencies.`);
-  });
+    });
 
-  it("Should be able to resolve indirect Promise bindings", async () => {
-      @injectable()
-      class UseDate implements UseDate {
-          public currentDate: Date;
-          public constructor(@inject("Date") currentDate: Date) {
-              expect(currentDate).instanceOf(Date);
+    it("Should retry promise if first time failed", async () => {
+        @injectable()
+        class Constructable {
+        }
 
-              this.currentDate = currentDate;
-          }
-          public doSomething() {
-              return this.currentDate;
-          }
-      }
+        let attemped = false;
 
-      const container = new Container();
-      container.bind<UseDate>("UseDate").to(UseDate);
-      container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date()));
+        const container = new Container();
+        container.bind<Constructable>("Constructable").toDynamicValue(() => {
+            if (attemped) {
+                return Promise.resolve(new Constructable());
+            }
 
-      const subject1 = await container.getAsync<UseDate>("UseDate");
-      const subject2 = await container.getAsync<UseDate>("UseDate");
-      // tslint:disable-next-line:no-console
-      console.log(subject1, subject2);
-      expect(subject1.doSomething() === subject2.doSomething()).eql(false);
-  });
+            attemped = true;
 
-  it("Should be able to resolve direct promise bindings", async () => {
-      const container = new Container();
-      container.bind<string>("async").toDynamicValue(() => Promise.resolve("foobar"));
+            return Promise.reject("break");
+        }).inSingletonScope();
 
-      const value = await container.getAsync<string>("async");
-      expect(value).eql("foobar");
-  });
+        try {
+            await container.getAsync("Constructable");
 
-  it("Should error if trying to resolve an promise in sync API", () => {
-      const container = new Container();
-      container.bind<string>("async").toDynamicValue(() => Promise.resolve("foobar"));
+            throw new Error("should have thrown exception.");
+        } catch (ex) {
+            await container.getAsync("Constructable");
+        }
+    });
 
-      expect(() => container.get<string>("async")).to.throw(`You are attempting to construct 'async' in a synchronous way
+    it("Should return resolved instance to onActivation when binding is async", async () => {
+        @injectable()
+        class Constructable {
+        }
+
+        const container = new Container();
+        container.bind<Constructable>("Constructable").toDynamicValue(() => Promise.resolve(new Constructable())).inSingletonScope()
+            .onActivation((context, c) => new Promise((r) => {
+                expect(c).instanceof(Constructable);
+
+                r(c);
+            }));
+
+        await container.getAsync("Constructable");
+    });
+
+    it("Should not allow sync get if an async activation was added to container", async () => {
+        const container = new Container();
+        container.bind("foo").toConstantValue("bar");
+
+        container.onActivation("foo", () => Promise.resolve("baz"));
+
+        expect(() => container.get("foo")).to.throw(`You are attempting to construct 'foo' in a synchronous way
  but it has asynchronous dependencies.`);
-  });
+    });
+
+    it("Should allow onActivation (sync) of a previously binded sync object (without activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toConstantValue("bar");
+
+        container.onActivation("foo", () => "baz");
+
+        const result = container.get("foo");
+
+        expect(result).eql("baz");
+    });
+
+    it("Should allow onActivation to replace objects in async autoBindInjectable chain", async () => {
+        class Level1 {
+
+        }
+
+        @injectable()
+        class Level2 {
+            public level1: Level1;
+
+            constructor(@inject(Level1) l1: Level1) {
+                this.level1 = l1;
+            }
+        }
+
+        @injectable()
+        class Level3 {
+            public level2: Level2;
+
+            constructor(@inject(Level2) l2: Level2) {
+                this.level2 = l2;
+            }
+        }
+
+        const constructedLevel2 = new Level2(new Level1());
+
+        const container = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
+        container.bind(Level1).toDynamicValue(() => Promise.resolve(new Level1()));
+        container.onActivation(Level2, () => {
+            return Promise.resolve(constructedLevel2);
+        });
+
+        const level2 = await container.getAsync(Level2);
+
+        expect(level2).equals(constructedLevel2);
+
+        const level3 = await container.getAsync(Level3);
+
+        expect(level3.level2).equals(constructedLevel2);
+    });
+
+    it("Should allow onActivation (async) of a previously binded sync object (without activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toConstantValue("bar");
+
+        container.onActivation("foo", () => Promise.resolve("baz"));
+
+        const result = await container.getAsync("foo");
+
+        expect(result).eql("baz");
+    });
+
+    it("Should allow onActivation (sync) of a previously binded async object (without activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toDynamicValue(() => Promise.resolve("bar"));
+
+        container.onActivation("foo", () => "baz");
+
+        const result = await container.getAsync("foo");
+
+        expect(result).eql("baz");
+    });
+
+    it("Should allow onActivation (async) of a previously binded async object (without activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toDynamicValue(() => Promise.resolve("bar"));
+
+        container.onActivation("foo", () => Promise.resolve("baz"));
+
+        const result = await container.getAsync("foo");
+
+        expect(result).eql("baz");
+    });
+
+    it("Should allow onActivation (sync) of a previously binded sync object (with activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toConstantValue("bar").onActivation(() => "bum");
+
+        container.onActivation("foo", (context, previous) => `${previous}baz`);
+
+        const result = container.get("foo");
+
+        expect(result).eql("bumbaz");
+    });
+
+    it("Should allow onActivation (async) of a previously binded sync object (with activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toConstantValue("bar").onActivation(() => "bum");
+
+        container.onActivation("foo", (context, previous) => Promise.resolve(`${previous}baz`));
+
+        const result = await container.getAsync("foo");
+
+        expect(result).eql("bumbaz");
+    });
+
+    it("Should allow onActivation (sync) of a previously binded async object (with activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toDynamicValue(() => Promise.resolve("bar")).onActivation(() => "bum");
+
+        container.onActivation("foo", (context, previous) => `${previous}baz`);
+
+        const result = await container.getAsync("foo");
+
+        expect(result).eql("bumbaz");
+    });
+
+    it("Should allow onActivation (async) of a previously binded async object (with activation)", async () => {
+        const container = new Container();
+        container.bind("foo").toDynamicValue(() => Promise.resolve("bar")).onActivation(() => "bum");
+
+        container.onActivation("foo", (context, previous) => Promise.resolve(`${previous}baz`));
+
+        const result = await container.getAsync("foo");
+
+        expect(result).eql("bumbaz");
+    });
+
+    it("Should allow onActivation (sync) of parent (async) through autobind tree", async () => {
+        class Parent {
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Parent();
+        // @ts-ignore
+        constructed.foo = "bar";
+
+        container.onActivation(Parent, () => constructed);
+
+        const result = await container.getAsync(Child);
+
+        expect(result.parent).equals(constructed);
+    });
+
+    it("Should allow onActivation (sync) of child (async) through autobind tree", async () => {
+        class Parent {
+
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Child(new Parent());
+
+        container.onActivation(Child, () => constructed);
+
+        const result = await container.getAsync(Child);
+
+        expect(result).equals(constructed);
+    });
+
+    it("Should allow onActivation (async) of parent (async) through autobind tree", async () => {
+        class Parent {
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Parent();
+
+        container.onActivation(Parent, () => Promise.resolve(constructed));
+
+        const result = await container.getAsync(Child);
+
+        expect(result.parent).equals(constructed);
+    });
+
+    it("Should allow onActivation (async) of child (async) through autobind tree", async () => {
+        class Parent {
+
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Child(new Parent());
+
+        container.onActivation(Child, () => Promise.resolve(constructed));
+
+        const result = await container.getAsync(Child);
+
+        expect(result).equals(constructed);
+    });
+
+    it("Should allow onActivation of child on parent container", async () => {
+        class Parent {
+
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Child(new Parent());
+
+        container.onActivation(Child, () => Promise.resolve(constructed));
+
+        const child = container.createChild();
+
+        const result = await child.getAsync(Child);
+
+        expect(result).equals(constructed);
+    });
+
+    it("Should allow onActivation of parent on parent container", async () => {
+        class Parent {
+
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Parent();
+
+        container.onActivation(Parent, () => Promise.resolve(constructed));
+
+        const child = container.createChild();
+
+        const result = await child.getAsync(Child);
+
+        expect(result.parent).equals(constructed);
+    });
+
+    it("Should allow onActivation of child from child container", async () => {
+        class Parent {
+
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent()));
+
+        const constructed = new Child(new Parent());
+
+        const child = container.createChild();
+        child.onActivation(Child, () => Promise.resolve(constructed));
+
+        const result = await child.getAsync(Child);
+
+        expect(result).equals(constructed);
+    });
+
+    it("Should priortize onActivation of parent container over child container", async () => {
+        const container = new Container();
+        container.onActivation("foo", (context, previous) => `${previous}baz`);
+        container.onActivation("foo", (context, previous) => `${previous}1`);
+
+        const child = container.createChild();
+
+        child.bind<string>("foo").toConstantValue("bar").onActivation((c, previous) => `${previous}bah`);
+        child.onActivation("foo", (context, previous) => `${previous}bum`);
+        child.onActivation("foo", (context, previous) => `${previous}2`);
+
+        const result = child.get("foo");
+
+        expect(result).equals("barbahbaz1bum2");
+    });
+
+    it("Should not allow onActivation of parent on child container", async () => {
+        class Parent {
+
+        }
+
+        @injectable()
+        class Child {
+            public parent: Parent;
+
+            public constructor(@inject(Parent) parent: Parent) {
+                this.parent = parent;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Parent>(Parent).toDynamicValue(() => Promise.resolve(new Parent())).inSingletonScope();
+
+        const constructed = new Parent();
+
+        const child = container.createChild();
+        child.onActivation(Parent, () => Promise.resolve(constructed));
+
+        const result = await child.getAsync(Child);
+
+        expect(result.parent).not.equals(constructed);
+    });
+
+    it("Should wait until onActivation promise resolves before returning object", async () => {
+        let resolved = false;
+
+        @injectable()
+        class Constructable {
+        }
+
+        const container = new Container();
+        container.bind<Constructable>("Constructable").to(Constructable).inSingletonScope()
+            .onActivation((context, c) => new Promise((r) => {
+                resolved = true;
+                r(c);
+            }));
+
+        const result = await container.getAsync("Constructable");
+
+        expect(result).instanceof(Constructable);
+        expect(resolved).eql(true);
+    });
+
+    it("Should wait until postConstruct promise resolves before returning object", async () => {
+        let resolved = false;
+
+        @injectable()
+        class Constructable {
+            @postConstruct()
+            public myPostConstructMethod() {
+                return new Promise((r) => {
+                    resolved = true;
+                    r({});
+                });
+            }
+        }
+
+        const container = new Container();
+        container.bind<Constructable>("Constructable").to(Constructable);
+
+        const result = await container.getAsync("Constructable");
+
+        expect(result).instanceof(Constructable);
+        expect(resolved).eql(true);
+    });
+
+    it("Should only call async method once if marked as singleton (indirect)", async () => {
+        @injectable()
+        class UseDate implements UseDate {
+            public currentDate: Date;
+            public constructor(@inject("Date") currentDate: Date) {
+                expect(currentDate).instanceOf(Date);
+
+                this.currentDate = currentDate;
+            }
+            public doSomething() {
+                return this.currentDate;
+            }
+        }
+
+        const container = new Container();
+        container.bind<UseDate>("UseDate").to(UseDate);
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        const subject1 = await container.getAsync<UseDate>("UseDate");
+        const subject2 = await container.getAsync<UseDate>("UseDate");
+        expect(subject1.doSomething() === subject2.doSomething()).eql(true);
+    });
+
+    it("Should support async singletons when using autoBindInjectable", async () => {
+        @injectable()
+        class AsyncValue {
+            public date: Date;
+            public constructor(@inject("Date") date: Date) {
+                this.date = date;
+            }
+        }
+
+        @injectable()
+        class MixedDependency {
+            public asyncValue: AsyncValue;
+            public date: Date;
+            public constructor(@inject(AsyncValue) asyncValue: AsyncValue) {
+                expect(asyncValue).instanceOf(AsyncValue);
+
+                this.asyncValue = asyncValue;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        const object1 = await container.getAsync<MixedDependency>(MixedDependency);
+        const object2 = await container.getAsync<MixedDependency>(MixedDependency);
+
+        expect(object1).equals(object2);
+    });
+
+    it("Should support shared async singletons when using autoBindInjectable", async () => {
+        @injectable()
+        class AsyncValue {
+            public date: Date;
+            public constructor(@inject("Date") date: Date) {
+                this.date = date;
+            }
+        }
+
+        @injectable()
+        class MixedDependency {
+            public asyncValue: AsyncValue;
+            public constructor(@inject(AsyncValue) asyncValue: AsyncValue) {
+                expect(asyncValue).instanceOf(AsyncValue);
+
+                this.asyncValue = asyncValue;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        const async = await container.getAsync<AsyncValue>(AsyncValue);
+
+        const object1 = await container.getAsync<MixedDependency>(MixedDependency);
+
+        expect(async).equals(object1.asyncValue);
+    });
+
+    it("Should support async dependencies in multiple layers", async () => {
+        @injectable()
+        class AsyncValue {
+            public date: Date;
+            public constructor(@inject("Date") date: Date) {
+                //expect(date).instanceOf(date);
+
+                this.date = date;
+            }
+        }
+
+        @injectable()
+        class MixedDependency {
+            public asyncValue: AsyncValue;
+            public date: Date;
+            public constructor(@inject(AsyncValue) asyncValue: AsyncValue, @inject("Date") date: Date) {
+                expect(asyncValue).instanceOf(AsyncValue);
+                expect(date).instanceOf(Date);
+
+                this.date = date;
+                this.asyncValue = asyncValue;
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        const subject1 = await container.getAsync<MixedDependency>(MixedDependency);
+        expect(subject1.date).instanceOf(Date);
+        expect(subject1.asyncValue).instanceOf(AsyncValue);
+    });
+
+    it("Should support async values already in cache", async () => {
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
+        expect(await container.getAsync<Date>("Date")).instanceOf(Date);
+    });
+
+    it("Should support async values already in cache when there dependencies", async () => {
+        @injectable()
+        class HasDependencies {
+            public constructor(@inject("Date") date: Date) {
+                expect(date).instanceOf(Date);
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
+        await container.getAsync<HasDependencies>(HasDependencies);
+    });
+
+    it("Should support async values already in cache when there are transient dependencies", async () => {
+        @injectable()
+        class Parent {
+            public constructor(@inject("Date") date: Date) {
+                expect(date).instanceOf(Date);
+            }
+        }
+
+        @injectable()
+        class Child {
+            public constructor(
+                @inject(Parent) parent: Parent,
+                @inject("Date") date: Date
+            ) {
+                expect(parent).instanceOf(Parent);
+                expect(date).instanceOf(Date);
+            }
+        }
+
+        const container = new Container({ autoBindInjectable: true });
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
+
+        expect(await container.getAsync<Date>("Date")).instanceOf(Date); // causes container to cache singleton as Lazy object
+        await container.getAsync<Child>(Child);
+    });
+
+    it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
+        @injectable()
+        class UseDate implements UseDate {
+            public currentDate: Date;
+            public foobar: string;
+
+            public constructor(@inject("Date") currentDate: Date, @inject("Static") foobar: string) {
+                expect(currentDate).instanceOf(Date);
+
+                this.currentDate = currentDate;
+                this.foobar = foobar;
+            }
+        }
+
+        const container = new Container();
+        container.bind<UseDate>("UseDate").to(UseDate);
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date()));
+        container.bind<String>("Static").toConstantValue("foobar");
+
+        const subject1 = await container.getAsync<UseDate>("UseDate");
+        expect(subject1.foobar).eql("foobar");
+    });
+
+    it("Should throw exception if using sync API with async dependencies", async () => {
+        @injectable()
+        class UseDate implements UseDate {
+            public currentDate: Date;
+            public constructor(@inject("Date") currentDate: Date) {
+                expect(currentDate).instanceOf(Date);
+
+                this.currentDate = currentDate;
+            }
+            public doSomething() {
+                return this.currentDate;
+            }
+        }
+
+        const container = new Container();
+        container.bind<UseDate>("UseDate").to(UseDate);
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date()));
+
+        expect(() => container.get<UseDate>("UseDate")).to.throw(`You are attempting to construct 'UseDate' in a synchronous way
+ but it has asynchronous dependencies.`);
+    });
+
+    it("Should be able to resolve indirect Promise bindings", async () => {
+        @injectable()
+        class UseDate implements UseDate {
+            public currentDate: Date;
+            public constructor(@inject("Date") currentDate: Date) {
+                expect(currentDate).instanceOf(Date);
+
+                this.currentDate = currentDate;
+            }
+            public doSomething() {
+                return this.currentDate;
+            }
+        }
+
+        const container = new Container();
+        container.bind<UseDate>("UseDate").to(UseDate);
+        container.bind<Date>("Date").toDynamicValue(() => Promise.resolve(new Date()));
+
+        const subject1 = await container.getAsync<UseDate>("UseDate");
+        const subject2 = await container.getAsync<UseDate>("UseDate");
+        // tslint:disable-next-line:no-console
+        console.log(subject1, subject2);
+        expect(subject1.doSomething() === subject2.doSomething()).eql(false);
+    });
+
+    it("Should be able to resolve direct promise bindings", async () => {
+        const container = new Container();
+        container.bind<string>("async").toDynamicValue(() => Promise.resolve("foobar"));
+
+        const value = await container.getAsync<string>("async");
+        expect(value).eql("foobar");
+    });
+
+    it("Should error if trying to resolve an promise in sync API", () => {
+        const container = new Container();
+        container.bind<string>("async").toDynamicValue(() => Promise.resolve("foobar"));
+
+        expect(() => container.get<string>("async")).to.throw(`You are attempting to construct 'async' in a synchronous way
+ but it has asynchronous dependencies.`);
+    });
 });
