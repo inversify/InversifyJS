@@ -1,72 +1,61 @@
-import { expect } from "chai";
-import * as ERRORS_MSGS from "../../src/constants/error_msgs";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import { decorate, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import * as ERRORS_MSGS from '../../src/constants/error_msgs';
+import * as METADATA_KEY from '../../src/constants/metadata_keys';
+import { decorate, injectable } from '../../src/inversify';
 
-describe("@injectable", () => {
+describe('@injectable', () => {
+	it('Should generate metadata if declared injections', () => {
+		class Katana {}
 
-    it("Should generate metadata if declared injections", () => {
+		interface Weapon {}
 
-        class Katana {}
+		@injectable()
+		class Warrior {
+			private _primaryWeapon: Katana;
+			private _secondaryWeapon: Weapon;
 
-        interface Weapon {}
+			public constructor(primaryWeapon: Katana, secondaryWeapon: Weapon) {
+				this._primaryWeapon = primaryWeapon;
+				this._secondaryWeapon = secondaryWeapon;
+			}
 
-        @injectable()
-        class Warrior {
+			public debug() {
+				return {
+					primaryWeapon: this._primaryWeapon,
+					secondaryWeapon: this._secondaryWeapon
+				};
+			}
+		}
 
-            private _primaryWeapon: Katana;
-            private _secondaryWeapon: Weapon;
+		const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
+		expect(metadata).to.be.instanceof(Array);
 
-            public constructor(primaryWeapon: Katana, secondaryWeapon: Weapon) {
-                this._primaryWeapon = primaryWeapon;
-                this._secondaryWeapon = secondaryWeapon;
-            }
+		expect(metadata[0]).to.be.eql(Katana);
+		expect(metadata[1]).to.be.eql(Object);
+		expect(metadata[2]).to.eq(undefined);
+	});
 
-            public debug() {
-                return {
-                    primaryWeapon: this._primaryWeapon,
-                    secondaryWeapon: this._secondaryWeapon
-                };
-            }
+	it('Should throw when applied multiple times', () => {
+		@injectable()
+		class Test {}
 
-        }
+		const useDecoratorMoreThanOnce = function () {
+			decorate(injectable(), Test);
+			decorate(injectable(), Test);
+		};
 
-        const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
-        expect(metadata).to.be.instanceof(Array);
+		expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
+	});
 
-        expect(metadata[0]).to.be.eql(Katana);
-        expect(metadata[1]).to.be.eql(Object);
-        expect(metadata[2]).to.eq(undefined);
-    });
+	it('Should be usable in VanillaJS applications', () => {
+		const VanillaJSWarrior = function () {
+			// ...
+		};
 
-    it("Should throw when applied multiple times", () => {
+		decorate(injectable(), VanillaJSWarrior);
 
-        @injectable()
-        class Test {}
-
-        const useDecoratorMoreThanOnce = function() {
-            decorate(injectable(), Test);
-            decorate(injectable(), Test);
-        };
-
-        expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
-    });
-
-    it("Should be usable in VanillaJS applications", () => {
-
-        interface Katana {}
-        interface Shuriken {}
-
-        const VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
-                // ...
-        };
-
-        decorate(injectable(), VanillaJSWarrior);
-
-        const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
-        expect(metadata).to.be.instanceof(Array);
-        expect(metadata.length).to.eql(0);
-
-    });
-
+		const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
+		expect(metadata).to.be.instanceof(Array);
+		expect(metadata.length).to.eql(0);
+	});
 });

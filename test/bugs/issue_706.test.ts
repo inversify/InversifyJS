@@ -1,33 +1,29 @@
-import { expect } from "chai";
-import { BindingScopeEnum, Container, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import { BindingScopeEnum, Container, injectable } from '../../src/inversify';
 
-describe("Issue 706", () => {
+describe('Issue 706', () => {
+	it('Should expose BindingScopeEnum as part of the public API', () => {
+		@injectable()
+		class SomeClass {
+			public time: number;
+			public constructor() {
+				this.time = new Date().getTime();
+			}
+		}
 
-    it("Should expose BindingScopeEnum as part of the public API", () => {
+		const container = new Container({
+			defaultScope: BindingScopeEnum.Singleton
+		});
 
-        @injectable()
-        class SomeClass {
-            public time: number;
-            public constructor() {
-                this.time = new Date().getTime();
-            }
-        }
+		const TYPE = {
+			SomeClass: Symbol.for('SomeClass')
+		};
 
-        const container = new Container({
-            defaultScope: BindingScopeEnum.Singleton,
-        });
+		container.bind<SomeClass>(TYPE.SomeClass).to(SomeClass);
 
-        const TYPE = {
-            SomeClass: Symbol.for("SomeClass")
-        };
+		const instanceOne = container.get<SomeClass>(TYPE.SomeClass);
+		const instanceTwo = container.get<SomeClass>(TYPE.SomeClass);
 
-        container.bind<SomeClass>(TYPE.SomeClass).to(SomeClass);
-
-        const instanceOne = container.get<SomeClass>(TYPE.SomeClass);
-        const instanceTwo = container.get<SomeClass>(TYPE.SomeClass);
-
-        expect(instanceOne.time).to.eq(instanceTwo.time);
-
-    });
-
+		expect(instanceOne.time).to.eq(instanceTwo.time);
+	});
 });
