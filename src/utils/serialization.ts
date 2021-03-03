@@ -3,13 +3,11 @@ import { interfaces } from "../interfaces/interfaces";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
     if (typeof serviceIdentifier === "function") {
-        const _serviceIdentifier: any = serviceIdentifier;
-        return _serviceIdentifier.name;
+        return serviceIdentifier.name;
     } else if (typeof serviceIdentifier === "symbol") {
         return serviceIdentifier.toString();
-    } else { // string
-        const _serviceIdentifier: any = serviceIdentifier;
-        return _serviceIdentifier;
+    } else {
+        return serviceIdentifier as string;
     }
 }
 
@@ -17,8 +15,8 @@ function listRegisteredBindingsForServiceIdentifier(
     container: interfaces.Container,
     serviceIdentifier: string,
     getBindings: <T>(
-        container: interfaces.Container,
-        serviceIdentifier: interfaces.ServiceIdentifier<T>
+        _container: interfaces.Container,
+        _serviceIdentifier: interfaces.ServiceIdentifier<T>
     ) => interfaces.Binding<T>[]
 ): string {
 
@@ -124,12 +122,12 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
     }
 }
 
-function getFunctionName(v: any): string {
+function getFunctionName(v: Function): string {
     if (v.name) {
         return v.name;
     } else {
         const name = v.toString();
-        const match = name.match(/^function\s*([^\s(]+)/);
+        const match = /^function\s*([^\s(]+)/.exec(name);
         return match ? match[1] : `Anonymous function: ${name}`;
     }
 }

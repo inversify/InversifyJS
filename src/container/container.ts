@@ -2,7 +2,7 @@ import { Binding } from "../bindings/binding";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
+import * as interfaces from "../interfaces/interfaces";
 import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
@@ -12,7 +12,7 @@ import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 
-class Container implements interfaces.Container {
+class Container implements Container {
 
     public id: number;
     public parent: interfaces.Container | null;
@@ -98,7 +98,7 @@ class Container implements interfaces.Container {
         this._metadataReader = new MetadataReader();
     }
 
-    public load(...modules: interfaces.ContainerModule[]) {
+    public load(...modules: interfaces.ContainerModule[]): void {
 
         const getHelpers = this._getContainerModuleHelpersFactory();
 
@@ -112,12 +112,10 @@ class Container implements interfaces.Container {
                 containerModuleHelpers.isboundFunction,
                 containerModuleHelpers.rebindFunction
             );
-
         }
-
     }
 
-    public async loadAsync(...modules: interfaces.AsyncContainerModule[]) {
+    public async loadAsync(...modules: interfaces.AsyncContainerModule[]): Promise<void> {
 
         const getHelpers = this._getContainerModuleHelpersFactory();
 
@@ -131,9 +129,7 @@ class Container implements interfaces.Container {
                 containerModuleHelpers.isboundFunction,
                 containerModuleHelpers.rebindFunction
             );
-
         }
-
     }
 
     public unload(...modules: interfaces.ContainerModule[]): void {
