@@ -1,129 +1,119 @@
 /// <reference path="../globals.d.ts" />
 
-import { expect } from "chai";
-import "es6-symbol/implement";
-import { Container, inject, injectable, named } from "../../src/inversify";
+import { expect } from 'chai';
+import 'es6-symbol/implement';
+import { Container, inject, injectable, named } from '../../src/inversify';
 
-describe("Named default", () => {
+describe('Named default', () => {
+	it('Should be able to inject a default to avoid ambiguous binding exceptions', () => {
+		const TYPES = {
+			Warrior: 'Warrior',
+			Weapon: 'Weapon'
+		};
 
-    it("Should be able to inject a default to avoid ambiguous binding exceptions", () => {
+		const TAG = {
+			chinese: 'chinese',
+			japanese: 'japanese',
+			throwable: 'throwable'
+		};
 
-        const TYPES = {
-            Warrior: "Warrior",
-            Weapon: "Weapon"
-        };
+		interface Weapon {
+			name: string;
+		}
 
-        const TAG = {
-            chinese: "chinese",
-            japanese: "japanese",
-            throwable: "throwable"
-        };
+		interface Warrior {
+			name: string;
+			weapon: Weapon;
+		}
 
-        interface Weapon {
-            name: string;
-        }
+		@injectable()
+		class Katana implements Weapon {
+			public name: string;
+			public constructor() {
+				this.name = 'Katana';
+			}
+		}
 
-        interface Warrior {
-            name: string;
-            weapon: Weapon;
-        }
+		@injectable()
+		class Shuriken implements Weapon {
+			public name: string;
+			public constructor() {
+				this.name = 'Shuriken';
+			}
+		}
 
-        @injectable()
-        class Katana implements Weapon {
-            public name: string;
-            public constructor() {
-                this.name = "Katana";
-            }
-        }
+		@injectable()
+		class Samurai implements Warrior {
+			public name: string;
+			public weapon: Weapon;
+			public constructor(@inject(TYPES.Weapon) weapon: Weapon) {
+				this.name = 'Samurai';
+				this.weapon = weapon;
+			}
+		}
 
-        @injectable()
-        class Shuriken implements Weapon {
-            public name: string;
-            public constructor() {
-                this.name = "Shuriken";
-            }
-        }
+		@injectable()
+		class Ninja implements Warrior {
+			public name: string;
+			public weapon: Weapon;
+			public constructor(@inject(TYPES.Weapon) @named(TAG.throwable) weapon: Weapon) {
+				this.name = 'Ninja';
+				this.weapon = weapon;
+			}
+		}
 
-        @injectable()
-        class Samurai implements Warrior {
-            public name: string;
-            public weapon: Weapon;
-            public constructor(
-                @inject(TYPES.Weapon) weapon: Weapon
-            ) {
-                this.name = "Samurai";
-                this.weapon = weapon;
-            }
-        }
+		const container = new Container();
+		container.bind<Warrior>(TYPES.Warrior).to(Ninja).whenTargetNamed(TAG.chinese);
+		container.bind<Warrior>(TYPES.Warrior).to(Samurai).whenTargetNamed(TAG.japanese);
+		container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+		container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
 
-        @injectable()
-        class Ninja implements Warrior {
-            public name: string;
-            public weapon: Weapon;
-            public constructor(
-                @inject(TYPES.Weapon) @named(TAG.throwable) weapon: Weapon
-            ) {
-                this.name = "Ninja";
-                this.weapon = weapon;
-            }
-        }
+		const ninja = container.getNamed<Warrior>(TYPES.Warrior, TAG.chinese);
+		const samurai = container.getNamed<Warrior>(TYPES.Warrior, TAG.japanese);
 
-        const container = new Container();
-        container.bind<Warrior>(TYPES.Warrior).to(Ninja).whenTargetNamed(TAG.chinese);
-        container.bind<Warrior>(TYPES.Warrior).to(Samurai).whenTargetNamed(TAG.japanese);
-        container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-        container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
+		expect(ninja.name).to.eql('Ninja');
+		expect(ninja.weapon.name).to.eql('Shuriken');
+		expect(samurai.name).to.eql('Samurai');
+		expect(samurai.weapon.name).to.eql('Katana');
+	});
 
-        const ninja = container.getNamed<Warrior>(TYPES.Warrior, TAG.chinese);
-        const samurai = container.getNamed<Warrior>(TYPES.Warrior, TAG.japanese);
+	it('Should be able to select a default to avoid ambiguous binding exceptions', () => {
+		const TYPES = {
+			Weapon: 'Weapon'
+		};
 
-        expect(ninja.name).to.eql("Ninja");
-        expect(ninja.weapon.name).to.eql("Shuriken");
-        expect(samurai.name).to.eql("Samurai");
-        expect(samurai.weapon.name).to.eql("Katana");
+		const TAG = {
+			throwable: 'throwable'
+		};
 
-    });
+		interface Weapon {
+			name: string;
+		}
 
-    it("Should be able to select a default to avoid ambiguous binding exceptions", () => {
+		@injectable()
+		class Katana implements Weapon {
+			public name: string;
+			public constructor() {
+				this.name = 'Katana';
+			}
+		}
 
-        const TYPES = {
-            Weapon: "Weapon"
-        };
+		@injectable()
+		class Shuriken implements Weapon {
+			public name: string;
+			public constructor() {
+				this.name = 'Shuriken';
+			}
+		}
 
-        const TAG = {
-            throwable: "throwable"
-        };
+		const container = new Container();
+		container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+		container.bind<Weapon>(TYPES.Weapon).to(Katana).inSingletonScope().whenTargetIsDefault();
 
-        interface Weapon {
-            name: string;
-        }
+		const defaultWeapon = container.get<Weapon>(TYPES.Weapon);
+		const throwableWeapon = container.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
 
-        @injectable()
-        class Katana implements Weapon {
-            public name: string;
-            public constructor() {
-                this.name = "Katana";
-            }
-        }
-
-        @injectable()
-        class Shuriken implements Weapon {
-            public name: string;
-            public constructor() {
-                this.name = "Shuriken";
-            }
-        }
-
-        const container = new Container();
-        container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
-        container.bind<Weapon>(TYPES.Weapon).to(Katana).inSingletonScope().whenTargetIsDefault();
-
-        const defaultWeapon = container.get<Weapon>(TYPES.Weapon);
-        const throwableWeapon = container.getNamed<Weapon>(TYPES.Weapon, TAG.throwable);
-
-        expect(defaultWeapon.name).eql("Katana");
-        expect(throwableWeapon.name).eql("Shuriken");
-
-    });
-
+		expect(defaultWeapon.name).eql('Katana');
+		expect(throwableWeapon.name).eql('Shuriken');
+	});
 });

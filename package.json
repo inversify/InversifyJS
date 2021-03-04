@@ -73,6 +73,7 @@
     "nyc": "15.1.0",
     "performance-now": "2.1.0",
     "publish-please": "5.5.2",
+    "queue-microtask": "^1.2.2",
     "reflect-metadata": "0.1.13",
     "sinon": "9.2.2",
     "ts-node": "9.1.1",

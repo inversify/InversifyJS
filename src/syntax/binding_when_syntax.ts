@@ -1,122 +1,103 @@
-import { interfaces } from "../interfaces/interfaces";
-import { BindingOnSyntax } from "./binding_on_syntax";
-import { namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from "./constraint_helpers";
+import * as interfaces from '../interfaces/interfaces';
+import { BindingOnSyntax } from './binding_on_syntax';
+import { namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from './constraint_helpers';
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
+	private _binding: interfaces.Binding<T>;
 
-    private _binding: interfaces.Binding<T>;
+	public constructor(binding: interfaces.Binding<T>) {
+		this._binding = binding;
+	}
 
-    public constructor(binding: interfaces.Binding<T>) {
-        this._binding = binding;
-    }
+	public when(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = constraint;
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public when(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = constraint;
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenTargetNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = namedConstraint(name);
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenTargetNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = namedConstraint(name);
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenTargetIsDefault(): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => {
+			const targetIsDefault = request.target !== null && !request.target.isNamed() && !request.target.isTagged();
 
-    public whenTargetIsDefault(): interfaces.BindingOnSyntax<T> {
+			return targetIsDefault;
+		};
 
-        this._binding.constraint = (request: interfaces.Request) => {
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-            const targetIsDefault = (request.target !== null) &&
-                (!request.target.isNamed()) &&
-                (!request.target.isTagged());
+	public whenTargetTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = taggedConstraint(tag)(value);
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-            return targetIsDefault;
-        };
+	public whenInjectedInto(parent: Function | string): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => typeConstraint(parent)(request.parentRequest);
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenParentNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => namedConstraint(name)(request.parentRequest);
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenTargetTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = taggedConstraint(tag)(value);
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenParentTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => taggedConstraint(tag)(value)(request.parentRequest);
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenInjectedInto(parent: (Function | string)): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = (request: interfaces.Request) =>
-            typeConstraint(parent)(request.parentRequest);
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenAnyAncestorIs(ancestor: Function | string): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) =>
+			traverseAncerstors(request, typeConstraint(ancestor));
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenParentNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = (request: interfaces.Request) =>
-            namedConstraint(name)(request.parentRequest);
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenNoAncestorIs(ancestor: Function | string): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) =>
+			!traverseAncerstors(request, typeConstraint(ancestor));
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenParentTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = (request: interfaces.Request) =>
-            taggedConstraint(tag)(value)(request.parentRequest);
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenAnyAncestorNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => traverseAncerstors(request, namedConstraint(name));
 
-    public whenAnyAncestorIs(ancestor: (Function | string)): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = (request: interfaces.Request) =>
-            traverseAncerstors(request, typeConstraint(ancestor));
-        return new BindingOnSyntax<T>(this._binding);
-    }
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenNoAncestorIs(ancestor: (Function | string)): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = (request: interfaces.Request) =>
-            !traverseAncerstors(request, typeConstraint(ancestor));
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenNoAncestorNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => !traverseAncerstors(request, namedConstraint(name));
 
-    public whenAnyAncestorNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-        this._binding.constraint = (request: interfaces.Request) =>
-            traverseAncerstors(request, namedConstraint(name));
+	public whenAnyAncestorTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) =>
+			traverseAncerstors(request, taggedConstraint(tag)(value));
 
-        return new BindingOnSyntax<T>(this._binding);
-    }
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-    public whenNoAncestorNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
+	public whenNoAncestorTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) =>
+			!traverseAncerstors(request, taggedConstraint(tag)(value));
 
-        this._binding.constraint = (request: interfaces.Request) =>
-            !traverseAncerstors(request, namedConstraint(name));
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-        return new BindingOnSyntax<T>(this._binding);
-    }
+	public whenAnyAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => traverseAncerstors(request, constraint);
 
-    public whenAnyAncestorTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+		return new BindingOnSyntax<T>(this._binding);
+	}
 
-        this._binding.constraint = (request: interfaces.Request) =>
-            traverseAncerstors(request, taggedConstraint(tag)(value));
+	public whenNoAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
+		this._binding.constraint = (request: interfaces.Request) => !traverseAncerstors(request, constraint);
 
-        return new BindingOnSyntax<T>(this._binding);
-    }
-
-    public whenNoAncestorTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
-
-        this._binding.constraint = (request: interfaces.Request) =>
-            !traverseAncerstors(request, taggedConstraint(tag)(value));
-
-        return new BindingOnSyntax<T>(this._binding);
-    }
-
-    public whenAnyAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
-
-        this._binding.constraint = (request: interfaces.Request) =>
-            traverseAncerstors(request, constraint);
-
-        return new BindingOnSyntax<T>(this._binding);
-    }
-
-    public whenNoAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
-
-        this._binding.constraint = (request: interfaces.Request) =>
-            !traverseAncerstors(request, constraint);
-
-        return new BindingOnSyntax<T>(this._binding);
-    }
-
+		return new BindingOnSyntax<T>(this._binding);
+	}
 }
 
 export { BindingWhenSyntax };
