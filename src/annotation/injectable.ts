@@ -1,17 +1,18 @@
-import * as ERRORS_MSGS from '../constants/error_msgs';
-import * as METADATA_KEY from '../constants/metadata_keys';
+import * as ERRORS_MSGS from "../constants/error_msgs";
+import * as METADATA_KEY from "../constants/metadata_keys";
 
 function injectable() {
-	return function (target: any) {
-		if (Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, target)) {
-			throw new Error(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
-		}
+  return function(target: any) {
 
-		const types = Reflect.getMetadata(METADATA_KEY.DESIGN_PARAM_TYPES, target) || [];
-		Reflect.defineMetadata(METADATA_KEY.PARAM_TYPES, types, target);
+    if (Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, target)) {
+      throw new Error(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
+    }
 
-		return target;
-	};
+    const types = Reflect.getMetadata(METADATA_KEY.DESIGN_PARAM_TYPES, target) || [];
+    Reflect.defineMetadata(METADATA_KEY.PARAM_TYPES, types, target);
+
+    return target;
+  };
 }
 
 export { injectable };

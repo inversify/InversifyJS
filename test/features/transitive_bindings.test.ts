@@ -1,82 +1,88 @@
-import { expect } from 'chai';
-import { Container, injectable, multiBindToService } from '../../src/inversify';
+import { expect } from "chai";
+import { Container, injectable, multiBindToService } from "../../src/inversify";
 
-describe('Transitive bindings', () => {
-	it('Should be able to bind to a service', () => {
-		@injectable()
-		class MySqlDatabaseTransactionLog {
-			public time: number;
-			public name: string;
-			public constructor() {
-				this.time = new Date().getTime();
-				this.name = 'MySqlDatabaseTransactionLog';
-			}
-		}
+describe("Transitive bindings", () => {
 
-		@injectable()
-		class DatabaseTransactionLog {
-			public time: number;
-			public name: string;
-		}
+    it("Should be able to bind to a service", () => {
 
-		@injectable()
-		class TransactionLog {
-			public time: number;
-			public name: string;
-		}
+        @injectable()
+        class MySqlDatabaseTransactionLog {
+            public time: number;
+            public name: string;
+            public constructor() {
+                this.time = new Date().getTime();
+                this.name = "MySqlDatabaseTransactionLog";
+            }
+        }
 
-		const container = new Container();
-		container.bind(MySqlDatabaseTransactionLog).toSelf().inSingletonScope();
-		container.bind(DatabaseTransactionLog).toService(MySqlDatabaseTransactionLog);
-		container.bind(TransactionLog).toService(DatabaseTransactionLog);
+        @injectable()
+        class DatabaseTransactionLog {
+            public time: number;
+            public name: string;
+        }
 
-		const mySqlDatabaseTransactionLog = container.get(MySqlDatabaseTransactionLog);
-		const databaseTransactionLog = container.get(DatabaseTransactionLog);
-		const transactionLog = container.get(TransactionLog);
+        @injectable()
+        class TransactionLog {
+            public time: number;
+            public name: string;
+        }
 
-		expect(mySqlDatabaseTransactionLog.name).to.eq('MySqlDatabaseTransactionLog');
-		expect(databaseTransactionLog.name).to.eq('MySqlDatabaseTransactionLog');
-		expect(transactionLog.name).to.eq('MySqlDatabaseTransactionLog');
-		expect(mySqlDatabaseTransactionLog.time).to.eq(databaseTransactionLog.time);
-		expect(databaseTransactionLog.time).to.eq(transactionLog.time);
-	});
+        const container = new Container();
+        container.bind(MySqlDatabaseTransactionLog).toSelf().inSingletonScope();
+        container.bind(DatabaseTransactionLog).toService(MySqlDatabaseTransactionLog);
+        container.bind(TransactionLog).toService(DatabaseTransactionLog);
 
-	it('Should be able to bulk bind to a service', () => {
-		@injectable()
-		class MySqlDatabaseTransactionLog {
-			public time: number;
-			public name: string;
-			public constructor() {
-				this.time = new Date().getTime();
-				this.name = 'MySqlDatabaseTransactionLog';
-			}
-		}
+        const mySqlDatabaseTransactionLog = container.get(MySqlDatabaseTransactionLog);
+        const databaseTransactionLog = container.get(DatabaseTransactionLog);
+        const transactionLog = container.get(TransactionLog);
 
-		@injectable()
-		class DatabaseTransactionLog {
-			public time: number;
-			public name: string;
-		}
+        expect(mySqlDatabaseTransactionLog.name).to.eq("MySqlDatabaseTransactionLog");
+        expect(databaseTransactionLog.name).to.eq("MySqlDatabaseTransactionLog");
+        expect(transactionLog.name).to.eq("MySqlDatabaseTransactionLog");
+        expect(mySqlDatabaseTransactionLog.time).to.eq(databaseTransactionLog.time);
+        expect(databaseTransactionLog.time).to.eq(transactionLog.time);
 
-		@injectable()
-		class TransactionLog {
-			public time: number;
-			public name: string;
-		}
+    });
 
-		const container = new Container();
-		const mbts = multiBindToService(container);
-		container.bind(MySqlDatabaseTransactionLog).toSelf().inSingletonScope();
-		mbts(MySqlDatabaseTransactionLog)(DatabaseTransactionLog, TransactionLog);
+    it("Should be able to bulk bind to a service", () => {
 
-		const mySqlDatabaseTransactionLog = container.get(MySqlDatabaseTransactionLog);
-		const databaseTransactionLog = container.get(DatabaseTransactionLog);
-		const transactionLog = container.get(TransactionLog);
+        @injectable()
+        class MySqlDatabaseTransactionLog {
+            public time: number;
+            public name: string;
+            public constructor() {
+                this.time = new Date().getTime();
+                this.name = "MySqlDatabaseTransactionLog";
+            }
+        }
 
-		expect(mySqlDatabaseTransactionLog.name).to.eq('MySqlDatabaseTransactionLog');
-		expect(databaseTransactionLog.name).to.eq('MySqlDatabaseTransactionLog');
-		expect(transactionLog.name).to.eq('MySqlDatabaseTransactionLog');
-		expect(mySqlDatabaseTransactionLog.time).to.eq(databaseTransactionLog.time);
-		expect(databaseTransactionLog.time).to.eq(transactionLog.time);
-	});
+        @injectable()
+        class DatabaseTransactionLog {
+            public time: number;
+            public name: string;
+        }
+
+        @injectable()
+        class TransactionLog {
+            public time: number;
+            public name: string;
+        }
+
+        const container = new Container();
+        const mbts = multiBindToService(container);
+        container.bind(MySqlDatabaseTransactionLog).toSelf().inSingletonScope();
+        mbts(MySqlDatabaseTransactionLog)(DatabaseTransactionLog, TransactionLog);
+
+        const mySqlDatabaseTransactionLog = container.get(MySqlDatabaseTransactionLog);
+        const databaseTransactionLog = container.get(DatabaseTransactionLog);
+        const transactionLog = container.get(TransactionLog);
+
+        expect(mySqlDatabaseTransactionLog.name).to.eq("MySqlDatabaseTransactionLog");
+        expect(databaseTransactionLog.name).to.eq("MySqlDatabaseTransactionLog");
+        expect(transactionLog.name).to.eq("MySqlDatabaseTransactionLog");
+        expect(mySqlDatabaseTransactionLog.time).to.eq(databaseTransactionLog.time);
+        expect(databaseTransactionLog.time).to.eq(transactionLog.time);
+
+    });
+
 });

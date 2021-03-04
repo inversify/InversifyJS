@@ -1,69 +1,76 @@
-import * as ERROR_MSGS from '../../src/constants/error_msgs';
-import { Container, inject, injectable } from '../../src/inversify';
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { Container, inject, injectable } from "../../src/inversify";
 
-describe('Issue 549', () => {
-	it('Should throw if circular dependencies found with dynamics', () => {
-		const TYPE = {
-			ADynamicValue: Symbol.for('ADynamicValue'),
-			BDynamicValue: Symbol.for('BDynamicValue')
-		};
+describe("Issue 549", () => {
 
-		@injectable()
-		class A {
-			public b: B;
-			public constructor(@inject(TYPE.BDynamicValue) b: B) {
-				this.b = b;
-			}
-		}
+    it("Should throw if circular dependencies found with dynamics", () => {
 
-		@injectable()
-		class B {
-			public a: A;
-			public constructor(@inject(TYPE.ADynamicValue) a: A) {
-				this.a = a;
-			}
-		}
+        const TYPE = {
+            ADynamicValue: Symbol.for("ADynamicValue"),
+            BDynamicValue: Symbol.for("BDynamicValue")
+        };
 
-		const container = new Container({ defaultScope: 'Singleton' });
-		container.bind(A).toSelf();
-		container.bind(B).toSelf();
+        @injectable()
+        class A {
+            public b: B;
+            public constructor(
+                @inject(TYPE.BDynamicValue)  b: B
+            ) {
+                this.b = b;
+            }
+        }
 
-		container.bind(TYPE.ADynamicValue).toDynamicValue((ctx) => ctx.container.get(A));
+        @injectable()
+        class B {
+            public a: A;
+            public constructor(
+                @inject(TYPE.ADynamicValue) a: A
+            ) {
+                this.a = a;
+            }
+        }
 
-		container.bind(TYPE.BDynamicValue).toDynamicValue((ctx) => ctx.container.get(B));
+        const container = new Container({defaultScope: "Singleton"});
+        container.bind(A).toSelf();
+        container.bind(B).toSelf();
 
-		function willThrow() {
-			return container.get<A>(A);
-		}
+        container.bind(TYPE.ADynamicValue).toDynamicValue((ctx) =>
+            ctx.container.get(A)
+        );
 
-		try {
-			const result = willThrow();
-			throw new Error(
-				`This line should never be executed. Expected 'willThrow' to throw! ${JSON.stringify(result)}`
-			);
-		} catch (e) {
-			const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(
-				'toDynamicValue',
-				TYPE.ADynamicValue.toString()
-			);
-			const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(
-				'toDynamicValue',
-				TYPE.BDynamicValue.toString()
-			);
-			const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1;
-			const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1;
+        container.bind(TYPE.BDynamicValue).toDynamicValue((ctx) =>
+            ctx.container.get(B)
+        );
 
-			if (!matchesErrorA && !matchesErrorB) {
-				throw new Error(
-					"Expected 'willThrow' to throw:\n" +
-						`- ${expectedErrorA}\n` +
-						'or\n' +
-						`- ${expectedErrorB}\n` +
-						'but got\n' +
-						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-						`- ${e.message}`
-				);
-			}
-		}
-	});
+        function willThrow() {
+            return container.get<A>(A);
+        }
+
+        try {
+            const result = willThrow();
+            throw new Error(
+                `This line should never be executed. Expected 'willThrow' to throw! ${JSON.stringify(result)}`
+            );
+        } catch (e) {
+
+            const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
+            const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.BDynamicValue.toString());
+            const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1;
+            const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1;
+
+            if (!matchesErrorA && !matchesErrorB) {
+                throw new Error(
+                    "Expected 'willThrow' to throw:\n" +
+                    `- ${expectedErrorA}\n` +
+                    "or\n" +
+                    `- ${expectedErrorB}\n` +
+                    "but got\n" +
+                    `- ${e.message}`
+                );
+            }
+
+        }
+
+    });
+
 });

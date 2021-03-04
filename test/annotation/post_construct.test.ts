@@ -1,60 +1,59 @@
-import { expect } from 'chai';
-import { postConstruct } from '../../src/annotation/post_construct';
-import * as ERRORS_MSGS from '../../src/constants/error_msgs';
-import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import { decorate } from '../../src/inversify';
-import { Metadata } from '../../src/planning/metadata';
+import { expect } from "chai";
+import { postConstruct } from "../../src/annotation/post_construct";
+import * as ERRORS_MSGS from "../../src/constants/error_msgs";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
+import { decorate } from "../../src/inversify";
+import { Metadata } from "../../src/planning/metadata";
 
-describe('@postConstruct', () => {
-	it('Should generate metadata for the decorated method', () => {
-		class Katana {
-			private useMessage: string;
+describe("@postConstruct", () => {
 
-			public use() {
-				return 'Used Katana!';
-			}
+    it("Should generate metadata for the decorated method", () => {
+        class Katana {
+            private useMessage: string;
 
-			@postConstruct()
-			public testMethod() {
-				this.useMessage = 'Used Katana!';
-			}
-			public debug() {
-				return this.useMessage;
-			}
-		}
-		const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
-		expect(metadata.value).to.be.equal('testMethod');
-	});
+            public use() {
+                return "Used Katana!";
+            }
 
-	it('Should throw when applied multiple times', () => {
-		function setup() {
-			class Katana {
-				@postConstruct()
-				public testMethod1() {
-					/* ... */
-				}
+            @postConstruct()
+            public testMethod() {
+                this.useMessage = "Used Katana!";
+            }
+            public debug() {
+                return this.useMessage;
+            }
+        }
+        const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
+        expect(metadata.value).to.be.equal("testMethod");
+    });
 
-				@postConstruct()
-				public testMethod2() {
-					/* ... */
-				}
-			}
-			Katana.toString();
-		}
-		expect(setup).to.throw(ERRORS_MSGS.MULTIPLE_POST_CONSTRUCT_METHODS);
-	});
+    it("Should throw when applied multiple times", () => {
+        function setup() {
+            class Katana {
+                @postConstruct()
+                public testMethod1() {/* ... */ }
 
-	it('Should be usable in VanillaJS applications', () => {
-		const VanillaJSWarrior = function () {
-			// ...
-		};
-		VanillaJSWarrior.prototype.testMethod = function () {
-			// ...
-		};
+                @postConstruct()
+                public testMethod2() {/* ... */ }
+            }
+            Katana.toString();
+        }
+        expect(setup).to.throw(ERRORS_MSGS.MULTIPLE_POST_CONSTRUCT_METHODS);
+    });
 
-		decorate(postConstruct(), VanillaJSWarrior.prototype, 'testMethod');
+    it("Should be usable in VanillaJS applications", () => {
 
-		const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
-		expect(metadata.value).to.be.equal('testMethod');
-	});
+        const VanillaJSWarrior = function () {
+            // ...
+        };
+        VanillaJSWarrior.prototype.testMethod = function () {
+            // ...
+        };
+
+        decorate(postConstruct(), VanillaJSWarrior.prototype, "testMethod");
+
+        const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
+        expect(metadata.value).to.be.equal("testMethod");
+    });
+
 });

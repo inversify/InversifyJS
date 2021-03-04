@@ -1,54 +1,63 @@
-import { expect } from 'chai';
-import * as ERROR_MSGS from '../../src/constants/error_msgs';
-import { Container, inject, injectable } from '../../src/inversify';
+import { expect } from "chai";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
+import { Container, inject, injectable } from "../../src/inversify";
 
-describe('Node', () => {
-	it('Should throw if circular dependencies found', () => {
-		interface A {}
-		interface B {}
-		interface C {}
-		interface D {}
+describe("Node", () => {
 
-		@injectable()
-		class A implements A {
-			public b: B;
-			public c: C;
-			public constructor(@inject('B') b: B, @inject('C') c: C) {
-				this.b = b;
-				this.c = c;
-			}
-		}
+    it("Should throw if circular dependencies found", () => {
 
-		@injectable()
-		class B implements B {}
+        interface A {}
+        interface B {}
+        interface C {}
+        interface D {}
 
-		@injectable()
-		class C implements C {
-			public d: D;
-			public constructor(@inject('D') d: D) {
-				this.d = d;
-			}
-		}
+        @injectable()
+        class A implements A {
+            public b: B;
+            public c: C;
+            public constructor(
+                @inject("B")  b: B,
+                @inject("C")  c: C
+            ) {
+                this.b = b;
+                this.c = c;
+            }
+        }
 
-		@injectable()
-		class D implements D {
-			public a: A;
-			public constructor(@inject('A') a: A) {
-				this.a = a;
-			}
-		}
+        @injectable()
+        class B implements B {}
 
-		const container = new Container();
-		container.bind<A>('A').to(A);
-		container.bind<B>('B').to(B);
-		container.bind<C>('C').to(C);
-		container.bind<D>('D').to(D);
+        @injectable()
+        class C implements C {
+            public d: D;
+            public constructor(@inject("D") d: D) {
+                this.d = d;
+            }
+        }
 
-		function willThrow() {
-			const a = container.get<A>('A');
-			return a;
-		}
+        @injectable()
+        class D implements D {
+            public a: A;
+            public constructor(@inject("A") a: A) {
+                this.a = a;
+            }
+        }
 
-		expect(willThrow).to.throw(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} A --> C --> D --> A`);
-	});
+        const container = new Container();
+        container.bind<A>("A").to(A);
+        container.bind<B>("B").to(B);
+        container.bind<C>("C").to(C);
+        container.bind<D>("D").to(D);
+
+        function willThrow() {
+            const a = container.get<A>("A");
+            return a;
+        }
+
+        expect(willThrow).to.throw(
+            `${ERROR_MSGS.CIRCULAR_DEPENDENCY} A --> C --> D --> A`
+        );
+
+    });
+
 });

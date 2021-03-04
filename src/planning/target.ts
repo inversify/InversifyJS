@@ -1,115 +1,115 @@
-import * as METADATA_KEY from '../constants/metadata_keys';
-import * as interfaces from '../interfaces/interfaces';
-import { id } from '../utils/id';
-import { Metadata } from './metadata';
-import { QueryableString } from './queryable_string';
+import * as METADATA_KEY from "../constants/metadata_keys";
+import { interfaces } from "../interfaces/interfaces";
+import { id } from "../utils/id";
+import { Metadata } from "./metadata";
+import { QueryableString } from "./queryable_string";
 
 class Target implements interfaces.Target {
-	public id: number;
-	public type: interfaces.TargetType;
-	public serviceIdentifier: interfaces.ServiceIdentifier<any>;
-	public name: interfaces.QueryableString;
-	public metadata: Metadata[];
 
-	public constructor(
-		type: interfaces.TargetType,
-		name: string,
-		serviceIdentifier: interfaces.ServiceIdentifier<any>,
-		namedOrTagged?: string | Metadata
-	) {
-		this.id = id();
-		this.type = type;
-		this.serviceIdentifier = serviceIdentifier;
-		this.name = new QueryableString(name || '');
-		this.metadata = new Array<Metadata>();
+    public id: number;
+    public type: interfaces.TargetType;
+    public serviceIdentifier: interfaces.ServiceIdentifier<any>;
+    public name: interfaces.QueryableString;
+    public metadata: Metadata[];
 
-		let metadataItem: interfaces.Metadata | null = null;
+    public constructor(
+        type: interfaces.TargetType,
+        name: string,
+        serviceIdentifier: interfaces.ServiceIdentifier<any>,
+        namedOrTagged?: (string | Metadata)
+    ) {
 
-		// is named target
-		if (typeof namedOrTagged === 'string') {
-			metadataItem = new Metadata(METADATA_KEY.NAMED_TAG, namedOrTagged);
-		} else if (namedOrTagged instanceof Metadata) {
-			// is target with metadata
-			metadataItem = namedOrTagged;
-		}
+        this.id = id();
+        this.type = type;
+        this.serviceIdentifier = serviceIdentifier;
+        this.name = new QueryableString(name || "");
+        this.metadata = new Array<Metadata>();
 
-		// target has metadata
-		if (metadataItem !== null) {
-			this.metadata.push(metadataItem);
-		}
-	}
+        let metadataItem: interfaces.Metadata | null = null;
 
-	public hasTag(key: string): boolean {
-		for (const m of this.metadata) {
-			if (m.key === key) {
-				return true;
-			}
-		}
-		return false;
-	}
+        // is named target
+        if (typeof namedOrTagged === "string") {
+            metadataItem = new Metadata(METADATA_KEY.NAMED_TAG, namedOrTagged);
+        } else if (namedOrTagged instanceof Metadata) {
+            // is target with metadata
+            metadataItem = namedOrTagged;
+        }
 
-	public isArray(): boolean {
-		return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
-	}
+        // target has metadata
+        if (metadataItem !== null) {
+            this.metadata.push(metadataItem);
+        }
 
-	public matchesArray(name: interfaces.ServiceIdentifier<any>): boolean {
-		return this.matchesTag(METADATA_KEY.MULTI_INJECT_TAG)(name);
-	}
+    }
 
-	public isNamed(): boolean {
-		return this.hasTag(METADATA_KEY.NAMED_TAG);
-	}
+    public hasTag(key: string): boolean {
+        for (const m of this.metadata) {
+            if (m.key === key) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public isTagged(): boolean {
-		return this.metadata.some(
-			(m) =>
-				m.key !== METADATA_KEY.INJECT_TAG &&
-				m.key !== METADATA_KEY.MULTI_INJECT_TAG &&
-				m.key !== METADATA_KEY.NAME_TAG &&
-				m.key !== METADATA_KEY.UNMANAGED_TAG &&
-				m.key !== METADATA_KEY.NAMED_TAG
-		);
-	}
+    public isArray(): boolean {
+        return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
+    }
 
-	public isOptional(): boolean {
-		return this.matchesTag(METADATA_KEY.OPTIONAL_TAG)(true);
-	}
+    public matchesArray(name: interfaces.ServiceIdentifier<any>): boolean {
+        return this.matchesTag(METADATA_KEY.MULTI_INJECT_TAG)(name);
+    }
 
-	public getNamedTag(): interfaces.Metadata | null {
-		if (this.isNamed()) {
-			return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
-		}
-		return null;
-	}
+    public isNamed(): boolean {
+        return this.hasTag(METADATA_KEY.NAMED_TAG);
+    }
 
-	public getCustomTags(): interfaces.Metadata[] | null {
-		if (this.isTagged()) {
-			return this.metadata.filter(
-				(m) =>
-					m.key !== METADATA_KEY.INJECT_TAG &&
-					m.key !== METADATA_KEY.MULTI_INJECT_TAG &&
-					m.key !== METADATA_KEY.NAME_TAG &&
-					m.key !== METADATA_KEY.UNMANAGED_TAG &&
-					m.key !== METADATA_KEY.NAMED_TAG
-			);
-		}
-		return null;
-	}
+    public isTagged(): boolean {
+        return this.metadata.some((m) =>
+            (m.key !== METADATA_KEY.INJECT_TAG) &&
+                   (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
+                   (m.key !== METADATA_KEY.NAME_TAG) &&
+                   (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
+                   (m.key !== METADATA_KEY.NAMED_TAG));
+    }
 
-	public matchesNamedTag(name: string): boolean {
-		return this.matchesTag(METADATA_KEY.NAMED_TAG)(name);
-	}
+    public isOptional(): boolean {
+        return this.matchesTag(METADATA_KEY.OPTIONAL_TAG)(true);
+    }
 
-	public matchesTag(key: string) {
-		return (value: any) => {
-			for (const m of this.metadata) {
-				if (m.key === key && m.value === value) {
-					return true;
-				}
-			}
-			return false;
-		};
-	}
+    public getNamedTag(): interfaces.Metadata | null {
+        if (this.isNamed()) {
+            return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
+        }
+        return null;
+    }
+
+    public getCustomTags(): interfaces.Metadata[] | null {
+        if (this.isTagged()) {
+            return this.metadata.filter((m) =>
+                (m.key !== METADATA_KEY.INJECT_TAG) &&
+                    (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
+                    (m.key !== METADATA_KEY.NAME_TAG) &&
+                    (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
+                    (m.key !== METADATA_KEY.NAMED_TAG));
+        }
+        return null;
+    }
+
+    public matchesNamedTag(name: string): boolean {
+        return this.matchesTag(METADATA_KEY.NAMED_TAG)(name);
+    }
+
+    public matchesTag(key: string) {
+        return (value: any) => {
+            for (const m of this.metadata) {
+                if (m.key === key && m.value === value) {
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
+
 }
 
 export { Target };

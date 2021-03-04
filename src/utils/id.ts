@@ -1,7 +1,7 @@
 let idCounter = 0;
 
 function id(): number {
-	return idCounter++;
+  return idCounter++;
 }
 
 export { id };
