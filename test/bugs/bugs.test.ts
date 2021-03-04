@@ -39,7 +39,7 @@ describe('Bugs', () => {
 		const container = new Container();
 		container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
 
-		const shouldThrow = function () {
+		const shouldThrow = () => {
 			container.get<SamuraiMaster>(SamuraiMaster);
 		};
 
@@ -421,12 +421,10 @@ describe('Bugs', () => {
 			this.configure(options);
 		});
 
-		expect(name).to.eql(
-			'Anonymous function: ' +
-				function (options: any) {
-					this.configure(options);
-				}.toString()
-		);
+		// prettier-ignore
+		expect(name).to.eql("Anonymous function: " + (function (options: any) {
+            this.configure(options);
+        }).toString());
 	});
 
 	it('Should be able to get all the available bindings for a service identifier', () => {
