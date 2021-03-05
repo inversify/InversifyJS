@@ -3,10 +3,10 @@ import { Metadata } from '../planning/metadata';
 import { tagParameter } from './decorator_utils';
 
 function targetName(name: string) {
-	return function (target: Object, targetKey: string, index: number) {
-		const metadata = new Metadata(METADATA_KEY.NAME_TAG, name);
-		tagParameter(target, targetKey, index, metadata);
-	};
+  return function (target: Object, targetKey: string, index: number) {
+    const metadata = new Metadata(METADATA_KEY.NAME_TAG, name);
+    tagParameter(target, targetKey, index, metadata);
+  };
 }
 
 export { targetName };

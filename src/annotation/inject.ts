@@ -7,30 +7,30 @@ import { tagParameter, tagProperty } from './decorator_utils';
 export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<unknown> | LazyServiceIdentifer;
 
 export class LazyServiceIdentifer<T = unknown> {
-	private _cb: () => interfaces.ServiceIdentifier<T>;
-	public constructor(cb: () => interfaces.ServiceIdentifier<T>) {
-		this._cb = cb;
-	}
+  private _cb: () => interfaces.ServiceIdentifier<T>;
+  public constructor(cb: () => interfaces.ServiceIdentifier<T>) {
+    this._cb = cb;
+  }
 
-	public unwrap() {
-		return this._cb();
-	}
+  public unwrap() {
+    return this._cb();
+  }
 }
 
 function inject(serviceIdentifier: ServiceIdentifierOrFunc) {
-	return function (target: Object, targetKey: string, index?: number): void {
-		if (serviceIdentifier === undefined) {
-			throw new Error(UNDEFINED_INJECT_ANNOTATION((target as ClassDecorator).name));
-		}
+  return function (target: Object, targetKey: string, index?: number): void {
+    if (serviceIdentifier === undefined) {
+      throw new Error(UNDEFINED_INJECT_ANNOTATION((target as ClassDecorator).name));
+    }
 
-		const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
+    const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
 
-		if (typeof index === 'number') {
-			tagParameter(target, targetKey, index, metadata);
-		} else {
-			tagProperty(target, targetKey, metadata);
-		}
-	};
+    if (typeof index === 'number') {
+      tagParameter(target, targetKey, index, metadata);
+    } else {
+      tagProperty(target, targetKey, metadata);
+    }
+  };
 }
 
 export { inject };
