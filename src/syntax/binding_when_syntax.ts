@@ -29,7 +29,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 		return new BindingOnSyntax<T>(this._binding);
 	}
 
-	public whenTargetTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+	public whenTargetTagged(tag: string | number | symbol, value: unknown): interfaces.BindingOnSyntax<T> {
 		this._binding.constraint = taggedConstraint(tag)(value);
 		return new BindingOnSyntax<T>(this._binding);
 	}
@@ -44,7 +44,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 		return new BindingOnSyntax<T>(this._binding);
 	}
 
-	public whenParentTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+	public whenParentTagged(tag: string | number | symbol, value: unknown): interfaces.BindingOnSyntax<T> {
 		this._binding.constraint = (request: interfaces.Request) => taggedConstraint(tag)(value)(request.parentRequest);
 		return new BindingOnSyntax<T>(this._binding);
 	}
@@ -73,14 +73,14 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 		return new BindingOnSyntax<T>(this._binding);
 	}
 
-	public whenAnyAncestorTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+	public whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): interfaces.BindingOnSyntax<T> {
 		this._binding.constraint = (request: interfaces.Request) =>
 			traverseAncerstors(request, taggedConstraint(tag)(value));
 
 		return new BindingOnSyntax<T>(this._binding);
 	}
 
-	public whenNoAncestorTagged(tag: string | number | symbol, value: any): interfaces.BindingOnSyntax<T> {
+	public whenNoAncestorTagged(tag: string | number | symbol, value: unknown): interfaces.BindingOnSyntax<T> {
 		this._binding.constraint = (request: interfaces.Request) =>
 			!traverseAncerstors(request, taggedConstraint(tag)(value));
 

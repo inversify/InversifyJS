@@ -3,7 +3,7 @@ import * as METADATA_KEY from '../constants/metadata_keys';
 import * as interfaces from '../interfaces/interfaces';
 
 function tagParameter(
-	annotationTarget: any,
+	annotationTarget: Object,
 	propertyName: string,
 	parameterIndex: number,
 	metadata: interfaces.Metadata
@@ -12,14 +12,14 @@ function tagParameter(
 	_tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
 }
 
-function tagProperty(annotationTarget: any, propertyName: string, metadata: interfaces.Metadata) {
+function tagProperty(annotationTarget: Object, propertyName: string, metadata: interfaces.Metadata) {
 	const metadataKey = METADATA_KEY.TAGGED_PROP;
 	_tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
 }
 
 function _tagParameterOrProperty(
 	metadataKey: string,
-	annotationTarget: any,
+	annotationTarget: Object,
 	propertyName: string,
 	metadata: interfaces.Metadata,
 	parameterIndex?: number
@@ -57,12 +57,12 @@ function _tagParameterOrProperty(
 	Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 }
 
-function _decorate(decorators: any[], target: any): void {
-	Reflect.decorate(decorators, target);
+function _decorate(decorators: unknown, target: Function): void {
+	Reflect.decorate(decorators as ClassDecorator[], target);
 }
 
 function _param(paramIndex: number, decorator: ParameterDecorator) {
-	return function (target: any, key: string) {
+	return function (target: Object, key: string) {
 		decorator(target, key, paramIndex);
 	};
 }
@@ -74,7 +74,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
 	decorator: ClassDecorator | ParameterDecorator | MethodDecorator,
-	target: any,
+	target: Function,
 	parameterIndex?: number | string
 ): void {
 	if (typeof parameterIndex === 'number') {

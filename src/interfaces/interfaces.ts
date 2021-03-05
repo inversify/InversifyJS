@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type BindingScope = 'Singleton' | 'Transient' | 'Request';
 
 export type BindingType =

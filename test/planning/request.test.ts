@@ -67,6 +67,7 @@ describe('Request', () => {
 		expect(katanaRequest.target.name.value()).eql('Katana');
 		expect(katanaRequest.childRequests.length).eql(0);
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const katanaParentRequest: interfaces.Request = katanaRequest.parentRequest as any;
 		expect(katanaParentRequest.serviceIdentifier).eql(identifiers.Ninja);
 		expect(katanaParentRequest.target.name.value()).eql('Ninja');

@@ -6,18 +6,18 @@ import { Metadata } from '../../src/planning/metadata';
 
 describe('Custom Metadata Reader', () => {
 	interface FunctionWithMetadata extends Function {
-		constructorInjections: interfaces.ServiceIdentifier<any>[];
+		constructorInjections: interfaces.ServiceIdentifier<unknown>[];
 		propertyInjections: PropertyInjectionMetadata[];
 	}
 
 	interface PropertyInjectionMetadata {
 		propName: string;
-		injection: interfaces.ServiceIdentifier<any>;
+		injection: interfaces.ServiceIdentifier<unknown>;
 	}
 
 	class StaticPropsMetadataReader implements interfaces.MetadataReader {
 		public getConstructorMetadata(constructorFunc: FunctionWithMetadata): interfaces.ConstructorMetadata {
-			const formatMetadata = (injections: interfaces.ServiceIdentifier<any>[]) => {
+			const formatMetadata = (injections: interfaces.ServiceIdentifier<unknown>[]) => {
 				const userGeneratedMetadata: interfaces.MetadataMap = {};
 				injections.forEach((injection, index) => {
 					const metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);

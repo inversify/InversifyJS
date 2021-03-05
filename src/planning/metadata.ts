@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as METADATA_KEY from '../constants/metadata_keys';
 import * as interfaces from '../interfaces/interfaces';
 

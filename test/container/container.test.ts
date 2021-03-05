@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { injectable } from '../../src/annotation/injectable';
@@ -10,7 +11,7 @@ import * as interfaces from '../../src/interfaces/interfaces';
 import { getBindingDictionary } from '../../src/planning/planner';
 import { getServiceIdentifierAsString } from '../../src/utils/serialization';
 
-type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
+type Dictionary = Map<interfaces.ServiceIdentifier<unknown>, interfaces.Binding<unknown>[]>;
 
 describe('Container', () => {
 	let sandbox: sinon.SinonSandbox;
@@ -575,6 +576,7 @@ describe('Container', () => {
 	});
 
 	it('Should be throw an exception if incorrect options is provided', () => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const invalidOptions1: any = () => 0;
 		const wrong1 = () => new Container(invalidOptions1);
 		expect(wrong1).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);

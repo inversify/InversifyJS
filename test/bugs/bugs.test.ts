@@ -50,7 +50,7 @@ describe('Bugs', () => {
 	it('Should not throw when args length of base and derived class match (property setter)', () => {
 		@injectable()
 		class Warrior {
-			protected rank: string | null;
+			public rank: string | null;
 			public constructor() {
 				// length = 0
 				this.rank = null;
@@ -68,7 +68,7 @@ describe('Bugs', () => {
 
 		const container = new Container();
 		container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-		const master: any = container.get<SamuraiMaster>(SamuraiMaster);
+		const master: SamuraiMaster = container.get<SamuraiMaster>(SamuraiMaster);
 		expect(master.rank).eql('master');
 	});
 
@@ -77,7 +77,7 @@ describe('Bugs', () => {
 
 		@injectable()
 		class Warrior {
-			protected rank: string;
+			public rank: string;
 			public constructor(rank: string) {
 				// length = 1
 				this.rank = rank;
@@ -99,7 +99,7 @@ describe('Bugs', () => {
 		container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
 		container.bind<string>(TYPES.Rank).toConstantValue('master').whenTargetNamed('master');
 
-		const master: any = container.get<SamuraiMaster>(SamuraiMaster);
+		const master: SamuraiMaster = container.get<SamuraiMaster>(SamuraiMaster);
 		expect(master.rank).eql('master');
 	});
 
@@ -108,7 +108,7 @@ describe('Bugs', () => {
 
 		@injectable()
 		class Warrior {
-			protected rank: string;
+			public rank: string;
 			public constructor(rank: string) {
 				// length = 1
 				this.rank = rank;
@@ -150,7 +150,7 @@ describe('Bugs', () => {
 		container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
 		container.bind<string>(TYPES.Rank).toConstantValue('master').whenTargetNamed('master');
 
-		const master: any = container.get<SamuraiMaster>(SamuraiMaster);
+		const master: SamuraiMaster = container.get<SamuraiMaster>(SamuraiMaster);
 		expect(master.rank).eql('master');
 		expect(master.weapon.name).eql('Katana');
 	});
@@ -417,12 +417,12 @@ describe('Bugs', () => {
 	});
 
 	it('Helper getFunctionName should not throw when using an anonymous function', () => {
-		const name = getFunctionName(function (options: any) {
+		const name = getFunctionName(function (options: Object) {
 			this.configure(options);
 		});
 
 		// prettier-ignore
-		expect(name).to.eql("Anonymous function: " + (function (options: any) {
+		expect(name).to.eql("Anonymous function: " + (function (options: Object) {
             this.configure(options);
         }).toString());
 	});

@@ -294,9 +294,9 @@ describe('Planner', () => {
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[0].target.isArray()).eql(true);
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[0].serviceIdentifier).eql('Weapon');
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].serviceIdentifier).eql('Weapon');
-		const shurikenImplementationType: any =
+		const shurikenImplementationType =
 			actualPlan.rootRequest.childRequests[0].childRequests[0].bindings[0].implementationType;
-		expect(shurikenImplementationType.name).eql('Shuriken');
+		expect(shurikenImplementationType?.name).eql('Shuriken');
 
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql(weaponId);
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.name.value()).eql('weapons');
@@ -304,9 +304,9 @@ describe('Planner', () => {
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[1].target.isArray()).eql(true);
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[1].serviceIdentifier).eql('Weapon');
 		expect(actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].serviceIdentifier).eql('Weapon');
-		const katanaImplementationType: any =
+		const katanaImplementationType =
 			actualPlan.rootRequest.childRequests[0].childRequests[1].bindings[0].implementationType;
-		expect(katanaImplementationType.name).eql('Katana');
+		expect(katanaImplementationType?.name).eql('Katana');
 	});
 
 	it('Should throw when no matching bindings are found', () => {

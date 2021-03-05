@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { TargetTypeEnum } from '../../src/constants/literal_types';
 import { Container } from '../../src/container/container';
+import { interfaces } from '../../src/inversify';
 import { Context } from '../../src/planning/context';
 import { Plan } from '../../src/planning/plan';
 import { Request } from '../../src/planning/request';
@@ -10,8 +11,7 @@ describe('Context', () => {
 	it('Should set its own properties correctly', () => {
 		const container = new Container();
 		const context1 = new Context(container);
-		const invalid: any = null;
-		const context2: Context = new Context(invalid);
+		const context2: Context = new Context((null as unknown) as interfaces.Container);
 
 		expect(context1.container).not.to.eql(null);
 		expect(context2.container).eql(null);

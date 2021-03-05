@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
@@ -6,7 +7,7 @@ import { decorate } from '../../src/annotation/decorator_utils';
 import { inject, LazyServiceIdentifer } from '../../src/annotation/inject';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import * as interfaces from '../../src/interfaces/interfaces';
+import type * as interfaces from '../../src/interfaces/interfaces';
 
 interface Katana {}
 interface Shuriken {}

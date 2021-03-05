@@ -5,10 +5,11 @@ import * as interfaces from '../interfaces/interfaces';
 import { Metadata } from '../planning/metadata';
 
 function _injectProperties(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	instance: any,
 	childRequests: interfaces.Request[],
 	resolveRequest: interfaces.ResolveRequestHandler
-): any {
+) {
 	const propertyInjectionsRequests = childRequests.filter(
 		(childRequest: interfaces.Request) =>
 			childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ClassProperty
@@ -26,11 +27,12 @@ function _injectProperties(
 	return instance;
 }
 
-function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): any {
+function _createInstance(Func: interfaces.Newable<unknown>, injections: Object[]) {
 	return new Func(...injections);
 }
 
-function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function _postConstruct(constr: interfaces.Newable<unknown>, result: any): void {
 	if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
 		const data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
 		try {
@@ -42,11 +44,11 @@ function _postConstruct(constr: interfaces.Newable<any>, result: any): void {
 }
 
 function resolveInstance(
-	constr: interfaces.Newable<any>,
+	constr: interfaces.Newable<unknown>,
 	childRequests: interfaces.Request[],
 	resolveRequest: interfaces.ResolveRequestHandler
-): any {
-	let result: any = null;
+) {
+	let result = null;
 
 	if (childRequests.length > 0) {
 		const constructorInjectionsRequests = childRequests.filter(

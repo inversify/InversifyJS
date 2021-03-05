@@ -13,6 +13,7 @@ describe('Performance', () => {
 
 		for (i = 0; i < times; i++) {
 			const start = now();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			result.container.bind<any>(`SOME_ID_${i}`).toConstantValue({ test: i });
 			const end = now();
 			result.register = end - start;

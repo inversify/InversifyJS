@@ -26,7 +26,7 @@ export const INVALID_DECORATOR_OPERATION =
 	'The @inject @multiInject @tagged and @named decorators ' +
 	'must be applied to the parameters of a class constructor or a class property.';
 
-export const ARGUMENTS_LENGTH_MISMATCH = (...values: any[]) =>
+export const ARGUMENTS_LENGTH_MISMATCH = (...values: string[]) =>
 	'The number of constructor arguments in the derived class ' +
 	`${values[0]} must be >= than the number of constructor arguments of its base class.`;
 
@@ -43,9 +43,9 @@ export const CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK =
 	'Invalid Container option. Skip base check must ' + 'be a boolean';
 
 export const MULTIPLE_POST_CONSTRUCT_METHODS = 'Cannot apply @postConstruct decorator multiple times in the same class';
-export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
+export const POST_CONSTRUCT_ERROR = (...values: string[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
 
-export const CIRCULAR_DEPENDENCY_IN_FACTORY = (...values: any[]) =>
+export const CIRCULAR_DEPENDENCY_IN_FACTORY = (...values: string[]) =>
 	'It looks like there is a circular dependency ' +
 	`in one of the '${values[0]}' bindings. Please investigate bindings with` +
 	`service identifier '${values[1]}'.`;

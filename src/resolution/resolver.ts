@@ -9,8 +9,8 @@ type FactoryType = 'toDynamicValue' | 'toFactory' | 'toAutoFactory' | 'toProvide
 
 const invokeFactory = (
 	factoryType: FactoryType,
-	serviceIdentifier: interfaces.ServiceIdentifier<any>,
-	fn: () => any
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+	fn: () => unknown
 ) => {
 	try {
 		return fn();
@@ -23,6 +23,7 @@ const invokeFactory = (
 	}
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _resolveRequest = (requestScope: interfaces.RequestScope) => (request: interfaces.Request): any => {
 	request.parentContext.setCurrentRequest(request);
 
@@ -44,7 +45,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) => (request: int
 			return _f(childRequest);
 		});
 	} else {
-		let result: any = null;
+		let result = null;
 
 		if (request.target.isOptional() && bindings.length === 0) {
 			return undefined;
@@ -70,15 +71,15 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) => (request: int
 			result = binding.implementationType;
 		} else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
 			result = invokeFactory('toDynamicValue', binding.serviceIdentifier, () =>
-				(binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
+				(binding.dynamicValue as (context: interfaces.Context) => unknown)(request.parentContext)
 			);
 		} else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
 			result = invokeFactory('toFactory', binding.serviceIdentifier, () =>
-				(binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
+				(binding.factory as interfaces.FactoryCreator<unknown>)(request.parentContext)
 			);
 		} else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
 			result = invokeFactory('toProvider', binding.serviceIdentifier, () =>
-				(binding.provider as interfaces.Provider<any>)(request.parentContext)
+				(binding.provider as interfaces.Provider<unknown>)(request.parentContext)
 			);
 		} else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 			result = resolveInstance(binding.implementationType, childRequests, _resolveRequest(requestScope));

@@ -12,6 +12,7 @@ describe('BindingInSyntax', () => {
 		const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
 		// cast to any to be able to access private props
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const _bindingInSyntax: any = bindingInSyntax;
 
 		expect(_bindingInSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);

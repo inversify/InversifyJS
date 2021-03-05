@@ -7,14 +7,14 @@ import { QueryableString } from './queryable_string';
 class Target implements interfaces.Target {
 	public id: number;
 	public type: interfaces.TargetType;
-	public serviceIdentifier: interfaces.ServiceIdentifier<any>;
+	public serviceIdentifier: interfaces.ServiceIdentifier<unknown>;
 	public name: interfaces.QueryableString;
 	public metadata: Metadata[];
 
 	public constructor(
 		type: interfaces.TargetType,
 		name: string,
-		serviceIdentifier: interfaces.ServiceIdentifier<any>,
+		serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
 		namedOrTagged?: string | Metadata
 	) {
 		this.id = id();
@@ -52,7 +52,7 @@ class Target implements interfaces.Target {
 		return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
 	}
 
-	public matchesArray(name: interfaces.ServiceIdentifier<any>): boolean {
+	public matchesArray(name: interfaces.ServiceIdentifier<unknown>): boolean {
 		return this.matchesTag(METADATA_KEY.MULTI_INJECT_TAG)(name);
 	}
 
@@ -101,6 +101,7 @@ class Target implements interfaces.Target {
 	}
 
 	public matchesTag(key: string) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return (value: any) => {
 			for (const m of this.metadata) {
 				if (m.key === key && m.value === value) {

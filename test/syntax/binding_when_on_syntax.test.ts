@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { injectable } from '../../src/annotation/injectable';

@@ -41,6 +41,7 @@ describe('InversifyJS', () => {
 			.to(Katana)
 			.onActivation((context: interfaces.Context, katana: Katana) => {
 				const handler = {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					apply(target: any, thisArgument: any, argumentsList: any[]) {
 						log.push(`Starting: ${new Date().getTime()}`);
 						const result = target.apply(thisArgument, argumentsList);

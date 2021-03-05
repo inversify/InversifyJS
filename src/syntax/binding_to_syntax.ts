@@ -11,7 +11,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 		this._binding = binding;
 	}
 
-	public to(constructor: new (...args: any[]) => T): interfaces.BindingInWhenOnSyntax<T> {
+	public to(constructor: new (...args: unknown[]) => T): interfaces.BindingInWhenOnSyntax<T> {
 		this._binding.type = BindingTypeEnum.Instance;
 		this._binding.implementationType = constructor;
 		return new BindingInWhenOnSyntax<T>(this._binding);
@@ -21,7 +21,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 		if (typeof this._binding.serviceIdentifier !== 'function') {
 			throw new Error(`${ERROR_MSGS.INVALID_TO_SELF_VALUE}`);
 		}
-		const self: any = this._binding.serviceIdentifier;
+		const self = this._binding.serviceIdentifier;
 		return this.to(self);
 	}
 
@@ -43,6 +43,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
 	public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
 		this._binding.type = BindingTypeEnum.Constructor;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this._binding.implementationType = constructor as any;
 		return new BindingWhenOnSyntax<T>(this._binding);
 	}

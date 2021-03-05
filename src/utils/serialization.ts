@@ -1,7 +1,7 @@
 import * as ERROR_MSGS from '../constants/error_msgs';
 import * as interfaces from '../interfaces/interfaces';
 
-function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
+function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): string {
 	if (typeof serviceIdentifier === 'function') {
 		return serviceIdentifier.name;
 	} else if (typeof serviceIdentifier === 'symbol') {
@@ -25,7 +25,7 @@ function listRegisteredBindingsForServiceIdentifier(
 	if (registeredBindings.length !== 0) {
 		registeredBindingsList = '\nRegistered bindings:';
 
-		registeredBindings.forEach((binding: interfaces.Binding<any>) => {
+		registeredBindings.forEach((binding: interfaces.Binding<unknown>) => {
 			// Use "Object as name of constant value injections"
 			let name = 'Object';
 
@@ -47,7 +47,7 @@ function listRegisteredBindingsForServiceIdentifier(
 
 function alreadyDependencyChain(
 	request: interfaces.Request,
-	serviceIdentifier: interfaces.ServiceIdentifier<any>
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>
 ): boolean {
 	if (request.parentRequest === null) {
 		return false;

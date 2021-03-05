@@ -17,17 +17,18 @@ import { getBaseClassDependencyCount, getDependencies, getFunctionName } from '.
 import { Request } from './request';
 import { Target } from './target';
 
-function getBindingDictionary(cntnr: any): interfaces.Lookup<interfaces.Binding<any>> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getBindingDictionary(cntnr: any): interfaces.Lookup<interfaces.Binding<unknown>> {
 	return cntnr._bindingDictionary;
 }
 
 function _createTarget(
 	isMultiInject: boolean,
 	targetType: interfaces.TargetType,
-	serviceIdentifier: interfaces.ServiceIdentifier<any>,
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
 	name: string,
 	key?: string | number | symbol,
-	value?: any
+	value?: unknown
 ): interfaces.Target {
 	const metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
 	const injectMetadata = new Metadata(metadataKey, serviceIdentifier);
@@ -47,9 +48,9 @@ function _getActiveBindings(
 	context: interfaces.Context,
 	parentRequest: interfaces.Request | null,
 	target: interfaces.Target
-): interfaces.Binding<any>[] {
-	let bindings = getBindings<any>(context.container, target.serviceIdentifier);
-	let activeBindings: interfaces.Binding<any>[] = [];
+): interfaces.Binding<unknown>[] {
+	let bindings = getBindings<unknown>(context.container, target.serviceIdentifier);
+	let activeBindings: interfaces.Binding<unknown>[] = [];
 
 	// automatic binding
 	if (
@@ -82,11 +83,11 @@ function _getActiveBindings(
 }
 
 function _validateActiveBindingCount(
-	serviceIdentifier: interfaces.ServiceIdentifier<any>,
-	bindings: interfaces.Binding<any>[],
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+	bindings: interfaces.Binding<unknown>[],
 	target: interfaces.Target,
 	container: interfaces.Container
-): interfaces.Binding<any>[] {
+): interfaces.Binding<unknown>[] {
 	switch (bindings.length) {
 		case BindingCount.NoBindingsAvailable:
 			if (target.isOptional()) {
@@ -120,12 +121,12 @@ function _validateActiveBindingCount(
 function _createSubRequests(
 	metadataReader: interfaces.MetadataReader,
 	avoidConstraints: boolean,
-	serviceIdentifier: interfaces.ServiceIdentifier<any>,
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
 	context: interfaces.Context,
 	parentRequest: interfaces.Request | null,
 	target: interfaces.Target
 ) {
-	let activeBindings: interfaces.Binding<any>[];
+	let activeBindings: interfaces.Binding<unknown>[];
 	let childRequest: interfaces.Request;
 
 	if (parentRequest === null) {
@@ -189,6 +190,7 @@ function getBindings<T>(
 	serviceIdentifier: interfaces.ServiceIdentifier<T>
 ): interfaces.Binding<T>[] {
 	let bindings: interfaces.Binding<T>[] = [];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
 
 	if (bindingDictionary.hasKey(serviceIdentifier)) {
@@ -206,9 +208,9 @@ function plan(
 	container: interfaces.Container,
 	isMultiInject: boolean,
 	targetType: interfaces.TargetType,
-	serviceIdentifier: interfaces.ServiceIdentifier<any>,
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
 	key?: string | number | symbol,
-	value?: any,
+	value?: unknown,
 	avoidConstraints = false
 ): interfaces.Context {
 	const context = new Context(container);
@@ -229,9 +231,9 @@ function plan(
 
 function createMockRequest(
 	container: interfaces.Container,
-	serviceIdentifier: interfaces.ServiceIdentifier<any>,
+	serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
 	key: string | number | symbol,
-	value: any
+	value: unknown
 ): interfaces.Request {
 	const target = new Target(TargetTypeEnum.Variable, '', serviceIdentifier, new Metadata(key, value));
 	const context = new Context(container);

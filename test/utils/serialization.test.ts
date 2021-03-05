@@ -13,6 +13,7 @@ describe('Serialization', () => {
 	});
 
 	it('Should return a good function name by using the regex', () => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const testFunction: any = { name: null };
 		testFunction.toString = () => 'function testFunction';
 

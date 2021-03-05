@@ -4,9 +4,9 @@ import * as interfaces from '../interfaces/interfaces';
 import { Metadata } from '../planning/metadata';
 import { tagParameter, tagProperty } from './decorator_utils';
 
-export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<any> | LazyServiceIdentifer;
+export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<unknown> | LazyServiceIdentifer;
 
-export class LazyServiceIdentifer<T = any> {
+export class LazyServiceIdentifer<T = unknown> {
 	private _cb: () => interfaces.ServiceIdentifier<T>;
 	public constructor(cb: () => interfaces.ServiceIdentifier<T>) {
 		this._cb = cb;
@@ -18,9 +18,9 @@ export class LazyServiceIdentifer<T = any> {
 }
 
 function inject(serviceIdentifier: ServiceIdentifierOrFunc) {
-	return function (target: any, targetKey: string, index?: number): void {
+	return function (target: Object, targetKey: string, index?: number): void {
 		if (serviceIdentifier === undefined) {
-			throw new Error(UNDEFINED_INJECT_ANNOTATION(target.name));
+			throw new Error(UNDEFINED_INJECT_ANNOTATION((target as ClassDecorator).name));
 		}
 
 		const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
