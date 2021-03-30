@@ -22,12 +22,15 @@ class Container implements interfaces.Container {
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
 
-    public static merge(container1: interfaces.Container, container2: interfaces.Container): interfaces.Container {
-
+    public static merge(
+      container1: interfaces.Container,
+      container2: interfaces.Container,
+      ...container3: interfaces.Container[]
+    ): interfaces.Container {
         const container = new Container();
+        const targetContainers: interfaces.Lookup<interfaces.Binding<any>>[] = [container1, container2, ...container3]
+            .map((targetContainer) => getBindingDictionary(targetContainer));
         const bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
-        const bindingDictionary1: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container1);
-        const bindingDictionary2: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container2);
 
         function copyDictionary(
             origin: interfaces.Lookup<interfaces.Binding<any>>,
@@ -42,11 +45,11 @@ class Container implements interfaces.Container {
 
         }
 
-        copyDictionary(bindingDictionary1, bindingDictionary);
-        copyDictionary(bindingDictionary2, bindingDictionary);
+        targetContainers.forEach((targetBindingDictionary) => {
+            copyDictionary(targetBindingDictionary, bindingDictionary);
+        });
 
         return container;
-
     }
 
     public constructor(containerOptions?: interfaces.ContainerOptions) {
