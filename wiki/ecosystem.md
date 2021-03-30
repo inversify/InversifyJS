@@ -5,9 +5,9 @@ On this page we will only feature a few of them that the InversifyJS maintainers
 Don’t let this discourage you from trying the rest of them!
 Consider these the “staff picks”, and don’t hesitate to submit a PR if you’ve built something wonderful with InversifyJS.
 
-### Utilitites
-- [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - Allows developers to declare lazy evaluated property injection using decorators.
-- [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - Allows developers to declare InversifyJS bindings using decorators.
+### Utilities
+- [inversify-binding-decorators](https://github.com/inversify/inversify-binding-decorators) - Allows developers to declare InversifyJS bindings using decorators.
+- [inversify-inject-decorators](https://github.com/inversify/inversify-inject-decorators) - Allows developers to declare lazy evaluated property injection using decorators.
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 - [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 - [inversify-vanillajs-helpers](https://github.com/inversify/inversify-vanillajs-helpers) - Some helpers for the development of InversifyJS applications with VanillaJS or Babel.
@@ -15,6 +15,9 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-components](https://github.com/webcomputing/inversify-components) - Layer on top of InversifyJS that enables you to split your application into several components.
 - [inversify-token](https://github.com/mscharley/inversify-token) - Token based layer for InversifyJS to enable strong type-safe guarantees for injection in TypeScript.
 - [inversify-agenda](https://github.com/lautarobock/inversify-agenda) - Some utilities for the development of agenda workers with Inversify
+- [inversify-graphql](https://github.com/oguimbal/inversify-graphql) - Some tools to allow developpers to inject services in their Apollo GraphQL implementations
+- [react-inversify](https://github.com/org-redtea/react-inversify) - Collection of decorators and hooks for interaction with InversifyJS container within React components
+- [@routex/inversify](https://github.com/routexjs/routex-inversify) - Utilities Some utilities for the developer of Routex applications with Inversify
 
 ### Middleware
 - [inversify-logger-middleware](https://github.com/inversify/inversify-logger-middleware) - A console logger middleware for InversifyJS.
@@ -28,6 +31,7 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [Express](https://github.com/inversify/inversify-express-example)
 - [Hapi](https://github.com/inversify/inversify-hapi-example)
 - [InversifyJS Binding Decorators](https://github.com/inversify/inversify-express-example/tree/master/BindingDecorators)
+- Apollo GraphQL [minimal](https://github.com/oguimbal/inversify-graphql/tree/master/sample/minimal) or [advanced](https://github.com/oguimbal/inversify-graphql/tree/master/sample/complex-types)
 
 ### Open Source Projects using InversifyJS
 <!-- The links are ordered alphabetically acording to the name -->
