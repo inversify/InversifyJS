@@ -980,6 +980,69 @@ describe("InversifyJS", () => {
 
     });
 
+    it("Should support the injection of auto named factories", () => {
+
+        interface Ninja {
+            fight(): string;
+            sneak(): string;
+        }
+        interface Weapon {}
+
+        interface Katana extends Weapon {
+            hit(): string;
+        }
+
+        interface Shuriken extends Weapon {
+            throw(): string;
+        }
+
+        @injectable()
+        class Katana implements Katana {
+            public hit() {
+                return "cut!";
+            }
+        }
+
+        @injectable()
+        class Shuriken implements Shuriken {
+            public throw() {
+                return "hit!";
+            }
+        }
+
+        @injectable()
+        class NinjaWithAutoNamedFactory implements Ninja {
+
+            private _katana: Katana;
+            private _shuriken: Shuriken;
+
+            public constructor(
+                @inject("Factory<Weapon>") weaponFactory: <TWeapon extends Weapon = Weapon>(named: string) => TWeapon
+            ) {
+                this._katana = weaponFactory<Katana>("katana");
+                this._shuriken = weaponFactory<Shuriken>("shuriken");
+            }
+
+            public fight() { return this._katana.hit(); }
+            public sneak() { return this._shuriken.throw(); }
+
+        }
+
+        const container = new Container();
+        container.bind<Ninja>("Ninja").to(NinjaWithAutoNamedFactory);
+        container.bind<Shuriken>("Shuriken").to(Shuriken);
+        container.bind<Katana>("Katana").to(Katana);
+        container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("katana");
+        container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("shuriken");
+        container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toAutoNamedFactory<Weapon>("Weapon");
+
+        const ninja = container.get<Ninja>("Ninja");
+
+        expect(ninja.fight()).eql("cut!");
+        expect(ninja.sneak()).eql("hit!");
+
+    });
+
     it("Should support the injection of providers", (done) => {
 
         type KatanaProvider = () => Promise<Katana>;
