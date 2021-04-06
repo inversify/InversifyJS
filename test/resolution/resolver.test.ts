@@ -176,14 +176,18 @@ describe("Resolve", () => {
       const bindingDictionary = getBindingDictionary(container);
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      expect(bindingDictionary.get(katanaId)[0].cache === null).eql(true);
+      const katanaBinding = bindingDictionary.get(katanaId)[0];
+      expect(katanaBinding.cache === null).eql(true);
+      expect(katanaBinding.activated).eql(false);
+
       const ninja = resolve<Ninja>(context);
       expect(ninja instanceof Ninja).eql(true);
 
       const ninja2 = resolve<Ninja>(context);
       expect(ninja2 instanceof Ninja).eql(true);
 
-      expect(bindingDictionary.get(katanaId)[0].cache instanceof Katana).eql(true);
+      expect(katanaBinding.cache instanceof Katana).eql(true);
+      expect(katanaBinding.activated).eql(true);
 
   });
 
@@ -295,7 +299,12 @@ describe("Resolve", () => {
 
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
+      const katanaBinding = getBindingDictionary(container).get(katanaId)[0];
+      expect(katanaBinding.activated).eql(false);
+
       const ninja = resolve<Ninja>(context);
+
+      expect(katanaBinding.activated).eql(true);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -1004,6 +1013,9 @@ describe("Resolve", () => {
 
       container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
 
+      const katanaFactoryBinding = getBindingDictionary(container).get(katanaFactoryId)[0];
+      expect(katanaFactoryBinding.activated).eql(false);
+
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       const ninja = resolve<Ninja>(context);
@@ -1014,6 +1026,8 @@ describe("Resolve", () => {
       expect(ninja.katanaFactory().handler instanceof KatanaHandler).eql(true);
       expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
+
+      expect(katanaFactoryBinding.activated).eql(true);
 
   });
 
