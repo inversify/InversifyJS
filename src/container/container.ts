@@ -176,64 +176,36 @@ class Container implements interfaces.Container {
         if (this._bindingDictionary.hasKey(serviceIdentifier)) {
             const bindings = this._bindingDictionary.get(serviceIdentifier);
 
-            for (const binding of bindings) {
-                const result = this.preDestroy(binding);
-
-                if (isPromise(result)) {
-                    throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
-                }
-            }
+            this._preDestroyBindings(bindings);
         }
 
-        try {
-            this._bindingDictionary.remove(serviceIdentifier);
-        } catch (e) {
-            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-        }
+        this._removeServiceFromDictionary(serviceIdentifier);
     }
 
     public async unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<any>): Promise<void> {
         if (this._bindingDictionary.hasKey(serviceIdentifier)) {
             const bindings = this._bindingDictionary.get(serviceIdentifier);
 
-            for (const binding of bindings) {
-                await this.preDestroy(binding);
-            }
+            await this._preDestroyBindingsAsync(bindings);
         }
 
-        try {
-            this._bindingDictionary.remove(serviceIdentifier);
-        } catch (e) {
-            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-        }
+        this._removeServiceFromDictionary(serviceIdentifier);
     }
 
     // Removes all the type bindings from the registry
     public unbindAll(): void {
         this._bindingDictionary.traverse((key, value) => {
-            for (const binding of value) {
-                const result = this.preDestroy(binding);
-
-                if (isPromise(result)) {
-                    throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
-                }
-            }
+            this._preDestroyBindings(value);
         });
 
         this._bindingDictionary = new Lookup<Binding<any>>();
     }
 
     public async unbindAllAsync(): Promise<void> {
-        const promises: Promise<any>[] = [];
+        const promises: Promise<void>[] = [];
 
         this._bindingDictionary.traverse((key, value) => {
-            for (const binding of value) {
-                const result = this.preDestroy(binding);
-
-                if (isPromise(result)) {
-                    promises.push(result);
-                }
-            }
+            promises.push(this._preDestroyBindingsAsync(value));
         });
 
         await Promise.all(promises);
@@ -384,18 +356,6 @@ class Container implements interfaces.Container {
         });
 
         return tempContainer.get<T>(constructorFunction);
-    }
-
-    private preDestroy(binding: Binding<any>): Promise<void> | void {
-        if (!binding.cache) {
-            return;
-        }
-
-        if (isPromise(binding.cache)) {
-            return binding.cache.then((resolved: any) => this.doDeactivation(binding, resolved));
-        }
-
-        return this.doDeactivation(binding, binding.cache);
     }
 
     private doDeactivation<T>(
@@ -579,6 +539,50 @@ class Container implements interfaces.Container {
             return result;
 
         };
+    }
+
+    private _preDestroyBinding(binding: Binding<any>): Promise<void> | void {
+        if (!binding.cache) {
+            return;
+        }
+
+        if (isPromise(binding.cache)) {
+            return binding.cache.then((resolved: any) => this.doDeactivation(binding, resolved));
+        }
+
+        return this.doDeactivation(binding, binding.cache);
+    }
+
+    private _preDestroyBindings(bindings: Binding<any>[]): void {
+        for (const binding of bindings) {
+            const result = this._preDestroyBinding(binding);
+
+            if (isPromise(result)) {
+                throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
+            }
+        }
+    }
+
+    private async _preDestroyBindingsAsync(bindings: Binding<any>[]): Promise<void> {
+        const promises: Promise<unknown>[] = [];
+        
+        for (const binding of bindings) {
+            const result = this._preDestroyBinding(binding);
+
+            if (isPromise(result)) {
+                promises.push(result);
+            }
+        }
+
+        await Promise.all(promises);
+    }
+
+    private _removeServiceFromDictionary(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
+        try {
+            this._bindingDictionary.remove(serviceIdentifier);
+        } catch (e) {
+            throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
     }
 
 }
