@@ -6,7 +6,7 @@
   "jsnext:main": "es/inversify.js",
   "types": "lib/inversify.d.ts",
   "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:test",
+    "build": "npm run build:lib && npm run build:amd && npm run build:es",
     "build:lib": "tsc -p src/tsconfig.json",
     "build:amd": "tsc -p src/tsconfig-amd.json",
     "build:es": "tsc -p src/tsconfig-es.json",
