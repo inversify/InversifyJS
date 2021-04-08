@@ -11,7 +11,7 @@
     "build:amd": "tsc -p src/tsconfig-amd.json",
     "build:es": "tsc -p src/tsconfig-es.json",
     "clean": "rm -r amd es lib",
-    "pretest": "tslint --project . && npm build",
+    "pretest": "tslint --project . && npm run build",
     "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "test:browser": "browserify test/inversify.test.ts -p [ tsify --noImplicitAny ] > ./test/bundle.test.js && karma start",
     "publish-please": "publish-please",
