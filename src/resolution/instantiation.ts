@@ -10,11 +10,7 @@ function _injectProperties(
     childRequests: interfaces.Request[],
     resolveRequest: interfaces.ResolveRequestHandler
 ): any {
-    const propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) =>
-        (
-            childRequest.target !== null &&
-            childRequest.target.type === TargetTypeEnum.ClassProperty
-        ));
+    const propertyInjectionsRequests = _filterRequestsByTargetType(childRequests, TargetTypeEnum.ClassProperty);
 
     const propertyInjections = propertyInjectionsRequests.map(resolveRequest);
 
@@ -29,8 +25,81 @@ function _injectProperties(
 
 }
 
-function _createInstance(Func: interfaces.Newable<any>, injections: Object[]): any {
-    return new Func(...injections);
+function _createInstance(
+    constr: interfaces.Newable<any>,
+    childRequests: interfaces.Request[],
+    resolveRequest: interfaces.ResolveRequestHandler,
+): any {
+    let result: any;
+
+    if (childRequests.length > 0) {
+        const constructorInjections = _getConstructionInjections(childRequests, resolveRequest);
+
+        if (constructorInjections.some(isPromise)) {
+            result = _createInstanceWithConstructorInjectionsAsync(
+                constructorInjections,
+                constr,
+                childRequests,
+                resolveRequest
+            );
+        } else {
+            result = _createInstanceWithConstructorInjections(constructorInjections, constr,childRequests, resolveRequest);
+        }
+    } else {
+        result = new constr();
+    }
+
+    return result;
+}
+
+function _createInstanceWithConstructorInjections(
+    constructorInjections: any[],
+    constr: interfaces.Newable<any>,
+    childRequests: interfaces.Request[],
+    resolveRequest: interfaces.ResolveRequestHandler,
+): any {
+    let result: any;
+
+    result = new constr(...constructorInjections);
+    result = _injectProperties(result, childRequests, resolveRequest);
+
+    return result;
+}
+
+async function _createInstanceWithConstructorInjectionsAsync(
+    constructorInjections: (any | Promise<any>)[],
+    constr: interfaces.Newable<any>,
+    childRequests: interfaces.Request[],
+    resolveRequest: interfaces.ResolveRequestHandler,
+): Promise<any> {
+    return _createInstanceWithConstructorInjections(
+        await Promise.all(constructorInjections),
+        constr,
+        childRequests,
+        resolveRequest,
+    );
+}
+
+function _filterRequestsByTargetType(requests: interfaces.Request[], type: interfaces.TargetType): interfaces.Request[] {
+    return requests.filter((request: interfaces.Request) =>
+        (request.target !== null && request.target.type === type));
+}
+
+function _getConstructionInjections(childRequests: interfaces.Request[], resolveRequest: interfaces.ResolveRequestHandler): any[] {
+    const constructorInjectionsRequests = _filterRequestsByTargetType(childRequests, TargetTypeEnum.ConstructorArgument);
+
+    return constructorInjectionsRequests.map(resolveRequest);
+}
+
+function _getInstanceAfterPostConstruct(constr: interfaces.Newable<any>, result: any): any {
+
+    const postConstructResult = _postConstruct(constr, result);
+
+    if (isPromise(postConstructResult)) {
+        return postConstructResult.then(() => result);
+    } else {
+        return result;
+    }
 }
 
 function _postConstruct(constr: interfaces.Newable<any>, result: any): void | Promise<void> {
@@ -44,12 +113,7 @@ function _postConstruct(constr: interfaces.Newable<any>, result: any): void | Pr
     }
 }
 
-function resolveInstance(
-    binding: interfaces.Binding<any>,
-    constr: interfaces.Newable<any>,
-    childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler
-): any {
+function _validateInstanceResolution(binding: interfaces.Binding<any>, constr: interfaces.Newable<any>): void {
     if (binding.scope === "Transient") {
         if (typeof binding.onDeactivation === "function") {
             throw new Error(ON_DEACTIVATION_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
@@ -59,46 +123,23 @@ function resolveInstance(
             throw new Error(PRE_DESTROY_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
         }
     }
+}
 
-    let result: any = null;
+function resolveInstance(
+    binding: interfaces.Binding<any>,
+    constr: interfaces.Newable<any>,
+    childRequests: interfaces.Request[],
+    resolveRequest: interfaces.ResolveRequestHandler,
+): any {
+    _validateInstanceResolution(binding, constr);
 
-    if (childRequests.length > 0) {
-        const constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) =>
-            (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ConstructorArgument));
+    const result = _createInstance(constr, childRequests, resolveRequest);
 
-        const constructorInjections = constructorInjectionsRequests.map(resolveRequest);
-
-        if (constructorInjections.some(isPromise)) {
-            return new Promise( async (resolve, reject) => {
-                try {
-                    const resolved = await Promise.all(constructorInjections);
-
-                    result = _createInstance(constr, resolved);
-                    result = _injectProperties(result, childRequests, resolveRequest);
-
-                    await _postConstruct(constr, result);
-
-                    resolve(result);
-                } catch (ex) {
-                    reject(ex);
-                }
-            });
-        }
-
-        result = _createInstance(constr, constructorInjections);
-        result = _injectProperties(result, childRequests, resolveRequest);
-
+    if (isPromise(result)) {
+        return result.then((resolvedResult) => _getInstanceAfterPostConstruct(constr, resolvedResult));
     } else {
-        result = new constr();
+        return _getInstanceAfterPostConstruct(constr, result);
     }
-
-    const post = _postConstruct(constr, result);
-
-    if (isPromise(post)) {
-        return post.then(() => result);
-    }
-
-    return result;
 }
 
 export { resolveInstance };
