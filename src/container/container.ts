@@ -565,7 +565,7 @@ class Container implements interfaces.Container {
 
     private async _preDestroyBindingsAsync(bindings: Binding<any>[]): Promise<void> {
         const promises: Promise<unknown>[] = [];
-        
+
         for (const binding of bindings) {
             const result = this._preDestroyBinding(binding);
 
