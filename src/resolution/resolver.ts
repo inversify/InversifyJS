@@ -122,7 +122,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             binding.activated = true;
 
             if (isPromise(result)) {
-              result = result.catch((ex) => {
+                result = result.catch((ex) => {
                     // allow binding to retry in future
                     binding.cache = null;
                     binding.activated = false;
@@ -167,19 +167,19 @@ function onActivation<T>(request: interfaces.Request, binding: interfaces.Bindin
     parent = parent.parent;
   }
 
-  const iter = containers.entries();
+  const iter = containers.values();
 
-  return activationLoop(request.parentContext, iter.next().value[1], iter, binding, request.serviceIdentifier, result);
+  return activationLoop(request.parentContext, iter.next().value, iter, binding, request.serviceIdentifier, result);
 }
 
 function activationLoop<T>(
     context: interfaces.Context,
     container: interfaces.Container,
-    containerIterator: IterableIterator<[number, interfaces.Container]>,
+    containerIterator: IterableIterator<interfaces.Container>,
     binding: interfaces.Binding<T>,
     identifier: interfaces.ServiceIdentifier<T>,
     previous: T | Promise<T>,
-    iterator?: IterableIterator<[number, interfaces.BindingActivation<any>]>
+    iterator?: IterableIterator<interfaces.BindingActivation<any>>
   ): T | Promise<T> {
     if (isPromise(previous)) {
         return previous.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised));
@@ -193,13 +193,13 @@ function activationLoop<T>(
       // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
       const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
 
-      iter = activations.hasKey(identifier) ? activations.get(identifier).entries() : [].entries();
+      iter = activations.hasKey(identifier) ? activations.get(identifier).values() : [].values();
     }
 
     let next = iter.next();
 
     while (!next.done) {
-      result = next.value[1](context, result);
+      result = next.value(context, result);
 
       if (isPromise(result)) {
           return result.then((unpromised) => activationLoop(context, container, containerIterator, binding, identifier, unpromised, iter));
@@ -212,7 +212,7 @@ function activationLoop<T>(
 
     if (nextContainer.value && !getBindingDictionary(container).hasKey(identifier)) {
       // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
-      return activationLoop(context, nextContainer.value[1], containerIterator, binding, identifier, result);
+      return activationLoop(context, nextContainer.value, containerIterator, binding, identifier, result);
     }
 
     return result;
