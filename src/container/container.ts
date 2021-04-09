@@ -358,10 +358,20 @@ class Container implements interfaces.Container {
         return tempContainer.get<T>(constructorFunction);
     }
 
-    private doDeactivation<T>(
-      binding: Binding<T>,
-      instance: T,
-      deactivationsIterator?: IterableIterator<interfaces.BindingDeactivation<any>>
+    private _destroyMetadata(constr: any, instance: any) {
+        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
+            const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
+            try {
+                return instance[data.value]();
+            } catch (e) {
+                throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
+            }
+        }
+    }
+
+    private _doDeactivation<T>(
+        binding: Binding<T>,
+        instance: T,
     ): void | Promise<void> {
         let constructor: any;
 
@@ -374,54 +384,65 @@ class Container implements interfaces.Container {
 
         try {
             if (this._deactivations.hasKey(binding.serviceIdentifier)) {
-                const deactivations = deactivationsIterator || this._deactivations.get(binding.serviceIdentifier).values();
-
-                let deactivation = deactivations.next();
-
-                while (deactivation.value) {
-                    const result = deactivation.value(instance);
-
-                    if (isPromise(result)) {
-                        return result.then(() => {
-                            this.doDeactivation(binding, instance, deactivations);
-                        }).catch((ex) => {
-                            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
-                        });
-                    }
-
-                    deactivation = deactivations.next();
-                }
-            }
-        } catch (ex) {
-            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
-        }
-
-        if (this.parent) {
-            return this.doDeactivation.bind(this.parent)(binding, instance);
-        }
-
-        try {
-            if (typeof binding.onDeactivation === "function") {
-                const result = binding.onDeactivation(instance);
+                const result = this._doServiceBindingsDeactivation(
+                    binding,
+                    instance,
+                    this._deactivations.get(binding.serviceIdentifier).values(),
+                );
 
                 if (isPromise(result)) {
-                    return result.then(() => this.destroyMetadata(constructor, instance));
+                    return result.then(() =>
+                        this._propagateDeactivationAsync(binding, instance, constructor),
+                    ).catch((ex) => {
+                        throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+                    });
                 }
             }
 
-            return this.destroyMetadata(constructor, instance);
+            const propagateDeactivationResult = this._propagateDeactivation(binding, instance, constructor);
+
+            if (isPromise(propagateDeactivationResult)) {
+                return propagateDeactivationResult.catch((ex) => {
+                    throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+                });
+            }
         } catch (ex) {
             throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
         }
     }
 
-    private destroyMetadata(constr: any, instance: any) {
-        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
-            const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
-            try {
-                return instance[data.value]();
-            } catch (e) {
-                throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
+
+    private _doServiceBindingsDeactivation<T>(
+        binding: Binding<T>,
+        instance: T,
+        deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>
+    ): void | Promise<void> {
+        let deactivation = deactivationsIterator.next();
+
+        while (deactivation.value) {
+            const result = deactivation.value(instance);
+
+            if (isPromise(result)) {
+                return result.then(() =>
+                    this._doServicesBindingsDeactivationAsync(binding, instance, deactivationsIterator),
+                );
+            }
+
+            deactivation = deactivationsIterator.next();
+        }
+    }
+
+    private async _doServicesBindingsDeactivationAsync<T>(
+        binding: Binding<T>,
+        instance: T,
+        deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>
+    ): Promise<void> {
+        if (this._deactivations.hasKey(binding.serviceIdentifier)) {
+            let deactivation = deactivationsIterator.next();
+
+            while (deactivation.value) {
+                await deactivation.value(instance);
+                deactivation = deactivationsIterator.next();
             }
         }
     }
@@ -547,10 +568,10 @@ class Container implements interfaces.Container {
         }
 
         if (isPromise(binding.cache)) {
-            return binding.cache.then((resolved: any) => this.doDeactivation(binding, resolved));
+            return binding.cache.then((resolved: any) => this._doDeactivation(binding, resolved));
         }
 
-        return this.doDeactivation(binding, binding.cache);
+        return this._doDeactivation(binding, binding.cache);
     }
 
     private _preDestroyBindings(bindings: Binding<any>[]): void {
@@ -577,11 +598,75 @@ class Container implements interfaces.Container {
         await Promise.all(promises);
     }
 
+    private _propagateDeactivation<T>(
+        binding: Binding<T>,
+        instance: T,
+        constructor: any
+    ): void | Promise<void> {
+        if (this.parent) {
+            const parentDeactivationResult = this._doDeactivation.bind(this.parent)(binding, instance);
+
+            if (isPromise(parentDeactivationResult)) {
+                return this._triggerOnDeactivationAndDestroyMetadataAsync(binding, instance, constructor);
+            }
+        } else {
+            return this._triggerOnDeactivationAndDestroyMetadata(binding, instance, constructor);
+        }
+    }
+
+    private async _propagateDeactivationAsync<T>(
+        binding: Binding<T>,
+        instance: T,
+        constructor: any
+    ): Promise<void> {
+        if (this.parent) {
+            await this._doDeactivation.bind(this.parent)(binding, instance);
+        } else {
+            await this._triggerOnDeactivationAndDestroyMetadataAsync(binding, instance, constructor);
+        }
+    }
+
     private _removeServiceFromDictionary(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
         try {
             this._bindingDictionary.remove(serviceIdentifier);
         } catch (e) {
             throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
+    }
+
+    private _triggerOnDeactivationAndDestroyMetadata<T>(
+        binding: Binding<T>,
+        instance: T,
+        constructor: any
+    ): void | Promise<void> {
+        try {
+            if (typeof binding.onDeactivation === "function") {
+                const result = binding.onDeactivation(instance);
+
+                if (isPromise(result)) {
+                    return result.then(() => this._destroyMetadata(constructor, instance));
+                }
+            }
+
+            return this._destroyMetadata(constructor, instance);
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+        }
+    }
+
+    private async _triggerOnDeactivationAndDestroyMetadataAsync<T>(
+        binding: Binding<T>,
+        instance: T,
+        constructor: any
+    ): Promise<void> {
+        try {
+            if (typeof binding.onDeactivation === "function") {
+                await binding.onDeactivation(instance);
+            }
+
+            await this._destroyMetadata(constructor, instance);
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
         }
     }
 
