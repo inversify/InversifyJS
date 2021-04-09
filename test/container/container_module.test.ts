@@ -153,7 +153,7 @@ describe("ContainerModule", () => {
     expect(deact).eql(true);
   });
 
-  it("Should be able to add an async deactivation hook through a container module", () => {
+  it("Should be able to add an async deactivation hook through a container module (async)", async () => {
     const container = new Container();
     container.bind<string>("A").toConstantValue("1");
 
@@ -167,7 +167,7 @@ describe("ContainerModule", () => {
 
     container.load(warriors);
     container.get("A");
-    container.unbindAsync("A");
+    await container.unbindAsync("A");
 
     expect(deact).eql(true);
   });
