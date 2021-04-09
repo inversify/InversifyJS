@@ -358,14 +358,11 @@ class Container implements interfaces.Container {
         return tempContainer.get<T>(constructorFunction);
     }
 
-    private _destroyMetadata(constr: any, instance: any) {
-        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
-            const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constr);
-            try {
-                return instance[data.value]();
-            } catch (e) {
-                throw new Error(ERROR_MSGS.PRE_DESTROY_ERROR(constr.name, e.message));
-            }
+    private _destroyMetadata(constructor: any, instance: any) {
+        if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constructor)) {
+            const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constructor);
+
+            return instance[data.value]();
         }
     }
 
@@ -391,21 +388,26 @@ class Container implements interfaces.Container {
                 );
 
                 if (isPromise(result)) {
-                    return result.then(() =>
-                        this._propagateDeactivationAsync(binding, instance, constructor),
-                    ).catch((ex) => {
-                        throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
-                    });
+                    return this._handleDeactivationError(
+                        result.then(() => this._propagateDeactivationAsync(binding, instance, constructor)),
+                        constructor
+                    );
                 }
             }
 
             const propagateDeactivationResult = this._propagateDeactivation(binding, instance, constructor);
 
             if (isPromise(propagateDeactivationResult)) {
-                return propagateDeactivationResult.catch((ex) => {
-                    throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
-                });
+                return this._handleDeactivationError(propagateDeactivationResult, constructor);
             }
+        } catch (ex) {
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+        }
+    }
+
+    private async _handleDeactivationError(asyncResult: Promise<void>, constructor: any): Promise<void> {
+        try {
+            await asyncResult
         } catch (ex) {
             throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
         }
@@ -639,19 +641,15 @@ class Container implements interfaces.Container {
         instance: T,
         constructor: any
     ): void | Promise<void> {
-        try {
-            if (typeof binding.onDeactivation === "function") {
-                const result = binding.onDeactivation(instance);
+        if (typeof binding.onDeactivation === "function") {
+            const result = binding.onDeactivation(instance);
 
-                if (isPromise(result)) {
-                    return result.then(() => this._destroyMetadata(constructor, instance));
-                }
+            if (isPromise(result)) {
+                return result.then(() => this._destroyMetadata(constructor, instance));
             }
-
-            return this._destroyMetadata(constructor, instance);
-        } catch (ex) {
-            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
         }
+
+        return this._destroyMetadata(constructor, instance);
     }
 
     private async _triggerOnDeactivationAndDestroyMetadataAsync<T>(
@@ -659,15 +657,11 @@ class Container implements interfaces.Container {
         instance: T,
         constructor: any
     ): Promise<void> {
-        try {
-            if (typeof binding.onDeactivation === "function") {
-                await binding.onDeactivation(instance);
-            }
-
-            await this._destroyMetadata(constructor, instance);
-        } catch (ex) {
-            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+        if (typeof binding.onDeactivation === "function") {
+            await binding.onDeactivation(instance);
         }
+
+        await this._destroyMetadata(constructor, instance);
     }
 
 }
