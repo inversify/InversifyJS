@@ -366,16 +366,12 @@ class Container implements interfaces.Container {
         }
     }
 
-    private _doDeactivation<T>(
-        binding: Binding<T>,
-        instance: T,
-    ): void | Promise<void> {
+    private _doDeactivation<T>(binding: Binding<T>, instance: T): void | Promise<void> {
         const constructor = Object.getPrototypeOf(instance).constructor;
 
         try {
             if (this._deactivations.hasKey(binding.serviceIdentifier)) {
                 const result = this._doServiceBindingsDeactivation(
-                    binding,
                     instance,
                     this._deactivations.get(binding.serviceIdentifier).values(),
                 );
@@ -408,9 +404,8 @@ class Container implements interfaces.Container {
 
 
     private _doServiceBindingsDeactivation<T>(
-        binding: Binding<T>,
         instance: T,
-        deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>
+        deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>,
     ): void | Promise<void> {
         let deactivation = deactivationsIterator.next();
 
@@ -419,7 +414,7 @@ class Container implements interfaces.Container {
 
             if (isPromise(result)) {
                 return result.then(() =>
-                    this._doServicesBindingsDeactivationAsync(binding, instance, deactivationsIterator),
+                    this._doServicesBindingsDeactivationAsync(instance, deactivationsIterator),
                 );
             }
 
@@ -428,17 +423,14 @@ class Container implements interfaces.Container {
     }
 
     private async _doServicesBindingsDeactivationAsync<T>(
-        binding: Binding<T>,
         instance: T,
-        deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>
+        deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>,
     ): Promise<void> {
-        if (this._deactivations.hasKey(binding.serviceIdentifier)) {
-            let deactivation = deactivationsIterator.next();
+        let deactivation = deactivationsIterator.next();
 
-            while (deactivation.value) {
-                await deactivation.value(instance);
-                deactivation = deactivationsIterator.next();
-            }
+        while (deactivation.value) {
+            await deactivation.value(instance);
+            deactivation = deactivationsIterator.next();
         }
     }
 
