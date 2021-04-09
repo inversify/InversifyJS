@@ -370,14 +370,7 @@ class Container implements interfaces.Container {
         binding: Binding<T>,
         instance: T,
     ): void | Promise<void> {
-        let constructor: any;
-
-        try {
-            constructor = (instance as any).constructor;
-        } catch (ex) {
-            // if placing mocks in container (eg: TypeMoq), this could blow up as constructor is not stubbed
-            return;
-        }
+        const constructor = Object.getPrototypeOf(instance).constructor;
 
         try {
             if (this._deactivations.hasKey(binding.serviceIdentifier)) {
