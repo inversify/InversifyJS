@@ -361,12 +361,12 @@ class Container implements interfaces.Container {
     private doDeactivation<T>(
       binding: Binding<T>,
       instance: T,
-      iter?: IterableIterator<[number, interfaces.BindingDeactivation<any>]>
+      deactivationsIterator?: IterableIterator<interfaces.BindingDeactivation<any>>
     ): void | Promise<void> {
-        let constr: any;
+        let constructor: any;
 
         try {
-            constr = (instance as any).constructor;
+            constructor = (instance as any).constructor;
         } catch (ex) {
             // if placing mocks in container (eg: TypeMoq), this could blow up as constructor is not stubbed
             return;
@@ -374,26 +374,26 @@ class Container implements interfaces.Container {
 
         try {
             if (this._deactivations.hasKey(binding.serviceIdentifier)) {
-                const deactivations = iter || this._deactivations.get(binding.serviceIdentifier).entries();
+                const deactivations = deactivationsIterator || this._deactivations.get(binding.serviceIdentifier).values();
 
-                let deact = deactivations.next();
+                let deactivation = deactivations.next();
 
-                while (deact.value) {
-                    const result = deact.value[1](instance);
+                while (deactivation.value) {
+                    const result = deactivation.value(instance);
 
                     if (isPromise(result)) {
                         return result.then(() => {
                             this.doDeactivation(binding, instance, deactivations);
                         }).catch((ex) => {
-                            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+                            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
                         });
                     }
 
-                    deact = deactivations.next();
+                    deactivation = deactivations.next();
                 }
             }
         } catch (ex) {
-            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
         }
 
         if (this.parent) {
@@ -405,13 +405,13 @@ class Container implements interfaces.Container {
                 const result = binding.onDeactivation(instance);
 
                 if (isPromise(result)) {
-                    return result.then(() => this.destroyMetadata(constr, instance));
+                    return result.then(() => this.destroyMetadata(constructor, instance));
                 }
             }
 
-            return this.destroyMetadata(constr, instance);
+            return this.destroyMetadata(constructor, instance);
         } catch (ex) {
-            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constr.name, ex.message));
+            throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
         }
     }
 
