@@ -159,25 +159,15 @@ function _onActivation<T>(request: interfaces.Request, binding: interfaces.Bindi
         result = resolved;
     }
 
-    const containers = [request.parentContext.container];
-
-    let parent = request.parentContext.container.parent;
-
-    while (parent) {
-        containers.unshift(parent);
-
-        parent = parent.parent;
-    }
-
-    const containersIterator = containers.values();
+    const containersIterator = _onActivationGetContainersToTraverse(request.parentContext.container);
 
     if (isPromise(result)) {
-        return result.then(() => _activationLoop(
+        return result.then((resolvedResult) => _activationLoop(
             request.parentContext,
             containersIterator.next().value,
             containersIterator,
             request.serviceIdentifier,
-            result,
+            resolvedResult,
         ));
     } else {
         return _activationLoop(
@@ -193,17 +183,11 @@ function _onActivation<T>(request: interfaces.Request, binding: interfaces.Bindi
 function _activationLoop<T>(
     context: interfaces.Context,
     container: interfaces.Container,
-    containersIterator: IterableIterator<interfaces.Container>,
+    containersIterator: Iterator<interfaces.Container>,
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
-    previousResult: T | Promise<T>,
+    previousResult: T,
 ): T | Promise<T> {
-    if (isPromise(previousResult)) {
-        return previousResult.then(
-            (unpromised) => _activationLoop(context, container, containersIterator, serviceIdentifier, unpromised),
-        );
-    }
-
-    const activationsIterator = _extractActivationsFromService(container, serviceIdentifier);
+    const activationsIterator = _extractActivationsForService(container, serviceIdentifier);
 
     const activationsTraverseResult = _traverseActivations(activationsIterator, context, previousResult);
 
@@ -228,7 +212,35 @@ function _activationLoop<T>(
     );
 }
 
-const _extractActivationsFromService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
+const _onActivationGetContainersToTraverse = (container: interfaces.Container): Iterator<interfaces.Container> => {
+    const containersStack = [container];
+
+    let parent = container.parent;
+
+    while (parent !== null) {
+        containersStack.push(parent);
+
+        parent = parent.parent;
+    }
+
+    const getNextContainer: () => IteratorResult<interfaces.Container> = () => {
+        const nextContainer = containersStack.pop();
+
+        if (nextContainer !== undefined) {
+            return { done: false, value: nextContainer };
+        } else {
+            return { done: true, value: undefined };
+        }
+    };
+
+    const containersIterator: Iterator<interfaces.Container> = {
+        next: getNextContainer,
+    };
+
+    return containersIterator;
+}
+
+const _extractActivationsForService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
     // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
     const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
 
@@ -236,7 +248,7 @@ const _extractActivationsFromService = <T>(container: interfaces.Container, serv
 }
 
 const _traverseActivations = <T> (
-    activationsIterator: IterableIterator<interfaces.BindingActivation<any>>,
+    activationsIterator: Iterator<interfaces.BindingActivation<any>>,
     context: interfaces.Context,
     result: T,
 ): T | Promise<T> => {
@@ -256,7 +268,7 @@ const _traverseActivations = <T> (
 }
 
 const _traverseActivationsAsync = async<T>(
-    activationsIterator: IterableIterator<interfaces.BindingActivation<any>>,
+    activationsIterator: Iterator<interfaces.BindingActivation<any>>,
     context: interfaces.Context,
     result: T,
 ): Promise<T> => {
@@ -274,7 +286,7 @@ const _traverseActivationsAsync = async<T>(
 const _traverseChildContainerActivations = <T>(
     context: interfaces.Context,
     container: interfaces.Container,
-    containersIterator: IterableIterator<interfaces.Container>,
+    containersIterator: Iterator<interfaces.Container>,
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
     result : T,
 ):  T | Promise<T> => {
