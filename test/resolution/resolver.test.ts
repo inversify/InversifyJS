@@ -2003,7 +2003,7 @@ describe("Resolve", () => {
       expect(result).equals(constructed);
   });
 
-  it("Should priortize onActivation of parent container over child container", async () => {
+  it("Should priortize onActivation of parent container over child container", () => {
       const container = new Container();
       container.onActivation("foo", (context, previous) => `${previous}baz`);
       container.onActivation("foo", (context, previous) => `${previous}1`);
@@ -2018,6 +2018,22 @@ describe("Resolve", () => {
 
       expect(result).equals("barbahbaz1bum2");
   });
+
+  it("Should priortize async onActivation of parent container over child container (async)", async () => {
+    const container = new Container();
+    container.onActivation("foo", async (context, previous) => `${previous}baz`);
+    container.onActivation("foo", async (context, previous) => `${previous}1`);
+
+    const child = container.createChild();
+
+    child.bind<string>("foo").toConstantValue("bar").onActivation((c, previous) => `${previous}bah`);
+    child.onActivation("foo", async (context, previous) => `${previous}bum`);
+    child.onActivation("foo", async (context, previous) => `${previous}2`);
+
+    const result = await child.getAsync("foo");
+
+    expect(result).equals("barbahbaz1bum2");
+});
 
   it("Should not allow onActivation of parent on child container", async () => {
       class Parent {

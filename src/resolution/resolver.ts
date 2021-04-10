@@ -159,61 +159,117 @@ function _onActivation<T>(request: interfaces.Request, binding: interfaces.Bindi
         result = resolved;
     }
 
-    const containersIterator = _onActivationGetContainersToTraverse(request.parentContext.container);
+    const context = request.parentContext;
+    const requestContainer = request.parentContext.container;
+    const serviceIdentifier = request.serviceIdentifier;
 
-    if (isPromise(result)) {
-        return result.then((resolvedResult) => _activationLoop(
-            request.parentContext,
-            containersIterator.next().value,
-            containersIterator,
-            request.serviceIdentifier,
-            resolvedResult,
-        ));
-    } else {
-        return _activationLoop(
-            request.parentContext,
-            containersIterator.next().value,
-            containersIterator,
-            request.serviceIdentifier,
-            result,
-        );
-    }
-}
+    const containersIterator = _getParentContainersIterator(requestContainer, true);
 
-function _activationLoop<T>(
-    context: interfaces.Context,
-    container: interfaces.Container,
-    containersIterator: Iterator<interfaces.Container>,
-    serviceIdentifier: interfaces.ServiceIdentifier<T>,
-    previousResult: T,
-): T | Promise<T> {
-    const activationsIterator = _extractActivationsForService(container, serviceIdentifier);
+    let container: interfaces.Container;
+    let containersIteratorResult = containersIterator.next();
 
-    const activationsTraverseResult = _traverseActivations(activationsIterator, context, previousResult);
+    do {
+        container = containersIteratorResult.value;
 
-    if (isPromise(activationsTraverseResult)) {
-        return activationsTraverseResult.then((result: T) => {
-            return _traverseChildContainerActivations(
+        if (isPromise(result)) {
+            result = ((nextContainer: interfaces.Container) => {
+                return result.then((resolvedResult) => _callContainerActivationsAsync<T>(
+                    context,
+                    nextContainer,
+                    serviceIdentifier,
+                    resolvedResult,
+                ));
+            })(container);
+        } else {
+            result = _callContainerActivations<T>(
                 context,
                 container,
-                containersIterator,
                 serviceIdentifier,
                 result,
             );
-        });
-    }
+        }
 
-    return _traverseChildContainerActivations(
-        context,
-        container,
-        containersIterator,
-        serviceIdentifier,
-        activationsTraverseResult,
-    );
+        containersIteratorResult = containersIterator.next();
+
+        // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
+    } while (containersIteratorResult.done !== true && !getBindingDictionary(container).hasKey(serviceIdentifier));
+
+    return result;
 }
 
-const _onActivationGetContainersToTraverse = (container: interfaces.Container): Iterator<interfaces.Container> => {
-    const containersStack = [container];
+const _callActivations = <T> (
+    activationsIterator: Iterator<interfaces.BindingActivation<any>>,
+    context: interfaces.Context,
+    result: T,
+): T | Promise<T> => {
+    let activation = activationsIterator.next();
+
+    while (!activation.done) {
+        result = activation.value(context, result);
+
+        if (isPromise(result)) {
+            return result.then((resolved) => _callActivationsAsync(activationsIterator, context, resolved));
+        }
+
+        activation = activationsIterator.next();
+    }
+
+    return result;
+}
+
+const _callActivationsAsync = async<T>(
+    activationsIterator: Iterator<interfaces.BindingActivation<any>>,
+    context: interfaces.Context,
+    result: T,
+): Promise<T> => {
+    let activation = activationsIterator.next();
+
+    while (!activation.done) {
+      result = await activation.value(context, result);
+
+      activation = activationsIterator.next();
+    }
+
+    return result;
+}
+
+const _callContainerActivations = <T>(
+    context: interfaces.Context,
+    container: interfaces.Container,
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    previousResult: T,
+): T | Promise<T> => {
+    const activationsIterator = _extractActivationsForService(container, serviceIdentifier);
+
+    const activationsTraverseResult = _callActivations(activationsIterator, context, previousResult);
+
+    return activationsTraverseResult;
+}
+
+const _callContainerActivationsAsync = async <T>(
+    context: interfaces.Context,
+    container: interfaces.Container,
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    previousResult: T,
+): Promise<T> => {
+    const activationsIterator = _extractActivationsForService(container, serviceIdentifier);
+
+    return _callActivationsAsync(activationsIterator, context, previousResult);
+}
+
+const _extractActivationsForService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
+    // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
+    const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
+
+    return activations.hasKey(serviceIdentifier) ? activations.get(serviceIdentifier).values() : [].values();
+}
+
+const _getParentContainersIterator = (container: interfaces.Container, includeSelf: boolean = false): Iterator<interfaces.Container> => {
+    const containersStack: interfaces.Container[] = [];
+
+    if (includeSelf) {
+        containersStack.push(container);
+    }
 
     let parent = container.parent;
 
@@ -239,66 +295,6 @@ const _onActivationGetContainersToTraverse = (container: interfaces.Container): 
 
     return containersIterator;
 }
-
-const _extractActivationsForService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
-    // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
-    const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
-
-    return activations.hasKey(serviceIdentifier) ? activations.get(serviceIdentifier).values() : [].values();
-}
-
-const _traverseActivations = <T> (
-    activationsIterator: Iterator<interfaces.BindingActivation<any>>,
-    context: interfaces.Context,
-    result: T,
-): T | Promise<T> => {
-    let activation = activationsIterator.next();
-
-    while (!activation.done) {
-        result = activation.value(context, result);
-
-        if (isPromise(result)) {
-            return _traverseActivationsAsync(activationsIterator, context, result);
-        }
-
-        activation = activationsIterator.next();
-    }
-
-    return result;
-}
-
-const _traverseActivationsAsync = async<T>(
-    activationsIterator: Iterator<interfaces.BindingActivation<any>>,
-    context: interfaces.Context,
-    result: T,
-): Promise<T> => {
-    let activation = activationsIterator.next();
-
-    while (!activation.done) {
-      result = await activation.value(context, result);
-
-      activation = activationsIterator.next();
-    }
-
-    return result;
-}
-
-const _traverseChildContainerActivations = <T>(
-    context: interfaces.Context,
-    container: interfaces.Container,
-    containersIterator: Iterator<interfaces.Container>,
-    serviceIdentifier: interfaces.ServiceIdentifier<T>,
-    result : T,
-):  T | Promise<T> => {
-    const nextContainer = containersIterator.next();
-
-    if (nextContainer.value && !getBindingDictionary(container).hasKey(serviceIdentifier)) {
-        // make sure if we are currently on the container that owns the binding, not to keep looping down to child containers
-        return _activationLoop(context, nextContainer.value, containersIterator, serviceIdentifier, result);
-    }
-
-    return result;
-};
 
 function resolve<T>(context: interfaces.Context): T {
     const _f = _resolveRequest(context.plan.rootRequest.requestScope);
