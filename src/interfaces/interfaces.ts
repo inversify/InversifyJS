@@ -1,5 +1,9 @@
 namespace interfaces {
 
+    type AsyncCallback<TCallback> =
+        TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>
+        : never;
+
     export type BindingScope = "Singleton" | "Transient" | "Request";
 
     export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
@@ -227,14 +231,7 @@ namespace interfaces {
         onDeactivation: interfaces.Container["onDeactivation"]
     ) => void;
 
-    export type AsyncContainerModuleCallBack = (
-        bind: interfaces.Bind,
-        unbind: interfaces.Unbind,
-        isBound: interfaces.IsBound,
-        rebind: interfaces.Rebind,
-        onActivation: interfaces.Container["onActivation"],
-        onDeactivation: interfaces.Container["onDeactivation"]
-    ) => Promise<void>;
+    export type AsyncContainerModuleCallBack = AsyncCallback<ContainerModuleCallBack>;
 
     export interface ContainerSnapshot {
         bindings: Lookup<Binding<any>>;
