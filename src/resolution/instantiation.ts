@@ -10,11 +10,7 @@ function _injectProperties(
     childRequests: interfaces.Request[],
     resolveRequest: interfaces.ResolveRequestHandler
 ): any {
-    const propertyInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) =>
-        (
-            childRequest.target !== null &&
-            childRequest.target.type === TargetTypeEnum.ClassProperty
-        ));
+    const propertyInjectionsRequests = _filterRequestsByTargetType(childRequests, TargetTypeEnum.ClassProperty);
 
     const propertyInjections = propertyInjectionsRequests.map(resolveRequest);
 
@@ -71,7 +67,7 @@ function _createInstanceWithConstructorInjections(
 }
 
 async function _createInstanceWithConstructorInjectionsAsync(
-    constructorInjections: any[],
+    constructorInjections: (any | Promise<any>)[],
     constr: interfaces.Newable<any>,
     childRequests: interfaces.Request[],
     resolveRequest: interfaces.ResolveRequestHandler,
@@ -84,9 +80,13 @@ async function _createInstanceWithConstructorInjectionsAsync(
     );
 }
 
+function _filterRequestsByTargetType(requests: interfaces.Request[], type: interfaces.TargetType): interfaces.Request[] {
+    return requests.filter((request: interfaces.Request) =>
+        (request.target !== null && request.target.type === type));
+}
+
 function _getConstructionInjections(childRequests: interfaces.Request[], resolveRequest: interfaces.ResolveRequestHandler): any[] {
-    const constructorInjectionsRequests = childRequests.filter((childRequest: interfaces.Request) =>
-        (childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ConstructorArgument));
+    const constructorInjectionsRequests = _filterRequestsByTargetType(childRequests, TargetTypeEnum.ConstructorArgument);
 
     return constructorInjectionsRequests.map(resolveRequest);
 }
