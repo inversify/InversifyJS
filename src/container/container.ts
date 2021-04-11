@@ -295,19 +295,27 @@ class Container implements interfaces.Container {
     // The runtime identifier must be associated with only one binding
     // use getAll when the runtime identifier is associated with multiple bindings
     public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-        return this._get<T>(false, false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
+        const defaultArgs = this._getDefaultArgs(serviceIdentifier, false);
+
+        return this._getWithAsyncContext<T>(false, defaultArgs) as T;
     }
 
     public getAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> {
-        return this._get<T>(true, false, false, TargetTypeEnum.Variable, serviceIdentifier) as Promise<T>;
+        const defaultArgs = this._getDefaultArgs(serviceIdentifier, false);
+
+        return this._getWithAsyncContext<T>(true, defaultArgs) as Promise<T>;
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        return this._get<T>(false, false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+        const defaultArgs = this._getDefaultArgs(serviceIdentifier, false, key, value);
+
+        return this._getWithAsyncContext<T>(false, defaultArgs) as T;
     }
 
     public getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T> {
-        return this._get<T>(true, false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as Promise<T>;
+        const defaultArgs = this._getDefaultArgs(serviceIdentifier, false, key, value);
+
+        return this._getWithAsyncContext<T>(true, defaultArgs) as Promise<T>;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
@@ -321,15 +329,21 @@ class Container implements interfaces.Container {
     // Resolves a dependency by its runtime identifier
     // The runtime identifier can be associated with one or multiple bindings
     public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-        return this._get<T>(false, true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
+        const defaultArgs = this._getAllDefaultArgs(serviceIdentifier);
+
+        return this._getWithAsyncContext<T>(false, defaultArgs) as T[];
     }
 
     public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T>[] {
-        return this._get<T>(true, true, true, TargetTypeEnum.Variable, serviceIdentifier) as Promise<T>[];
+        const defaultArgs = this._getAllDefaultArgs(serviceIdentifier);
+
+        return this._getWithAsyncContext<T>(true, defaultArgs) as Promise<T>[];
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        return this._get<T>(false, false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+        const defaultArgs = this._getDefaultArgs(serviceIdentifier, true, key, value);
+
+        return this._getWithAsyncContext<T>(false, defaultArgs) as T[];
     }
 
     public getAllTaggedAsync<T>(
@@ -337,7 +351,9 @@ class Container implements interfaces.Container {
       key: string | number | symbol,
       value: any
     ): Promise<T>[] {
-        return this._get<T>(true, false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as Promise<T>[];
+        const defaultArgs = this._getDefaultArgs(serviceIdentifier, true, key, value);
+
+        return this._getWithAsyncContext<T>(true, defaultArgs) as Promise<T>[];
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
@@ -434,6 +450,10 @@ class Container implements interfaces.Container {
         }
     }
 
+    private _getDefaultContextInterceptor(): (context: interfaces.Context) => interfaces.Context {
+        return (context) => context;
+    }
+
     private _getContainerModuleHelpersFactory() {
 
         const setModuleId = (bindingToSyntax: any, moduleId: number) => {
@@ -482,27 +502,8 @@ class Container implements interfaces.Container {
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
-    private _get<T>(
-        async: boolean,
-        avoidConstraints: boolean,
-        isMultiInject: boolean,
-        targetType: interfaces.TargetType,
-        serviceIdentifier: interfaces.ServiceIdentifier<any>,
-        key?: string | number | symbol,
-        value?: any
-    ): (T | T[] | Promise<T> | Promise<T>[]) {
-
-        let result: (T | T[]) | null = null;
-
-        const defaultArgs: interfaces.NextArgs = {
-            avoidConstraints,
-            contextInterceptor: (context: interfaces.Context) => context,
-            isMultiInject,
-            key,
-            serviceIdentifier,
-            targetType,
-            value
-        };
+    private _get<T>(defaultArgs: interfaces.NextArgs): (T | T[] | Promise<T> | Promise<T>[]) {
+        let result: (T | T[] | Promise<T> | Promise<T>[]) | null = null;
 
         if (this._middleware) {
             result = this._middleware(defaultArgs);
@@ -513,11 +514,51 @@ class Container implements interfaces.Container {
             result = this._planAndResolve<T>()(defaultArgs);
         }
 
-        if (isPromise(result) && !async) {
-            throw new Error(ERROR_MSGS.LAZY_IN_SYNC(serviceIdentifier));
+        return result;
+    }
+
+    private _getWithAsyncContext<T>(
+        isAsync: boolean,
+        defaultArgs: interfaces.NextArgs,
+    ): (T | T[] | Promise<T> | Promise<T>[]) {
+        const result = this._get<T>(defaultArgs);
+
+        if (isPromise(result) && !isAsync) {
+            throw new Error(ERROR_MSGS.LAZY_IN_SYNC(defaultArgs.serviceIdentifier));
         }
 
         return result;
+    }
+
+    private _getAllDefaultArgs<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.NextArgs {
+        const defaultArgs: interfaces.NextArgs = {
+            avoidConstraints: true,
+            contextInterceptor: this._getDefaultContextInterceptor(),
+            isMultiInject: true,
+            targetType: TargetTypeEnum.Variable,
+            serviceIdentifier,
+        };
+
+        return defaultArgs;
+    }
+
+    private _getDefaultArgs<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        isMultiInject: boolean,
+        key?: string | number | symbol,
+        value?: any,
+    ): interfaces.NextArgs {
+        const defaultArgs: interfaces.NextArgs = {
+            avoidConstraints: false,
+            contextInterceptor: this._getDefaultContextInterceptor(),
+            isMultiInject,
+            targetType: TargetTypeEnum.Variable,
+            serviceIdentifier,
+            key,
+            value,
+        };
+
+        return defaultArgs;
     }
 
     // Planner creates a plan and Resolver resolves a plan
