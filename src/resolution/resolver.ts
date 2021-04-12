@@ -76,8 +76,10 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
 
         if (binding.type === BindingTypeEnum.ConstantValue) {
             result = binding.cache;
+            binding.activated = true;
         } else if (binding.type === BindingTypeEnum.Function) {
             result = binding.cache;
+            binding.activated = true;
         } else if (binding.type === BindingTypeEnum.Constructor) {
             result = binding.implementationType;
         } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
