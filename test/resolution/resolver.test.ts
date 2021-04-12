@@ -1028,6 +1028,8 @@ describe("Resolve", () => {
       expect(ninja.shuriken instanceof Shuriken).eql(true);
       expect(katanaFactoryBinding.activated).eql(true);
 
+      expect(katanaFactoryBinding.activated).eql(true);
+
     });
 
   it("Should run the @PostConstruct method", () => {
