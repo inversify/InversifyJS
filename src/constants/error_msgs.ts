@@ -44,7 +44,7 @@ export const CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK = "Invalid Container opti
 export const MULTIPLE_PRE_DESTROY_METHODS = "Cannot apply @preDestroy decorator multiple times in the same class";
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
 export const ASYNC_UNBIND_REQUIRED = "Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)";
-export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
+export const POST_CONSTRUCT_ERROR = (clazz: string, errorMessage: string) => `@postConstruct error in class ${clazz}: ${errorMessage}`;
 export const PRE_DESTROY_ERROR = (clazz: string, errorMessage: string) => `@preDestroy error in class ${clazz}: ${errorMessage}`;
 export const ON_DEACTIVATION_ERROR = (clazz: string, errorMessage: string) => `onDeactivation() error in class ${clazz}: ${errorMessage}`;
 
