@@ -6,7 +6,7 @@ import * as interfaces from '../interfaces/interfaces';
 import { isStackOverflowExeption } from '../utils/exceptions';
 import { circularDependencyToException, getServiceIdentifierAsString, listMetadataForTarget, listRegisteredBindingsForServiceIdentifier } from '../utils/serialization';
 import { Context } from './context';
-import { AnyMetadataValue, Metadata } from './metadata';
+import { Metadata } from './metadata';
 import { Plan } from './plan';
 import { getBaseClassDependencyCount, getDependencies, getFunctionName } from './reflection_utils';
 import { Request } from './request';
@@ -27,7 +27,7 @@ function _createTarget(
   serviceIdentifier: interfaces.ServiceIdentifier<string | symbol>,
   name: string,
   key?: string | number | symbol,
-  value?: AnyMetadataValue
+  value?: unknown
 ): interfaces.Target {
   const metadataKey = isMultiInject ?
     METADATA_KEY.MULTI_INJECT_TAG :

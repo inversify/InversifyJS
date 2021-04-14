@@ -1,4 +1,4 @@
-import * as METADATA_KEY from '../constants/metadata_keys';
+import { NAMED_TAG, MULTI_INJECT_TAG, INJECT_TAG, NAME_TAG, UNMANAGED_TAG, OPTIONAL_TAG } from '../constants/metadata_keys';
 import * as interfaces from '../interfaces/interfaces';
 import { id } from '../utils/id';
 import { Metadata } from './metadata';
@@ -15,7 +15,7 @@ class Target implements interfaces.Target {
   public constructor(
     type: interfaces.TargetType,
     name: string,
-    serviceIdentifier: interfaces.ServiceIdentifier<interfaces.IndexObject>,
+    serviceIdentifier: string | symbol,
     namedOrTagged?: string | Metadata
   ) {
     this.id = id();
@@ -28,7 +28,7 @@ class Target implements interfaces.Target {
 
     // is named target
     if (typeof namedOrTagged === 'string') {
-      metadataItem = new Metadata(METADATA_KEY.NAMED_TAG, namedOrTagged);
+      metadataItem = new Metadata(NAMED_TAG, namedOrTagged);
     } else if (namedOrTagged instanceof Metadata) {
       // is target with metadata
       metadataItem = namedOrTagged;
@@ -50,35 +50,35 @@ class Target implements interfaces.Target {
   }
 
   public isArray(): boolean {
-    return this.hasTag(METADATA_KEY.MULTI_INJECT_TAG);
+    return this.hasTag(MULTI_INJECT_TAG);
   }
 
   public matchesArray(name: interfaces.ServiceIdentifier<unknown>): boolean {
-    return this.matchesTag(METADATA_KEY.MULTI_INJECT_TAG)(name);
+    return this.matchesTag(MULTI_INJECT_TAG)(name);
   }
 
   public isNamed(): boolean {
-    return this.hasTag(METADATA_KEY.NAMED_TAG);
+    return this.hasTag(NAMED_TAG);
   }
 
   public isTagged(): boolean {
     return this.metadata.some(
       (m) =>
-        m.key !== METADATA_KEY.INJECT_TAG &&
-        m.key !== METADATA_KEY.MULTI_INJECT_TAG &&
-        m.key !== METADATA_KEY.NAME_TAG &&
-        m.key !== METADATA_KEY.UNMANAGED_TAG &&
-        m.key !== METADATA_KEY.NAMED_TAG
+        m.key !== INJECT_TAG &&
+        m.key !== MULTI_INJECT_TAG &&
+        m.key !== NAME_TAG &&
+        m.key !== UNMANAGED_TAG &&
+        m.key !== NAMED_TAG
     );
   }
 
   public isOptional(): boolean {
-    return this.matchesTag(METADATA_KEY.OPTIONAL_TAG)(true);
+    return this.matchesTag(OPTIONAL_TAG)(true);
   }
 
   public getNamedTag(): interfaces.Metadata | null {
     if (this.isNamed()) {
-      return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
+      return this.metadata.filter((m) => m.key === NAMED_TAG)[0] ?? null;
     }
     return null;
   }
@@ -87,18 +87,18 @@ class Target implements interfaces.Target {
     if (this.isTagged()) {
       return this.metadata.filter(
         (m) =>
-          m.key !== METADATA_KEY.INJECT_TAG &&
-          m.key !== METADATA_KEY.MULTI_INJECT_TAG &&
-          m.key !== METADATA_KEY.NAME_TAG &&
-          m.key !== METADATA_KEY.UNMANAGED_TAG &&
-          m.key !== METADATA_KEY.NAMED_TAG
+          m.key !== INJECT_TAG &&
+          m.key !== MULTI_INJECT_TAG &&
+          m.key !== NAME_TAG &&
+          m.key !== UNMANAGED_TAG &&
+          m.key !== NAMED_TAG
       );
     }
     return null;
   }
 
   public matchesNamedTag(name: string): boolean {
-    return this.matchesTag(METADATA_KEY.NAMED_TAG)(name);
+    return this.matchesTag(NAMED_TAG)(name);
   }
 
   public matchesTag(key: string) {

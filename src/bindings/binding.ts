@@ -4,7 +4,7 @@ import { id } from '../utils/id';
 
 class Binding<T> implements interfaces.Binding<T> {
   public id: number;
-  public moduleId: string;
+  public moduleId!: string;
 
   // Determines weather the bindings has been already activated
   // The activation action takes place when an instance is resolved
@@ -39,9 +39,13 @@ class Binding<T> implements interfaces.Binding<T> {
   public constraint: (request: interfaces.Request) => boolean;
 
   // On activation handler (invoked just before an instance is added to cache and injected)
-  public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
+  public onActivation: (
+    (context: interfaces.Context, injectable: T) => T) | null;
 
-  public constructor(serviceIdentifier: interfaces.ServiceIdentifier<T>, scope: interfaces.BindingScope) {
+  public constructor(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    scope: interfaces.BindingScope
+  ) {
     this.id = id();
     this.activated = false;
     this.serviceIdentifier = serviceIdentifier;
@@ -58,7 +62,9 @@ class Binding<T> implements interfaces.Binding<T> {
 
   public clone(): interfaces.Binding<T> {
     const clone = new Binding(this.serviceIdentifier, this.scope);
-    clone.activated = clone.scope === BindingScopeEnum.Singleton ? this.activated : false;
+    clone.activated = clone.scope === BindingScopeEnum.Singleton ?
+      this.activated :
+      false;
     clone.implementationType = this.implementationType;
     clone.dynamicValue = this.dynamicValue;
     clone.scope = this.scope;

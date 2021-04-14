@@ -28,7 +28,7 @@ class Request implements interfaces.Request {
     this.bindings = Array.isArray(bindings) ? bindings : [bindings];
 
     // Set requestScope if Request is the root request
-    this.requestScope = parentRequest === null ? new Map<unknown, unknown>() : null;
+    this.requestScope = parentRequest === null ? new Map() : null;
   }
 
   public addChildRequest(

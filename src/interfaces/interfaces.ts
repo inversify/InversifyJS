@@ -1,4 +1,3 @@
-import { AnyMetadataValue } from '../planning/metadata';
 
 export type BindingScope = 'Singleton' | 'Transient' | 'Request';
 
@@ -39,7 +38,7 @@ export interface TargetTypeEnum {
 
 export type IndexObject = Record<string, unknown>;
 
-export type Newable<T = IndexObject> = new (...args: unknown[]) => T;
+export type Newable<T = IndexObject> = new (...args: never[]) => T;
 
 export interface Abstract<T> {
   prototype: T;
@@ -107,12 +106,12 @@ export interface Context {
 }
 
 export interface ReflectResult {
-  [key: string]: Metadata[];
+  [key: string]: Metadata | Metadata[];
 }
 
-export interface Metadata {
+export interface Metadata<T = unknown> {
   key: string | number | symbol;
-  value: AnyMetadataValue;
+  value: T;
 }
 
 export interface Plan {
@@ -336,7 +335,7 @@ export interface BindingInWhenOnSyntax<T>
   BindingWhenOnSyntax<T> { }
 
 export interface BindingToSyntax<T> {
-  to(constructor: new (...args: unknown[]) => T): BindingInWhenOnSyntax<T>;
+  to(constructor: new (...args: never[]) => T): BindingInWhenOnSyntax<T>;
   toSelf(): BindingInWhenOnSyntax<T>;
   toConstantValue(value: T): BindingWhenOnSyntax<T>;
   toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;

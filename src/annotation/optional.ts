@@ -1,10 +1,15 @@
-import * as METADATA_KEY from '../constants/metadata_keys';
+import { OPTIONAL_TAG } from '../constants/metadata_keys';
 import { Metadata } from '../planning/metadata';
 import { tagParameter, tagProperty } from './decorator_utils';
 
+
 function optional() {
-  return function (target: NewableFunction, targetKey: string, index?: number): void {
-    const metadata = new Metadata(METADATA_KEY.OPTIONAL_TAG, true);
+  return function (
+    target: NewableFunction,
+    targetKey: string,
+    index?: number
+  ): void {
+    const metadata = new Metadata(OPTIONAL_TAG, true);
 
     if (typeof index === 'number') {
       tagParameter(target, targetKey, index, metadata);
