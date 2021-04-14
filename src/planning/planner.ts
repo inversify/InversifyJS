@@ -4,12 +4,7 @@ import { BindingTypeEnum, TargetTypeEnum } from '../constants/literal_types';
 import * as METADATA_KEY from '../constants/metadata_keys';
 import * as interfaces from '../interfaces/interfaces';
 import { isStackOverflowExeption } from '../utils/exceptions';
-import {
-  circularDependencyToException,
-  getServiceIdentifierAsString,
-  listMetadataForTarget,
-  listRegisteredBindingsForServiceIdentifier
-} from '../utils/serialization';
+import { circularDependencyToException, getServiceIdentifierAsString, listMetadataForTarget, listRegisteredBindingsForServiceIdentifier } from '../utils/serialization';
 import { Context } from './context';
 import { AnyMetadataValue, Metadata } from './metadata';
 import { Plan } from './plan';
@@ -18,7 +13,7 @@ import { Request } from './request';
 import { Target } from './target';
 
 function getBindingDictionary<T>(container: interfaces.Container): interfaces.Lookup<interfaces.Binding<T>> {
-  return (container as interfaces.Container & { _bindingDictionary: interfaces.Lookup<interfaces.Binding<T>>})._bindingDictionary;
+  return (container as interfaces.Container & { _bindingDictionary: interfaces.Lookup<interfaces.Binding<T>> })._bindingDictionary;
 }
 
 function _createTarget(

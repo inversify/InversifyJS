@@ -10,7 +10,6 @@ import { BindingToSyntax } from '../syntax/binding_to_syntax';
 import { id } from '../utils/id';
 import { getServiceIdentifierAsString } from '../utils/serialization';
 import { ContainerSnapshot } from './container_snapshot';
-import { Lookup } from './lookup';
 
 class Container implements Container {
   public id: number;

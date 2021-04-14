@@ -72,7 +72,7 @@ function dependencyChainToString(request: interfaces.Request) {
   return stringArr.reverse().join(' --> ');
 }
 
-function circularDependencyToException(request: interfaces.Request) {
+function circularDependencyToException(request: interfaces.Request): void {
   request.childRequests.forEach((childRequest) => {
     if (alreadyDependencyChain(childRequest, childRequest.serviceIdentifier)) {
       const services = dependencyChainToString(childRequest);
@@ -106,7 +106,7 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
   }
 }
 
-function getFunctionName(v: Function): string {
+function getFunctionName(v: NewableFunction): string {
   if (v.name) {
     return v.name;
   } else {

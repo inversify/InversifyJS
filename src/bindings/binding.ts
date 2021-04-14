@@ -47,8 +47,7 @@ class Binding<T> implements interfaces.Binding<T> {
     this.serviceIdentifier = serviceIdentifier;
     this.scope = scope;
     this.type = BindingTypeEnum.Invalid;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.constraint = (request: interfaces.Request) => true;
+    this.constraint = (_request: interfaces.Request) => true;
     this.implementationType = null;
     this.cache = null;
     this.factory = null;

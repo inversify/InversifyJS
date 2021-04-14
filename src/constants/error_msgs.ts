@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 export const DUPLICATED_INJECTABLE_DECORATOR = 'Cannot apply @injectable decorator multiple times.';
 export const DUPLICATED_METADATA = 'Metadata key was used more than once in a parameter:';
 export const NULL_ARGUMENT = 'NULL argument';
