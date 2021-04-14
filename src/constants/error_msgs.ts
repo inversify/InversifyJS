@@ -17,7 +17,7 @@ export const INVALID_BINDING_TYPE = "Invalid binding type:";
 export const NO_MORE_SNAPSHOTS_AVAILABLE = "No snapshot available to restore.";
 export const INVALID_MIDDLEWARE_RETURN = "Invalid return type in middleware. Middleware must return!";
 export const INVALID_FUNCTION_BINDING = "Value provided to function binding must be a function!";
-export const LAZY_IN_SYNC = (key: any) => `You are attempting to construct '${key}' in a synchronous way
+export const LAZY_IN_SYNC = (key: unknown) => `You are attempting to construct '${key}' in a synchronous way
  but it has asynchronous dependencies.`;
 
 export const INVALID_TO_SELF_VALUE = "The toSelf function can only be applied when a constructor is " +
@@ -45,11 +45,11 @@ export const MULTIPLE_PRE_DESTROY_METHODS = "Cannot apply @preDestroy decorator 
 export const MULTIPLE_POST_CONSTRUCT_METHODS = "Cannot apply @postConstruct decorator multiple times in the same class";
 export const ASYNC_UNBIND_REQUIRED = "Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)";
 export const POST_CONSTRUCT_ERROR = (...values: any[]) => `@postConstruct error in class ${values[0]}: ${values[1]}`;
-export const PRE_DESTROY_ERROR = (...values: any[]) => `@preDestroy error in class ${values[0]}: ${values[1]}`;
-export const ON_DEACTIVATION_ERROR = (...values: any[]) => `onDeactivation() error in class ${values[0]}: ${values[1]}`;
+export const PRE_DESTROY_ERROR = (clazz: string, errorMessage: string) => `@preDestroy error in class ${clazz}: ${errorMessage}`;
+export const ON_DEACTIVATION_ERROR = (clazz: string, errorMessage: string) => `onDeactivation() error in class ${clazz}: ${errorMessage}`;
 
-export const CIRCULAR_DEPENDENCY_IN_FACTORY = (...values: any[]) =>  "It looks like there is a circular dependency " +
-    `in one of the '${values[0]}' bindings. Please investigate bindings with` +
-    `service identifier '${values[1]}'.`;
+export const CIRCULAR_DEPENDENCY_IN_FACTORY = (factoryType: string, serviceIdentifier: string) =>
+    `It looks like there is a circular dependency in one of the '${factoryType}' bindings. Please investigate bindings with` +
+    `service identifier '${serviceIdentifier}'.`;
 
 export const STACK_OVERFLOW = "Maximum call stack size exceeded";
