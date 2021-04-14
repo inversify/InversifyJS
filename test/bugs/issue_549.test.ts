@@ -12,9 +12,9 @@ describe("Issue 549", () => {
 
         @injectable()
         class A {
-            public b: B;
+            public b: unknown;
             public constructor(
-                @inject(TYPE.BDynamicValue)  b: B
+                @inject(TYPE.BDynamicValue)  b: unknown
             ) {
                 this.b = b;
             }
@@ -22,9 +22,9 @@ describe("Issue 549", () => {
 
         @injectable()
         class B {
-            public a: A;
+            public a: unknown;
             public constructor(
-                @inject(TYPE.ADynamicValue) a: A
+                @inject(TYPE.ADynamicValue) a: unknown
             ) {
                 this.a = a;
             }

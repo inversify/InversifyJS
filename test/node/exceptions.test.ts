@@ -13,11 +13,11 @@ describe("Node", () => {
 
         @injectable()
         class A implements A {
-            public b: B;
-            public c: C;
+            public b: unknown;
+            public c: unknown;
             public constructor(
-                @inject("B")  b: B,
-                @inject("C")  c: C
+                @inject("B") b: unknown,
+                @inject("C") c: unknown,
             ) {
                 this.b = b;
                 this.c = c;
@@ -29,16 +29,16 @@ describe("Node", () => {
 
         @injectable()
         class C implements C {
-            public d: D;
-            public constructor(@inject("D") d: D) {
+            public d: unknown;
+            public constructor(@inject("D") d: unknown) {
                 this.d = d;
             }
         }
 
         @injectable()
         class D implements D {
-            public a: A;
-            public constructor(@inject("A") a: A) {
+            public a: unknown;
+            public constructor(@inject("A") a: unknown) {
                 this.a = a;
             }
         }

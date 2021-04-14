@@ -127,9 +127,9 @@ describe("Planner", () => {
 
         @injectable()
         class D implements D {
-            public a: A;
+            public a: unknown;
             public constructor(
-                @inject("A") a: A
+                @inject("A") a: unknown
             ) { // circular dependency
                 this.a = a;
             }
@@ -137,9 +137,9 @@ describe("Planner", () => {
 
         @injectable()
         class C implements C {
-            public d: D;
+            public d: unknown;
             public constructor(
-                @inject("D") d: D
+                @inject("D") d: unknown
             ) {
                 this.d = d;
             }
@@ -150,11 +150,11 @@ describe("Planner", () => {
 
         @injectable()
         class A implements A {
-            public b: B;
-            public c: C;
+            public b: unknown;
+            public c: unknown;
             public constructor(
-                @inject("B") b: B,
-                @inject("C") c: C
+                @inject("B") b: unknown,
+                @inject("C") c: unknown,
             ) {
                 this.b = b;
                 this.c = c;

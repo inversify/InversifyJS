@@ -19,9 +19,9 @@ describe("Issue 543", () => {
 
         @injectable()
         class Child2 {
-            public circ: Circular;
+            public circ: unknown;
             public constructor(
-                @inject(TYPE.Circular) circ: Circular
+                @inject(TYPE.Circular) circ: unknown
             ) {
                 this.circ = circ;
             }
@@ -29,11 +29,11 @@ describe("Issue 543", () => {
 
         @injectable()
         class Child {
-            public irrelevant: Irrelevant;
-            public child2: Child2;
+            public irrelevant: unknown;
+            public child2: unknown;
             public constructor(
-                @inject(TYPE.Irrelevant) irrelevant: Irrelevant,
-                @inject(TYPE.Child2) child2: Child2
+                @inject(TYPE.Irrelevant) irrelevant: unknown,
+                @inject(TYPE.Child2) child2: unknown
             ) {
                 this.irrelevant = irrelevant;
                 this.child2 = child2;
@@ -42,11 +42,11 @@ describe("Issue 543", () => {
 
         @injectable()
         class Circular {
-            public irrelevant: Irrelevant;
-            public child: Child;
+            public irrelevant: unknown;
+            public child: unknown;
             public constructor(
-                @inject(TYPE.Irrelevant) irrelevant: Irrelevant,
-                @inject(TYPE.Child) child: Child
+                @inject(TYPE.Irrelevant) irrelevant: unknown,
+                @inject(TYPE.Child) child: unknown
             ) {
                 this.irrelevant = irrelevant;
                 this.child = child;
@@ -55,11 +55,11 @@ describe("Issue 543", () => {
 
         @injectable()
         class Root {
-            public irrelevant: Irrelevant;
-            public circ: Circular;
+            public irrelevant: unknown;
+            public circ: unknown;
             public constructor(
-                @inject(TYPE.Irrelevant) irrelevant1: Irrelevant,
-                @inject(TYPE.Circular) circ: Circular
+                @inject(TYPE.Irrelevant) irrelevant1: unknown,
+                @inject(TYPE.Circular) circ: unknown
             ) {
                 this.irrelevant = irrelevant1;
                 this.circ = circ;
