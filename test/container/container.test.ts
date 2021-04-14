@@ -574,17 +574,17 @@ describe('Container', () => {
   });
 
   it('Should be throw an exception if incorrect options is provided', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const invalidOptions1: any = () => 0;
-    const wrong1 = () => new Container(invalidOptions1);
+    type InvalidOptions = interfaces.ContainerOptions
+    const invalidOptions1 = () => 0;
+    const wrong1 = () => new Container(invalidOptions1 as unknown as InvalidOptions);
     expect(wrong1).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
 
-    const invalidOptions2: any = { autoBindInjectable: 'wrongValue' };
-    const wrong2 = () => new Container(invalidOptions2);
+    const invalidOptions2 = { autoBindInjectable: 'wrongValue' };
+    const wrong2 = () => new Container(invalidOptions2 as unknown as InvalidOptions);
     expect(wrong2).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
 
-    const invalidOptions3: any = { defaultScope: 'wrongValue' };
-    const wrong3 = () => new Container(invalidOptions3);
+    const invalidOptions3 = { defaultScope: 'wrongValue' };
+    const wrong3 = () => new Container(invalidOptions3 as unknown as InvalidOptions);
     expect(wrong3).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
   });
 

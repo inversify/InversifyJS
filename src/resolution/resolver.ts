@@ -23,8 +23,7 @@ const invokeFactory = (
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _resolveRequest = (requestScope: interfaces.RequestScope) => (request: interfaces.Request): any => {
+const _resolveRequest = <T = unknown | unknown[]>(requestScope: interfaces.RequestScope) => (request: interfaces.Request): T | T[] => {
   request.parentContext.setCurrentRequest(request);
 
   const bindings = request.bindings;
@@ -41,7 +40,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) => (request: int
   if (targetIsAnArray && targetParentIsNotAnArray) {
     // Create an array instead of creating an instance
     return childRequests.map((childRequest: interfaces.Request) => {
-      const _f = _resolveRequest(requestScope);
+      const _f = _resolveRequest<T>(requestScope);
       return _f(childRequest);
     });
   } else {

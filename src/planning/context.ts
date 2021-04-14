@@ -12,11 +12,11 @@ class Context implements interfaces.Context {
     this.container = container;
   }
 
-  public addPlan(plan: interfaces.Plan) {
+  public addPlan(plan: interfaces.Plan): void {
     this.plan = plan;
   }
 
-  public setCurrentRequest(currentRequest: interfaces.Request) {
+  public setCurrentRequest(currentRequest: interfaces.Request): void {
     this.currentRequest = currentRequest;
   }
 }

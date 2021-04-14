@@ -3,30 +3,36 @@ import * as METADATA_KEY from '../constants/metadata_keys';
 import * as interfaces from '../interfaces/interfaces';
 
 function tagParameter(
-  annotationTarget: Object,
+  annotationTarget: NewableFunction,
   propertyName: string,
   parameterIndex: number,
   metadata: interfaces.Metadata
-) {
+): void {
   const metadataKey = METADATA_KEY.TAGGED;
   _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
 }
 
-function tagProperty(annotationTarget: Object, propertyName: string, metadata: interfaces.Metadata) {
+function tagProperty(
+  annotationTarget: NewableFunction,
+  propertyName: string,
+  metadata: interfaces.Metadata
+): void {
   const metadataKey = METADATA_KEY.TAGGED_PROP;
   _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
 }
 
 function _tagParameterOrProperty(
   metadataKey: string,
-  annotationTarget: Object,
+  annotationTarget: NewableFunction,
   propertyName: string,
   metadata: interfaces.Metadata,
   parameterIndex?: number
 ) {
   let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
   const isParameterDecorator = typeof parameterIndex === 'number';
-  const key: string = parameterIndex !== undefined && isParameterDecorator ? parameterIndex.toString() : propertyName;
+  const key: string = parameterIndex !== undefined && isParameterDecorator ?
+    parameterIndex.toString() :
+    propertyName;
 
   // if the decorator is used as a parameter decorator, the property name must be provided
   if (isParameterDecorator && propertyName !== undefined) {
@@ -35,7 +41,7 @@ function _tagParameterOrProperty(
 
   // read metadata if available
   if (Reflect.hasOwnMetadata(metadataKey, annotationTarget)) {
-    paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
+    paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget) as interfaces.ReflectResult;
   }
 
   // get metadata for the decorated parameter by its index
@@ -57,12 +63,12 @@ function _tagParameterOrProperty(
   Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 }
 
-function _decorate(decorators: unknown, target: Function): void {
+function _decorate(decorators: unknown, target: NewableFunction): void {
   Reflect.decorate(decorators as ClassDecorator[], target);
 }
 
 function _param(paramIndex: number, decorator: ParameterDecorator) {
-  return function (target: Object, key: string) {
+  return function (target: interfaces.IndexObject, key: string) {
     decorator(target, key, paramIndex);
   };
 }
@@ -74,7 +80,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
   decorator: ClassDecorator | ParameterDecorator | MethodDecorator,
-  target: Function,
+  target: NewableFunction,
   parameterIndex?: number | string
 ): void {
   if (typeof parameterIndex === 'number') {

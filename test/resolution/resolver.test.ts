@@ -898,7 +898,7 @@ describe('Resolve', () => {
       .to(Katana)
       .onActivation((theContext: interfaces.Context, katana: Katana) => {
         const handler = {
-          apply(target: any, thisArgument: any, argumentsList: any[]) {
+          apply(target: unknown, thisArgument: unknown, argumentsList: unknown[]) {
             timeTracker.push(`Starting ${target.name} ${new Date().getTime()}`);
             const result = target.apply(thisArgument, argumentsList);
             timeTracker.push(`Finished ${target.name} ${new Date().getTime()}`);

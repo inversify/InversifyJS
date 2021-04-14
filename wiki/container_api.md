@@ -17,7 +17,7 @@ container.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
 You can use container options to change the default scope used at application level:
 
 ```ts
-let container = new Container({ defaultScope: "Singleton" });
+let container = new Container({ defaultScope: 'Singleton' });
 ```
 
 ### autoBindInjectable
@@ -26,9 +26,9 @@ You can use this to activate automatic binding for `@injectable()` decorated cla
 
 ```ts
 let container = new Container({ autoBindInjectable: true });
-container.isBound(Ninja);          // returns false
-container.get(Ninja);              // returns a Ninja
-container.isBound(Ninja);          // returns true
+container.isBound(Ninja); // returns false
+container.get(Ninja); // returns a Ninja
+container.isBound(Ninja); // returns true
 ```
 
 Manually defined bindings will take precedence:
@@ -36,7 +36,7 @@ Manually defined bindings will take precedence:
 ```ts
 let container = new Container({ autoBindInjectable: true });
 container.bind(Ninja).to(Samurai);
-container.get(Ninja);              // returns a Samurai
+container.get(Ninja); // returns a Samurai
 ```
 
 ### skipBaseClassChecks
@@ -56,17 +56,17 @@ Merges two containers into one:
 ```ts
 @injectable()
 class Ninja {
-    public name = "Ninja";
+  public name = 'Ninja';
 }
 
 @injectable()
 class Shuriken {
-    public name = "Shuriken";
+  public name = 'Shuriken';
 }
 
 let CHINA_EXPANSION_TYPES = {
-    Ninja: "Ninja",
-    Shuriken: "Shuriken"
+  Ninja: 'Ninja',
+  Shuriken: 'Shuriken'
 };
 
 let chinaExpansionContainer = new Container();
@@ -75,17 +75,17 @@ chinaExpansionContainer.bind<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).to(Shurik
 
 @injectable()
 class Samurai {
-    public name = "Samurai";
+  public name = 'Samurai';
 }
 
 @injectable()
 class Katana {
-    public name = "Katana";
+  public name = 'Katana';
 }
 
 let JAPAN_EXPANSION_TYPES = {
-    Katana: "Katana",
-    Samurai: "Samurai"
+  Katana: 'Katana',
+  Samurai: 'Samurai'
 };
 
 let japanExpansionContainer = new Container();
@@ -93,10 +93,10 @@ japanExpansionContainer.bind<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).to(Samurai)
 japanExpansionContainer.bind<Katana>(JAPAN_EXPANSION_TYPES.Katana).to(Katana);
 
 let gameContainer = Container.merge(chinaExpansionContainer, japanExpansionContainer);
-expect(gameContainer.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql("Ninja");
-expect(gameContainer.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql("Shuriken");
-expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("Samurai");
-expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
+expect(gameContainer.get<Ninja>(CHINA_EXPANSION_TYPES.Ninja).name).to.eql('Ninja');
+expect(gameContainer.get<Shuriken>(CHINA_EXPANSION_TYPES.Shuriken).name).to.eql('Shuriken');
+expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql('Samurai');
+expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql('Katana');
 ```
 
 ## container.getNamed<T>()
@@ -105,11 +105,11 @@ Named bindings:
 
 ```ts
 let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("japanese");
-container.bind<Weapon>("Weapon").to(Shuriken).whenTargetNamed("chinese");
+container.bind<Weapon>('Weapon').to(Katana).whenTargetNamed('japanese');
+container.bind<Weapon>('Weapon').to(Shuriken).whenTargetNamed('chinese');
 
-let katana = container.getNamed<Weapon>("Weapon", "japanese");
-let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
+let katana = container.getNamed<Weapon>('Weapon', 'japanese');
+let shuriken = container.getNamed<Weapon>('Weapon', 'chinese');
 ```
 
 ## container.getTagged<T>()
@@ -118,11 +118,11 @@ Tagged bindings:
 
 ```ts
 let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("faction", "samurai");
-container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("faction", "ninja");
+container.bind<Weapon>('Weapon').to(Katana).whenTargetTagged('faction', 'samurai');
+container.bind<Weapon>('Weapon').to(Shuriken).whenTargetTagged('faction', 'ninja');
 
-let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
-let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
+let katana = container.getTagged<Weapon>('Weapon', 'faction', 'samurai');
+let shuriken = container.getTagged<Weapon>('Weapon', 'faction', 'ninja');
 ```
 
 ## container.getAll<T>()
@@ -131,71 +131,70 @@ Get all available bindings for a given identifier:
 
 ```ts
 let container = new Container();
-container.bind<Weapon>("Weapon").to(Katana);
-container.bind<Weapon>("Weapon").to(Shuriken);
+container.bind<Weapon>('Weapon').to(Katana);
+container.bind<Weapon>('Weapon').to(Shuriken);
 
-let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
+let weapons = container.getAll<Weapon>('Weapon'); // returns Weapon[]
 ```
 
 ## container.getAllNamed<T>()
 
-Get all available bindings for a given identifier that match the given 
+Get all available bindings for a given identifier that match the given
 named constraint:
 
 ```ts
 let container = new Container();
 
 interface Intl {
-    hello?: string;
-    goodbye?: string;
+  hello?: string;
+  goodbye?: string;
 }
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetNamed("fr");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetNamed("fr");
+container.bind<Intl>('Intl').toConstantValue({ hello: 'bonjour' }).whenTargetNamed('fr');
+container.bind<Intl>('Intl').toConstantValue({ goodbye: 'au revoir' }).whenTargetNamed('fr');
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
+container.bind<Intl>('Intl').toConstantValue({ hello: 'hola' }).whenTargetNamed('es');
+container.bind<Intl>('Intl').toConstantValue({ goodbye: 'adios' }).whenTargetNamed('es');
 
-let fr = container.getAllNamed<Intl>("Intl", "fr");
+let fr = container.getAllNamed<Intl>('Intl', 'fr');
 expect(fr.length).to.eql(2);
-expect(fr[0].hello).to.eql("bonjour");
-expect(fr[1].goodbye).to.eql("au revoir");
+expect(fr[0].hello).to.eql('bonjour');
+expect(fr[1].goodbye).to.eql('au revoir');
 
-let es = container.getAllNamed<Intl>("Intl", "es");
+let es = container.getAllNamed<Intl>('Intl', 'es');
 expect(es.length).to.eql(2);
-expect(es[0].hello).to.eql("hola");
-expect(es[1].goodbye).to.eql("adios");
+expect(es[0].hello).to.eql('hola');
+expect(es[1].goodbye).to.eql('adios');
 ```
-
 
 ## container.getAllTagged<T>()
 
-Get all available bindings for a given identifier that match the given 
+Get all available bindings for a given identifier that match the given
 named constraint:
 
 ```ts
 let container = new Container();
 
 interface Intl {
-    hello?: string;
-    goodbye?: string;
+  hello?: string;
+  goodbye?: string;
 }
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "bonjour" }).whenTargetTagged("lang", "fr");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "au revoir" }).whenTargetTagged("lang", "fr");
+container.bind<Intl>('Intl').toConstantValue({ hello: 'bonjour' }).whenTargetTagged('lang', 'fr');
+container.bind<Intl>('Intl').toConstantValue({ goodbye: 'au revoir' }).whenTargetTagged('lang', 'fr');
 
-container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
-container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
+container.bind<Intl>('Intl').toConstantValue({ hello: 'hola' }).whenTargetTagged('lang', 'es');
+container.bind<Intl>('Intl').toConstantValue({ goodbye: 'adios' }).whenTargetTagged('lang', 'es');
 
-let fr = container.getAllTagged<Intl>("Intl", "lang", "fr");
+let fr = container.getAllTagged<Intl>('Intl', 'lang', 'fr');
 expect(fr.length).to.eql(2);
-expect(fr[0].hello).to.eql("bonjour");
-expect(fr[1].goodbye).to.eql("au revoir");
+expect(fr[0].hello).to.eql('bonjour');
+expect(fr[1].goodbye).to.eql('au revoir');
 
-let es = container.getAllTagged<Intl>("Intl", "lang", "es");
+let es = container.getAllTagged<Intl>('Intl', 'lang', 'es');
 expect(es.length).to.eql(2);
-expect(es[0].hello).to.eql("hola");
-expect(es[1].goodbye).to.eql("adios");
+expect(es[0].hello).to.eql('hola');
+expect(es[1].goodbye).to.eql('adios');
 ```
 
 ## container.isBound(serviceIdentifier: ServiceIdentifier)
@@ -204,15 +203,15 @@ You can use the `isBound` method to check if there are registered bindings for a
 
 ```ts
 interface Warrior {}
-let warriorId = "Warrior";
-let warriorSymbol = Symbol.for("Warrior");
+let warriorId = 'Warrior';
+let warriorSymbol = Symbol.for('Warrior');
 
 @injectable()
 class Ninja implements Warrior {}
 
 interface Katana {}
-let katanaId = "Katana";
-let katanaSymbol = Symbol.for("Katana");
+let katanaId = 'Katana';
+let katanaSymbol = Symbol.for('Katana');
 
 @injectable()
 class Katana implements Katana {}
@@ -235,9 +234,9 @@ expect(container.isBound(katanaSymbol)).to.eql(false);
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
 
 ```ts
-const zero = "Zero";
-const invalidDivisor = "InvalidDivisor";
-const validDivisor = "ValidDivisor";
+const zero = 'Zero';
+const invalidDivisor = 'InvalidDivisor';
+const validDivisor = 'ValidDivisor';
 let container = new Container();
 
 expect(container.isBound(zero)).to.eql(false);
@@ -255,13 +254,13 @@ expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
 expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
 ```
 
-## container.isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any)
+## container.isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: unknown)
 
 You can use the `isBoundTagged` method to check if there are registered bindings for a given service identifier with a given tagged constraint.
 
 ```ts
-const zero = "Zero";
-const isValidDivisor = "IsValidDivisor";
+const zero = 'Zero';
+const isValidDivisor = 'IsValidDivisor';
 let container = new Container();
 
 expect(container.isBound(zero)).to.eql(false);
@@ -286,7 +285,7 @@ The function returns an instance of `BindingToSyntax` which allows to create the
 
 ```ts
 let TYPES = {
-    someType: "someType"
+  someType: 'someType'
 };
 
 let container = new Container();
@@ -304,33 +303,36 @@ expect(values2[1]).to.eq(undefined);
 ```
 
 ## container.resolve<T>(constructor: Newable<T>)
+
 Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance even if no bindings have been declared:
 
 ```ts
 @injectable()
 class Katana {
-    public hit() {
-        return "cut!";
-    }
+  public hit() {
+    return 'cut!';
+  }
 }
 
 @injectable()
 class Ninja implements Ninja {
-    public katana: Katana;
-    public constructor(katana: Katana) {
-        this.katana = katana;
-    }
-    public fight() { return this.katana.hit(); }
+  public katana: Katana;
+  public constructor(katana: Katana) {
+    this.katana = katana;
+  }
+  public fight() {
+    return this.katana.hit();
+  }
 }
 
 const container = new Container();
 container.bind(Katana).toSelf();
 
 const tryGet = () => container.get(Ninja);
-expect(tryGet).to.throw("No matching bindings found for serviceIdentifier: Ninja");
+expect(tryGet).to.throw('No matching bindings found for serviceIdentifier: Ninja');
 
 const ninja = container.resolve(Ninja);
-expect(ninja.fight()).to.eql("cut!");
+expect(ninja.fight()).to.eql('cut!');
 ```
 
 Please note that it only allows to skip declaring a binding for the root element in the dependency graph (composition root). All the sub-dependencies (e.g. `Katana` in the preceding example) will require a binding to be declared.

@@ -12,15 +12,15 @@ export class LazyServiceIdentifer<T = unknown> {
     this._cb = cb;
   }
 
-  public unwrap() {
+  public unwrap(): interfaces.ServiceIdentifier<T> {
     return this._cb();
   }
 }
 
 function inject(serviceIdentifier: ServiceIdentifierOrFunc) {
-  return function (target: Object, targetKey: string, index?: number): void {
+  return function (target: NewableFunction, targetKey: string, index?: number): void {
     if (serviceIdentifier === undefined) {
-      throw new Error(UNDEFINED_INJECT_ANNOTATION((target as ClassDecorator).name));
+      throw new Error(UNDEFINED_INJECT_ANNOTATION(target.name));
     }
 
     const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);

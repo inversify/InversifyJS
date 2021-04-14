@@ -2,8 +2,14 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": ["es6", "dom"],
-    "types": ["mocha", "reflect-metadata"],
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "types": [
+      "mocha",
+      "reflect-metadata"
+    ],
     "moduleResolution": "node",
     "sourceMap": true,
     "jsx": "react",

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { LazyServiceIdentifer } from '../annotation/inject';
 import * as ERROR_MSGS from '../constants/error_msgs';
 import { TargetTypeEnum } from '../constants/literal_types';
@@ -57,8 +56,8 @@ function getConstructorArgsAsTarget(
   index: number,
   isBaseClass: boolean,
   constructorName: string,
-  serviceIdentifiers: any,
-  constructorArgsMetadata: any
+  serviceIdentifiers: Function[] | undefined,
+  constructorArgsMetadata: interfaces.MetadataMap
 ) {
   // Create map from array of metadata for faster access to metadata
   const targetMetadata = constructorArgsMetadata[index.toString()] || [];
@@ -100,8 +99,8 @@ function getConstructorArgsAsTarget(
 function getConstructorArgsAsTargets(
   isBaseClass: boolean,
   constructorName: string,
-  serviceIdentifiers: any,
-  constructorArgsMetadata: any,
+  serviceIdentifiers: Function[] | undefined,
+  constructorArgsMetadata: interfaces.MetadataMap,
   iterations: number
 ) {
   const targets: interfaces.Target[] = [];
@@ -141,7 +140,7 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
     const serviceIdentifier = metadata.inject || metadata.multiInject;
 
     // The property target
-    const target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIdentifier);
+    const target = new Target(TargetTypeEnum.ClassProperty, (targetName as string), serviceIdentifier);
     target.metadata = targetMetadata;
     targets.push(target);
   }
@@ -168,7 +167,7 @@ function getBaseClassDependencyCount(metadataReader: interfaces.MetadataReader, 
     const targets = getTargets(metadataReader, baseConstructorName, baseConstructor, true);
 
     // get unmanaged metadata
-    const metadata: any[] = targets.map((t: interfaces.Target) =>
+    const metadata: unknown[] = targets.map((t: interfaces.Target) =>
       t.metadata.filter((m: interfaces.Metadata) => m.key === METADATA_KEY.UNMANAGED_TAG)
     );
 
@@ -188,9 +187,9 @@ function getBaseClassDependencyCount(metadataReader: interfaces.MetadataReader, 
   }
 }
 
-function formatTargetMetadata(targetMetadata: any[]) {
+function formatTargetMetadata(targetMetadata: interfaces.Metadata[]) {
   // Create map from array of metadata for faster access to metadata
-  const targetMetadataMap: any = {};
+  const targetMetadataMap: interfaces.TargetMetadataMap = {};
   targetMetadata.forEach((m: interfaces.Metadata) => {
     targetMetadataMap[m.key.toString()] = m.value;
   });

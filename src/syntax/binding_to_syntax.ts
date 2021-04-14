@@ -43,8 +43,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
   public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Constructor;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this._binding.implementationType = constructor as any;
+    this._binding.implementationType = constructor as unknown as interfaces.Newable<T>;
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 

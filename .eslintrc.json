@@ -1,0 +1,62 @@
+/*
+  Rules Severity
+    - 0 = off
+    - 1 = warn
+    - 2 = error
+*/
+{
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "impliedStrict": true
+    },
+    "ecmaVersion": 2018,
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    // Javscript Specific Rules That Are Applied To Typescript Too
+    "max-len": [
+      "error",
+      {
+        "code": 140,
+        "ignorePattern": "^import"
+      }
+    ],
+    "no-console": 2,
+    "quotes": [
+      2,
+      "single"
+    ],
+    "semi": 2,
+    "sort-keys": [
+      2,
+      "asc",
+      {
+        "caseSensitive": true,
+        "natural": false,
+        "minKeys": 2
+      }
+    ],
+    // Typescript Specific Rules From This Point On
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-explicit-any": 2,
+    "@typescript-eslint/no-inferrable-types": 2,
+    "@typescript-eslint/no-unused-vars": [
+      2,
+      {
+        "argsIgnorePattern": "_"
+      }
+    ]
+  }
+}

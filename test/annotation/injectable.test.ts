@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as ERRORS_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import { decorate, injectable } from '../../src/inversify';
+import { decorate, injectable, interfaces } from '../../src/inversify';
 
 describe('@injectable', () => {
   it('Should generate metadata if declared injections', () => {
@@ -27,7 +27,7 @@ describe('@injectable', () => {
       }
     }
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
+    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior) as interfaces.MetadataMap;
     expect(metadata).to.be.instanceof(Array);
 
     expect(metadata[0]).to.be.eql(Katana);
@@ -54,7 +54,7 @@ describe('@injectable', () => {
 
     decorate(injectable(), VanillaJSWarrior);
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
+    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior) as interfaces.MetadataMap;
     expect(metadata).to.be.instanceof(Array);
     expect(metadata.length).to.eql(0);
   });

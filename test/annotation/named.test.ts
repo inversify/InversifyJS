@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(decorators: ClassDecorator[], target: unknown, key?: unknown, desc?: unknown): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from 'chai';
@@ -52,7 +52,7 @@ class InvalidDecoratorUsageWarrior {
 describe('@named', () => {
   it('Should generate metadata for named parameters', () => {
     const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, NamedWarrior);
+    const paramsMetadata = Reflect.getMetadata(metadataKey, NamedWarrior) as interfaces.MetadataMap;
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument
@@ -80,7 +80,7 @@ describe('@named', () => {
     }
 
     const metadataKey = METADATA_KEY.TAGGED_PROP;
-    const metadata = Reflect.getMetadata(metadataKey, Warrior);
+    const metadata = Reflect.getMetadata(metadataKey, Warrior) as interfaces.MetadataMap;
 
     const m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
@@ -123,7 +123,7 @@ describe('@named', () => {
     decorate(named('less_powerful'), VanillaJSWarrior, 1);
 
     const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior);
+    const paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior) as interfaces.MetadataMap;
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument

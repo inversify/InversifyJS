@@ -171,7 +171,7 @@ class Container implements Container {
   }
 
   public isBoundNamed(
-    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+    serviceIdentifier: interfaces.ServiceIdentifier<string | symbol>,
     named: string | number | symbol
   ): boolean {
     return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
@@ -179,7 +179,7 @@ class Container implements Container {
 
   // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
   public isBoundTagged(
-    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+    serviceIdentifier: interfaces.ServiceIdentifier<string | symbol>,
     key: string | number | symbol,
     value: unknown
   ): boolean {
@@ -224,7 +224,7 @@ class Container implements Container {
     this._middleware = middlewares.reduce((prev, curr) => curr(prev), initial);
   }
 
-  public applyCustomMetadataReader(metadataReader: interfaces.MetadataReader) {
+  public applyCustomMetadataReader(metadataReader: interfaces.MetadataReader): void {
     this._metadataReader = metadataReader;
   }
 
@@ -265,7 +265,7 @@ class Container implements Container {
     return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
-  public resolve<T>(constructorFunction: interfaces.Newable<T>) {
+  public resolve<T>(constructorFunction: interfaces.Newable<T>): T {
     const tempContainer = this.createChild();
     tempContainer.bind<T>(constructorFunction).toSelf();
     return tempContainer.get<T>(constructorFunction);
@@ -319,7 +319,7 @@ class Container implements Container {
     key?: string | number | symbol,
     value?: unknown
   ): T | T[] {
-    let result: (T | T[]) | null = null;
+    let result: interfaces.MiddlewareResult<T> = null;
 
     const defaultArgs: interfaces.NextArgs = {
       avoidConstraints,
@@ -332,7 +332,7 @@ class Container implements Container {
     };
 
     if (this._middleware) {
-      result = this._middleware(defaultArgs);
+      result = this._middleware(defaultArgs) as interfaces.MiddlewareResult<T>;
       if (result === undefined || result === null) {
         throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
       }

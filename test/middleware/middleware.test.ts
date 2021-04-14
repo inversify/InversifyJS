@@ -32,7 +32,7 @@ describe('Middleware', () => {
     }
 
     container.applyMiddleware(middleware1);
-    const _container: any = container;
+    const _container: unknown = container;
     expect(_container._middleware).not.to.eql(null);
   });
 

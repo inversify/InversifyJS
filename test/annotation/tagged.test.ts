@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(decorators: ClassDecorator[], target: unknown, key?: unknown, desc?: unknown): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from 'chai';

@@ -26,7 +26,7 @@ describe('BindingInWhenOnSyntax', () => {
     const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
     // cast to any to be able to access private props
-    const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
+    const _bindingInWhenOnSyntax: unknown = bindingInWhenOnSyntax;
 
     expect(_bindingInWhenOnSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
   });
@@ -39,7 +39,7 @@ describe('BindingInWhenOnSyntax', () => {
     const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
     // cast to any to be able to access private props
-    const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
+    const _bindingInWhenOnSyntax: unknown = bindingInWhenOnSyntax;
 
     // stubs for BindingWhenSyntax methods
     const inSingletonScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, 'inSingletonScope').returns(null);
@@ -72,7 +72,7 @@ describe('BindingInWhenOnSyntax', () => {
     const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
     // cast to any to be able to access private props
-    const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
+    const _bindingInWhenOnSyntax: unknown = bindingInWhenOnSyntax;
 
     // stubs for BindingWhenSyntax methods
     const whenStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'when').returns(null);
@@ -162,7 +162,7 @@ describe('BindingInWhenOnSyntax', () => {
     const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
     // cast to any to be able to access private props
-    const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
+    const _bindingInWhenOnSyntax: unknown = bindingInWhenOnSyntax;
 
     // stubs for BindingWhenSyntax methods
     const onActivationStub = sinon.stub(_bindingInWhenOnSyntax._bindingOnSyntax, 'onActivation').returns(null);

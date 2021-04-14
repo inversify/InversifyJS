@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AnyMetadataValue } from '../planning/metadata';
+
 export type BindingScope = 'Singleton' | 'Transient' | 'Request';
 
 export type BindingType =
@@ -36,7 +37,9 @@ export interface TargetTypeEnum {
   Variable: TargetType;
 }
 
-export type Newable<T> = new (...args: any[]) => T;
+export type IndexObject = Record<string, unknown>;
+
+export type Newable<T = IndexObject> = new (...args: unknown[]) => T;
 
 export interface Abstract<T> {
   prototype: T;
@@ -58,17 +61,17 @@ export interface Binding<T> extends Clonable<Binding<T>> {
   scope: BindingScope;
   type: BindingType;
   implementationType: Newable<T> | null;
-  factory: FactoryCreator<any> | null;
-  provider: ProviderCreator<any> | null;
+  factory: FactoryCreator<unknown> | null;
+  provider: ProviderCreator<unknown> | null;
   onActivation: ((context: Context, injectable: T) => T) | null;
   cache: T | null;
 }
 
-export type Factory<T> = (...args: any[]) => ((...args: any[]) => T) | T;
+export type Factory<T> = (...args: unknown[]) => ((...args: unknown[]) => T) | T;
 
 export type FactoryCreator<T> = (context: Context) => Factory<T>;
 
-export type Provider<T> = (...args: any[]) => ((...args: any[]) => Promise<T>) | Promise<T>;
+export type Provider<T> = (...args: unknown[]) => ((...args: unknown[]) => Promise<T>) | Promise<T>;
 
 export type ProviderCreator<T> = (context: Context) => Provider<T>;
 
@@ -77,16 +80,18 @@ export interface NextArgs {
   contextInterceptor: (contexts: Context) => Context;
   isMultiInject: boolean;
   targetType: TargetType;
-  serviceIdentifier: ServiceIdentifier<any>;
+  serviceIdentifier: ServiceIdentifier<unknown>;
   key?: string | number | symbol;
-  value?: any;
+  value?: unknown;
 }
 
-export type Next = (args: NextArgs) => any | any[];
+export type Next<T = unknown> = (args: NextArgs) => T | T[];
 
 export type Middleware = (next: Next) => Next;
 
 export type ContextInterceptor = (context: Context) => Context;
+
+export type MiddlewareResult<T> = (T | T[]) | null;
 
 export interface Context {
   id: number;
@@ -103,7 +108,7 @@ export interface ReflectResult {
 
 export interface Metadata {
   key: string | number | symbol;
-  value: any;
+  value: AnyMetadataValue;
 }
 
 export interface Plan {
@@ -119,29 +124,29 @@ export interface QueryableString {
   value(): string;
 }
 
-export type ResolveRequestHandler = (request: Request) => any;
+export type ResolveRequestHandler = (request: Request) => unknown;
 
-export type RequestScope = Map<any, any> | null;
+export type RequestScope = Map<unknown, unknown> | null;
 
 export interface Request {
   id: number;
-  serviceIdentifier: ServiceIdentifier<any>;
+  serviceIdentifier: ServiceIdentifier<unknown>;
   parentContext: Context;
   parentRequest: Request | null;
   childRequests: Request[];
   target: Target;
-  bindings: Binding<any>[];
+  bindings: Binding<IndexObject>[];
   requestScope: RequestScope;
   addChildRequest(
-    serviceIdentifier: ServiceIdentifier<any>,
-    bindings: Binding<any> | Binding<any>[],
+    serviceIdentifier: ServiceIdentifier<unknown>,
+    bindings: Binding<unknown> | Binding<unknown>[],
     target: Target
   ): Request;
 }
 
 export interface Target {
   id: number;
-  serviceIdentifier: ServiceIdentifier<any>;
+  serviceIdentifier: ServiceIdentifier<IndexObject>;
   type: TargetType;
   name: QueryableString;
   metadata: Metadata[];
@@ -149,12 +154,20 @@ export interface Target {
   getCustomTags(): Metadata[] | null;
   hasTag(key: string | number | symbol): boolean;
   isArray(): boolean;
-  matchesArray(name: ServiceIdentifier<any>): boolean;
+  matchesArray(name: ServiceIdentifier<IndexObject>): boolean;
   isNamed(): boolean;
   isTagged(): boolean;
   isOptional(): boolean;
   matchesNamedTag(name: string): boolean;
-  matchesTag(key: string | number | symbol): (value: any) => boolean;
+  matchesTag(key: string | number | symbol): (value: IndexObject) => boolean;
+}
+
+export interface TargetMetadataMap {
+  inject: string | MetadataMap;
+  multiInject: string | MetadataMap;
+  // targetName?: string | MetadataMap;
+  // unmanaged?: string | MetadataMap;
+  // [ key: string ]: string | boolean;
 }
 
 export interface ContainerOptions {
@@ -169,16 +182,16 @@ export interface Container {
   options: ContainerOptions;
   bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
   rebind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
-  unbind(serviceIdentifier: ServiceIdentifier<any>): void;
+  unbind<T = unknown>(serviceIdentifier: ServiceIdentifier<T>): void;
   unbindAll(): void;
-  isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
-  isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
-  isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
+  isBound<T = unknown>(serviceIdentifier: ServiceIdentifier<T>): boolean;
+  isBoundNamed<T = unknown>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): boolean;
+  isBoundTagged<T = unknown>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): boolean;
   get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
   getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
-  getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
+  getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T;
   getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-  getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+  getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T[];
   getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
   resolve<T>(constructorFunction: Newable<T>): T;
   load(...modules: ContainerModule[]): void;
@@ -219,19 +232,19 @@ export type AsyncContainerModuleCallBack = (
 ) => Promise<void>;
 
 export interface ContainerSnapshot {
-  bindings: Lookup<Binding<any>>;
+  bindings: Lookup<Binding<unknown>>;
   middleware: Next | null;
 }
 
 export interface Lookup<T> extends Clonable<Lookup<T>> {
-  add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
-  getMap(): Map<ServiceIdentifier<any>, T[]>;
-  get(serviceIdentifier: ServiceIdentifier<any>): T[];
-  remove(serviceIdentifier: ServiceIdentifier<any>): void;
+  add(serviceIdentifier: ServiceIdentifier<unknown>, value: T): void;
+  getMap(): Map<ServiceIdentifier<unknown>, T[]>;
+  get(serviceIdentifier: ServiceIdentifier<unknown>): T[];
+  remove(serviceIdentifier: ServiceIdentifier<unknown>): void;
   removeByCondition(condition: (item: T) => boolean): void;
-  hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
+  hasKey(serviceIdentifier: ServiceIdentifier<unknown>): boolean;
   clone(): Lookup<T>;
-  traverse(func: (key: ServiceIdentifier<any>, value: T[]) => void): void;
+  traverse(func: (key: ServiceIdentifier<unknown>, value: T[]) => void): void;
 }
 
 export interface BindingOnSyntax<T> {
@@ -242,16 +255,16 @@ export interface BindingWhenSyntax<T> {
   when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
   whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
   whenTargetIsDefault(): BindingOnSyntax<T>;
-  whenTargetTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-  whenInjectedInto(parent: Function | string): BindingOnSyntax<T>;
+  whenTargetTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+  whenInjectedInto(parent: NewableFunction | string): BindingOnSyntax<T>;
   whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
-  whenParentTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-  whenAnyAncestorIs(ancestor: Function | string): BindingOnSyntax<T>;
-  whenNoAncestorIs(ancestor: Function | string): BindingOnSyntax<T>;
+  whenParentTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+  whenAnyAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
+  whenNoAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
   whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-  whenAnyAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
+  whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
   whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-  whenNoAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
+  whenNoAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
   whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
   whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
 }
@@ -267,7 +280,7 @@ export interface BindingInSyntax<T> {
 export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> {}
 
 export interface BindingToSyntax<T> {
-  to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
+  to(constructor: new (...args: unknown[]) => T): BindingInWhenOnSyntax<T>;
   toSelf(): BindingInWhenOnSyntax<T>;
   toConstantValue(value: T): BindingWhenOnSyntax<T>;
   toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
@@ -285,8 +298,8 @@ export interface ConstraintFunction extends Function {
 }
 
 export interface MetadataReader {
-  getConstructorMetadata(constructorFunc: Function): ConstructorMetadata;
-  getPropertiesMetadata(constructorFunc: Function): MetadataMap;
+  getConstructorMetadata(constructorFunc: NewableFunction): ConstructorMetadata;
+  getPropertiesMetadata(constructorFunc: NewableFunction): MetadataMap;
 }
 
 export interface MetadataMap {
@@ -294,6 +307,6 @@ export interface MetadataMap {
 }
 
 export interface ConstructorMetadata {
-  compilerGeneratedMetadata: Function[] | undefined;
+  compilerGeneratedMetadata: NewableFunction[] | undefined;
   userGeneratedMetadata: MetadataMap;
 }

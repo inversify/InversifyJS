@@ -12,7 +12,6 @@ const traverseAncerstors = (request: interfaces.Request, constraint: interfaces.
 };
 
 // This helpers use currying to help you to generate constraints
-
 const taggedConstraint = (key: string | number | symbol) => (value: unknown) => {
   const constraint: interfaces.ConstraintFunction = (request: interfaces.Request | null) =>
     request !== null && request.target !== null && request.target.matchesTag(key)(value);

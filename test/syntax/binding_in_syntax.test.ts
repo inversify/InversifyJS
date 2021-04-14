@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { Binding } from '../../src/bindings/binding';
 import { BindingScopeEnum } from '../../src/constants/literal_types';
+import { interfaces } from '../../src/inversify';
 import { BindingInSyntax } from '../../src/syntax/binding_in_syntax';
 
 describe('BindingInSyntax', () => {
@@ -11,9 +12,9 @@ describe('BindingInSyntax', () => {
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
-    // cast to any to be able to access private props
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const _bindingInSyntax: any = bindingInSyntax;
+    const _bindingInSyntax = bindingInSyntax as unknown as {
+      _binding: { serviceIdentifier: interfaces.Binding<unknown> }
+    };
 
     expect(_bindingInSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
   });

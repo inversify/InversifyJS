@@ -20,7 +20,7 @@ describe('BindingWhenSyntax', () => {
 
     // cast to any to be able to access private props
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const _bindingWhenSyntax: any = bindingWhenSyntax;
+    const _bindingWhenSyntax: unknown = bindingWhenSyntax;
 
     expect(_bindingWhenSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
   });

@@ -17,7 +17,7 @@ class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
 }
 
 describe('Lookup', () => {
-  const invalid: any = null;
+  const invalid: unknown = null;
 
   it('Should throw when invoking get, remove or hasKey with a null key', () => {
     const lookup = new Lookup<any>();
@@ -138,7 +138,7 @@ describe('Lookup', () => {
       return lookup;
     };
 
-    const removeByModule = (expected: any) => (item: interfaces.Binding<any>): boolean => item.moduleId === expected;
+    const removeByModule = (expected: unknown) => (item: interfaces.Binding<any>): boolean => item.moduleId === expected;
 
     const lookup1 = getLookup();
     expect(lookup1.hasKey(warriorId)).to.eql(true);

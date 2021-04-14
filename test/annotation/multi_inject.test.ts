@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(decorators: ClassDecorator[], target: unknown, key?: unknown, desc?: unknown): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from 'chai';
@@ -49,7 +49,7 @@ class InvalidDecoratorUsageWarrior {
 describe('@multiInject', () => {
   it('Should generate metadata for named parameters', () => {
     const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, DecoratedWarrior);
+    const paramsMetadata = Reflect.getMetadata(metadataKey, DecoratedWarrior) as interfaces.MetadataMap;
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument
@@ -97,7 +97,7 @@ describe('@multiInject', () => {
     decorate(multiInject('Weapon'), VanillaJSWarrior, 0);
 
     const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior);
+    const paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior) as interfaces.MetadataMap;
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument

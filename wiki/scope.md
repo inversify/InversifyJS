@@ -3,9 +3,9 @@
 InversifyJS uses transient scope by default but you can also use singleton and request scope:
 
 ```ts
-container.bind<Shuriken>("Shuriken").to(Shuriken).inTransientScope(); // Default
-container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
-container.bind<Shuriken>("Shuriken").to(Shuriken).inRequestScope();
+container.bind<Shuriken>('Shuriken').to(Shuriken).inTransientScope(); // Default
+container.bind<Shuriken>('Shuriken').to(Shuriken).inSingletonScope();
+container.bind<Shuriken>('Shuriken').to(Shuriken).inRequestScope();
 ```
 
 ## About `inSingletonScope`
@@ -14,15 +14,15 @@ There are many available kinds of bindings:
 
 ```ts
 interface BindingToSyntax<T> {
-    to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
-    toSelf(): BindingInWhenOnSyntax<T>;
-    toConstantValue(value: T): BindingWhenOnSyntax<T>;
-    toDynamicValue(func: (context: Context) => T): BindingWhenOnSyntax<T>;
-    toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-    toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
-    toFunction(func: T): BindingWhenOnSyntax<T>;
-    toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
-    toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
+  to(constructor: { new (...args: unknown[]): T }): BindingInWhenOnSyntax<T>;
+  toSelf(): BindingInWhenOnSyntax<T>;
+  toConstantValue(value: T): BindingWhenOnSyntax<T>;
+  toDynamicValue(func: (context: Context) => T): BindingWhenOnSyntax<T>;
+  toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
+  toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
+  toFunction(func: T): BindingWhenOnSyntax<T>;
+  toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
+  toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
 }
 ```
 
@@ -37,10 +37,10 @@ In this group are included the following types of binding:
 
 ```ts
 interface BindingToSyntax<T> {
-    to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
-    toSelf(): BindingInWhenOnSyntax<T>;
-    toConstantValue(value: T): BindingWhenOnSyntax<T>;
-    toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
+  to(constructor: { new (...args: unknown[]): T }): BindingInWhenOnSyntax<T>;
+  toSelf(): BindingInWhenOnSyntax<T>;
+  toConstantValue(value: T): BindingWhenOnSyntax<T>;
+  toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
 }
 ```
 
@@ -56,11 +56,11 @@ In this group are included the following types of binding:
 
 ```ts
 interface BindingToSyntax<T> {
-    toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-    toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
-    toFunction(func: T): BindingWhenOnSyntax<T>;
-    toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
-    toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
+  toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
+  toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
+  toFunction(func: T): BindingWhenOnSyntax<T>;
+  toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
+  toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
 }
 ```
 
@@ -69,15 +69,15 @@ We cannot select the scope of this types of binding because the value to be inje
 For example, the following binding will inject a factory which will always be a singleton.
 
 ```ts
-container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toAutoFactory<Katana>("Katana");
+container.bind<interfaces.Factory<Katana>>('Factory<Katana>').toAutoFactory<Katana>('Katana');
 ```
 
 However, the value returned by the factory may or may not be a singleton:
 
 ```ts
-container.bind<Katana>("Katana").to(Katana).inTransientScope();
+container.bind<Katana>('Katana').to(Katana).inTransientScope();
 // or
-container.bind<Katana>("Katana").to(Katana).inSingletonScope();
+container.bind<Katana>('Katana').to(Katana).inSingletonScope();
 ```
 
 ## About `inRequestScope`

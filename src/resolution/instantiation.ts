@@ -5,8 +5,7 @@ import * as interfaces from '../interfaces/interfaces';
 import { Metadata } from '../planning/metadata';
 
 function _injectProperties(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  instance: any,
+  instance: interfaces.IndexObject,
   childRequests: interfaces.Request[],
   resolveRequest: interfaces.ResolveRequestHandler
 ) {
@@ -27,14 +26,13 @@ function _injectProperties(
   return instance;
 }
 
-function _createInstance(Func: interfaces.Newable<unknown>, injections: Object[]) {
+function _createInstance(Func: interfaces.Newable, injections: unknown[]): interfaces.IndexObject {
   return new Func(...injections);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function _postConstruct(constr: interfaces.Newable<unknown>, result: any): void {
+function _postConstruct(constr: interfaces.Newable<unknown>, result: interfaces.IndexObject): void {
   if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
-    const data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
+    const data = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr) as Metadata;
     try {
       result[data.value]();
     } catch (e) {
@@ -44,10 +42,10 @@ function _postConstruct(constr: interfaces.Newable<unknown>, result: any): void 
 }
 
 function resolveInstance(
-  constr: interfaces.Newable<unknown>,
+  constr: interfaces.Newable<interfaces.IndexObject>,
   childRequests: interfaces.Request[],
   resolveRequest: interfaces.ResolveRequestHandler
-) {
+): interfaces.IndexObject {
   let result = null;
 
   if (childRequests.length > 0) {

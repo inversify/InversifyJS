@@ -3,7 +3,7 @@ import * as METADATA_KEY from '../constants/metadata_keys';
 import { Metadata } from '../planning/metadata';
 
 function postConstruct() {
-  return function (target: Object, propertyKey: string) {
+  return function (target: ClassDecorator, propertyKey: string): void {
     const metadata = new Metadata(METADATA_KEY.POST_CONSTRUCT, propertyKey);
 
     if (Reflect.hasOwnMetadata(METADATA_KEY.POST_CONSTRUCT, target.constructor)) {

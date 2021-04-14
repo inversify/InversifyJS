@@ -15,7 +15,7 @@ describe('BindingToSyntax', () => {
     const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
     // cast to any to be able to access private props
-    const _bindingToSyntax: any = bindingToSyntax;
+    const _bindingToSyntax: unknown = bindingToSyntax;
 
     expect(_bindingToSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
   });
@@ -51,7 +51,7 @@ describe('BindingToSyntax', () => {
     expect(binding.type).eql(BindingTypeEnum.DynamicValue);
     expect(typeof binding.dynamicValue).eql('function');
 
-    const dynamicValueFactory: any = binding.dynamicValue;
+    const dynamicValueFactory: unknown = binding.dynamicValue;
     expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
 
     bindingToSyntax.toConstructor<Ninja>(Ninja);

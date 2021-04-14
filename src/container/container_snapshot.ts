@@ -4,7 +4,10 @@ class ContainerSnapshot implements interfaces.ContainerSnapshot {
   public bindings: interfaces.Lookup<interfaces.Binding<unknown>>;
   public middleware: interfaces.Next | null;
 
-  public static of(bindings: interfaces.Lookup<interfaces.Binding<unknown>>, middleware: interfaces.Next | null) {
+  public static of(
+    bindings: interfaces.Lookup<interfaces.Binding<unknown>>,
+    middleware: interfaces.Next | null
+  ): interfaces.ContainerSnapshot {
     const snapshot = new ContainerSnapshot();
     snapshot.bindings = bindings;
     snapshot.middleware = middleware;
