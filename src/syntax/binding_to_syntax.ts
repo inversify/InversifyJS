@@ -11,7 +11,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     this._binding = binding;
   }
 
-  public to(constructor: new (...args: unknown[]) => T): interfaces.BindingInWhenOnSyntax<T> {
+  public to(
+    constructor: new (...args: unknown[]) => T
+  ): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Instance;
     this._binding.implementationType = constructor;
     return new BindingInWhenOnSyntax<T>(this._binding);
@@ -33,7 +35,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toDynamicValue(func: (context: interfaces.Context) => T): interfaces.BindingInWhenOnSyntax<T> {
+  public toDynamicValue(
+    func: (context: interfaces.Context) => T
+  ): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.DynamicValue;
     this._binding.cache = null;
     this._binding.dynamicValue = func;
@@ -41,13 +45,17 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingInWhenOnSyntax<T>(this._binding);
   }
 
-  public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
+  public toConstructor<T2>(
+    constructor: interfaces.Newable<T2>
+  ): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Constructor;
-    this._binding.implementationType = constructor as unknown as interfaces.Newable<T>;
+    this._binding.implementationType = constructor;
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
+  public toFactory<T2>(
+    factory: interfaces.FactoryCreator<T2>
+  ): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Factory;
     this._binding.factory = factory;
     return new BindingWhenOnSyntax<T>(this._binding);
@@ -63,7 +71,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return bindingWhenOnSyntax;
   }
 
-  public toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T> {
+  public toAutoFactory<T2>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T2>
+  ): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Factory;
     this._binding.factory = (context) => {
       const autofactory = () => context.container.get<T2>(serviceIdentifier);
@@ -72,13 +82,17 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
+  public toProvider<T2>(
+    provider: interfaces.ProviderCreator<T2>
+  ): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Provider;
     this._binding.provider = provider;
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toService(service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>): void {
+  public toService(
+    service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>
+  ): void {
     this.toDynamicValue((context) => context.container.get<T>(service));
   }
 }

@@ -9,7 +9,13 @@ function tagParameter(
   metadata: interfaces.Metadata
 ): void {
   const metadataKey = METADATA_KEY.TAGGED;
-  _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
+  _tagParameterOrProperty(
+    metadataKey,
+    annotationTarget,
+    propertyName,
+    metadata,
+    parameterIndex
+  );
 }
 
 function tagProperty(
@@ -18,7 +24,12 @@ function tagProperty(
   metadata: interfaces.Metadata
 ): void {
   const metadataKey = METADATA_KEY.TAGGED_PROP;
-  _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
+  _tagParameterOrProperty(
+    metadataKey,
+    annotationTarget.constructor,
+    propertyName,
+    metadata
+  );
 }
 
 function _tagParameterOrProperty(
@@ -41,7 +52,10 @@ function _tagParameterOrProperty(
 
   // read metadata if available
   if (Reflect.hasOwnMetadata(metadataKey, annotationTarget)) {
-    paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget) as interfaces.ReflectResult;
+    paramsOrPropertiesMetadata = Reflect.getMetadata(
+      metadataKey,
+      annotationTarget
+    ) as interfaces.ReflectResult;
   }
 
   // get metadata for the decorated parameter by its index
@@ -84,11 +98,21 @@ function decorate(
   parameterIndex?: number | string
 ): void {
   if (typeof parameterIndex === 'number') {
-    _decorate([_param(parameterIndex, decorator as ParameterDecorator)], target);
+    _decorate(
+      [_param(parameterIndex, decorator as ParameterDecorator)],
+      target
+    );
   } else if (typeof parameterIndex === 'string') {
-    Reflect.decorate([decorator as MethodDecorator], target, parameterIndex);
+    Reflect.decorate(
+      [decorator as MethodDecorator],
+      target,
+      parameterIndex
+    );
   } else {
-    _decorate([decorator as ClassDecorator], target);
+    _decorate(
+      [decorator as ClassDecorator],
+      target
+    );
   }
 }
 

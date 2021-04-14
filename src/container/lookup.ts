@@ -14,7 +14,10 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
   }
 
   // adds a new entry to _map
-  public add(serviceIdentifier: interfaces.ServiceIdentifier<unknown>, value: T): void {
+  public add(
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+    value: T
+  ): void {
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
     }
@@ -48,7 +51,9 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
   }
 
   // removes a entry from _map by its key (serviceIdentifier)
-  public remove(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): void {
+  public remove(
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+  ): void {
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
     }
@@ -70,7 +75,9 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
   }
 
   // returns true if _map contains a key (serviceIdentifier)
-  public hasKey(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): boolean {
+  public hasKey(
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+  ): boolean {
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
     }
@@ -90,7 +97,12 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
     return copy;
   }
 
-  public traverse(func: (key: interfaces.ServiceIdentifier<unknown>, value: T[]) => void): void {
+  public traverse(
+    func: (
+      key: interfaces.ServiceIdentifier<unknown>,
+      value: T[]
+    ) => void
+  ): void {
     this._map.forEach((value, key) => {
       func(key, value);
     });

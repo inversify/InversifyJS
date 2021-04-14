@@ -31,7 +31,7 @@ class Container implements Container {
       container2,
       ...container3
     ].map((targetContainer) => getBindingDictionary(targetContainer));
-    const bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>> = getBindingDictionary(container);
+    const bindingDictionary = getBindingDictionary(container);
 
     function copyDictionary(
       origin: interfaces.Lookup<interfaces.Binding<unknown>>,
@@ -108,7 +108,9 @@ class Container implements Container {
     }
   }
 
-  public async loadAsync(...modules: interfaces.AsyncContainerModule[]): Promise<void> {
+  public async loadAsync(
+    ...modules: interfaces.AsyncContainerModule[]
+  ): Promise<void> {
     const getHelpers = this._getContainerModuleHelpersFactory();
 
     for (const currentModule of modules) {
@@ -124,8 +126,9 @@ class Container implements Container {
   }
 
   public unload(...modules: interfaces.ContainerModule[]): void {
-    const conditionFactory = (expected: string | number) => (item: interfaces.Binding<unknown>): boolean =>
-      item.moduleId === expected;
+    const conditionFactory = (expected: string | number) =>
+      (item: interfaces.Binding<unknown>): boolean =>
+        item.moduleId === expected;
 
     modules.forEach((module) => {
       const condition = conditionFactory(module.id);
@@ -134,20 +137,26 @@ class Container implements Container {
   }
 
   // Registers a type binding
-  public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
+  public bind<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>
+  ): interfaces.BindingToSyntax<T> {
     const scope = this.options.defaultScope || BindingScopeEnum.Transient;
     const binding = new Binding<T>(serviceIdentifier, scope);
     this._bindingDictionary.add(serviceIdentifier, binding);
     return new BindingToSyntax<T>(binding);
   }
 
-  public rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
+  public rebind<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>
+  ): interfaces.BindingToSyntax<T> {
     this.unbind(serviceIdentifier);
     return this.bind(serviceIdentifier);
   }
 
   // Removes a type binding from the registry by its key
-  public unbind(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): void {
+  public unbind(
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+  ): void {
     try {
       this._bindingDictionary.remove(serviceIdentifier);
     } catch (e) {
@@ -161,7 +170,9 @@ class Container implements Container {
   }
 
   // Allows to check if there are bindings available for serviceIdentifier
-  public isBound(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): boolean {
+  public isBound(
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+  ): boolean {
     let bound = this._bindingDictionary.hasKey(serviceIdentifier);
     if (!bound && this.parent) {
       bound = this.parent.isBound(serviceIdentifier);
@@ -200,7 +211,9 @@ class Container implements Container {
   }
 
   public snapshot(): void {
-    this._snapshots.push(ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware));
+    this._snapshots.push(
+      ContainerSnapshot.of(this._bindingDictionary.clone(), this._middleware)
+    );
   }
 
   public restore(): void {
@@ -212,18 +225,24 @@ class Container implements Container {
     this._middleware = snapshot.middleware;
   }
 
-  public createChild(containerOptions?: interfaces.ContainerOptions): Container {
+  public createChild(
+    containerOptions?: interfaces.ContainerOptions
+  ): Container {
     const child = new Container(containerOptions || this.options);
     child.parent = this;
     return child;
   }
 
   public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
-    const initial: interfaces.Next = this._middleware ? this._middleware : this._planAndResolve();
+    const initial: interfaces.Next = this._middleware ?
+      this._middleware :
+      this._planAndResolve();
     this._middleware = middlewares.reduce((prev, curr) => curr(prev), initial);
   }
 
-  public applyCustomMetadataReader(metadataReader: interfaces.MetadataReader): void {
+  public applyCustomMetadataReader(
+    metadataReader: interfaces.MetadataReader
+  ): void {
     this._metadataReader = metadataReader;
   }
 
@@ -231,7 +250,12 @@ class Container implements Container {
   // The runtime identifier must be associated with only one binding
   // use getAll when the runtime identifier is associated with multiple bindings
   public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-    return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier) as T;
+    return this._get<T>(
+      false,
+      false,
+      TargetTypeEnum.Variable,
+      serviceIdentifier
+    ) as T;
   }
 
   public getTagged<T>(
@@ -239,17 +263,34 @@ class Container implements Container {
     key: string | number | symbol,
     value: unknown
   ): T {
-    return this._get<T>(false, false, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T;
+    return this._get<T>(
+      false,
+      false,
+      TargetTypeEnum.Variable,
+      serviceIdentifier,
+      key,
+      value
+    ) as T;
   }
 
-  public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
+  public getNamed<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    named: string | number | symbol
+  ): T {
     return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
   // Resolves a dependency by its runtime identifier
   // The runtime identifier can be associated with one or multiple bindings
-  public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-    return this._get<T>(true, true, TargetTypeEnum.Variable, serviceIdentifier) as T[];
+  public getAll<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>
+  ): T[] {
+    return this._get<T>(
+      true,
+      true,
+      TargetTypeEnum.Variable,
+      serviceIdentifier
+    ) as T[];
   }
 
   public getAllTagged<T>(
@@ -257,11 +298,25 @@ class Container implements Container {
     key: string | number | symbol,
     value: unknown
   ): T[] {
-    return this._get<T>(false, true, TargetTypeEnum.Variable, serviceIdentifier, key, value) as T[];
+    return this._get<T>(
+      false,
+      true,
+      TargetTypeEnum.Variable,
+      serviceIdentifier,
+      key,
+      value
+    ) as T[];
   }
 
-  public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
-    return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  public getAllNamed<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    named: string | number | symbol
+  ): T[] {
+    return this.getAllTagged<T>(
+      serviceIdentifier,
+      METADATA_KEY.NAMED_TAG,
+      named
+    );
   }
 
   public resolve<T>(constructorFunction: interfaces.Newable<T>): T {
@@ -271,28 +326,39 @@ class Container implements Container {
   }
 
   private _getContainerModuleHelpersFactory() {
-    const setModuleId = (bindingToSyntax: { _binding: { moduleId: number } }, moduleId: number) => {
+    const setModuleId = (
+      bindingToSyntax: { _binding: { moduleId: number } },
+      moduleId: number
+    ) => {
       bindingToSyntax._binding.moduleId = moduleId;
     };
 
-    const getBindFunction = (moduleId: number) => (serviceIdentifier: interfaces.ServiceIdentifier<unknown>) => {
+    const getBindFunction = (moduleId: number) => (
+      serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+    ) => {
       const _bind = this.bind.bind(this);
       const bindingToSyntax = _bind(serviceIdentifier);
       setModuleId(bindingToSyntax, moduleId);
       return bindingToSyntax;
     };
 
-    const getUnbindFunction = () => (serviceIdentifier: interfaces.ServiceIdentifier<unknown>) => {
+    const getUnbindFunction = () => (
+      serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+    ) => {
       const _unbind = this.unbind.bind(this);
       _unbind(serviceIdentifier);
     };
 
-    const getIsboundFunction = () => (serviceIdentifier: interfaces.ServiceIdentifier<unknown>) => {
+    const getIsboundFunction = () => (
+      serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+    ) => {
       const _isBound = this.isBound.bind(this);
       return _isBound(serviceIdentifier);
     };
 
-    const getRebindFunction = (moduleId: number) => (serviceIdentifier: interfaces.ServiceIdentifier<unknown>) => {
+    const getRebindFunction = (moduleId: number) => (
+      serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+    ) => {
       const _rebind = this.rebind.bind(this);
       const bindingToSyntax = _rebind(serviceIdentifier);
       setModuleId(bindingToSyntax, moduleId);

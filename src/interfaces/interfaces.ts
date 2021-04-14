@@ -67,11 +67,15 @@ export interface Binding<T> extends Clonable<Binding<T>> {
   cache: T | null;
 }
 
-export type Factory<T> = (...args: unknown[]) => ((...args: unknown[]) => T) | T;
+export type Factory<T> = (
+  ...args: unknown[]
+) => ((...args: unknown[]) => T) | T;
 
 export type FactoryCreator<T> = (context: Context) => Factory<T>;
 
-export type Provider<T> = (...args: unknown[]) => ((...args: unknown[]) => Promise<T>) | Promise<T>;
+export type Provider<T> = (
+  ...args: unknown[]
+) => ((...args: unknown[]) => Promise<T>) | Promise<T>;
 
 export type ProviderCreator<T> = (context: Context) => Provider<T>;
 
@@ -159,7 +163,7 @@ export interface Target {
   isTagged(): boolean;
   isOptional(): boolean;
   matchesNamedTag(name: string): boolean;
-  matchesTag(key: string | number | symbol): (value: IndexObject) => boolean;
+  matchesTag(key: string | number | symbol): (value: unknown) => boolean;
 }
 
 export interface TargetMetadataMap {
@@ -185,14 +189,35 @@ export interface Container {
   unbind<T = unknown>(serviceIdentifier: ServiceIdentifier<T>): void;
   unbindAll(): void;
   isBound<T = unknown>(serviceIdentifier: ServiceIdentifier<T>): boolean;
-  isBoundNamed<T = unknown>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): boolean;
-  isBoundTagged<T = unknown>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): boolean;
+  isBoundNamed<T = unknown>(
+    serviceIdentifier: ServiceIdentifier<T>,
+    named: string | number | symbol
+  ): boolean;
+  isBoundTagged<T = unknown>(
+    serviceIdentifier: ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown
+  ): boolean;
   get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-  getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
-  getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T;
+  getNamed<T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+    named: string | number | symbol
+  ): T;
+  getTagged<T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown
+  ): T;
   getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-  getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T[];
-  getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
+  getAllTagged<T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown
+  ): T[];
+  getAllNamed<T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+    named: string | number | symbol
+  ): T[];
   resolve<T>(constructorFunction: Newable<T>): T;
   load(...modules: ContainerModule[]): void;
   loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
@@ -204,9 +229,13 @@ export interface Container {
   createChild(): Container;
 }
 
-export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+export type Bind = <T>(
+  serviceIdentifier: ServiceIdentifier<T>
+) => BindingToSyntax<T>;
 
-export type Rebind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+export type Rebind = <T>(
+  serviceIdentifier: ServiceIdentifier<T>
+) => BindingToSyntax<T>;
 
 export type Unbind = <T>(serviceIdentifier: ServiceIdentifier<T>) => void;
 
@@ -222,7 +251,12 @@ export interface AsyncContainerModule {
   registry: AsyncContainerModuleCallBack;
 }
 
-export type ContainerModuleCallBack = (bind: Bind, unbind: Unbind, isBound: IsBound, rebind: Rebind) => void;
+export type ContainerModuleCallBack = (
+  bind: Bind,
+  unbind: Unbind,
+  isBound: IsBound,
+  rebind: Rebind
+) => void;
 
 export type AsyncContainerModuleCallBack = (
   bind: Bind,
@@ -248,28 +282,48 @@ export interface Lookup<T> extends Clonable<Lookup<T>> {
 }
 
 export interface BindingOnSyntax<T> {
-  onActivation(fn: (context: Context, injectable: T) => T): BindingWhenSyntax<T>;
+  onActivation(
+    fn: (context: Context, injectable: T) => T
+  ): BindingWhenSyntax<T>;
 }
 
 export interface BindingWhenSyntax<T> {
   when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
   whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
   whenTargetIsDefault(): BindingOnSyntax<T>;
-  whenTargetTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+  whenTargetTagged(
+    tag: string | number | symbol,
+    value: unknown
+  ): BindingOnSyntax<T>;
   whenInjectedInto(parent: NewableFunction | string): BindingOnSyntax<T>;
   whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
-  whenParentTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+  whenParentTagged(
+    tag: string | number | symbol,
+    value: unknown
+  ): BindingOnSyntax<T>;
   whenAnyAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
   whenNoAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
   whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-  whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+  whenAnyAncestorTagged(
+    tag: string | number | symbol,
+    value: unknown
+  ): BindingOnSyntax<T>;
   whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-  whenNoAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
-  whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
-  whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+  whenNoAncestorTagged(
+    tag: string | number | symbol,
+    value: unknown
+  ): BindingOnSyntax<T>;
+  whenAnyAncestorMatches(
+    constraint: (request: Request) => boolean
+  ): BindingOnSyntax<T>;
+  whenNoAncestorMatches(
+    constraint: (request: Request) => boolean
+  ): BindingOnSyntax<T>;
 }
 
-export interface BindingWhenOnSyntax<T> extends BindingWhenSyntax<T>, BindingOnSyntax<T> {}
+export interface BindingWhenOnSyntax<T> extends
+  BindingWhenSyntax<T>,
+  BindingOnSyntax<T> { }
 
 export interface BindingInSyntax<T> {
   inSingletonScope(): BindingWhenOnSyntax<T>;
@@ -277,7 +331,9 @@ export interface BindingInSyntax<T> {
   inRequestScope(): BindingWhenOnSyntax<T>;
 }
 
-export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> {}
+export interface BindingInWhenOnSyntax<T>
+  extends BindingInSyntax<T>,
+  BindingWhenOnSyntax<T> { }
 
 export interface BindingToSyntax<T> {
   to(constructor: new (...args: unknown[]) => T): BindingInWhenOnSyntax<T>;
@@ -287,7 +343,9 @@ export interface BindingToSyntax<T> {
   toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
   toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
   toFunction(func: T): BindingWhenOnSyntax<T>;
-  toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
+  toAutoFactory<T2>(
+    serviceIdentifier: ServiceIdentifier<T2>
+  ): BindingWhenOnSyntax<T>;
   toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
   toService(service: ServiceIdentifier<T>): void;
 }

@@ -6,16 +6,24 @@ import * as interfaces from '../interfaces/interfaces';
 import { getFunctionName } from '../utils/serialization';
 import { Target } from './target';
 
-function getDependencies(metadataReader: interfaces.MetadataReader, func: Function): interfaces.Target[] {
+function getDependencies(
+  metadataReader: interfaces.MetadataReader,
+  func: NewableFunction
+): interfaces.Target[] {
   const constructorName = getFunctionName(func);
-  const targets: interfaces.Target[] = getTargets(metadataReader, constructorName, func, false);
+  const targets: interfaces.Target[] = getTargets(
+    metadataReader,
+    constructorName,
+    func,
+    false
+  );
   return targets;
 }
 
 function getTargets(
   metadataReader: interfaces.MetadataReader,
   constructorName: string,
-  func: Function,
+  func: NewableFunction,
   isBaseClass: boolean
 ): interfaces.Target[] {
   const metadata = metadataReader.getConstructorMetadata(func);
@@ -56,7 +64,7 @@ function getConstructorArgsAsTarget(
   index: number,
   isBaseClass: boolean,
   constructorName: string,
-  serviceIdentifiers: Function[] | undefined,
+  serviceIdentifiers: NewableFunction[] | undefined,
   constructorArgsMetadata: interfaces.MetadataMap
 ) {
   // Create map from array of metadata for faster access to metadata
@@ -88,7 +96,11 @@ function getConstructorArgsAsTarget(
       throw new Error(msg);
     }
 
-    const target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIdentifier);
+    const target = new Target(
+      TargetTypeEnum.ConstructorArgument,
+      metadata.targetName,
+      serviceIdentifier
+    );
     target.metadata = targetMetadata;
     return target;
   }
@@ -99,7 +111,7 @@ function getConstructorArgsAsTarget(
 function getConstructorArgsAsTargets(
   isBaseClass: boolean,
   constructorName: string,
-  serviceIdentifiers: Function[] | undefined,
+  serviceIdentifiers: NewableFunction[] | undefined,
   constructorArgsMetadata: interfaces.MetadataMap,
   iterations: number
 ) {
@@ -121,7 +133,10 @@ function getConstructorArgsAsTargets(
   return targets;
 }
 
-function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function) {
+function getClassPropsAsTargets(
+  metadataReader: interfaces.MetadataReader,
+  constructorFunc: NewableFunction
+) {
   const classPropsMetadata = metadataReader.getPropertiesMetadata(constructorFunc);
   let targets: interfaces.Target[] = [];
   const keys = Object.keys(classPropsMetadata);
@@ -140,13 +155,19 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
     const serviceIdentifier = metadata.inject || metadata.multiInject;
 
     // The property target
-    const target = new Target(TargetTypeEnum.ClassProperty, (targetName as string), serviceIdentifier);
+    const target = new Target(
+      TargetTypeEnum.ClassProperty,
+      targetName as string,
+      serviceIdentifier
+    );
     target.metadata = targetMetadata;
     targets.push(target);
   }
 
   // Check if base class has injected properties
-  const baseConstructor = Object.getPrototypeOf(constructorFunc.prototype).constructor;
+  const baseConstructor = Object.getPrototypeOf(
+    constructorFunc.prototype
+  ).constructor;
 
   if (baseConstructor !== Object) {
     const baseTargets = getClassPropsAsTargets(metadataReader, baseConstructor);
@@ -157,18 +178,30 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
   return targets;
 }
 
-function getBaseClassDependencyCount(metadataReader: interfaces.MetadataReader, func: Function): number {
-  const baseConstructor = Object.getPrototypeOf(func.prototype).constructor;
+function getBaseClassDependencyCount(
+  metadataReader: interfaces.MetadataReader,
+  func: NewableFunction)
+  : number {
+  const baseConstructor = Object.getPrototypeOf(
+    func.prototype
+  ).constructor;
 
   if (baseConstructor !== Object) {
     // get targets for base class
     const baseConstructorName = getFunctionName(baseConstructor);
 
-    const targets = getTargets(metadataReader, baseConstructorName, baseConstructor, true);
+    const targets = getTargets(
+      metadataReader,
+      baseConstructorName,
+      baseConstructor,
+      true
+    );
 
     // get unmanaged metadata
     const metadata: unknown[] = targets.map((t: interfaces.Target) =>
-      t.metadata.filter((m: interfaces.Metadata) => m.key === METADATA_KEY.UNMANAGED_TAG)
+      t.metadata.filter(
+        (m: interfaces.Metadata) => m.key === METADATA_KEY.UNMANAGED_TAG
+      )
     );
 
     // Compare the number of constructor arguments with the number of

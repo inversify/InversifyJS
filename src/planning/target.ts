@@ -7,7 +7,8 @@ import { QueryableString } from './queryable_string';
 class Target implements interfaces.Target {
   public id: number;
   public type: interfaces.TargetType;
-  public serviceIdentifier: interfaces.ServiceIdentifier<interfaces.IndexObject>;
+  public serviceIdentifier:
+    interfaces.ServiceIdentifier<interfaces.IndexObject>;
   public name: interfaces.QueryableString;
   public metadata: Metadata[];
 

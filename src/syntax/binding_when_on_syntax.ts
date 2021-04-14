@@ -2,7 +2,9 @@ import * as interfaces from '../interfaces/interfaces';
 import { BindingOnSyntax } from './binding_on_syntax';
 import { BindingWhenSyntax } from './binding_when_syntax';
 
-class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfaces.BindingOnSyntax<T> {
+class BindingWhenOnSyntax<T> implements
+  interfaces.BindingWhenSyntax<T>,
+  interfaces.BindingOnSyntax<T> {
   private _bindingWhenSyntax: interfaces.BindingWhenSyntax<T>;
   private _bindingOnSyntax: interfaces.BindingOnSyntax<T>;
   private _binding: interfaces.Binding<T>;
@@ -13,7 +15,9 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
     this._bindingOnSyntax = new BindingOnSyntax<T>(this._binding);
   }
 
-  public when(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
+  public when(
+    constraint: (request: interfaces.Request) => boolean
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.when(constraint);
   }
 
@@ -25,11 +29,15 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
     return this._bindingWhenSyntax.whenTargetIsDefault();
   }
 
-  public whenTargetTagged(tag: string, value: unknown): interfaces.BindingOnSyntax<T> {
+  public whenTargetTagged(
+    tag: string, value: unknown
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenTargetTagged(tag, value);
   }
 
-  public whenInjectedInto(parent: NewableFunction | string): interfaces.BindingOnSyntax<T> {
+  public whenInjectedInto(
+    parent: NewableFunction | string
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenInjectedInto(parent);
   }
 
@@ -37,15 +45,21 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
     return this._bindingWhenSyntax.whenParentNamed(name);
   }
 
-  public whenParentTagged(tag: string, value: unknown): interfaces.BindingOnSyntax<T> {
+  public whenParentTagged(
+    tag: string, value: unknown
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenParentTagged(tag, value);
   }
 
-  public whenAnyAncestorIs(ancestor: NewableFunction | string): interfaces.BindingOnSyntax<T> {
+  public whenAnyAncestorIs(
+    ancestor: NewableFunction | string
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenAnyAncestorIs(ancestor);
   }
 
-  public whenNoAncestorIs(ancestor: NewableFunction | string): interfaces.BindingOnSyntax<T> {
+  public whenNoAncestorIs(
+    ancestor: NewableFunction | string
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenNoAncestorIs(ancestor);
   }
 
@@ -53,7 +67,9 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
     return this._bindingWhenSyntax.whenAnyAncestorNamed(name);
   }
 
-  public whenAnyAncestorTagged(tag: string, value: unknown): interfaces.BindingOnSyntax<T> {
+  public whenAnyAncestorTagged(
+    tag: string, value: unknown
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenAnyAncestorTagged(tag, value);
   }
 
@@ -61,19 +77,27 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
     return this._bindingWhenSyntax.whenNoAncestorNamed(name);
   }
 
-  public whenNoAncestorTagged(tag: string, value: unknown): interfaces.BindingOnSyntax<T> {
+  public whenNoAncestorTagged(
+    tag: string, value: unknown
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenNoAncestorTagged(tag, value);
   }
 
-  public whenAnyAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
+  public whenAnyAncestorMatches(
+    constraint: (request: interfaces.Request) => boolean
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenAnyAncestorMatches(constraint);
   }
 
-  public whenNoAncestorMatches(constraint: (request: interfaces.Request) => boolean): interfaces.BindingOnSyntax<T> {
+  public whenNoAncestorMatches(
+    constraint: (request: interfaces.Request) => boolean
+  ): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenNoAncestorMatches(constraint);
   }
 
-  public onActivation(handler: (context: interfaces.Context, injectable: T) => T): interfaces.BindingWhenSyntax<T> {
+  public onActivation(handler: (
+    context: interfaces.Context, injectable: T
+  ) => T): interfaces.BindingWhenSyntax<T> {
     return this._bindingOnSyntax.onActivation(handler);
   }
 }

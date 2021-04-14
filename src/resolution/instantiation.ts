@@ -2,7 +2,6 @@ import { POST_CONSTRUCT_ERROR } from '../constants/error_msgs';
 import { TargetTypeEnum } from '../constants/literal_types';
 import * as METADATA_KEY from '../constants/metadata_keys';
 import * as interfaces from '../interfaces/interfaces';
-import { Metadata } from '../planning/metadata';
 
 function _injectProperties(
   instance: interfaces.IndexObject,
@@ -11,7 +10,8 @@ function _injectProperties(
 ) {
   const propertyInjectionsRequests = childRequests.filter(
     (childRequest: interfaces.Request) =>
-      childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ClassProperty
+      childRequest.target !== null &&
+      childRequest.target.type === TargetTypeEnum.ClassProperty
   );
 
   const propertyInjections = propertyInjectionsRequests.map(resolveRequest);
@@ -26,13 +26,17 @@ function _injectProperties(
   return instance;
 }
 
-function _createInstance(Func: interfaces.Newable, injections: unknown[]): interfaces.IndexObject {
+function _createInstance(
+  Func: interfaces.Newable, injections: unknown[]
+): interfaces.IndexObject {
   return new Func(...injections);
 }
 
-function _postConstruct(constr: interfaces.Newable<unknown>, result: interfaces.IndexObject): void {
+function _postConstruct(
+  constr: interfaces.Newable<unknown>, result: interfaces.IndexObject
+): void {
   if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
-    const data = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr) as Metadata;
+    const data = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
     try {
       result[data.value]();
     } catch (e) {
@@ -51,12 +55,14 @@ function resolveInstance(
   if (childRequests.length > 0) {
     const constructorInjectionsRequests = childRequests.filter(
       (childRequest: interfaces.Request) =>
-        childRequest.target !== null && childRequest.target.type === TargetTypeEnum.ConstructorArgument
+        childRequest.target !== null &&
+        childRequest.target.type === TargetTypeEnum.ConstructorArgument
     );
 
-    const constructorInjections = constructorInjectionsRequests.map(resolveRequest);
-
-    result = _createInstance(constr, constructorInjections);
+    result = _createInstance(
+      constr,
+      constructorInjectionsRequests.map(resolveRequest)
+    );
     result = _injectProperties(result, childRequests, resolveRequest);
   } else {
     result = new constr();

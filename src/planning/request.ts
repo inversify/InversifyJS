@@ -15,7 +15,8 @@ class Request implements interfaces.Request {
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     parentContext: interfaces.Context,
     parentRequest: interfaces.Request | null,
-    bindings: interfaces.Binding<interfaces.IndexObject> | interfaces.Binding<interfaces.IndexObject>[],
+    bindings: interfaces.Binding<interfaces.IndexObject> |
+      interfaces.Binding<interfaces.IndexObject>[],
     target: interfaces.Target
   ) {
     this.id = id();
@@ -32,10 +33,17 @@ class Request implements interfaces.Request {
 
   public addChildRequest(
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-    bindings: interfaces.Binding<interfaces.IndexObject> | interfaces.Binding<interfaces.IndexObject>[],
+    bindings: interfaces.Binding<interfaces.IndexObject> |
+      interfaces.Binding<interfaces.IndexObject>[],
     target: interfaces.Target
   ): interfaces.Request {
-    const child = new Request(serviceIdentifier, this.parentContext, this, bindings, target);
+    const child = new Request(
+      serviceIdentifier,
+      this.parentContext,
+      this,
+      bindings,
+      target
+    );
     this.childRequests.push(child);
     return child;
   }

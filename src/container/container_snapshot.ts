@@ -1,8 +1,8 @@
 import * as interfaces from '../interfaces/interfaces';
 
 class ContainerSnapshot implements interfaces.ContainerSnapshot {
-  public bindings: interfaces.Lookup<interfaces.Binding<unknown>>;
-  public middleware: interfaces.Next | null;
+  public bindings!: interfaces.Lookup<interfaces.Binding<unknown>>;
+  public middleware!: interfaces.Next | null;
 
   public static of(
     bindings: interfaces.Lookup<interfaces.Binding<unknown>>,

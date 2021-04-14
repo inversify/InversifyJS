@@ -8,7 +8,9 @@ class BindingOnSyntax<T> implements interfaces.BindingOnSyntax<T> {
     this._binding = binding;
   }
 
-  public onActivation(handler: (context: interfaces.Context, injectable: T) => T): interfaces.BindingWhenSyntax<T> {
+  public onActivation(
+    handler: (context: interfaces.Context, injectable: T) => T
+  ): interfaces.BindingWhenSyntax<T> {
     this._binding.onActivation = handler;
     return new BindingWhenSyntax<T>(this._binding);
   }
