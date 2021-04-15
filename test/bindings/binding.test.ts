@@ -6,7 +6,9 @@ import * as Stubs from '../utils/stubs';
 describe('Binding', () => {
   it('Should set its own properties correctly', () => {
     const fooIdentifier = 'FooInterface';
-    const fooBinding = new Binding<Stubs.FooInterface>(fooIdentifier, BindingScopeEnum.Transient);
+    const fooBinding = new Binding<Stubs.FooInterface>(
+      fooIdentifier, BindingScopeEnum.Transient
+    );
     expect(fooBinding.serviceIdentifier).eql(fooIdentifier);
     expect(fooBinding.implementationType).eql(null);
     expect(fooBinding.cache).eql(null);

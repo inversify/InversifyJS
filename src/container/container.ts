@@ -1,22 +1,28 @@
 import { Binding } from '../bindings/binding';
-import * as ERROR_MSGS from '../constants/error_msgs';
-import { BindingScopeEnum, TargetTypeEnum } from '../constants/literal_types';
-import * as METADATA_KEY from '../constants/metadata_keys';
-import * as interfaces from '../interfaces/interfaces';
+import { BindingToSyntax } from '../syntax/binding_to_syntax';
+import { ContainerSnapshot } from './container_snapshot';
+import { Lookup } from './lookup';
 import { MetadataReader } from '../planning/metadata_reader';
+
 import { createMockRequest, getBindingDictionary, plan } from '../planning/planner';
 import { resolve } from '../resolution/resolver';
-import { BindingToSyntax } from '../syntax/binding_to_syntax';
+
+import { CONTAINER_OPTIONS_MUST_BE_AN_OBJECT, CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE, CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE, CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK, CANNOT_UNBIND, NO_MORE_SNAPSHOTS_AVAILABLE, INVALID_MIDDLEWARE_RETURN } from '../constants/error_msgs';
+import { BindingScopeEnum, TargetTypeEnum } from '../constants/literal_types';
+
 import { id } from '../utils/id';
 import { getServiceIdentifierAsString } from '../utils/serialization';
-import { ContainerSnapshot } from './container_snapshot';
 
-class Container implements Container {
+import * as METADATA_KEY from '../constants/metadata_keys';
+import * as interfaces from '../interfaces/interfaces';
+
+
+class Container implements interfaces.Container {
   public id: number;
   public parent: interfaces.Container | null;
   public readonly options: interfaces.ContainerOptions;
   private _middleware: interfaces.Next | null;
-  private _bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>>;
+  private _bindingDictionary: interfaces.Lookup<interfaces.Binding>;
   private _snapshots: interfaces.ContainerSnapshot[];
   private _metadataReader: interfaces.MetadataReader;
 
@@ -26,7 +32,7 @@ class Container implements Container {
     ...container3: interfaces.Container[]
   ): interfaces.Container {
     const container = new Container();
-    const targetContainers: interfaces.Lookup<interfaces.Binding<unknown>>[] = [
+    const targetContainers = [
       container1,
       container2,
       ...container3
@@ -54,7 +60,7 @@ class Container implements Container {
   public constructor(containerOptions?: interfaces.ContainerOptions) {
     const options = containerOptions || {};
     if (typeof options !== 'object') {
-      throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
+      throw new Error(`${CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
     }
 
     if (options.defaultScope === undefined) {
@@ -64,19 +70,19 @@ class Container implements Container {
       options.defaultScope !== BindingScopeEnum.Transient &&
       options.defaultScope !== BindingScopeEnum.Request
     ) {
-      throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
+      throw new Error(`${CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
     }
 
     if (options.autoBindInjectable === undefined) {
       options.autoBindInjectable = false;
     } else if (typeof options.autoBindInjectable !== 'boolean') {
-      throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
+      throw new Error(`${CONTAINER_OPTIONS_INVALID_AUTO_BIND_INJECTABLE}`);
     }
 
     if (options.skipBaseClassChecks === undefined) {
       options.skipBaseClassChecks = false;
     } else if (typeof options.skipBaseClassChecks !== 'boolean') {
-      throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK}`);
+      throw new Error(`${CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK}`);
     }
 
     this.options = {
@@ -86,7 +92,7 @@ class Container implements Container {
     };
 
     this.id = id();
-    this._bindingDictionary = new Lookup<interfaces.Binding<unknown>>();
+    this._bindingDictionary = new Lookup();
     this._snapshots = [];
     this._middleware = null;
     this.parent = null;
@@ -160,7 +166,9 @@ class Container implements Container {
     try {
       this._bindingDictionary.remove(serviceIdentifier);
     } catch (e) {
-      throw new Error(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+      throw new Error(
+        `${CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`
+      );
     }
   }
 
@@ -219,7 +227,7 @@ class Container implements Container {
   public restore(): void {
     const snapshot = this._snapshots.pop();
     if (snapshot === undefined) {
-      throw new Error(ERROR_MSGS.NO_MORE_SNAPSHOTS_AVAILABLE);
+      throw new Error(NO_MORE_SNAPSHOTS_AVAILABLE);
     }
     this._bindingDictionary = snapshot.bindings;
     this._middleware = snapshot.middleware;
@@ -325,6 +333,11 @@ class Container implements Container {
     return tempContainer.get<T>(constructorFunction);
   }
 
+  public getBindingDictionary<T = unknown>():
+    interfaces.Lookup<interfaces.Binding<T>> {
+    return this._bindingDictionary;
+  }
+
   private _getContainerModuleHelpersFactory() {
     const setModuleId = (
       bindingToSyntax: { _binding: { moduleId: number } },
@@ -399,7 +412,7 @@ class Container implements Container {
     if (this._middleware) {
       result = this._middleware(defaultArgs) as interfaces.MiddlewareResult<T>;
       if (result === undefined || result === null) {
-        throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
+        throw new Error(INVALID_MIDDLEWARE_RETURN);
       }
     } else {
       result = this._planAndResolve<T>()(defaultArgs);

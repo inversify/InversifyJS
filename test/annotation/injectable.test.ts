@@ -5,9 +5,9 @@ import { decorate, injectable, interfaces } from '../../src/inversify';
 
 describe('@injectable', () => {
   it('Should generate metadata if declared injections', () => {
-    class Katana {}
+    class Katana { }
 
-    interface Weapon {}
+    interface Weapon { }
 
     @injectable()
     class Warrior {
@@ -37,14 +37,16 @@ describe('@injectable', () => {
 
   it('Should throw when applied multiple times', () => {
     @injectable()
-    class Test {}
+    class Test { }
 
     const useDecoratorMoreThanOnce = function () {
       decorate(injectable(), Test);
       decorate(injectable(), Test);
     };
 
-    expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
+    expect(useDecoratorMoreThanOnce).to.throw(
+      ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR
+    );
   });
 
   it('Should be usable in VanillaJS applications', () => {
@@ -54,7 +56,10 @@ describe('@injectable', () => {
 
     decorate(injectable(), VanillaJSWarrior);
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior) as interfaces.MetadataMap;
+    const metadata = Reflect.getMetadata(
+      METADATA_KEY.PARAM_TYPES,
+      VanillaJSWarrior
+    ) as interfaces.MetadataMap;
     expect(metadata).to.be.instanceof(Array);
     expect(metadata.length).to.eql(0);
   });

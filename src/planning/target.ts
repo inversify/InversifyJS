@@ -7,15 +7,14 @@ import { QueryableString } from './queryable_string';
 class Target implements interfaces.Target {
   public id: number;
   public type: interfaces.TargetType;
-  public serviceIdentifier:
-    interfaces.ServiceIdentifier<interfaces.IndexObject>;
+  public serviceIdentifier: interfaces.ServiceIdentifier<string | symbol>;
   public name: interfaces.QueryableString;
   public metadata: Metadata[];
 
   public constructor(
     type: interfaces.TargetType,
     name: string,
-    serviceIdentifier: string | symbol,
+    serviceIdentifier: interfaces.ServiceIdentifier<string | symbol>,
     namedOrTagged?: string | Metadata
   ) {
     this.id = id();

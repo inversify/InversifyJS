@@ -36,7 +36,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
   }
 
   // gets the value of a entry by its key (serviceIdentifier)
-  public get(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): T[] {
+  public get(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
     }

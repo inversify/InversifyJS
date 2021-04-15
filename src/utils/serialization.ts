@@ -1,7 +1,9 @@
-import * as ERROR_MSGS from '../constants/error_msgs';
+import { CIRCULAR_DEPENDENCY } from '../constants/error_msgs';
 import * as interfaces from '../interfaces/interfaces';
 
-function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): string {
+function getServiceIdentifierAsString(
+  serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+): string {
   if (typeof serviceIdentifier === 'function') {
     return serviceIdentifier.name;
   } else if (typeof serviceIdentifier === 'symbol') {
@@ -59,9 +61,11 @@ function alreadyDependencyChain(
 }
 
 function dependencyChainToString(request: interfaces.Request) {
-  function _createStringArr(req: interfaces.Request, result: string[] = []): string[] {
-    const serviceIdentifier = getServiceIdentifierAsString(req.serviceIdentifier);
-    result.push(serviceIdentifier);
+  function _createStringArr(
+    req: interfaces.Request,
+    result: string[] = []
+  ): string[] {
+    result.push(getServiceIdentifierAsString(req.serviceIdentifier));
     if (req.parentRequest !== null) {
       return _createStringArr(req.parentRequest, result);
     }
@@ -76,14 +80,17 @@ function circularDependencyToException(request: interfaces.Request): void {
   request.childRequests.forEach((childRequest) => {
     if (alreadyDependencyChain(childRequest, childRequest.serviceIdentifier)) {
       const services = dependencyChainToString(childRequest);
-      throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
+      throw new Error(`${CIRCULAR_DEPENDENCY} ${services}`);
     } else {
       circularDependencyToException(childRequest);
     }
   });
 }
 
-function listMetadataForTarget(serviceIdentifierString: string, target: interfaces.Target): string {
+function listMetadataForTarget(
+  serviceIdentifierString: string,
+  target: interfaces.Target
+): string {
   if (target.isTagged() || target.isNamed()) {
     let m = '';
 
@@ -112,7 +119,7 @@ function getFunctionName(v: NewableFunction): string {
   } else {
     const name = v.toString();
     const match = /^function\s*([^\s(]+)/.exec(name);
-    return match ? match[1] : `Anonymous function: ${name}`;
+    return match ? match?.[1] as string : `Anonymous function: ${name}`;
   }
 }
 

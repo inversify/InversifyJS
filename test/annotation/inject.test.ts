@@ -1,6 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare function __decorate(decorators: ClassDecorator[], target: unknown, key?: unknown, desc?: unknown): void;
-declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
+declare function __decorate(
+  decorators: ClassDecorator[],
+  target: unknown,
+  key?: unknown,
+  desc?: unknown
+): void;
+
+declare function __param(
+  paramIndex: number,
+  decorator: ParameterDecorator
+): ClassDecorator;
 
 import { expect } from 'chai';
 import { decorate } from '../../src/annotation/decorator_utils';
@@ -10,9 +18,9 @@ import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import type * as interfaces from '../../src/interfaces/interfaces';
 
 
-class Katana {}
-class Shuriken {}
-class Sword {}
+class Katana { }
+class Shuriken { }
+class Sword { }
 
 const lazySwordId = new LazyServiceIdentifer(() => 'Sword');
 
@@ -64,7 +72,10 @@ class InvalidDecoratorUsageWarrior {
 describe('@inject', () => {
   it('Should generate metadata for named parameters', () => {
     const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, DecoratedWarrior) as interfaces.MetadataMap;
+    const paramsMetadata = Reflect.getMetadata(
+      metadataKey,
+      DecoratedWarrior
+    ) as interfaces.MetadataMap;
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument
@@ -94,7 +105,13 @@ describe('@inject', () => {
 
   it('Should throw when applied multiple times', () => {
     const useDecoratorMoreThanOnce = function () {
-      __decorate([__param(0, inject('Katana')), __param(0, inject('Shurien'))], InvalidDecoratorUsageWarrior);
+      __decorate(
+        [
+          __param(0, inject('Katana')),
+          __param(0, inject('Shurien'))
+        ],
+        InvalidDecoratorUsageWarrior
+      );
     };
 
     const msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.INJECT_TAG}`;
@@ -107,7 +124,9 @@ describe('@inject', () => {
         [__param(0, inject('Katana'))],
         InvalidDecoratorUsageWarrior.prototype,
         'test',
-        Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, 'test')
+        Object.getOwnPropertyDescriptor(
+          InvalidDecoratorUsageWarrior.prototype, 'test'
+        )
       );
     };
 
@@ -118,7 +137,12 @@ describe('@inject', () => {
   it('Should throw when applied with undefined', () => {
     // this can happen when there is circular dependency between symbols
     const useDecoratorWithUndefined = function () {
-      __decorate([__param(0, inject(undefined as any))], InvalidDecoratorUsageWarrior);
+      __decorate(
+        [
+          __param(0, inject(undefined))
+        ],
+        InvalidDecoratorUsageWarrior
+      );
     };
 
     const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION('InvalidDecoratorUsageWarrior')}`;

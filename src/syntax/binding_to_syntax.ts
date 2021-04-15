@@ -12,7 +12,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
   }
 
   public to(
-    constructor: new (...args: unknown[]) => T
+    constructor: new (...args: never[]) => T
   ): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Instance;
     this._binding.implementationType = constructor;

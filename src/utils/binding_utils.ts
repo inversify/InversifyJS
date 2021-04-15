@@ -1,5 +1,6 @@
 import { interfaces } from '../inversify';
 
+
 export const multiBindToService = (container: interfaces.Container) => (
   service: interfaces.ServiceIdentifier<unknown>
 ) => (...types: interfaces.ServiceIdentifier<unknown>[]): void =>

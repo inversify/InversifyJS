@@ -50,7 +50,7 @@ export interface Clonable<T> {
   clone(): T;
 }
 
-export interface Binding<T> extends Clonable<Binding<T>> {
+export interface Binding<T = unknown> extends Clonable<Binding<T>> {
   id: number;
   moduleId: string;
   activated: boolean;
@@ -138,18 +138,18 @@ export interface Request {
   parentRequest: Request | null;
   childRequests: Request[];
   target: Target;
-  bindings: Binding<IndexObject>[];
+  bindings: Binding<ServiceIdentifier<string | symbol>>[];
   requestScope: RequestScope;
   addChildRequest(
     serviceIdentifier: ServiceIdentifier<unknown>,
-    bindings: Binding<unknown> | Binding<unknown>[],
+    bindings: Binding<ServiceIdentifier<string | symbol>>[],
     target: Target
   ): Request;
 }
 
 export interface Target {
   id: number;
-  serviceIdentifier: ServiceIdentifier<IndexObject>;
+  serviceIdentifier: ServiceIdentifier<string | symbol>;
   type: TargetType;
   name: QueryableString;
   metadata: Metadata[];
@@ -217,6 +217,7 @@ export interface Container {
     serviceIdentifier: ServiceIdentifier<T>,
     named: string | number | symbol
   ): T[];
+  getBindingDictionary<T = unknown>(): Lookup<Binding<T>>
   resolve<T>(constructorFunction: Newable<T>): T;
   load(...modules: ContainerModule[]): void;
   loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
@@ -272,7 +273,7 @@ export interface ContainerSnapshot {
 export interface Lookup<T> extends Clonable<Lookup<T>> {
   add(serviceIdentifier: ServiceIdentifier<unknown>, value: T): void;
   getMap(): Map<ServiceIdentifier<unknown>, T[]>;
-  get(serviceIdentifier: ServiceIdentifier<unknown>): T[];
+  get(serviceIdentifier: ServiceIdentifier<T>): T[];
   remove(serviceIdentifier: ServiceIdentifier<unknown>): void;
   removeByCondition(condition: (item: T) => boolean): void;
   hasKey(serviceIdentifier: ServiceIdentifier<unknown>): boolean;
