@@ -66,10 +66,11 @@ class Target implements interfaces.Target {
     public isTagged(): boolean {
         return this.metadata.some((m) =>
             (m.key !== METADATA_KEY.INJECT_TAG) &&
-                   (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
-                   (m.key !== METADATA_KEY.NAME_TAG) &&
-                   (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
-                   (m.key !== METADATA_KEY.NAMED_TAG));
+            (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
+            (m.key !== METADATA_KEY.NAME_TAG) &&
+            (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
+            (m.key !== METADATA_KEY.NAMED_TAG) &&
+            (m.key !== METADATA_KEY.OPTIONAL_TAG));
     }
 
     public isOptional(): boolean {
