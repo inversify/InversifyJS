@@ -435,12 +435,12 @@ describe("Bugs", () => {
 
     it("Helper getFunctionName should not throw when using an anonymous function", () => {
 
-        const name = getFunctionName(function (options: any) {
-            this.configure(options);
+        const name = getFunctionName(function (options: unknown) {
+            return options;
         });
 
-        expect(name).to.eql("Anonymous function: " + (function (options: any) {
-            this.configure(options);
+        expect(name).to.eql("Anonymous function: " + (function (options: unknown) {
+            return options;
         }).toString());
 
     });
@@ -479,19 +479,23 @@ describe("Bugs", () => {
         function wrongNamedBinding() { container.getAllNamed<Controller>(controllerId, "Wrong"); }
         expect(wrongNamedBinding).to.throw();
 
-        const appControllerNamedRight = container.getAllNamed<Controller>(controllerId, tagA);
+        const appControllerNamedRight = container.getAllNamed<Controller>(controllerId, tagA) as Controller[] & [Controller];
         expect(appControllerNamedRight.length).to.eql(1, "getAllNamed");
         expect(appControllerNamedRight[0].name).to.eql("AppController");
 
         function wrongTaggedBinding() { container.getAllTagged<Controller>(controllerId, "Wrong", "Wrong"); }
         expect(wrongTaggedBinding).to.throw();
 
-        const appControllerTaggedRight = container.getAllTagged<Controller>(controllerId, METADATA_KEY.NAMED_TAG, tagB);
+        const appControllerTaggedRight = container.getAllTagged<Controller>(
+            controllerId, METADATA_KEY.NAMED_TAG, tagB,
+        ) as Controller[] & [Controller];
+
+
         expect(appControllerTaggedRight.length).to.eql(1, "getAllTagged");
         expect(appControllerTaggedRight[0].name).to.eql("AppController2");
 
         const getAppController = () => {
-            const matches = container.getAll<Controller>(controllerId);
+            const matches = container.getAll<Controller>(controllerId) as Controller[] & [Controller, Controller];
             expect(matches.length).to.eql(2);
             expect(matches[0].name).to.eql("AppController");
             expect(matches[1].name).to.eql("AppController2");
@@ -550,7 +554,7 @@ describe("Bugs", () => {
         class Foo {
             public bar: Bar[];
             public constructor(@multiInject(BAR) ...args: Bar[][]) {
-                this.bar = args[0];
+                this.bar = args[0] as Bar[];
             }
         }
 
@@ -559,7 +563,11 @@ describe("Bugs", () => {
         expect(serviceIdentifiers["0"][0].value.toString()).to.be.eql("Symbol(BAR)");
 
         // is the plan correct?
-        const dependencies = getDependencies(new MetadataReader(), Foo);
+        const dependencies = getDependencies(
+            new MetadataReader(),
+            Foo,
+        ) as interfaces.Target[] & [interfaces.Target];
+
         expect(dependencies.length).to.be.eql(1);
         expect(dependencies[0].serviceIdentifier.toString()).to.be.eql("Symbol(BAR)");
 
@@ -570,8 +578,8 @@ describe("Bugs", () => {
         container.bind<Foo>(FOO).to(Foo);
         const foo = container.get<Foo>(FOO);
         expect(foo.bar.length).to.eql(2);
-        expect(foo.bar[0].name).to.eql("bar1");
-        expect(foo.bar[1].name).to.eql("bar2");
+        expect((foo.bar[0] as Bar).name).to.eql("bar1");
+        expect((foo.bar[1]as Bar).name).to.eql("bar2");
 
     });
 
@@ -699,7 +707,7 @@ describe("Bugs", () => {
         abstract class BaseWarrior implements Warrior {
 
             public name: string;
-            public primaryWeapon: Weapon;
+            public primaryWeapon!: Weapon;
 
             public constructor(@unmanaged() name: string) {
                 this.name = name;
@@ -721,7 +729,7 @@ describe("Bugs", () => {
 
             @inject(TYPES.Weapon)
             @tagged(TAGS.Priority, TAGS.Secondary)
-            public secondaryWeapon: Weapon;
+            public secondaryWeapon!: Weapon;
 
             public constructor() {
                 super("Samurai");

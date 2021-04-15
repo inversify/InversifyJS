@@ -17,14 +17,14 @@ describe("Transitive bindings", () => {
 
         @injectable()
         class DatabaseTransactionLog {
-            public time: number;
-            public name: string;
+            public time!: number;
+            public name!: string;
         }
 
         @injectable()
         class TransactionLog {
-            public time: number;
-            public name: string;
+            public time!: number;
+            public name!: string;
         }
 
         const container = new Container();
@@ -58,14 +58,14 @@ describe("Transitive bindings", () => {
 
         @injectable()
         class DatabaseTransactionLog {
-            public time: number;
-            public name: string;
+            public time!: number;
+            public name!: string;
         }
 
         @injectable()
         class TransactionLog {
-            public time: number;
-            public name: string;
+            public time!: number;
+            public name!: string;
         }
 
         const container = new Container();

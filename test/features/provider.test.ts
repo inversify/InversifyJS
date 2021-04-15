@@ -84,8 +84,8 @@ describe("Provider", () => {
 
         @injectable()
         class Katana implements Sword {
-            public material: string;
-            public damage: number;
+            public material!: string;
+            public damage!: number;
         }
 
         type SwordProvider = (material: string, damage: number) => Promise<Sword>;
@@ -131,8 +131,8 @@ describe("Provider", () => {
 
         @injectable()
         class Katana implements Sword {
-            public material: string;
-            public damage: number;
+            public material!: string;
+            public damage!: number;
         }
 
         type SwordProvider = (material: string) => (damage: number) => Promise<Sword>;

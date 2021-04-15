@@ -65,7 +65,7 @@ describe("Request", () => {
           new Target(TargetTypeEnum.ConstructorArgument, "Katana", identifiers.Katana)
       );
 
-      const katanaRequest = ninjaRequest.childRequests[0];
+      const katanaRequest = ninjaRequest.childRequests[0] as interfaces.Request;
 
       expect(katanaRequest.serviceIdentifier).eql(identifiers.Katana);
       expect(katanaRequest.target.name.value()).eql("Katana");

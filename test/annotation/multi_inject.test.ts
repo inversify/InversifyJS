@@ -19,8 +19,8 @@ class DecoratedWarrior {
       @multiInject("Weapon") weapons: Weapon[]
     ) {
 
-        this._primaryWeapon = weapons[0];
-        this._secondaryWeapon = weapons[1];
+        this._primaryWeapon = weapons[0] as Weapon;
+        this._secondaryWeapon = weapons[1] as Weapon;
     }
 
     public mock() {
@@ -37,8 +37,8 @@ class InvalidDecoratorUsageWarrior {
     public constructor(
       weapons: Weapon[]
     ) {
-          this._primaryWeapon = weapons[0];
-          this._secondaryWeapon = weapons[1];
+          this._primaryWeapon = weapons[0] as Weapon;
+          this._secondaryWeapon = weapons[1] as Weapon;
     }
 
     public test(a: string) { /*...*/ }

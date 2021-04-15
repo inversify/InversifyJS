@@ -9,7 +9,7 @@ describe("@postConstruct", () => {
 
     it("Should generate metadata for the decorated method", () => {
         class Katana {
-            private useMessage: string;
+            private useMessage!: string;
 
             public use() {
                 return "Used Katana!";

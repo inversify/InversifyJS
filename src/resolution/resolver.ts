@@ -56,7 +56,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             return undefined;
         }
 
-        const binding = bindings[0];
+        const binding = bindings[0] as interfaces.Binding<any>;
         const isSingleton = binding.scope === BindingScopeEnum.Singleton;
         const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 

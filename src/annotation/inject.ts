@@ -18,7 +18,7 @@ export class LazyServiceIdentifer<T = any> {
 }
 
 function inject(serviceIdentifier: ServiceIdentifierOrFunc) {
-  return function(target: any, targetKey: string, index?: number | PropertyDescriptor): void {
+  return function(target: any, targetKey: string | symbol, index?: number | PropertyDescriptor): void {
     if (serviceIdentifier === undefined) {
       throw new Error(UNDEFINED_INJECT_ANNOTATION(target.name));
     }

@@ -5,7 +5,7 @@ import { id } from "../utils/id";
 class Binding<T> implements interfaces.Binding<T> {
 
     public id: number;
-    public moduleId: string;
+    public moduleId!: string;
 
     // Determines weather the bindings has been already activated
     // The activation action takes place when an instance is resolved
@@ -37,7 +37,7 @@ class Binding<T> implements interfaces.Binding<T> {
     public provider: interfaces.ProviderCreator<T> | null;
 
     // A constraint used to limit the contexts in which this binding is applicable
-    public constraint: (request: interfaces.Request) => boolean;
+    public constraint: (request: interfaces.Request | null) => boolean;
 
     // On activation handler (invoked just before an instance is added to cache and injected)
     public onActivation: ((context: interfaces.Context, injectable: T) => T) | null;
@@ -48,7 +48,7 @@ class Binding<T> implements interfaces.Binding<T> {
         this.serviceIdentifier = serviceIdentifier;
         this.scope = scope;
         this.type = BindingTypeEnum.Invalid;
-        this.constraint = (request: interfaces.Request) => true;
+        this.constraint = (request: interfaces.Request | null) => true;
         this.implementationType = null;
         this.cache = null;
         this.factory = null;

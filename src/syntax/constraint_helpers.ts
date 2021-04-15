@@ -36,12 +36,12 @@ const typeConstraint = (type: (Function | string)) => (request: interfaces.Reque
     let binding: interfaces.Binding<any> | null = null;
 
     if (request !== null) {
-        binding = request.bindings[0];
+        binding = request.bindings[0] as interfaces.Binding<any>;
         if (typeof type === "string") {
             const serviceIdentifier = binding.serviceIdentifier;
             return serviceIdentifier === type;
         } else {
-            const constructor = request.bindings[0].implementationType;
+            const constructor = (request.bindings[0] as interfaces.Binding<any>).implementationType;
             return type === constructor;
         }
     }

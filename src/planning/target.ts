@@ -78,7 +78,9 @@ class Target implements interfaces.Target {
 
     public getNamedTag(): interfaces.Metadata | null {
         if (this.isNamed()) {
-            return this.metadata.filter((m) => m.key === METADATA_KEY.NAMED_TAG)[0];
+            return this.metadata.filter(
+                (m) => m.key === METADATA_KEY.NAMED_TAG,
+            )[0] as interfaces.Metadata;
         }
         return null;
     }

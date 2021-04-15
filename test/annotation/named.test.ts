@@ -86,7 +86,7 @@ describe("@named", () => {
 
     class Warrior {
       @named("throwable")
-      public weapon: Weapon;
+      public weapon!: Weapon;
     }
 
     const metadataKey = METADATA_KEY.TAGGED_PROP;

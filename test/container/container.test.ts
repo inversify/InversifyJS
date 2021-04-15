@@ -436,12 +436,12 @@ describe("Container", () => {
         container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetNamed("es");
         container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetNamed("es");
 
-        const fr = container.getAllNamed<Intl>("Intl", "fr");
+        const fr = container.getAllNamed<Intl>("Intl", "fr") as Intl[] & [Intl, Intl];
         expect(fr.length).to.equal(2);
         expect(fr[0].hello).to.equal("bonjour");
         expect(fr[1].goodbye).to.equal("au revoir");
 
-        const es = container.getAllNamed<Intl>("Intl", "es");
+        const es = container.getAllNamed<Intl>("Intl", "es") as Intl[] & [Intl, Intl];
         expect(es.length).to.equal(2);
         expect(es[0].hello).to.equal("hola");
         expect(es[1].goodbye).to.equal("adios");
@@ -461,12 +461,12 @@ describe("Container", () => {
         container.bind<Intl>("Intl").toConstantValue({ hello: "hola" }).whenTargetTagged("lang", "es");
         container.bind<Intl>("Intl").toConstantValue({ goodbye: "adios" }).whenTargetTagged("lang", "es");
 
-        const fr = container.getAllTagged<Intl>("Intl", "lang", "fr");
+        const fr = container.getAllTagged<Intl>("Intl", "lang", "fr") as Intl[] & [Intl, Intl];;
         expect(fr.length).to.equal(2);
         expect(fr[0].hello).to.equal("bonjour");
         expect(fr[1].goodbye).to.equal("au revoir");
 
-        const es = container.getAllTagged<Intl>("Intl", "lang", "es");
+        const es = container.getAllTagged<Intl>("Intl", "lang", "es") as Intl[] & [Intl, Intl];;
         expect(es.length).to.equal(2);
         expect(es[0].hello).to.equal("hola");
         expect(es[1].goodbye).to.equal("adios");

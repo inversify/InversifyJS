@@ -114,10 +114,7 @@ function _validateActiveBindingCount(
             }
 
         case BindingCount.OnlyOneBindingAvailable:
-            if (!target.isArray()) {
-                return bindings;
-            }
-
+            return bindings;
         case BindingCount.MultipleBindingsAvailable:
         default:
             if (!target.isArray()) {

@@ -25,7 +25,7 @@ describe("Custom Metadata Reader", () => {
                 injections.forEach((injection, index) => {
                     const metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);
                     if (Array.isArray(userGeneratedMetadata[index])) {
-                        userGeneratedMetadata[index].push(metadata);
+                        (userGeneratedMetadata[index] as interfaces.Metadata[]).push(metadata);
                     } else {
                         userGeneratedMetadata[index] = [metadata];
                     }
@@ -59,7 +59,7 @@ describe("Custom Metadata Reader", () => {
                 injections.forEach((propInjection, index) => {
                     const metadata = new Metadata(METADATA_KEY.INJECT_TAG, propInjection.injection);
                     if (Array.isArray(userGeneratedMetadata[propInjection.propName])) {
-                        userGeneratedMetadata[propInjection.propName].push(metadata);
+                        (userGeneratedMetadata[propInjection.propName] as interfaces.Metadata[]).push(metadata);
                     } else {
                         userGeneratedMetadata[propInjection.propName] = [metadata];
                     }
@@ -190,8 +190,8 @@ describe("Custom Metadata Reader", () => {
 
             public static readonly __brk = 1; // TEMP
 
-            private _katana: Katana;
-            private _shuriken: Shuriken;
+            private _katana!: Katana;
+            private _shuriken!: Shuriken;
             public fight() { return this._katana.hit(); }
             public sneak() { return this._shuriken.throw(); }
 
@@ -289,27 +289,42 @@ describe("Custom Metadata Reader", () => {
         expect(Array.isArray(constructorMetadataLog)).eq(true);
         expect(constructorMetadataLog.length).eq(3);
 
-        const compilerGeneratedMetadata0 = constructorMetadataLog[0].compilerGeneratedMetadata;
+        const constructorMetadataLogFirstElement = constructorMetadataLog[0] as interfaces.ConstructorMetadata;
+        const constructorMetadataLogSecondElement = constructorMetadataLog[1] as interfaces.ConstructorMetadata;
+        const constructorMetadataLogThirdElement = constructorMetadataLog[2] as interfaces.ConstructorMetadata;
+
+        const compilerGeneratedMetadata0 = constructorMetadataLogFirstElement.compilerGeneratedMetadata;
 
         if (compilerGeneratedMetadata0) {
             expect(compilerGeneratedMetadata0[0]).eq(Katana);
             expect(compilerGeneratedMetadata0[1]).eq(Shuriken);
         }
 
-        expect(constructorMetadataLog[0].userGeneratedMetadata["0"][0].key).eq("inject");
-        expect(constructorMetadataLog[0].userGeneratedMetadata["0"][0].value).eq("Katana");
-        expect(constructorMetadataLog[0].userGeneratedMetadata["1"][0].key).eq("inject");
-        expect(constructorMetadataLog[0].userGeneratedMetadata["1"][0].value).eq("Shuriken");
+        const userGeneratedMetadataFirstElement =
+            constructorMetadataLogFirstElement.userGeneratedMetadata["0"] as interfaces.Metadata[];
 
-        expect(JSON.stringify(constructorMetadataLog[1].compilerGeneratedMetadata)).eq(JSON.stringify([]));
-        expect(JSON.stringify(constructorMetadataLog[2].compilerGeneratedMetadata)).eq(JSON.stringify([]));
-        expect(JSON.stringify(constructorMetadataLog[1].userGeneratedMetadata)).eq(JSON.stringify({}));
-        expect(JSON.stringify(constructorMetadataLog[2].userGeneratedMetadata)).eq(JSON.stringify({}));
+        const userGeneratedMetadataSecondElement =
+            constructorMetadataLogFirstElement.userGeneratedMetadata["1"] as interfaces.Metadata[];
+
+        expect((userGeneratedMetadataFirstElement[0] as interfaces.Metadata).key).eq("inject");
+        expect((userGeneratedMetadataFirstElement[0] as interfaces.Metadata).value).eq("Katana");
+        expect((userGeneratedMetadataSecondElement[0] as interfaces.Metadata).key).eq("inject");
+        expect((userGeneratedMetadataSecondElement[0] as interfaces.Metadata).value).eq("Shuriken");
+
+        expect(JSON.stringify(constructorMetadataLogSecondElement.compilerGeneratedMetadata)).eq(JSON.stringify([]));
+        expect(JSON.stringify(constructorMetadataLogThirdElement.compilerGeneratedMetadata)).eq(JSON.stringify([]));
+        expect(JSON.stringify(constructorMetadataLogSecondElement.userGeneratedMetadata)).eq(JSON.stringify({}));
+        expect(JSON.stringify(constructorMetadataLogThirdElement.userGeneratedMetadata)).eq(JSON.stringify({}));
 
         expect(propertyMetadataLog.length).eq(3);
-        expect(propertyMetadataLog[0].length).eq(0);
-        expect(propertyMetadataLog[1].length).eq(0);
-        expect(propertyMetadataLog[2].length).eq(0);
+
+        const getLength = (metadata: interfaces.MetadataMap) => {
+            return (metadata as unknown as { length: number }).length
+        }
+
+        expect(getLength(propertyMetadataLog[0] as interfaces.MetadataMap)).eq(0);
+        expect(getLength(propertyMetadataLog[1] as interfaces.MetadataMap)).eq(0);
+        expect(getLength(propertyMetadataLog[2] as interfaces.MetadataMap)).eq(0);
 
     });
 

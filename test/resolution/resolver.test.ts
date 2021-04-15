@@ -175,7 +175,7 @@ describe("Resolve", () => {
       const bindingDictionary = getBindingDictionary(container);
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      const katanaBinding = bindingDictionary.get(katanaId)[0];
+      const katanaBinding = bindingDictionary.get(katanaId)[0] as interfaces.Binding<any>;
       expect(katanaBinding.cache === null).eql(true);
       expect(katanaBinding.activated).eql(false);
 
@@ -232,7 +232,7 @@ describe("Resolve", () => {
           resolve(context);
       };
 
-      expect(context.plan.rootRequest.bindings[0].type).eql(BindingTypeEnum.Invalid);
+      expect((context.plan.rootRequest.bindings[0] as interfaces.Binding<any>).type).eql(BindingTypeEnum.Invalid);
       expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
 
   });
@@ -298,7 +298,7 @@ describe("Resolve", () => {
 
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      const katanaBinding = getBindingDictionary(container).get(katanaId)[0];
+      const katanaBinding = getBindingDictionary(container).get(katanaId)[0] as interfaces.Binding<any>;
       expect(katanaBinding.activated).eql(false);
 
       const ninja = resolve<Ninja>(context);
@@ -854,8 +854,8 @@ describe("Resolve", () => {
           public constructor(
               @multiInject("Weapon") @targetName("weapons") weapons: Weapon[]
           ) {
-              this.katana = weapons[0];
-              this.shuriken = weapons[1];
+              this.katana = weapons[0] as Weapon;
+              this.shuriken = weapons[1] as Weapon;
           }
       }
 
@@ -1012,7 +1012,7 @@ describe("Resolve", () => {
 
       container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
 
-      const katanaFactoryBinding = getBindingDictionary(container).get(katanaFactoryId)[0];
+      const katanaFactoryBinding = getBindingDictionary(container).get(katanaFactoryId)[0] as interfaces.Binding<any>;
       expect(katanaFactoryBinding.activated).eql(false);
 
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
@@ -1038,7 +1038,7 @@ describe("Resolve", () => {
 
         @injectable()
         class Katana implements Sword {
-            private useMessage: string;
+            private useMessage!: string;
 
             public use() {
                 return this.useMessage;
@@ -1100,7 +1100,7 @@ describe("Resolve", () => {
 
         @injectable()
         abstract class Sword implements Weapon {
-            protected useMessage: string;
+            protected useMessage!: string;
 
             @postConstruct()
             public postConstruct () {

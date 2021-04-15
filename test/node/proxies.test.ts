@@ -37,7 +37,7 @@ describe("InversifyJS", () => {
         container.bind<Warrior>(warriorId).to(Ninja);
         const log: string[] = [];
 
-        container.bind<Weapon>(weaponId).to(Katana).onActivation((context: interfaces.Context, katana: Katana) => {
+        container.bind<Weapon>(weaponId).to(Katana).onActivation((context: interfaces.Context, weapon: Weapon) => {
             const handler = {
                 apply(target: any, thisArgument: any, argumentsList: any[]) {
                     log.push(`Starting: ${new Date().getTime()}`);
@@ -46,16 +46,16 @@ describe("InversifyJS", () => {
                     return result;
                 }
             };
-            katana.use = new Proxy(katana.use, handler);
-            return katana;
+            weapon.use = new Proxy(weapon.use, handler);
+            return weapon;
         });
 
         const ninja = container.get<Warrior>(warriorId);
         ninja.weapon.use();
 
         expect(log.length).eql(2);
-        expect(log[0].indexOf("Starting: ")).not.to.eql(-1);
-        expect(log[1].indexOf("Finished: ")).not.to.eql(-1);
+        expect((log[0] as string).indexOf("Starting: ")).not.to.eql(-1);
+        expect((log[1] as string).indexOf("Finished: ")).not.to.eql(-1);
 
     });
 

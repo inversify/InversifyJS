@@ -16,22 +16,26 @@ describe("Target", () => {
 
     it("Should be able to create instances of named targets", () => {
         const target = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana", "primary");
+        const targetFirstMetadata = target.metadata[0] as Metadata;
+
         expect(target.serviceIdentifier).to.be.eql("Katana");
         expect(target.name.value()).to.be.eql("katana");
         expect(Array.isArray(target.metadata)).to.be.eql(true);
         expect(target.metadata.length).to.be.eql(1);
-        expect(target.metadata[0].key).to.be.eql(METADATA_KEY.NAMED_TAG);
-        expect(target.metadata[0].value).to.be.eql("primary");
+        expect(targetFirstMetadata.key).to.be.eql(METADATA_KEY.NAMED_TAG);
+        expect(targetFirstMetadata.value).to.be.eql("primary");
     });
 
     it("Should be able to create instances of tagged targets", () => {
         const target = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Katana", new Metadata("power", 5));
+        const targetFirstMetadata = target.metadata[0] as Metadata;
+
         expect(target.serviceIdentifier).to.be.eql("Katana");
         expect(target.name.value()).to.be.eql("katana");
         expect(Array.isArray(target.metadata)).to.be.eql(true);
         expect(target.metadata.length).to.be.eql(1);
-        expect(target.metadata[0].key).to.be.eql("power");
-        expect(target.metadata[0].value).to.be.eql(5);
+        expect(targetFirstMetadata.key).to.be.eql("power");
+        expect(targetFirstMetadata.value).to.be.eql(5);
     });
 
     it("Should be able to identify named metadata", () => {

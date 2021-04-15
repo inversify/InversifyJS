@@ -38,7 +38,7 @@ describe("Property Injection", () => {
         class Samurai implements Warrior {
             public name: string;
             @inject(TYPES.Weapon)
-            public weapon: Weapon;
+            public weapon!: Weapon;
             public constructor() {
                 this.name = "Samurai";
             }
@@ -101,7 +101,7 @@ describe("Property Injection", () => {
 
             @inject(TYPES.Weapon)
             @named(TAGS.Secondary)
-            public secondaryWeapon: Weapon;
+            public secondaryWeapon!: Weapon;
 
             public constructor(
                 @inject(TYPES.Weapon) @named(TAGS.Primary) weapon: Weapon
@@ -170,11 +170,11 @@ describe("Property Injection", () => {
 
             @inject(TYPES.Weapon)
             @named(TAGS.Primary)
-            public primaryWeapon: Weapon;
+            public primaryWeapon!: Weapon;
 
             @inject(TYPES.Weapon)
             @named(TAGS.Secondary)
-            public secondaryWeapon: Weapon;
+            public secondaryWeapon!: Weapon;
 
             public constructor() {
                 this.name = "Samurai";
@@ -241,11 +241,11 @@ describe("Property Injection", () => {
 
             @inject(TYPES.Weapon)
             @tagged(TAGS.Priority, TAGS.Primary)
-            public primaryWeapon: Weapon;
+            public primaryWeapon!: Weapon;
 
             @inject(TYPES.Weapon)
             @tagged(TAGS.Priority, TAGS.Secondary)
-            public secondaryWeapon: Weapon;
+            public secondaryWeapon!: Weapon;
 
             public constructor() {
                 this.name = "Samurai";
@@ -304,7 +304,7 @@ describe("Property Injection", () => {
             public name: string;
 
             @multiInject(TYPES.Weapon)
-            public weapons: Weapon[];
+            public weapons!: Weapon[];
 
             public constructor() {
                 this.name = "Samurai";
@@ -319,9 +319,9 @@ describe("Property Injection", () => {
         const warrior = container.get<Warrior>(TYPES.Warrior);
         expect(warrior.name).to.eql("Samurai");
         expect(warrior.weapons[0]).not.to.eql(undefined);
-        expect(warrior.weapons[0].name).to.eql("Katana");
+        expect((warrior.weapons[0] as Weapon).name).to.eql("Katana");
         expect(warrior.weapons[1]).not.to.eql(undefined);
-        expect(warrior.weapons[1].name).to.eql("Shuriken");
+        expect((warrior.weapons[1] as Weapon).name).to.eql("Shuriken");
 
     });
 
@@ -370,7 +370,7 @@ describe("Property Injection", () => {
 
             @inject(TYPES.Weapon)
             @tagged(TAGS.Priority, TAGS.Primary)
-            public primaryWeapon: Weapon;
+            public primaryWeapon!: Weapon;
 
             public constructor(@unmanaged() name: string) {
                 this.name = name;
@@ -382,7 +382,7 @@ describe("Property Injection", () => {
 
             @inject(TYPES.Weapon)
             @tagged(TAGS.Priority, TAGS.Secondary)
-            public secondaryWeapon: Weapon;
+            public secondaryWeapon!: Weapon;
 
             public constructor() {
                 super("Samurai");
@@ -418,7 +418,7 @@ describe("Property Injection", () => {
         class Router {
 
             @inject(TYPES.Route) @optional()
-            private route: Route;
+            private route!: Route;
 
             public getRoute(): Route {
                 return this.route;

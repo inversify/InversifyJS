@@ -4,7 +4,7 @@ import { interfaces } from "../interfaces/interfaces";
 
 function tagParameter(
     annotationTarget: any,
-    propertyName: string,
+    propertyName: string | symbol,
     parameterIndex: number,
     metadata: interfaces.Metadata
 ) {
@@ -14,7 +14,7 @@ function tagParameter(
 
 function tagProperty(
     annotationTarget: any,
-    propertyName: string,
+    propertyName: string | symbol,
     metadata: interfaces.Metadata
 ) {
     const metadataKey = METADATA_KEY.TAGGED_PROP;
@@ -24,14 +24,14 @@ function tagProperty(
 function _tagParameterOrProperty(
     metadataKey: string,
     annotationTarget: any,
-    propertyName: string,
+    propertyName: string | symbol,
     metadata: interfaces.Metadata,
     parameterIndex?: number
 ) {
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
     const isParameterDecorator = (typeof parameterIndex === "number");
-    const key: string = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
+    const key = ((parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName) as string;
 
     // if the decorator is used as a parameter decorator, the property name must be provided
     if (isParameterDecorator && propertyName !== undefined) {
@@ -44,7 +44,8 @@ function _tagParameterOrProperty(
     }
 
     // get metadata for the decorated parameter by its index
-    let paramOrPropertyMetadata: interfaces.Metadata[] = paramsOrPropertiesMetadata[key];
+    let paramOrPropertyMetadata: interfaces.Metadata[] =
+        paramsOrPropertiesMetadata[key] as interfaces.Metadata[];
 
     if (!Array.isArray(paramOrPropertyMetadata)) {
         paramOrPropertyMetadata = [];
