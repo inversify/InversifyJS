@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x, 15.x]
-        ts-project: [tsconfig.json, tsconfig-es6.json]
+        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
 
     env:
       TS_NODE_PROJECT: ${{ matrix.ts-project }}
