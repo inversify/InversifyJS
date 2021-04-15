@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Upgrade information for v4.x to v5.x
 
+### Fixed
+- Fix injection on optional properties when targeting ES6 #928
+
 ## [5.0.1] - 2018-10-17
 ### Added 
 - Updating constructor injection wiki document with concrete injection example #922
