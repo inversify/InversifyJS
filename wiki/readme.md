@@ -23,6 +23,7 @@ Welcome to the InversifyJS wiki!
 - [Injecting a class constructor](./constructor_injection.md)
 - [Injecting a Factory](./factory_injection.md)
 - [Auto factory](./auto_factory.md)
+- [Auto named factory](./auto_named_factory.md)
 - [Injecting a Provider (asynchronous Factory)](./provider_injection.md)
 - [Activation handler](./activation_handler.md)
 - [Post Construct decorator](./post_construct.md)
