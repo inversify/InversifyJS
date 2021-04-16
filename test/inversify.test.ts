@@ -89,7 +89,7 @@ describe("InversifyJS", () => {
         @injectable()
         class Ninja {
 
-            private _shuriken: Shuriken;
+            private _shuriken!: Shuriken;
             @inject(Shuriken)
             public set Shuriken(shuriken: Shuriken) {
                 this._shuriken = shuriken;
@@ -846,7 +846,7 @@ describe("InversifyJS", () => {
         class SparkPlugs implements SparkPlugs { }
 
         class Engine {
-            public displacement: number | null;
+            public displacement!: number | null;
         }
 
         @injectable()
@@ -1069,8 +1069,8 @@ describe("InversifyJS", () => {
                 public katana: Weapon;
                 public shuriken: Weapon;
                 public constructor(@multiInject(weaponId) weapons: Weapon[]) {
-                    this.katana = weapons[0];
-                    this.shuriken = weapons[1];
+                    this.katana = weapons[0] as Weapon;
+                    this.shuriken = weapons[1] as Weapon;
                 }
             }
 
@@ -1154,8 +1154,8 @@ describe("InversifyJS", () => {
                 public constructor(
                     @multiInject("Ninja") ninja: Ninja[]
                 ) {
-                    this.ninjaMaster = ninja[0];
-                    this.student = ninja[1];
+                    this.ninjaMaster = ninja[0] as Ninja;
+                    this.student = ninja[1] as Ninja;
                 }
             }
 
@@ -1243,8 +1243,8 @@ describe("InversifyJS", () => {
                 public constructor(
                     @multiInject(warriorId) ninjas: Ninja[]
                 ) {
-                    this.ninjaMaster = ninjas[0];
-                    this.student = ninjas[1];
+                    this.ninjaMaster = ninjas[0] as Ninja;
+                    this.student = ninjas[1] as Ninja;
                 }
             }
 
@@ -1275,10 +1275,12 @@ describe("InversifyJS", () => {
             const ninjaOrganisation = container.get<Organisation>(organisationId);
 
             for (let i = 0; i < 2; i++) {
-                expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
-                expect(ninjaOrganisation.schools[i].ninjaMaster.sneak()).eql("hit!");
-                expect(ninjaOrganisation.schools[i].student.fight()).eql("cut!");
-                expect(ninjaOrganisation.schools[i].student.sneak()).eql("hit!");
+                const ithNinjaOrganizationSchool = ninjaOrganisation.schools[i] as School;
+
+                expect(ithNinjaOrganizationSchool.ninjaMaster.fight()).eql("cut!");
+                expect(ithNinjaOrganizationSchool.ninjaMaster.sneak()).eql("hit!");
+                expect(ithNinjaOrganizationSchool.student.fight()).eql("cut!");
+                expect(ithNinjaOrganizationSchool.student.sneak()).eql("hit!");
             }
 
         });
@@ -1289,7 +1291,7 @@ describe("InversifyJS", () => {
 
             @injectable()
             class Weapon {
-                public name: string;
+                public name!: string;
             }
 
             @injectable()
@@ -1313,8 +1315,8 @@ describe("InversifyJS", () => {
                 public katana: Weapon;
                 public shuriken: Weapon;
                 public constructor(@multiInject(Weapon) weapons: Weapon[]) {
-                    this.katana = weapons[0];
-                    this.shuriken = weapons[1];
+                    this.katana = weapons[0] as Weapon;
+                    this.shuriken = weapons[1] as Weapon;
                 }
             }
 
@@ -1380,8 +1382,8 @@ describe("InversifyJS", () => {
                 public constructor(
                     @multiInject(Ninja) ninja: Ninja[]
                 ) {
-                    this.ninjaMaster = ninja[0];
-                    this.student = ninja[1];
+                    this.ninjaMaster = ninja[0] as Ninja;
+                    this.student = ninja[1] as Ninja;
                 }
             }
 
@@ -1444,8 +1446,8 @@ describe("InversifyJS", () => {
                 public constructor(
                     @multiInject(Ninja) ninjas: Ninja[]
                 ) {
-                    this.ninjaMaster = ninjas[0];
-                    this.student = ninjas[1];
+                    this.ninjaMaster = ninjas[0] as Ninja;
+                    this.student = ninjas[1] as Ninja;
                 }
             }
 
@@ -1472,10 +1474,12 @@ describe("InversifyJS", () => {
             const ninjaOrganisation = container.get<NinjaOrganisation>(NinjaOrganisation);
 
             for (let i = 0; i < 2; i++) {
-                expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
-                expect(ninjaOrganisation.schools[i].ninjaMaster.sneak()).eql("hit!");
-                expect(ninjaOrganisation.schools[i].student.fight()).eql("cut!");
-                expect(ninjaOrganisation.schools[i].student.sneak()).eql("hit!");
+                const ithNinjaOrganizationSchool = ninjaOrganisation.schools[i] as NinjaSchool;
+
+                expect(ithNinjaOrganizationSchool.ninjaMaster.fight()).eql("cut!");
+                expect(ithNinjaOrganizationSchool.ninjaMaster.sneak()).eql("hit!");
+                expect(ithNinjaOrganizationSchool.student.fight()).eql("cut!");
+                expect(ithNinjaOrganizationSchool.student.sneak()).eql("hit!");
             }
 
         });
@@ -1514,8 +1518,8 @@ describe("InversifyJS", () => {
                 public katana: Weapon;
                 public shuriken: Weapon;
                 public constructor(@multiInject(TYPES.Weapon) weapons: Weapon[]) {
-                    this.katana = weapons[0];
-                    this.shuriken = weapons[1];
+                    this.katana = weapons[0] as Weapon;
+                    this.shuriken = weapons[1] as Weapon;
                 }
             }
 
@@ -1606,8 +1610,8 @@ describe("InversifyJS", () => {
                 public constructor(
                     @multiInject(TYPES.Ninja) ninja: Ninja[]
                 ) {
-                    this.ninjaMaster = ninja[0];
-                    this.student = ninja[1];
+                    this.ninjaMaster = ninja[0] as Ninja;
+                    this.student = ninja[1] as Ninja;
                 }
             }
 
@@ -1696,8 +1700,8 @@ describe("InversifyJS", () => {
                 public constructor(
                     @multiInject(TYPES.Ninja) ninjas: Ninja[]
                 ) {
-                    this.ninjaMaster = ninjas[0];
-                    this.student = ninjas[1];
+                    this.ninjaMaster = ninjas[0] as Ninja;
+                    this.student = ninjas[1] as Ninja;
                 }
             }
 
@@ -1728,10 +1732,12 @@ describe("InversifyJS", () => {
             const ninjaOrganisation = container.get<Organisation>(TYPES.Organisation);
 
             for (let i = 0; i < 2; i++) {
-                expect(ninjaOrganisation.schools[i].ninjaMaster.fight()).eql("cut!");
-                expect(ninjaOrganisation.schools[i].ninjaMaster.sneak()).eql("hit!");
-                expect(ninjaOrganisation.schools[i].student.fight()).eql("cut!");
-                expect(ninjaOrganisation.schools[i].student.sneak()).eql("hit!");
+                const ithNinjaOrganizationSchool = ninjaOrganisation.schools[i] as School;
+
+                expect(ithNinjaOrganizationSchool.ninjaMaster.fight()).eql("cut!");
+                expect(ithNinjaOrganizationSchool.ninjaMaster.sneak()).eql("hit!");
+                expect(ithNinjaOrganizationSchool.student.fight()).eql("cut!");
+                expect(ithNinjaOrganizationSchool.student.sneak()).eql("hit!");
             }
 
         });
@@ -2011,7 +2017,7 @@ describe("InversifyJS", () => {
         // Therefore the following will fail
         @injectable()
         class SamuraiMaster extends Samurai implements Warrior {
-            public isMaster: boolean;
+            public isMaster!: boolean;
         }
 
         // However, he following will work
