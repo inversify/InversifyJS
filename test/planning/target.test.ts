@@ -82,6 +82,29 @@ describe("Target", () => {
         target3.metadata.push(new Metadata("power", 5), new Metadata("speed", 5));
         expect(target3.isTagged()).to.be.eql(true);
 
+        const target4 = new Target(TargetTypeEnum.Variable, "", "Katana");
+        target4.metadata.push(new Metadata(METADATA_KEY.INJECT_TAG, "Katana"))
+        expect(target4.isTagged()).to.be.eql(false);
+
+        const target5 = new Target(TargetTypeEnum.Variable, "", "Katana");
+        target5.metadata.push(new Metadata(METADATA_KEY.MULTI_INJECT_TAG, "Katana"))
+        expect(target5.isTagged()).to.be.eql(false);
+
+        const target6 = new Target(TargetTypeEnum.Variable, "katanaName", "Katana");
+        target6.metadata.push(new Metadata(METADATA_KEY.NAME_TAG, "katanaName"))
+        expect(target6.isTagged()).to.be.eql(false);
+
+        const target7 = new Target(TargetTypeEnum.Variable, "", "Katana");
+        target7.metadata.push(new Metadata(METADATA_KEY.UNMANAGED_TAG, true))
+        expect(target7.isTagged()).to.be.eql(false);
+
+        const target8 = new Target(TargetTypeEnum.Variable, "katanaName", "Katana");
+        target8.metadata.push(new Metadata(METADATA_KEY.NAMED_TAG, "katanaName"))
+        expect(target8.isTagged()).to.be.eql(false);
+
+        const target9 = new Target(TargetTypeEnum.Variable, "", "Katana");
+        target9.metadata.push(new Metadata(METADATA_KEY.OPTIONAL_TAG, true))
+        expect(target9.isTagged()).to.be.eql(false);
     });
 
     it("Should be able to match tagged metadata", () => {

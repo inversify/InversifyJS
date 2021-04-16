@@ -64,12 +64,9 @@ class Target implements interfaces.Target {
     }
 
     public isTagged(): boolean {
-        return this.metadata.some((m) =>
-            (m.key !== METADATA_KEY.INJECT_TAG) &&
-                   (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
-                   (m.key !== METADATA_KEY.NAME_TAG) &&
-                   (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
-                   (m.key !== METADATA_KEY.NAMED_TAG));
+        return this.metadata.some(
+            (metadata) => METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
+        );
     }
 
     public isOptional(): boolean {
@@ -87,14 +84,12 @@ class Target implements interfaces.Target {
 
     public getCustomTags(): interfaces.Metadata[] | null {
         if (this.isTagged()) {
-            return this.metadata.filter((m) =>
-                (m.key !== METADATA_KEY.INJECT_TAG) &&
-                    (m.key !== METADATA_KEY.MULTI_INJECT_TAG) &&
-                    (m.key !== METADATA_KEY.NAME_TAG) &&
-                    (m.key !== METADATA_KEY.UNMANAGED_TAG) &&
-                    (m.key !== METADATA_KEY.NAMED_TAG));
+            return this.metadata.filter(
+                (metadata) => METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
+            );
+        } else {
+            return null;
         }
-        return null;
     }
 
     public matchesNamedTag(name: string): boolean {
