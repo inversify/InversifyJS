@@ -121,7 +121,7 @@ describe("ContainerModule", () => {
   it("Should be able to add an activation hook through a container module", () => {
 
     const container = new Container();
-    container.bind<string>("A").toConstantValue("1");
+    container.bind<string>("A").toDynamicValue(() => "1");
     expect(container.get<string>("A")).to.eql("1");
 
     const warriors = new ContainerModule((bind, unbind, isBound, rebind, onActivation) => {
