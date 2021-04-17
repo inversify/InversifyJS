@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix `Target.isTagged()` to exclude `optional` from tag injections #1190.
 - Update `toConstructor`, `toFactory`, `toFunction`, `toAutoFactory`, `toProvider` and `toConstantValue` to have singleton scope #1297.
+- Fix injection on optional properties when targeting ES6 #928
 
 ## [5.0.1] - 2018-10-17
 ### Added 
