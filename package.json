@@ -6,10 +6,11 @@
   "jsnext:main": "es/inversify.js",
   "types": "lib/inversify.d.ts",
   "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es",
+    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
     "build:lib": "tsc -p src/tsconfig.json",
     "build:amd": "tsc -p src/tsconfig-amd.json",
     "build:es": "tsc -p src/tsconfig-es.json",
+    "build:es6": "tsc -p src/tsconfig-es6.json",
     "clean": "rm -r amd es lib",
     "pretest": "tslint --project .",
     "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
