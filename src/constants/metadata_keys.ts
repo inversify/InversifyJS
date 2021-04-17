@@ -30,3 +30,16 @@ export const DESIGN_PARAM_TYPES = "design:paramtypes";
 
 // used to identify postConstruct functions
 export const POST_CONSTRUCT = "post_construct";
+
+function getNonCustomTagKeys(): string[] {
+    return [
+        INJECT_TAG,
+        MULTI_INJECT_TAG,
+        NAME_TAG,
+        UNMANAGED_TAG,
+        NAMED_TAG,
+        OPTIONAL_TAG,
+    ];
+}
+
+export const NON_CUSTOM_TAG_KEYS: string[] = getNonCustomTagKeys();
