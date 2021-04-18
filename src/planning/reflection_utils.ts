@@ -34,7 +34,9 @@ function getTargets(
 
     const keys = Object.keys(constructorArgsMetadata);
     const hasUserDeclaredUnknownInjections = (func.length === 0 && keys.length > 0);
-    const iterations = (hasUserDeclaredUnknownInjections) ? keys.length : func.length;
+    const hasOptionalParameters = keys.length > func.length;
+
+    const iterations = (hasUserDeclaredUnknownInjections || hasOptionalParameters) ? keys.length : func.length;
 
     // Target instances that represent constructor arguments to be injected
     const constructorTargets = getConstructorArgsAsTargets(

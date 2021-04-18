@@ -120,41 +120,41 @@ describe("Planner", () => {
 
     it("Should throw when circular dependencies found", () => {
 
-        interface A { }
-        interface B { }
-        interface C { }
-        interface D { }
+        interface IA { }
+        interface IB { }
+        interface IC { }
+        interface ID { }
 
         @injectable()
-        class D implements D {
-            public a: A;
+        class D implements ID {
+            public a: IA;
             public constructor(
-                @inject("A") a: A
+                @inject("A") a: IA
             ) { // circular dependency
                 this.a = a;
             }
         }
 
         @injectable()
-        class C implements C {
-            public d: D;
+        class C implements IC {
+            public d: ID;
             public constructor(
-                @inject("D") d: D
+                @inject("D") d: ID
             ) {
                 this.d = d;
             }
         }
 
         @injectable()
-        class B implements B { }
+        class B implements IB { }
 
         @injectable()
-        class A implements A {
-            public b: B;
-            public c: C;
+        class A implements IA {
+            public b: IB;
+            public c: IC;
             public constructor(
-                @inject("B") b: B,
-                @inject("C") c: C
+                @inject("B") b: IB,
+                @inject("C") c: IC
             ) {
                 this.b = b;
                 this.c = c;
@@ -167,10 +167,10 @@ describe("Planner", () => {
         const dId = "D";
 
         const container = new Container();
-        container.bind<A>(aId).to(A);
-        container.bind<B>(bId).to(B);
-        container.bind<C>(cId).to(C);
-        container.bind<D>(dId).to(D);
+        container.bind<IA>(aId).to(A);
+        container.bind<IB>(bId).to(B);
+        container.bind<IC>(cId).to(C);
+        container.bind<ID>(dId).to(D);
 
         const throwErrorFunction = () => {
             container.get(aId);
