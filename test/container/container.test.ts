@@ -977,4 +977,20 @@ describe("Container", () => {
         expect(await container.getTaggedAsync(zero, isValidDivisor, true)).to.equal(1);
 
     });
+
+    it("should be able to get all the servides binded (async)", async () => {
+        const serviceIdentifier = "service-identifier";
+
+        const container = new Container();
+
+        const firstValueBinded = "value-one";
+        const secondValueBinded = "value-two";
+
+        container.bind(serviceIdentifier).toConstantValue(firstValueBinded);
+        container.bind(serviceIdentifier).toConstantValue(secondValueBinded);
+
+        const services = await container.getAllAsync<string>(serviceIdentifier);
+
+        expect(services).to.deep.eq([firstValueBinded, secondValueBinded]);
+    })
 });

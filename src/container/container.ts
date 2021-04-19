@@ -632,11 +632,7 @@ class Container implements interfaces.Container {
         constructor: any
     ): void | Promise<void> {
         if (this.parent) {
-            const parentDeactivationResult = this._doDeactivation.bind(this.parent)(binding, instance);
-
-            if (isPromise(parentDeactivationResult)) {
-                return this._triggerOnDeactivationAndDestroyMetadataAsync(binding, instance, constructor);
-            }
+            return this._doDeactivation.bind(this.parent)(binding, instance);
         } else {
             return this._triggerOnDeactivationAndDestroyMetadata(binding, instance, constructor);
         }

@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import * as sinon from "sinon";
 import { Container } from "../../src/container/container";
 import { AsyncContainerModule, ContainerModule } from "../../src/container/container_module";
 import { interfaces } from "../../src/interfaces/interfaces";
@@ -170,5 +171,28 @@ describe("ContainerModule", () => {
     await container.unbindAsync("A");
 
     expect(deact).eql(true);
+  });
+
+  it("Should be able to add multiple async deactivation hook through a container module (async)", async () => {
+
+    const onActivationHandlerSpy = sinon.spy<() => Promise<void>>(async () => undefined);
+
+    const serviceIdentifier = "destroyable";
+    const container = new Container();
+
+    const containerModule = new ContainerModule((bind, unbind, isBound, rebind, onActivation, onDeactivation) => {
+      onDeactivation(serviceIdentifier, onActivationHandlerSpy);
+      onDeactivation(serviceIdentifier, onActivationHandlerSpy);
+    });
+
+    container.bind(serviceIdentifier).toConstantValue(serviceIdentifier);
+
+    container.get(serviceIdentifier);
+
+    container.load(containerModule);
+
+    await container.unbindAllAsync();
+
+    expect(onActivationHandlerSpy.callCount).to.eq(2);
   });
 });
