@@ -1589,7 +1589,7 @@ describe("Resolve", () => {
       expect(klass).eql(4);
   });
 
-  it("Should invoke destory in order (all async unless child deactivation): child container, parent container, binding, class", async () => {
+  it("Should invoke destory in order (async): child container, parent container, binding, class", async () => {
     let roll = 1;
     let binding = null;
     let klass = null;
