@@ -99,9 +99,35 @@ expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("S
 expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
 ```
 
+## container.get<T>()
+
+Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana);
+
+let katana = container.get<Weapon>("Weapon");
+```
+
+## container.getAsync<T>()
+
+Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
+
+```ts
+async function buildLevel1(): Level1 {
+    return new Level1();
+}
+
+let container = new Container();
+container.bind("Level1").toDynamicValue(() => buildLevel1());
+
+let level1 = await container.getAsync<Level1>("Level1"); // Returns Promise<Level1>
+```
+
 ## container.getNamed<T>()
 
-Named bindings:
+Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -112,9 +138,22 @@ let katana = container.getNamed<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 
+## container.getNamedAsync<T>()
+
+Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").toDynamicValue(async () => new Katana()).whenTargetNamed("japanese");
+container.bind<Weapon>("Weapon").toDynamicValue(async () => new Weapon()).whenTargetNamed("chinese");
+
+let katana = container.getNamedAsync<Weapon>("Weapon", "japanese");
+let shuriken = container.getNamedAsync<Weapon>("Weapon", "chinese");
+```
+
 ## container.getTagged<T>()
 
-Tagged bindings:
+Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -125,9 +164,22 @@ let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
+## container.getTaggedAsync<T>()
+
+Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").toDynamicValue(async () => new Katana()).whenTargetTagged("faction", "samurai");
+container.bind<Weapon>("Weapon").toDynamicValue(async () => new Weapon()).whenTargetTagged("faction", "ninja");
+
+let katana = container.getTaggedAsync<Weapon>("Weapon", "faction", "samurai");
+let shuriken = container.getTaggedAsync<Weapon>("Weapon", "faction", "ninja");
+```
+
 ## container.getAll<T>()
 
-Get all available bindings for a given identifier:
+Get all available bindings for a given identifier. All the bindings must be syncronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -137,10 +189,21 @@ container.bind<Weapon>("Weapon").to(Shuriken);
 let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
+## container.getAllAsync<T>()
+
+Get all available bindings for a given identifier:
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana);
+container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken());
+
+let weapons = await container.getAllAsync<Weapon>("Weapon");  // returns Promise<Weapon[]>
+```
+
 ## container.getAllNamed<T>()
 
-Get all available bindings for a given identifier that match the given 
-named constraint:
+Resolves all the dependencies by its runtime identifier that matches the given named constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -167,11 +230,39 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
+## container.getAllNamedAsync<T>()
+
+Resolves all the dependencies by its runtime identifier that matches the given named constraint:
+
+```ts
+let container = new Container();
+
+interface Intl {
+    hello?: string;
+    goodbye?: string;
+}
+
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ hello: "bonjour" })).whenTargetNamed("fr");
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "au revoir" })).whenTargetNamed("fr");
+
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ hello: "hola" })).whenTargetNamed("es");
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "adios" })).whenTargetNamed("es");
+
+let fr = container.getAllNamedAsync<Intl>("Intl", "fr");
+expect(fr.length).to.eql(2);
+expect(fr[0].hello).to.eql("bonjour");
+expect(fr[1].goodbye).to.eql("au revoir");
+
+let es = container.getAllNamedAsync<Intl>("Intl", "es");
+expect(es.length).to.eql(2);
+expect(es[0].hello).to.eql("hola");
+expect(es[1].goodbye).to.eql("adios");
+```
+
 
 ## container.getAllTagged<T>()
 
-Get all available bindings for a given identifier that match the given 
-named constraint:
+Resolves all the dependencies by its runtime identifier that matches the given tagged constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -193,6 +284,35 @@ expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
 let es = container.getAllTagged<Intl>("Intl", "lang", "es");
+expect(es.length).to.eql(2);
+expect(es[0].hello).to.eql("hola");
+expect(es[1].goodbye).to.eql("adios");
+```
+
+## container.getAllTaggedAsync<T>()
+
+Resolves all the dependencies by its runtime identifier that matches the given tagged constraint:
+
+```ts
+let container = new Container();
+
+interface Intl {
+    hello?: string;
+    goodbye?: string;
+}
+
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ hello: "bonjour" })).whenTargetTagged("lang", "fr");
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "au revoir" })).whenTargetTagged("lang", "fr");
+
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ hello: "hola" })).whenTargetTagged("lang", "es");
+container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "adios" })).whenTargetTagged("lang", "es");
+
+let fr = container.getAllTaggedAsync<Intl>("Intl", "lang", "fr");
+expect(fr.length).to.eql(2);
+expect(fr[0].hello).to.eql("bonjour");
+expect(fr[1].goodbye).to.eql("au revoir");
+
+let es = container.getAllTaggedAsync<Intl>("Intl", "lang", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
