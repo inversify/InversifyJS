@@ -99,7 +99,7 @@ expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("S
 expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
 ```
 
-## container.get<T>()
+## container.get<T>(serviceIdentifier: ServiceIdentifier<T>)
 
 Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -110,7 +110,7 @@ container.bind<Weapon>("Weapon").to(Katana);
 let katana = container.get<Weapon>("Weapon");
 ```
 
-## container.getAsync<T>()
+## container.getAsync<T>(serviceIdentifier: ServiceIdentifier<T>)
 
 Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -125,7 +125,7 @@ container.bind("Level1").toDynamicValue(() => buildLevel1());
 let level1 = await container.getAsync<Level1>("Level1"); // Returns Promise<Level1>
 ```
 
-## container.getNamed<T>()
+## container.getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol)
 
 Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -138,7 +138,7 @@ let katana = container.getNamed<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 
-## container.getNamedAsync<T>()
+## container.getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol)
 
 Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -151,7 +151,7 @@ let katana = container.getNamedAsync<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamedAsync<Weapon>("Weapon", "chinese");
 ```
 
-## container.getTagged<T>()
+## container.getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -164,7 +164,7 @@ let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getTaggedAsync<T>()
+## container.getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -177,7 +177,7 @@ let katana = container.getTaggedAsync<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTaggedAsync<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getAll<T>()
+## container.getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>)
 
 Get all available bindings for a given identifier. All the bindings must be syncronously resolved, otherwise an error is thrown:
 
@@ -189,7 +189,7 @@ container.bind<Weapon>("Weapon").to(Shuriken);
 let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## container.getAllAsync<T>()
+## container.getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>)
 
 Get all available bindings for a given identifier:
 
@@ -201,7 +201,7 @@ container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken());
 let weapons = await container.getAllAsync<Weapon>("Weapon");  // returns Promise<Weapon[]>
 ```
 
-## container.getAllNamed<T>()
+## container.getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol)
 
 Resolves all the dependencies by its runtime identifier that matches the given named constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -230,7 +230,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllNamedAsync<T>()
+## container.getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol)
 
 Resolves all the dependencies by its runtime identifier that matches the given named constraint:
 
@@ -260,7 +260,7 @@ expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## container.getAllTagged<T>()
+## container.getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -289,7 +289,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllTaggedAsync<T>()
+## container.getAllTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint:
 
@@ -454,3 +454,32 @@ expect(ninja.fight()).to.eql("cut!");
 ```
 
 Please note that it only allows to skip declaring a binding for the root element in the dependency graph (composition root). All the sub-dependencies (e.g. `Katana` in the preceding example) will require a binding to be declared.
+
+## container.onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>)
+
+Adds an activation handler for the dependencies's identifier.
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana);
+container.onActivation("Weapon", (context: interfaces.Context, katana: Katana): Katana | Promise<Katana> => {
+    console.log('katana instance activation!');
+    return katana;
+});
+
+let katana = container.get<Weapon>("Weapon");
+```
+
+## onDeactivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onDeactivation: interfaces.BindingDeactivation<T>)
+
+Adds a deactivation handler for the dependencie's identifier.
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana);
+container.onDeactivation("Weapon", (katana: Katana): void | Promise<void> => {
+    console.log('katana instance deactivation!');
+});
+
+container.unbind("Weapon");
+```
