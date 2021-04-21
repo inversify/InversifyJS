@@ -175,7 +175,9 @@ namespace interfaces {
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
+        unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<any>): Promise<void>;
         unbindAll(): void;
+        unbindAllAsync(): Promise<void>;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
         isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
         isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
