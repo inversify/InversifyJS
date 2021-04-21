@@ -10,21 +10,18 @@
             "name": "Mocha Tests",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "args": [
+                "-r",
+                "ts-node/register",
                 "--require",
                 "reflect-metadata",
-                "-u",
-                "tdd",
                 "--timeout",
                 "999999",
                 "--colors",
-                "${workspaceRoot}/test/**/*.test.js"
+                "${workspaceRoot}/test/**/*.test.ts"
             ],
-            "sourceMaps": true,
-            "outFiles": [
-                "${workspaceRoot}/test",
-                "${workspaceRoot}/src"
-            ],
-            "internalConsoleOptions": "openOnSessionStart"
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "protocol": "inspector"
         },
         {
             "type": "node",

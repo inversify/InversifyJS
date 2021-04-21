@@ -10,11 +10,14 @@ describe("Issue 549", () => {
             BDynamicValue: Symbol.for("BDynamicValue")
         };
 
+        interface IA {}
+        interface IB {}
+
         @injectable()
         class A {
-            public b: B;
+            public b: IB;
             public constructor(
-                @inject(TYPE.BDynamicValue)  b: B
+                @inject(TYPE.BDynamicValue)  b: IB
             ) {
                 this.b = b;
             }
@@ -22,9 +25,9 @@ describe("Issue 549", () => {
 
         @injectable()
         class B {
-            public a: A;
+            public a: IA;
             public constructor(
-                @inject(TYPE.ADynamicValue) a: A
+                @inject(TYPE.ADynamicValue) a: IA
             ) {
                 this.a = a;
             }

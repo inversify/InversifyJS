@@ -38,6 +38,7 @@ dts
 lib
 temp
 es
+es6
 amd
 
 type_definitions/inversify/*.js
@@ -48,7 +49,8 @@ src/**/*.js
 src/*.js.map
 src/**/*.js.map
 
-src/*.d.ts
+*.d.ts
+*.tsbuildinfo
 src/annotation/*.d.ts
 src/bindings/*.d.ts
 src/constants/*.d.ts
@@ -65,3 +67,5 @@ src/**/*.js.map
 src/*.js.map
 type_definitions/**/*.js
 .idea
+
+.nyc_output
