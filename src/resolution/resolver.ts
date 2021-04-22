@@ -27,8 +27,8 @@ const invokeFactory = (
     }
 };
 
-const _resolveRequest = (requestScope: interfaces.RequestScope) =>
-    (request: interfaces.Request): any => {
+const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
+    (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
 
     request.parentContext.setCurrentRequest(request);
 
@@ -47,12 +47,12 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {
             const _f = _resolveRequest(requestScope);
-            return _f(childRequest);
+            return _f(childRequest) as T | Promise<T>;
         });
 
     } else {
 
-        let result: any = null;
+        let result: undefined | T | Promise<T> | (T | Promise<T>)[];
 
         if (request.target.isOptional() && bindings.length === 0) {
             return undefined;
@@ -81,7 +81,7 @@ const _resolveRequest = (requestScope: interfaces.RequestScope) =>
             result = binding.cache;
             binding.activated = true;
         } else if (binding.type === BindingTypeEnum.Constructor) {
-            result = binding.implementationType;
+            result = binding.implementationType as unknown as T;
         } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
             result = invokeFactory(
                 "toDynamicValue",
@@ -290,9 +290,9 @@ const _getParentContainersIterator = (container: interfaces.Container, includeSe
     return containersIterator;
 }
 
-function resolve<T>(context: interfaces.Context): (T | T[] | Promise<T> | Promise<T>[]) {
+function resolve<T>(context: interfaces.Context): T | Promise<T> | (T | Promise<T>)[] {
     const _f = _resolveRequest(context.plan.rootRequest.requestScope);
-    return _f(context.plan.rootRequest);
+    return _f(context.plan.rootRequest) as T | Promise<T> | (T | Promise<T>)[];
 }
 
 export { resolve };

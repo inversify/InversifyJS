@@ -523,13 +523,10 @@ class Container implements interfaces.Container {
     private _getButThrowIfAsync<T>(
         getArgs: GetArgs,
     ): (T | T[]) {
-        let lazyInSyncError = false;
         const result = this._get<T>(getArgs);
-        if (Array.isArray(result) && result.some(isPromise)) {
-            lazyInSyncError = true;
-        } else if (isPromise(result)){
-            lazyInSyncError = true;
-        }
+
+        const isArrayContainingPromise = Array.isArray(result) && result.some(isPromise);
+        const lazyInSyncError = isArrayContainingPromise || isPromise(result);
 
         if (lazyInSyncError) {
             throw new Error(ERROR_MSGS.LAZY_IN_SYNC(getArgs.serviceIdentifier));
