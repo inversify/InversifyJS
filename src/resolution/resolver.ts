@@ -197,7 +197,7 @@ const _callActivations = <T> (
     while (!activation.done) {
         result = activation.value(context, result);
 
-        if (isPromise(result)) {
+        if (isPromise<T>(result)) {
             return result.then((resolved) => _callActivationsAsync(activationsIterator, context, resolved));
         }
 
