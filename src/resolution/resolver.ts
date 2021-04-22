@@ -290,7 +290,7 @@ const _getParentContainersIterator = (container: interfaces.Container, includeSe
     return containersIterator;
 }
 
-function resolve<T>(context: interfaces.Context): T {
+function resolve<T>(context: interfaces.Context): (T | T[] | Promise<T> | Promise<T>[]) {
     const _f = _resolveRequest(context.plan.rootRequest.requestScope);
     return _f(context.plan.rootRequest);
 }

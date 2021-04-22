@@ -5,26 +5,6 @@ import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import { isPromise } from "../utils/async";
 
-function _injectProperties<T>(
-    instance: T,
-    childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler
-): T {
-    const propertyInjectionsRequests = _filterRequestsByTargetType(childRequests, TargetTypeEnum.ClassProperty);
-
-    const propertyInjections = propertyInjectionsRequests.map(resolveRequest);
-
-    propertyInjectionsRequests.forEach((r: interfaces.Request, index: number) => {
-        const propertyName = r.target.name.value();
-        const injection = propertyInjections[index];
-
-        (instance as Record<string, unknown>)[propertyName] = injection;
-    });
-
-    return instance;
-
-}
-
 function _createInstance<T>(
     constr: interfaces.Newable<T>,
     childRequests: interfaces.Request[],
@@ -33,17 +13,39 @@ function _createInstance<T>(
     let result: T | Promise<T>;
 
     if (childRequests.length > 0) {
-        const constructorInjections = _getConstructionInjections(childRequests, resolveRequest);
-
-        if (constructorInjections.some(isPromise)) {
-            result = _createInstanceWithConstructorInjectionsAsync(
-                constructorInjections,
-                constr,
-                childRequests,
-                resolveRequest
-            );
-        } else {
-            result = _createInstanceWithConstructorInjections(constructorInjections, constr,childRequests, resolveRequest);
+        let isAsync = false
+        const constructorInjections: unknown[] = []
+        const propertyRequests: interfaces.Request[] = []
+        const propertyInjections: unknown[] = []
+        for(const childRequest of childRequests){
+            let injection:unknown
+            const target = childRequest.target
+            const targetType = target.type
+            if(targetType === TargetTypeEnum.ConstructorArgument){
+                injection = resolveRequest(childRequest)
+                constructorInjections.push(injection)
+            }else{
+                propertyRequests.push(childRequest)
+                injection = resolveRequest(childRequest)
+                propertyInjections.push(injection)
+            }
+            if(!isAsync){
+                if(Array.isArray(injection)){
+                    for(const arrayInjection of injection){
+                        if(isPromise(arrayInjection)){
+                            isAsync = true
+                            break
+                        }
+                    }
+                }else if(isPromise(injection)){
+                    isAsync = true
+                }
+            }
+        }
+        if(isAsync){
+            result = createInstanceWithInjectionsAsync(constructorInjections,propertyRequests,propertyInjections, constr)
+        }else{
+            result = createInstanceWithInjections(constructorInjections,propertyRequests,propertyInjections, constr)
         }
     } else {
         result = new constr();
@@ -52,43 +54,39 @@ function _createInstance<T>(
     return result;
 }
 
-function _createInstanceWithConstructorInjections<T>(
-    constructorInjections: unknown[],
-    constr: interfaces.Newable<T>,
-    childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler,
-): T {
-    let result: T;
+function createInstanceWithInjections<T>(
+    constructorArgs:unknown[],
+    propertyRequests:interfaces.Request[],
+    propertyValues:unknown[],
+    constr:interfaces.Newable<T>): T{
+        const instance = new constr(...constructorArgs);
+        propertyRequests.forEach((r: interfaces.Request, index: number) => {
+            const propertyName = r.target.name.value();
+            const injection = propertyValues[index];
+            (instance as Record<string, unknown>)[propertyName] = injection;
+        });
+        return instance
 
-    result = new constr(...constructorInjections);
-    result = _injectProperties(result, childRequests, resolveRequest);
-
-    return result;
 }
-
-async function _createInstanceWithConstructorInjectionsAsync<T>(
-    constructorInjections: (unknown | Promise<unknown>)[],
-    constr: interfaces.Newable<T>,
-    childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler,
-): Promise<T> {
-    return _createInstanceWithConstructorInjections(
-        await Promise.all(constructorInjections),
-        constr,
-        childRequests,
-        resolveRequest,
-    );
+async function createInstanceWithInjectionsAsync<T>(
+    possiblePromiseConstructorArgs:unknown[],
+    propertyRequests:interfaces.Request[],
+    possiblyPromisePropertyValues:unknown[],
+    constr:interfaces.Newable<T>):Promise<T>{
+        const ctorArgs = await possiblyWaitInjections(possiblePromiseConstructorArgs)
+        const propertyValues = await possiblyWaitInjections(possiblyPromisePropertyValues)
+        return createInstanceWithInjections<T>(ctorArgs,propertyRequests,propertyValues, constr)
 }
-
-function _filterRequestsByTargetType(requests: interfaces.Request[], type: interfaces.TargetType): interfaces.Request[] {
-    return requests.filter((request: interfaces.Request) =>
-        (request.target !== null && request.target.type === type));
-}
-
-function _getConstructionInjections(childRequests: interfaces.Request[], resolveRequest: interfaces.ResolveRequestHandler): unknown[] {
-    const constructorInjectionsRequests = _filterRequestsByTargetType(childRequests, TargetTypeEnum.ConstructorArgument);
-
-    return constructorInjectionsRequests.map(resolveRequest);
+async function possiblyWaitInjections(possiblePromiseinjections:unknown[]){
+    const injections:unknown[] = [];
+    for(const injection of possiblePromiseinjections){
+        if(Array.isArray(injection)){
+            injections.push(Promise.all(injection))
+        }else{
+            injections.push(injection)
+        }
+    }
+    return Promise.all(injections)
 }
 
 function _getInstanceAfterPostConstruct<T>(constr: interfaces.Newable<T>, result: T): T | Promise<T> {
