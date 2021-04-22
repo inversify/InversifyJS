@@ -3,7 +3,7 @@ import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
-import { isPromise } from "../utils/async";
+import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 
 function _createInstance<T>(
     constr: interfaces.Newable<T>,
@@ -30,11 +30,7 @@ function _createInstance<T>(
                 propertyInjections.push(injection)
             }
             if(!isAsync){
-                if(Array.isArray(injection)){
-                    isAsync = injection.some(isPromise)
-                }else if(isPromise(injection)){
-                    isAsync = true
-                }
+                isAsync = isPromiseOrContainsPromise(injection);
             }
         }
         if(isAsync){

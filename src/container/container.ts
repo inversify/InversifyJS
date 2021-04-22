@@ -7,7 +7,7 @@ import { MetadataReader } from "../planning/metadata_reader";
 import { createMockRequest, getBindingDictionary, plan } from "../planning/planner";
 import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
-import { isPromise } from "../utils/async";
+import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
@@ -525,10 +525,7 @@ class Container implements interfaces.Container {
     ): (T | T[]) {
         const result = this._get<T>(getArgs);
 
-        const isArrayContainingPromise = Array.isArray(result) && result.some(isPromise);
-        const lazyInSyncError = isArrayContainingPromise || isPromise(result);
-
-        if (lazyInSyncError) {
+        if (isPromiseOrContainsPromise<T>(result)) {
             throw new Error(ERROR_MSGS.LAZY_IN_SYNC(getArgs.serviceIdentifier));
         }
 
