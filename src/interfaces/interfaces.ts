@@ -190,9 +190,9 @@ namespace interfaces {
         getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>;
         getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>;
         getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>;
-        getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>[];
-        getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>[];
-        getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[];
+        getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T[]>;
+        getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T[]>;
+        getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]>;
         onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
         onDeactivation<T>(serviceIdentifier: ServiceIdentifier<T>, onDeactivation: BindingDeactivation<T>): void;
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;

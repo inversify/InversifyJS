@@ -302,10 +302,10 @@ class Container implements interfaces.Container {
         return this._getButThrowIfAsync<T>(getArgs) as T;
     }
 
-    public getAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> {
+    public async getAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> {
         const getArgs = this._getNotAllArgs(serviceIdentifier, false);
 
-        return this._get<T>(getArgs) as Promise<T>;
+        return  this._get<T>(getArgs) as Promise<T>|T;
     }
 
     public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
@@ -314,10 +314,13 @@ class Container implements interfaces.Container {
         return this._getButThrowIfAsync<T>(getArgs) as T;
     }
 
-    public getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T> {
-        const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
+    public async getTaggedAsync<T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        key: string | number | symbol,
+        value: any): Promise<T> {
+            const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
 
-        return this._get<T>(getArgs) as Promise<T>;
+            return this._get<T>(getArgs) as Promise<T>|T;
     }
 
     public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
@@ -336,10 +339,10 @@ class Container implements interfaces.Container {
         return this._getButThrowIfAsync<T>(getArgs) as T[];
     }
 
-    public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T>[] {
+    public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T[]> {
         const getArgs = this._getAllArgs(serviceIdentifier);
 
-        return this._get<T>(getArgs) as Promise<T>[];
+        return Promise.all(this._get<T>(getArgs) as (Promise<T>|T)[]);
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
@@ -352,17 +355,17 @@ class Container implements interfaces.Container {
       serviceIdentifier: interfaces.ServiceIdentifier<T>,
       key: string | number | symbol,
       value: any
-    ): Promise<T>[] {
+    ): Promise<T[]> {
         const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
 
-        return this._get<T>(getArgs) as Promise<T>[];
+        return Promise.all(this._get<T>(getArgs) as (Promise<T>|T)[]);
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
         return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
-    public getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T>[] {
+    public getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]> {
         return this.getAllTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }
 
