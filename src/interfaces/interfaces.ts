@@ -1,4 +1,5 @@
 namespace interfaces {
+    export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[]
 
     type AsyncCallback<TCallback> =
         TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>

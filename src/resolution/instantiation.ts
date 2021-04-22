@@ -31,12 +31,7 @@ function _createInstance<T>(
             }
             if(!isAsync){
                 if(Array.isArray(injection)){
-                    for(const arrayInjection of injection){
-                        if(isPromise(arrayInjection)){
-                            isAsync = true
-                            break
-                        }
-                    }
+                    isAsync = injection.some(isPromise)
                 }else if(isPromise(injection)){
                     isAsync = true
                 }

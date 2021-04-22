@@ -503,35 +503,39 @@ class Container implements interfaces.Container {
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
-    private _get<T>(getArgs: GetArgs): (T | T[] | Promise<T> | Promise<T>[]) {
-        let result: (T | T[] | Promise<T> | Promise<T>[]) | null = null;
+    private _get<T>(getArgs: GetArgs): interfaces.ContainerResolution<T> {
         const planAndResolveArgs:interfaces.NextArgs = {
             ...getArgs,
             contextInterceptor:(context) => context,
             targetType: TargetTypeEnum.Variable
         }
         if (this._middleware) {
-            result = this._middleware(planAndResolveArgs);
-            if (result === undefined || result === null) {
+            const middlewareResult = this._middleware(planAndResolveArgs);
+            if (middlewareResult === undefined || middlewareResult === null) {
                 throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
             }
-        } else {
-            result = this._planAndResolve<T>()(planAndResolveArgs);
+            return middlewareResult
         }
 
-        return result;
+        return this._planAndResolve<T>()(planAndResolveArgs);
     }
 
     private _getButThrowIfAsync<T>(
         getArgs: GetArgs,
-    ): (T | T[] | Promise<T> | Promise<T>[]) {
+    ): (T | T[]) {
+        let lazyInSyncError = false;
         const result = this._get<T>(getArgs);
+        if (Array.isArray(result) && result.some(isPromise)) {
+            lazyInSyncError = true;
+        } else if (isPromise(result)){
+            lazyInSyncError = true;
+        }
 
-        if (isPromise(result)) {
+        if (lazyInSyncError) {
             throw new Error(ERROR_MSGS.LAZY_IN_SYNC(getArgs.serviceIdentifier));
         }
 
-        return result;
+        return result as (T | T[]);
     }
 
     private _getAllArgs<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): GetArgs {
@@ -564,7 +568,7 @@ class Container implements interfaces.Container {
     // Planner creates a plan and Resolver resolves a plan
     // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
-    private _planAndResolve<T>(): (args: interfaces.NextArgs) => (T | T[] | Promise<T> | Promise<T>[]) {
+    private _planAndResolve<T>(): (args: interfaces.NextArgs) => interfaces.ContainerResolution<T> {
         return (args: interfaces.NextArgs) => {
 
             // create a plan
