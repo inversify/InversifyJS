@@ -86,6 +86,24 @@ describe("Lookup", () => {
 
   });
 
+  it("Should use use the original non clonable entry if it is not clonable", () => {
+    const lookup = new Lookup<any>();
+    const key1 = Symbol.for("TEST_KEY");
+
+    class Warrior {
+      public kind: string;
+      public constructor(kind: string) {
+        this.kind = kind;
+      }
+    }
+    const warrior = new Warrior("ninja")
+    lookup.add(key1, warrior);
+
+    const copy = lookup.clone();
+    expect(copy.get(key1)[0] === warrior).to.eql(true);
+
+  })
+
   it("Should be able to remove a binding by a condition", () => {
 
     const moduleId1 = "moduleId1";

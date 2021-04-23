@@ -152,7 +152,7 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 function _onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, previousResult: T): T | Promise<T> {
     let result = _callBindingActivation(request, binding, previousResult);
 
-    const containersIterator = _getParentContainersIterator(request.parentContext.container, true);
+    const containersIterator = _getContainersIterator(request.parentContext.container);
 
     let container: interfaces.Container;
     let containersIteratorResult = containersIterator.next();
@@ -258,12 +258,8 @@ const _extractActivationsForService = <T>(container: interfaces.Container, servi
     return activations.hasKey(serviceIdentifier) ? activations.get(serviceIdentifier).values() : [].values();
 }
 
-const _getParentContainersIterator = (container: interfaces.Container, includeSelf: boolean = false): Iterator<interfaces.Container> => {
-    const containersStack: interfaces.Container[] = [];
-
-    if (includeSelf) {
-        containersStack.push(container);
-    }
+const _getContainersIterator = (container: interfaces.Container): Iterator<interfaces.Container> => {
+    const containersStack: interfaces.Container[] = [container];
 
     let parent = container.parent;
 

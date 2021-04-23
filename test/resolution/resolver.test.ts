@@ -1364,15 +1364,33 @@ describe("Resolve", () => {
       }
 
       const container = new Container();
+      let deactivatedDestroyable:Destroyable|null = null
       container.bind<Destroyable>("Destroyable").toDynamicValue(() => Promise.resolve(new Destroyable())).inSingletonScope()
           .onDeactivation((instance) => new Promise((r) => {
-              expect(instance).instanceof(Destroyable);
+              deactivatedDestroyable = instance
               r();
           }));
 
       await container.getAsync("Destroyable");
 
       await container.unbindAsync("Destroyable");
+
+      expect(deactivatedDestroyable).instanceof(Destroyable);
+
+      // with BindingInWhenOnSyntax
+      const container2 = new Container({defaultScope: "Singleton"});
+      let deactivatedDestroyable2:Destroyable|null = null
+      container2.bind<Destroyable>("Destroyable").toDynamicValue(() => Promise.resolve(new Destroyable()))
+        .onDeactivation((instance) => new Promise((r) => {
+            deactivatedDestroyable2 = instance
+            r();
+        }));
+
+      await container2.getAsync("Destroyable");
+
+      await container2.unbindAsync("Destroyable");
+
+      expect(deactivatedDestroyable2).instanceof(Destroyable);
   });
 
   it("Should wait on deactivation promise before returning unbindAsync()", async () => {
@@ -1545,6 +1563,45 @@ describe("Resolve", () => {
       expect(() => container.unbind("Destroyable")).to
           .throw("Attempting to unbind dependency with asynchronous destruction (@preDestroy or onDeactivation)");
   });
+
+  it("Should throw deactivation error when errors in deactivation ( sync )", () => {
+    @injectable()
+    class Destroyable {
+    }
+    const errorMessage = "the error message"
+    const container = new Container();
+    container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+        .onDeactivation(() => {throw new Error(errorMessage)});
+
+    container.get("Destroyable");
+
+    const expectedErrorMessage = ERROR_MSGS.ON_DEACTIVATION_ERROR("Destroyable",errorMessage)
+
+    expect(() => container.unbind("Destroyable")).to
+        .throw(expectedErrorMessage);
+  })
+
+  it("Should throw deactivation error when errors in deactivation ( async )", async () => {
+    @injectable()
+    class Destroyable {
+    }
+    const errorMessage = "the error message"
+    const container = new Container();
+    container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope()
+        .onDeactivation(() => Promise.reject(new Error(errorMessage)));
+
+    container.get("Destroyable");
+
+    const expectedErrorMessage = ERROR_MSGS.ON_DEACTIVATION_ERROR("Destroyable",errorMessage)
+
+    let error:any
+    try{
+        await container.unbindAsync("Destroyable")
+    }catch(e){
+        error = e
+    }
+    expect(error.message).to.eql(expectedErrorMessage)
+  })
 
   it("Should invoke destroy in order (all async): child container, parent container, binding, class", async () => {
       let roll = 1;
