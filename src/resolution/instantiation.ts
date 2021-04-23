@@ -11,35 +11,28 @@ interface InstanceCreationInstruction{
     propertyRequests:interfaces.Request[]
 }
 
-type CreateInstanceWithInjectionArg<T> = InstanceCreationInstruction & {constr: interfaces.Newable<T>,}
+type ResolvedRequests = InstanceCreationInstruction & {isAsync:boolean}
+
+type CreateInstanceWithInjectionArg<T> = InstanceCreationInstruction & {constr: interfaces.Newable<T>}
 
 function _resolveRequests(
     childRequests: interfaces.Request[],
     resolveRequest: interfaces.ResolveRequestHandler
-) : InstanceCreationInstruction & {
-    isAsync:boolean
-} {
-    let isAsync = false
-    const constructorInjections: unknown[] = []
-    const propertyRequests: interfaces.Request[] = []
-    const propertyInjections: unknown[] = []
-    for(const childRequest of childRequests){
-        let injection:unknown
-        const target = childRequest.target
-        const targetType = target.type
+) : ResolvedRequests {
+    return childRequests.reduce<ResolvedRequests>((resolvedRequests,childRequest)=> {
+        const injection = resolveRequest(childRequest)
+        const targetType = childRequest.target.type
         if(targetType === TargetTypeEnum.ConstructorArgument){
-            injection = resolveRequest(childRequest)
-            constructorInjections.push(injection)
+            resolvedRequests.constructorInjections.push(injection)
         }else{
-            propertyRequests.push(childRequest)
-            injection = resolveRequest(childRequest)
-            propertyInjections.push(injection)
+            resolvedRequests.propertyRequests.push(childRequest)
+            resolvedRequests.propertyInjections.push(injection)
         }
-        if(!isAsync){
-            isAsync = isPromiseOrContainsPromise(injection);
+        if(!resolvedRequests.isAsync){
+            resolvedRequests.isAsync = isPromiseOrContainsPromise(injection);
         }
-    }
-    return {constructorInjections,propertyInjections,propertyRequests,isAsync}
+        return resolvedRequests
+    },{constructorInjections:[],propertyInjections:[],propertyRequests:[],isAsync:false})
 }
 
 function _createInstance<T>(
