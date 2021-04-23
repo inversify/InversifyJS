@@ -178,7 +178,7 @@ class Container implements interfaces.Container {
         if (this._bindingDictionary.hasKey(serviceIdentifier)) {
             const bindings = this._bindingDictionary.get(serviceIdentifier);
 
-            this._tryDeactivations(bindings);
+            this._deactivateSingletons(bindings);
         }
 
         this._removeServiceFromDictionary(serviceIdentifier);
@@ -188,7 +188,7 @@ class Container implements interfaces.Container {
         if (this._bindingDictionary.hasKey(serviceIdentifier)) {
             const bindings = this._bindingDictionary.get(serviceIdentifier);
 
-            await this._tryDeactivationsAsync(bindings);
+            await this._deactivateSingletonsAsync(bindings);
         }
 
         this._removeServiceFromDictionary(serviceIdentifier);
@@ -197,7 +197,7 @@ class Container implements interfaces.Container {
     // Removes all the type bindings from the registry
     public unbindAll(): void {
         this._bindingDictionary.traverse((key, value) => {
-            this._tryDeactivations(value);
+            this._deactivateSingletons(value);
         });
 
         this._bindingDictionary = new Lookup<Binding<any>>();
@@ -207,7 +207,7 @@ class Container implements interfaces.Container {
         const promises: Promise<void>[] = [];
 
         this._bindingDictionary.traverse((key, value) => {
-            promises.push(this._tryDeactivationsAsync(value));
+            promises.push(this._deactivateSingletonsAsync(value));
         });
 
         await Promise.all(promises);
@@ -588,7 +588,7 @@ class Container implements interfaces.Container {
         };
     }
 
-    private _tryDeactivate(binding: Binding<any>): Promise<void> | void {
+    private _deactivateIfSingleton(binding: Binding<any>): Promise<void> | void {
         if (!binding.cache) {
             return;
         }
@@ -600,9 +600,9 @@ class Container implements interfaces.Container {
         return this._deactivate(binding, binding.cache);
     }
 
-    private _tryDeactivations(bindings: Binding<any>[]): void {
+    private _deactivateSingletons(bindings: Binding<any>[]): void {
         for (const binding of bindings) {
-            const result = this._tryDeactivate(binding);
+            const result = this._deactivateIfSingleton(binding);
 
             if (isPromise(result)) {
                 throw new Error(ERROR_MSGS.ASYNC_UNBIND_REQUIRED);
@@ -610,18 +610,8 @@ class Container implements interfaces.Container {
         }
     }
 
-    private async _tryDeactivationsAsync(bindings: Binding<any>[]): Promise<void> {
-        const promises: Promise<unknown>[] = [];
-
-        for (const binding of bindings) {
-            const result = this._tryDeactivate(binding);
-
-            if (isPromise(result)) {
-                promises.push(result);
-            }
-        }
-
-        await Promise.all(promises);
+    private async _deactivateSingletonsAsync(bindings: Binding<any>[]): Promise<void> {
+        await Promise.all(bindings.map(b => this._deactivateIfSingleton(b)))
     }
 
     private _propagateServiceDeactivationThenBindingAndPreDestroy<T>(
