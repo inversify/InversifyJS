@@ -5,6 +5,43 @@ import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 
+interface InstanceCreationInstruction{
+    constructorInjections: unknown[],
+    propertyInjections: unknown[],
+    propertyRequests:interfaces.Request[]
+}
+
+type CreateInstanceWithInjectionArg<T> = InstanceCreationInstruction & {constr: interfaces.Newable<T>,}
+
+function _resolveRequests(
+    childRequests: interfaces.Request[],
+    resolveRequest: interfaces.ResolveRequestHandler
+) : InstanceCreationInstruction & {
+    isAsync:boolean
+} {
+    let isAsync = false
+    const constructorInjections: unknown[] = []
+    const propertyRequests: interfaces.Request[] = []
+    const propertyInjections: unknown[] = []
+    for(const childRequest of childRequests){
+        let injection:unknown
+        const target = childRequest.target
+        const targetType = target.type
+        if(targetType === TargetTypeEnum.ConstructorArgument){
+            injection = resolveRequest(childRequest)
+            constructorInjections.push(injection)
+        }else{
+            propertyRequests.push(childRequest)
+            injection = resolveRequest(childRequest)
+            propertyInjections.push(injection)
+        }
+        if(!isAsync){
+            isAsync = isPromiseOrContainsPromise(injection);
+        }
+    }
+    return {constructorInjections,propertyInjections,propertyRequests,isAsync}
+}
+
 function _createInstance<T>(
     constr: interfaces.Newable<T>,
     childRequests: interfaces.Request[],
@@ -13,30 +50,12 @@ function _createInstance<T>(
     let result: T | Promise<T>;
 
     if (childRequests.length > 0) {
-        let isAsync = false
-        const constructorInjections: unknown[] = []
-        const propertyRequests: interfaces.Request[] = []
-        const propertyInjections: unknown[] = []
-        for(const childRequest of childRequests){
-            let injection:unknown
-            const target = childRequest.target
-            const targetType = target.type
-            if(targetType === TargetTypeEnum.ConstructorArgument){
-                injection = resolveRequest(childRequest)
-                constructorInjections.push(injection)
-            }else{
-                propertyRequests.push(childRequest)
-                injection = resolveRequest(childRequest)
-                propertyInjections.push(injection)
-            }
-            if(!isAsync){
-                isAsync = isPromiseOrContainsPromise(injection);
-            }
-        }
-        if(isAsync){
-            result = createInstanceWithInjectionsAsync(constructorInjections,propertyRequests,propertyInjections, constr)
+        const resolved = _resolveRequests(childRequests,resolveRequest)
+        const createInstanceWithInjectionsArg: CreateInstanceWithInjectionArg<T> = {...resolved,constr}
+        if(resolved.isAsync){
+            result = createInstanceWithInjectionsAsync(createInstanceWithInjectionsArg)
         }else{
-            result = createInstanceWithInjections(constructorInjections,propertyRequests,propertyInjections, constr)
+            result = createInstanceWithInjections(createInstanceWithInjectionsArg)
         }
     } else {
         result = new constr();
@@ -46,28 +65,25 @@ function _createInstance<T>(
 }
 
 function createInstanceWithInjections<T>(
-    constructorArgs:unknown[],
-    propertyRequests:interfaces.Request[],
-    propertyValues:unknown[],
-    constr:interfaces.Newable<T>): T{
-        const instance = new constr(...constructorArgs);
-        propertyRequests.forEach((r: interfaces.Request, index: number) => {
-            const propertyName = r.target.name.value();
-            const injection = propertyValues[index];
-            (instance as Record<string, unknown>)[propertyName] = injection;
-        });
-        return instance
+    args:CreateInstanceWithInjectionArg<T>
+): T {
+    const instance = new args.constr(...args.constructorInjections);
+    args.propertyRequests.forEach((r: interfaces.Request, index: number) => {
+        const propertyName = r.target.name.value();
+        const injection = args.propertyInjections[index];
+        (instance as Record<string, unknown>)[propertyName] = injection;
+    });
+    return instance
+}
 
-}
 async function createInstanceWithInjectionsAsync<T>(
-    possiblePromiseConstructorArgs:unknown[],
-    propertyRequests:interfaces.Request[],
-    possiblyPromisePropertyValues:unknown[],
-    constr:interfaces.Newable<T>):Promise<T>{
-        const ctorArgs = await possiblyWaitInjections(possiblePromiseConstructorArgs)
-        const propertyValues = await possiblyWaitInjections(possiblyPromisePropertyValues)
-        return createInstanceWithInjections<T>(ctorArgs,propertyRequests,propertyValues, constr)
+    args:CreateInstanceWithInjectionArg<T>
+): Promise<T> {
+    const constructorInjections = await possiblyWaitInjections(args.constructorInjections)
+    const propertyInjections = await possiblyWaitInjections(args.propertyInjections)
+    return createInstanceWithInjections<T>({...args,constructorInjections,propertyInjections})
 }
+
 async function possiblyWaitInjections(possiblePromiseinjections:unknown[]){
     const injections:unknown[] = [];
     for(const injection of possiblePromiseinjections){
