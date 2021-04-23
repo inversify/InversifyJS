@@ -978,7 +978,7 @@ describe("Container", () => {
 
     });
 
-    it("should be able to get all the servides binded (async)", async () => {
+    it("should be able to get all the services binded (async)", async () => {
         const serviceIdentifier = "service-identifier";
 
         const container = new Container();

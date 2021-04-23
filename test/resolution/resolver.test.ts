@@ -1655,7 +1655,7 @@ describe("Resolve", () => {
       expect(klass).eql(4);
   });
 
-  it("Should invoke destory in order (sync + async): child container, parent container, binding, class", async () => {
+  it("Should invoke destroy in order (sync + async): child container, parent container, binding, class", async () => {
       let roll = 1;
       let binding = null;
       let klass = null;
@@ -1703,7 +1703,7 @@ describe("Resolve", () => {
       expect(klass).eql(4);
   });
 
-  it("Should invoke destory in order (all sync): child container, parent container, binding, class", () => {
+  it("Should invoke destroy in order (all sync): child container, parent container, binding, class", () => {
       let roll = 1;
       let binding = null;
       let klass = null;
@@ -1745,7 +1745,7 @@ describe("Resolve", () => {
       expect(klass).eql(4);
   });
 
-  it("Should invoke destory in order (async): child container, parent container, binding, class", async () => {
+  it("Should invoke destroy in order (async): child container, parent container, binding, class", async () => {
     let roll = 1;
     let binding = null;
     let klass = null;
@@ -1865,16 +1865,16 @@ describe("Resolve", () => {
       @injectable()
       class Constructable {
       }
-
+      let activated: Constructable | null = null
       const container = new Container();
       container.bind<Constructable>("Constructable").toDynamicValue(() => Promise.resolve(new Constructable())).inSingletonScope()
           .onActivation((context, c) => new Promise((r) => {
-              expect(c).instanceof(Constructable);
-
+              activated = c
               r(c);
           }));
 
       await container.getAsync("Constructable");
+      expect(activated).instanceof(Constructable);
   });
 
   it("Should not allow sync get if an async activation was added to container", async () => {
@@ -2466,7 +2466,7 @@ describe("Resolve", () => {
       await container.getAsync<Child>(Child);
   });
 
-  it("Should be able to mix BindingType.AsyncValue bindings with non-async values", async () => {
+  it("Should be able to mix async bindings with non-async values", async () => {
       @injectable()
       class UseDate implements UseDate {
           public currentDate: Date;
