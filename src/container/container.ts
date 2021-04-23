@@ -392,20 +392,22 @@ class Container implements interfaces.Container {
 
         try {
             if (this._deactivations.hasKey(binding.serviceIdentifier)) {
-                const result = this._deactivateService(
+                const result = this._deactivateContainer(
                     instance,
                     this._deactivations.get(binding.serviceIdentifier).values(),
                 );
 
                 if (isPromise(result)) {
                     return this._handleDeactivationError(
-                        result.then(() => this._propagateServiceDeactivationThenBindingAndPreDestroyAsync(binding, instance, constructor)),
+                        result.then(() => this._propagateContainerDeactivationThenBindingAndPreDestroyAsync(
+                            binding, instance, constructor)),
                         constructor
                     );
                 }
             }
 
-            const propagateDeactivationResult = this._propagateServiceDeactivationThenBindingAndPreDestroy(binding, instance, constructor);
+            const propagateDeactivationResult = this._propagateContainerDeactivationThenBindingAndPreDestroy(
+                binding, instance, constructor);
 
             if (isPromise(propagateDeactivationResult)) {
                 return this._handleDeactivationError(propagateDeactivationResult, constructor);
@@ -424,7 +426,7 @@ class Container implements interfaces.Container {
     }
 
 
-    private _deactivateService<T>(
+    private _deactivateContainer<T>(
         instance: T,
         deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>,
     ): void | Promise<void> {
@@ -435,7 +437,7 @@ class Container implements interfaces.Container {
 
             if (isPromise(result)) {
                 return result.then(() =>
-                    this._deactivateServiceAsync(instance, deactivationsIterator),
+                    this._deactivateContainerAsync(instance, deactivationsIterator),
                 );
             }
 
@@ -443,7 +445,7 @@ class Container implements interfaces.Container {
         }
     }
 
-    private async _deactivateServiceAsync<T>(
+    private async _deactivateContainerAsync<T>(
         instance: T,
         deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<any>>,
     ): Promise<void> {
@@ -614,7 +616,7 @@ class Container implements interfaces.Container {
         await Promise.all(bindings.map(b => this._deactivateIfSingleton(b)))
     }
 
-    private _propagateServiceDeactivationThenBindingAndPreDestroy<T>(
+    private _propagateContainerDeactivationThenBindingAndPreDestroy<T>(
         binding: Binding<T>,
         instance: T,
         constructor: any
@@ -626,7 +628,7 @@ class Container implements interfaces.Container {
         }
     }
 
-    private async _propagateServiceDeactivationThenBindingAndPreDestroyAsync<T>(
+    private async _propagateContainerDeactivationThenBindingAndPreDestroyAsync<T>(
         binding: Binding<T>,
         instance: T,
         constructor: any

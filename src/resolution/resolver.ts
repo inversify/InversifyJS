@@ -149,8 +149,8 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 
 };
 
-function _onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, previousResult: T): T | Promise<T> {
-    let result = _callBindingActivation(request, binding, previousResult);
+function _onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, resolved: T): T | Promise<T> {
+    let result = _bindingActivation(request.parentContext, binding, resolved);
 
     const containersIterator = _getContainersIterator(request.parentContext.container);
 
@@ -159,11 +159,14 @@ function _onActivation<T>(request: interfaces.Request, binding: interfaces.Bindi
 
     do {
         container = containersIteratorResult.value;
+        const context = request.parentContext;
+        const serviceIdentifier = request.serviceIdentifier;
+        const activationsIterator = _getContainerActivationsForService(container, serviceIdentifier);
 
         if (isPromise(result)) {
-            result = _callContainerActivationsAsync<T>(request, container, result);
+            result = _activateContainerAsync<T>(activationsIterator, context, result);
         } else {
-            result = _callContainerActivations<T>(request, container, result);
+            result = _activateContainer<T>(activationsIterator, context, result);
         }
 
         containersIteratorResult = containersIterator.next();
@@ -174,12 +177,12 @@ function _onActivation<T>(request: interfaces.Request, binding: interfaces.Bindi
     return result;
 }
 
-const _callBindingActivation = <T>(request: interfaces.Request, binding: interfaces.Binding<T>, previousResult: T): T | Promise<T> => {
+const _bindingActivation = <T>(context: interfaces.Context, binding: interfaces.Binding<T>, previousResult: T): T | Promise<T> => {
     let result: T | Promise<T>;
 
     // use activation handler if available
     if (typeof binding.onActivation === "function") {
-        result = binding.onActivation(request.parentContext, previousResult);
+        result = binding.onActivation(context, previousResult);
     } else {
         result = previousResult;
     }
@@ -187,7 +190,7 @@ const _callBindingActivation = <T>(request: interfaces.Request, binding: interfa
     return result;
 }
 
-const _callActivations = <T> (
+const _activateContainer = <T> (
     activationsIterator: Iterator<interfaces.BindingActivation<any>>,
     context: interfaces.Context,
     result: T,
@@ -198,7 +201,7 @@ const _callActivations = <T> (
         result = activation.value(context, result);
 
         if (isPromise<T>(result)) {
-            return result.then((resolved) => _callActivationsAsync(activationsIterator, context, resolved));
+            return _activateContainerAsync(activationsIterator, context, result);
         }
 
         activation = activationsIterator.next();
@@ -207,11 +210,12 @@ const _callActivations = <T> (
     return result;
 }
 
-const _callActivationsAsync = async<T>(
+const _activateContainerAsync = async<T>(
     activationsIterator: Iterator<interfaces.BindingActivation<any>>,
     context: interfaces.Context,
-    result: T,
+    resultPromise: Promise<T>,
 ): Promise<T> => {
+    let result = await resultPromise
     let activation = activationsIterator.next();
 
     while (!activation.done) {
@@ -223,35 +227,7 @@ const _callActivationsAsync = async<T>(
     return result;
 }
 
-const _callContainerActivations = <T>(
-    request: interfaces.Request,
-    container: interfaces.Container,
-    previousResult: T,
-): T | Promise<T> => {
-    const context = request.parentContext;
-    const serviceIdentifier = request.serviceIdentifier;
-
-    const activationsIterator = _extractActivationsForService(container, serviceIdentifier);
-
-    const activationsTraverseResult = _callActivations(activationsIterator, context, previousResult);
-
-    return activationsTraverseResult;
-}
-
-const _callContainerActivationsAsync = async <T>(
-    request: interfaces.Request,
-    container: interfaces.Container,
-    previousResult: T | Promise<T>,
-): Promise<T> => {
-    const context = request.parentContext;
-    const serviceIdentifier = request.serviceIdentifier;
-
-    const activationsIterator = _extractActivationsForService(container, serviceIdentifier);
-
-    return _callActivationsAsync(activationsIterator, context, await previousResult);
-}
-
-const _extractActivationsForService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
+const _getContainerActivationsForService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
     // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
     const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
 
