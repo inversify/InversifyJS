@@ -11,9 +11,13 @@ interface InstanceCreationInstruction{
     propertyRequests:interfaces.Request[]
 }
 
-type ResolvedRequests = InstanceCreationInstruction & {isAsync:boolean}
+interface ResolvedRequests extends InstanceCreationInstruction{
+    isAsync:boolean
+}
 
-type CreateInstanceWithInjectionArg<T> = InstanceCreationInstruction & {constr: interfaces.Newable<T>}
+interface CreateInstanceWithInjectionArg<T> extends InstanceCreationInstruction{
+    constr: interfaces.Newable<T>
+}
 
 function _resolveRequests(
     childRequests: interfaces.Request[],
