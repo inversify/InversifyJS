@@ -9,6 +9,8 @@ Its some other cases it gives you a contract that guarantees
 that this method will be invoked only once in the lifetime
 of the object when used in singleton scope. See the following examples for usage.
 
+The method can be synchronous or asynchronous.
+
 
 ```ts
 interface Katana {

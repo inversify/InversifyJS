@@ -43,8 +43,12 @@ This will create the Reflect object as a global.
 Most modern JavaScript engines support map but if you need to support old browsers you will need to use a map polyfill (e.g. [es6-map](https://www.npmjs.com/package/es6-map)).
 
 ## Promise
-[Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) are only required only if you use want to 
-[inject a provider](https://github.com/inversify/InversifyJS#injecting-a-provider-asynchronous-factory).
+[Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) are required if you want to:
+
+[Inject a provider](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md) or
+[inject dynamic values asynchronously](https://github.com/inversify/InversifyJS/blob/master/wiki/value_injection.md).
+
+Handle [post construction](https://github.com/inversify/InversifyJS/blob/master/wiki/post_construct.md) and [activation](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md), or [pre destroy](https://github.com/inversify/InversifyJS/blob/master/wiki/pre_destroy.md) and [deactivation](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md) asynchronously.
 
 Most modern JavaScript engines support promises but if you need to support old browsers you will need to use a promise polyfill (e.g. [es6-promise](https://github.com/stefanpenner/es6-promise) or [bluebird](https://www.npmjs.com/package/bluebird)).
 

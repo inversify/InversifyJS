@@ -1,4 +1,5 @@
 namespace interfaces {
+    export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>
     export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[]
 
     type AsyncCallback<TCallback> =
@@ -57,7 +58,7 @@ namespace interfaces {
         activated: boolean;
         serviceIdentifier: ServiceIdentifier<T>;
         constraint: ConstraintFunction;
-        dynamicValue: ((context: interfaces.Context) => T) | null;
+        dynamicValue: DynamicValue<T> | null;
         scope: BindingScope;
         type: BindingType;
         implementationType: Newable<T> | null;
@@ -291,7 +292,7 @@ namespace interfaces {
         to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
         toSelf(): BindingInWhenOnSyntax<T>;
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
-        toDynamicValue(func: (context: Context) => T | Promise<T>): BindingInWhenOnSyntax<T>;
+        toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
         toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;

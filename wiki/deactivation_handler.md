@@ -1,6 +1,6 @@
 # Deactivation handler
 
-It is possible to add an activation handler for a type not binded in transient scope. The deactivation handler is invoked before the type is unbinded from the container:
+It is possible to add a deactivation handler for a type binded in singleton scope.  The handler can be synchronous or asynchronous. The deactivation handler is invoked before the type is unbinded from the container:
 
 ```ts
 @injectable()
@@ -24,7 +24,9 @@ It's possible to add a deactivation handler in multiple ways
 - Adding the handler to a binding.
 - Adding the handler to the class through the [preDestroy decorator](./pre_destroy.md).
 
-Handlers added to the container are the firsts ones to be resolved. Any handler added to a child container is called before the ones added to their parent. Any handler added through the `preDestroy` decorator is called after any handler added to a container or a biding:
+Handlers added to the container are the firsts ones to be resolved. Any handler added to a child container is called before the ones added to their parent. Relevant bindings from the container are called next and finally the `preDestroy` method is called. In the example above, relevant bindings are those bindings bound to the unbinded "Destroyable" service identifer.
+
+The example below demonstrates call order.
 
 ```ts
 let roll = 1;
