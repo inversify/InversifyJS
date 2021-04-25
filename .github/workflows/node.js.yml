@@ -45,3 +45,21 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+
+  coverage:
+    needs: [ build ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '15'
+    - run: npm install
+    - run: npm run test
+    - uses: paambaati/codeclimate-action@v2.7.5
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      with:
+        coverageCommand: npx nyc report --reporter=lcov
+        debug: true
