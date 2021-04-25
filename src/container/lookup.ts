@@ -29,7 +29,6 @@ class Lookup<T> implements interfaces.Lookup<T> {
         const entry = this._map.get(serviceIdentifier);
         if (entry !== undefined) {
             entry.push(value);
-            this._map.set(serviceIdentifier, entry);
         } else {
             this._map.set(serviceIdentifier, [value]);
         }
@@ -64,15 +63,25 @@ class Lookup<T> implements interfaces.Lookup<T> {
 
     }
 
-    public removeByCondition(condition: (item: T) => boolean): void {
+    public removeByCondition(condition: (item: T) => boolean): T[] {
+        const removals:T[] = [];
         this._map.forEach((entries, key) => {
-            const updatedEntries = entries.filter((entry) => !condition(entry));
+            const updatedEntries:T[] = [];
+            for(const entry of entries){
+                const remove = condition(entry)
+                if(remove){
+                    removals.push(entry)
+                }else{
+                    updatedEntries.push(entry)
+                }
+            }
             if (updatedEntries.length > 0) {
                 this._map.set(key, updatedEntries);
             } else {
                 this._map.delete(key);
             }
         });
+        return removals;
     }
 
     // returns true if _map contains a key (serviceIdentifier)

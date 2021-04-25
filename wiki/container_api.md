@@ -99,7 +99,7 @@ expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("S
 expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
 ```
 
-## container.get<T>(serviceIdentifier: ServiceIdentifier<T>)
+## container.get<T>(serviceIdentifier: ServiceIdentifier<T>): T
 
 Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -110,7 +110,7 @@ container.bind<Weapon>("Weapon").to(Katana);
 let katana = container.get<Weapon>("Weapon");
 ```
 
-## container.getAsync<T>(serviceIdentifier: ServiceIdentifier<T>)
+## container.getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>
 
 Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -125,7 +125,7 @@ container.bind("Level1").toDynamicValue(() => buildLevel1());
 let level1 = await container.getAsync<Level1>("Level1"); // Returns Promise<Level1>
 ```
 
-## container.getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol)
+## container.getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T
 
 Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -138,7 +138,7 @@ let katana = container.getNamed<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 
-## container.getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol)
+## container.getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>
 
 Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -151,7 +151,7 @@ let katana = container.getNamedAsync<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamedAsync<Weapon>("Weapon", "chinese");
 ```
 
-## container.getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
+## container.getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -164,7 +164,7 @@ let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
+## container.getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -177,7 +177,7 @@ let katana = container.getTaggedAsync<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTaggedAsync<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>)
+## container.getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[]
 
 Get all available bindings for a given identifier. All the bindings must be syncronously resolved, otherwise an error is thrown:
 
@@ -189,7 +189,7 @@ container.bind<Weapon>("Weapon").to(Shuriken);
 let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## container.getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>)
+## container.getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T[]>
 
 Get all available bindings for a given identifier:
 
@@ -201,7 +201,7 @@ container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken());
 let weapons = await container.getAllAsync<Weapon>("Weapon");  // returns Promise<Weapon[]>
 ```
 
-## container.getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol)
+## container.getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[]
 
 Resolves all the dependencies by its runtime identifier that matches the given named constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -230,7 +230,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol)
+## container.getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]>
 
 Resolves all the dependencies by its runtime identifier that matches the given named constraint:
 
@@ -260,7 +260,7 @@ expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## container.getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
+## container.getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[]
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
 
@@ -289,7 +289,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any)
+## container.getAllTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T[]>
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint:
 

@@ -54,7 +54,7 @@ namespace interfaces {
 
     export interface Binding<T> extends Clonable<Binding<T>> {
         id: number;
-        moduleId: string;
+        moduleId: ContainerModuleBase["id"];
         activated: boolean;
         serviceIdentifier: ServiceIdentifier<T>;
         constraint: ConstraintFunction;
@@ -176,6 +176,7 @@ namespace interfaces {
         options: ContainerOptions;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
+        rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>>
         unbind(serviceIdentifier: ServiceIdentifier<any>): void;
         unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<any>): Promise<void>;
         unbindAll(): void;
@@ -201,6 +202,7 @@ namespace interfaces {
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
         unload(...modules: ContainerModule[]): void;
+        unloadAsync(...modules: interfaces.ContainerModule[]): Promise<void>
         applyCustomMetadataReader(metadataReader: MetadataReader): void;
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
@@ -214,16 +216,31 @@ namespace interfaces {
 
     export type Unbind = <T>(serviceIdentifier: ServiceIdentifier<T>) => void;
 
+    export type UnbindAsync = <T>(serviceIdentifier: ServiceIdentifier<T>) => Promise<void>;
+
     export type IsBound = <T>(serviceIdentifier: ServiceIdentifier<T>) => boolean;
 
-    export interface ContainerModule {
+    export interface ContainerModuleBase{
         id: number;
+    }
+
+    export interface ContainerModule extends ContainerModuleBase {
         registry: ContainerModuleCallBack;
     }
 
-    export interface AsyncContainerModule {
-        id: number;
+    export interface AsyncContainerModule extends ContainerModuleBase {
         registry: AsyncContainerModuleCallBack;
+    }
+
+    export interface ModuleActivationHandlers{
+        onActivations:interfaces.BindingActivation<any>[],
+        onDeactivations:interfaces.BindingDeactivation<any>[]
+    }
+
+    export interface ModuleActivationsStore extends Clonable<ModuleActivationsStore>{
+        addDeactivation(moduleId: ContainerModuleBase["id"], onDeactivation: interfaces.BindingDeactivation<any>): void
+        addActivation(moduleId: ContainerModuleBase["id"], onActivation: interfaces.BindingActivation<any>): void
+        remove(moduleId: ContainerModuleBase["id"]): ModuleActivationHandlers
     }
 
     export type ContainerModuleCallBack = (
@@ -231,6 +248,7 @@ namespace interfaces {
         unbind: interfaces.Unbind,
         isBound: interfaces.IsBound,
         rebind: interfaces.Rebind,
+        unbindAsync: interfaces.UnbindAsync,
         onActivation: interfaces.Container["onActivation"],
         onDeactivation: interfaces.Container["onDeactivation"]
     ) => void;
@@ -242,6 +260,7 @@ namespace interfaces {
         activations: Lookup<BindingActivation<any>>;
         deactivations: Lookup<BindingDeactivation<any>>;
         middleware: Next | null;
+        moduleActivationStore: interfaces.ModuleActivationsStore;
     }
 
     export interface Lookup<T> extends Clonable<Lookup<T>> {
@@ -249,7 +268,7 @@ namespace interfaces {
         getMap(): Map<interfaces.ServiceIdentifier<any>, T[]>;
         get(serviceIdentifier: ServiceIdentifier<any>): T[];
         remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void;
-        removeByCondition(condition: (item: T) => boolean): void;
+        removeByCondition(condition: (item: T) => boolean): T[];
         hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
         clone(): Lookup<T>;
         traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;

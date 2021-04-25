@@ -6,18 +6,21 @@ class ContainerSnapshot implements interfaces.ContainerSnapshot {
     public activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
     public deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>;
     public middleware: interfaces.Next | null;
+    public moduleActivationStore: interfaces.ModuleActivationsStore;
 
     public static of(
       bindings: interfaces.Lookup<interfaces.Binding<any>>,
       middleware: interfaces.Next | null,
       activations: interfaces.Lookup<interfaces.BindingActivation<any>>,
-      deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>
+      deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>,
+      moduleActivationsStore: interfaces.ModuleActivationsStore
     ) {
         const snapshot = new ContainerSnapshot();
         snapshot.bindings = bindings;
         snapshot.middleware = middleware;
         snapshot.deactivations = deactivations;
         snapshot.activations = activations;
+        snapshot.moduleActivationStore = moduleActivationsStore;
         return snapshot;
     }
 

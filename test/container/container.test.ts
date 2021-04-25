@@ -334,6 +334,33 @@ describe("Container", () => {
         expect(timesCalled).to.be.equal(1);
     });
 
+    it("Should save and restore the container activations and deactivations when snapshot and restore", () => {
+        const sid = "sid";
+        const container = new Container();
+        container.bind<string>(sid).toConstantValue("Value");
+
+        let activated = false;
+        let deactivated = false
+
+        container.snapshot();
+
+        container.onActivation<string>(sid,(c, i) => {
+            activated = true;
+            return i;
+        });
+        container.onDeactivation(sid,i => {
+            deactivated = true;
+        });
+
+        container.restore();
+
+        container.get(sid);
+        container.unbind(sid);
+
+        expect(activated).to.equal(false);
+        expect(deactivated).to.equal(false);
+    })
+
     it("Should be able to check is there are bindings available for a given identifier", () => {
 
         interface Warrior {}
@@ -890,6 +917,28 @@ describe("Container", () => {
         expect(values1[1]).to.eq(2);
 
         container.rebind<number>(TYPES.someType).toConstantValue(3);
+        const values2 = container.getAll(TYPES.someType);
+        expect(values2[0]).to.eq(3);
+        expect(values2[1]).to.eq(undefined);
+
+    });
+
+    it("Should be able to override a binding using rebindAsync", async () => {
+
+        const TYPES = {
+            someType: "someType"
+        };
+
+        const container = new Container();
+        container.bind<number>(TYPES.someType).toConstantValue(1);
+        container.bind<number>(TYPES.someType).toConstantValue(2);
+        container.onDeactivation(TYPES.someType,() => Promise.resolve())
+
+        const values1 = container.getAll(TYPES.someType);
+        expect(values1[0]).to.eq(1);
+        expect(values1[1]).to.eq(2);
+
+        (await container.rebindAsync<number>(TYPES.someType)).toConstantValue(3);
         const values2 = container.getAll(TYPES.someType);
         expect(values2[0]).to.eq(3);
         expect(values2[1]).to.eq(undefined);

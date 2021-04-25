@@ -106,8 +106,8 @@ describe("Lookup", () => {
 
   it("Should be able to remove a binding by a condition", () => {
 
-    const moduleId1 = "moduleId1";
-    const moduleId2 = "moduleId2";
+    const moduleId1 = 1;
+    const moduleId2 = 2;
     const warriorId = "Warrior";
     const weaponId = "Weapon";
 
