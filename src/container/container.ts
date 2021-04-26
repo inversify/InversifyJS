@@ -12,7 +12,7 @@ import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
-import { ModuleActivationsStore } from "./module_activations_store";
+import { ModuleActivationStore } from "./module_activation_store";
 
 type GetArgs = Omit<interfaces.NextArgs,'contextInterceptor'|'targetType'>
 
@@ -28,7 +28,7 @@ class Container implements interfaces.Container {
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
     private _appliedMiddleware: interfaces.Middleware[] = [];
-    private _moduleActivationStore: interfaces.ModuleActivationsStore
+    private _moduleActivationStore: interfaces.ModuleActivationStore
 
     public static merge(
       container1: interfaces.Container,
@@ -106,7 +106,7 @@ class Container implements interfaces.Container {
         this._deactivations = new Lookup<interfaces.BindingDeactivation<any>>();
         this.parent = null;
         this._metadataReader = new MetadataReader();
-        this._moduleActivationStore = new ModuleActivationsStore()
+        this._moduleActivationStore = new ModuleActivationStore()
     }
 
     public load(...modules: interfaces.ContainerModule[]) {

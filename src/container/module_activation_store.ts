@@ -1,6 +1,6 @@
 import { interfaces } from "../interfaces/interfaces";
 
-export class ModuleActivationsStore implements interfaces.ModuleActivationsStore {
+export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     private _map = new Map<number, interfaces.ModuleActivationHandlers>();
     remove(moduleId: interfaces.ContainerModuleBase["id"]): interfaces.ModuleActivationHandlers {
         if (this._map.has(moduleId)) {
@@ -33,8 +33,8 @@ export class ModuleActivationsStore implements interfaces.ModuleActivationsStore
         }
     }
 
-    clone(): interfaces.ModuleActivationsStore {
-        const clone = new ModuleActivationsStore();
+    clone(): interfaces.ModuleActivationStore {
+        const clone = new ModuleActivationStore();
         this._map.forEach((handlersStore, moduleId) => {
             handlersStore.onActivations.forEach(onActivation => clone.addActivation(moduleId,onActivation));
             handlersStore.onDeactivations.forEach(onDeactivation => clone.addDeactivation(moduleId,onDeactivation));

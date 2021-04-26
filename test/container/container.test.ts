@@ -6,6 +6,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { ContainerModule } from "../../src/container/container_module";
+import { ModuleActivationStore } from "../../src/container/module_activation_store";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { getBindingDictionary } from "../../src/planning/planner";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
@@ -359,6 +360,23 @@ describe("Container", () => {
 
         expect(activated).to.equal(false);
         expect(deactivated).to.equal(false);
+    })
+
+    it("Should save and restore the module activation store when snapshot and restore", () => {
+        const container = new Container();
+        const clonedActivationStore = new ModuleActivationStore();
+        const originalActivationStore = {
+            clone(){
+                return clonedActivationStore;
+            }
+        }
+        const anyContainer = container as any;
+        anyContainer._moduleActivationStore = originalActivationStore;
+        container.snapshot();
+        const snapshot:interfaces.ContainerSnapshot = anyContainer._snapshots[0];
+        expect(snapshot.moduleActivationStore === clonedActivationStore).to.equal(true);
+        container.restore();
+        expect(anyContainer._moduleActivationStore === clonedActivationStore).to.equal(true);
     })
 
     it("Should be able to check is there are bindings available for a given identifier", () => {

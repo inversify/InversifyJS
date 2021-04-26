@@ -237,7 +237,7 @@ namespace interfaces {
         onDeactivations:interfaces.BindingDeactivation<any>[]
     }
 
-    export interface ModuleActivationsStore extends Clonable<ModuleActivationsStore>{
+    export interface ModuleActivationStore extends Clonable<ModuleActivationStore>{
         addDeactivation(moduleId: ContainerModuleBase["id"], onDeactivation: interfaces.BindingDeactivation<any>): void
         addActivation(moduleId: ContainerModuleBase["id"], onActivation: interfaces.BindingActivation<any>): void
         remove(moduleId: ContainerModuleBase["id"]): ModuleActivationHandlers
@@ -260,7 +260,7 @@ namespace interfaces {
         activations: Lookup<BindingActivation<any>>;
         deactivations: Lookup<BindingDeactivation<any>>;
         middleware: Next | null;
-        moduleActivationStore: interfaces.ModuleActivationsStore;
+        moduleActivationStore: interfaces.ModuleActivationStore;
     }
 
     export interface Lookup<T> extends Clonable<Lookup<T>> {
