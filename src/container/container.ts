@@ -362,7 +362,7 @@ class Container implements interfaces.Container {
     public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T[]> {
         const getArgs = this._getAllArgs(serviceIdentifier);
 
-        return Promise.all(this._get<T>(getArgs) as (Promise<T>|T)[]);
+        return this._getAll(getArgs);
     }
 
     public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
@@ -378,7 +378,7 @@ class Container implements interfaces.Container {
     ): Promise<T[]> {
         const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
 
-        return Promise.all(this._get<T>(getArgs) as (Promise<T>|T)[]);
+        return this._getAll(getArgs);
     }
 
     public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
@@ -548,7 +548,9 @@ class Container implements interfaces.Container {
         });
 
     }
-
+    private _getAll<T>(getArgs:GetArgs): Promise<T[]>{
+        return Promise.all(this._get<T>(getArgs) as (Promise<T>|T)[]);
+    }
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
