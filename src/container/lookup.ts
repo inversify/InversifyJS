@@ -60,27 +60,42 @@ class Lookup<T> implements interfaces.Lookup<T> {
         if (!this._map.delete(serviceIdentifier)) {
             throw new Error(ERROR_MSGS.KEY_NOT_FOUND);
         }
+    }
 
+    public removeIntersection(lookup: interfaces.Lookup<T>): void {
+
+        this.traverse(
+            (serviceIdentifier: interfaces.ServiceIdentifier<unknown>, value: T[]) => {
+                const lookupActivations = lookup.hasKey(serviceIdentifier) ? lookup.get(serviceIdentifier) : undefined;
+                if (lookupActivations !== undefined) {
+                    const filteredValues = value.filter(
+                        (lookupValue) =>
+                            !lookupActivations.some((moduleActivation) => lookupValue === moduleActivation)
+                    );
+
+                    this._setValue(serviceIdentifier, filteredValues);
+                }
+            }
+        );
     }
 
     public removeByCondition(condition: (item: T) => boolean): T[] {
-        const removals:T[] = [];
+        const removals: T[] = [];
         this._map.forEach((entries, key) => {
             const updatedEntries:T[] = [];
-            for(const entry of entries){
-                const remove = condition(entry)
-                if(remove){
-                    removals.push(entry)
-                }else{
-                    updatedEntries.push(entry)
+
+            for (const entry of entries) {
+                const remove = condition(entry);
+                if (remove) {
+                    removals.push(entry);
+                } else {
+                    updatedEntries.push(entry);
                 }
             }
-            if (updatedEntries.length > 0) {
-                this._map.set(key, updatedEntries);
-            } else {
-                this._map.delete(key);
-            }
+
+            this._setValue(key, updatedEntries);
         });
+
         return removals;
     }
 
@@ -111,6 +126,14 @@ class Lookup<T> implements interfaces.Lookup<T> {
         this._map.forEach((value, key) => {
             func(key, value);
         });
+    }
+
+    private _setValue(serviceIdentifier: interfaces.ServiceIdentifier<unknown>, value: T[]): void {
+        if (value.length > 0) {
+            this._map.set(serviceIdentifier, value);
+        } else {
+            this._map.delete(serviceIdentifier);
+        }
     }
 
 }

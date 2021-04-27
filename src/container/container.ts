@@ -406,17 +406,14 @@ class Container implements interfaces.Container {
             return instance[data.value]();
         }
     }
-    private _removeModuleHandlers(moduleId:number): void {
-        const handlers = this._moduleActivationStore.remove(moduleId)
-        if (handlers.onActivations.length > 0) {
-            this._activations.removeByCondition(onActivation => handlers.onActivations.indexOf(onActivation) !== -1);
-        }
-        if (handlers.onDeactivations.length > 0) {
-            this._deactivations.removeByCondition(onDeactivation => handlers.onDeactivations.indexOf(onDeactivation) !== -1);
-        }
+    private _removeModuleHandlers(moduleId: number): void {
+        const moduleActivationsHandlers = this._moduleActivationStore.remove(moduleId);
+
+        this._activations.removeIntersection(moduleActivationsHandlers.onActivations);
+        this._deactivations.removeIntersection(moduleActivationsHandlers.onDeactivations);
     }
 
-    private _removeModuleBindings(moduleId:number): interfaces.Binding<any>[] {
+    private _removeModuleBindings(moduleId: number): interfaces.Binding<any>[] {
         return this._bindingDictionary.removeByCondition(binding => binding.moduleId === moduleId);
     }
 
@@ -527,14 +524,14 @@ class Container implements interfaces.Container {
 
         const getOnActivationFunction = (moduleId:interfaces.ContainerModuleBase["id"]) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>, onActivation: interfaces.BindingActivation<any>) => {
-                this._moduleActivationStore.addActivation(moduleId,onActivation)
-                this.onActivation(serviceIdentifier,onActivation)
+                this._moduleActivationStore.addActivation(moduleId, serviceIdentifier, onActivation);
+                this.onActivation(serviceIdentifier, onActivation);
             }
 
         const getOnDeactivationFunction = (moduleId:interfaces.ContainerModuleBase["id"]) =>
             (serviceIdentifier: interfaces.ServiceIdentifier<any>, onDeactivation: interfaces.BindingDeactivation<any>) => {
-                this._moduleActivationStore.addDeactivation(moduleId,onDeactivation)
-                this.onDeactivation(serviceIdentifier,onDeactivation)
+                this._moduleActivationStore.addDeactivation(moduleId, serviceIdentifier, onDeactivation);
+                this.onDeactivation(serviceIdentifier,onDeactivation);
             }
 
         return (mId: interfaces.ContainerModuleBase["id"]) => ({

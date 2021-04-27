@@ -233,13 +233,21 @@ namespace interfaces {
     }
 
     export interface ModuleActivationHandlers{
-        onActivations:interfaces.BindingActivation<any>[],
-        onDeactivations:interfaces.BindingDeactivation<any>[]
+        onActivations: Lookup<BindingActivation<unknown>>,
+        onDeactivations: Lookup<BindingDeactivation<unknown>>
     }
 
-    export interface ModuleActivationStore extends Clonable<ModuleActivationStore>{
-        addDeactivation(moduleId: ContainerModuleBase["id"], onDeactivation: interfaces.BindingDeactivation<any>): void
-        addActivation(moduleId: ContainerModuleBase["id"], onActivation: interfaces.BindingActivation<any>): void
+    export interface ModuleActivationStore extends Clonable<ModuleActivationStore> {
+        addDeactivation(
+            moduleId: ContainerModuleBase["id"],
+            serviceIdentifier: ServiceIdentifier<unknown>,
+            onDeactivation: interfaces.BindingDeactivation<unknown>
+        ): void
+        addActivation(
+            moduleId: ContainerModuleBase["id"],
+            serviceIdentifier: ServiceIdentifier<unknown>,
+            onActivation: interfaces.BindingActivation<unknown>
+        ): void
         remove(moduleId: ContainerModuleBase["id"]): ModuleActivationHandlers
     }
 
@@ -269,6 +277,7 @@ namespace interfaces {
         get(serviceIdentifier: ServiceIdentifier<any>): T[];
         remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void;
         removeByCondition(condition: (item: T) => boolean): T[];
+        removeIntersection(lookup: interfaces.Lookup<T>): void
         hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
         clone(): Lookup<T>;
         traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;

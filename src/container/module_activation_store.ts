@@ -1,51 +1,64 @@
 import { interfaces } from "../interfaces/interfaces";
+import { Lookup } from "./lookup";
 
 export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     private _map = new Map<number, interfaces.ModuleActivationHandlers>();
-    remove(moduleId: interfaces.ContainerModuleBase["id"]): interfaces.ModuleActivationHandlers {
+
+    public remove(moduleId: number): interfaces.ModuleActivationHandlers {
         if (this._map.has(moduleId)) {
             const handlers = this._map.get(moduleId);
             this._map.delete(moduleId);
             return handlers!;
         }
-        return this._getHandlersStore();
+        return this._getEmptyHandlersStore();
     }
 
-    addDeactivation(moduleId: interfaces.ContainerModuleBase["id"], onDeactivation: interfaces.BindingDeactivation<any>) {
-        const entry = this._map.get(moduleId);
-        if (entry !== undefined) {
-            entry.onDeactivations.push(onDeactivation);
-        } else {
-            const handlersStore = this._getHandlersStore();
-            handlersStore.onDeactivations.push(onDeactivation);
-            this._map.set(moduleId, handlersStore);
-        }
+    public addDeactivation(
+        moduleId: number,
+        serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+        onDeactivation: interfaces.BindingDeactivation<number>,
+    ) {
+        this._getModuleActivationHandlers(moduleId)
+            .onDeactivations.add(serviceIdentifier, onDeactivation);
     }
 
-    addActivation(moduleId: interfaces.ContainerModuleBase["id"], onActivation: interfaces.BindingActivation<any>) {
-        const entry = this._map.get(moduleId);
-        if (entry !== undefined) {
-            entry.onActivations.push(onActivation);
-        } else {
-            const handlersStore = this._getHandlersStore();
-            handlersStore.onActivations.push(onActivation);
-            this._map.set(moduleId, handlersStore);
-        }
+    public addActivation(
+        moduleId: number,
+        serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+        onActivation: interfaces.BindingActivation<unknown>,
+    ) {
+        this._getModuleActivationHandlers(moduleId)
+            .onActivations.add(serviceIdentifier, onActivation);
     }
 
-    clone(): interfaces.ModuleActivationStore {
+    public clone(): interfaces.ModuleActivationStore {
         const clone = new ModuleActivationStore();
+
         this._map.forEach((handlersStore, moduleId) => {
-            handlersStore.onActivations.forEach(onActivation => clone.addActivation(moduleId,onActivation));
-            handlersStore.onDeactivations.forEach(onDeactivation => clone.addDeactivation(moduleId,onDeactivation));
-        })
+            clone._map.set(moduleId, {
+                onActivations: handlersStore.onActivations.clone(),
+                onDeactivations: handlersStore.onDeactivations.clone(),
+            });
+        });
+
         return clone;
     }
 
-    private _getHandlersStore(): interfaces.ModuleActivationHandlers {
+    private _getModuleActivationHandlers(moduleId: number): interfaces.ModuleActivationHandlers {
+        let moduleActivationHandlers: interfaces.ModuleActivationHandlers | undefined = this._map.get(moduleId);
+
+        if (moduleActivationHandlers === undefined) {
+            moduleActivationHandlers = this._getEmptyHandlersStore();
+            this._map.set(moduleId, moduleActivationHandlers);
+        }
+
+        return moduleActivationHandlers;
+    }
+
+    private _getEmptyHandlersStore(): interfaces.ModuleActivationHandlers {
         const handlersStore: interfaces.ModuleActivationHandlers = {
-            onActivations: [],
-            onDeactivations: []
+            onActivations: new Lookup(),
+            onDeactivations: new Lookup()
         };
         return handlersStore;
     }
