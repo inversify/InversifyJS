@@ -177,4 +177,45 @@ describe("Lookup", () => {
 
   });
 
+  it('should be able to remove the intersection with another lookup', () => {
+    const lookup = new Lookup<unknown>();
+
+    const serviceIdentifier1 = 'service-identifier-1';
+    const serviceIdentifier2 = 'service-identifier-2';
+
+    const serviceIdentifier1Values = [11, 12, 13, 14];
+    const serviceIdentifier2Values = [21, 22, 23, 24];
+
+    for (const value of serviceIdentifier1Values) {
+      lookup.add(serviceIdentifier1, value);
+    }
+
+    for (const value of serviceIdentifier2Values) {
+      lookup.add(serviceIdentifier2, value);
+    }
+
+    const lookupToIntersect = new Lookup<unknown>();
+
+    const lookupToIntersectServiceIdentifier2Values = [23, 24, 25, 26];
+
+    const serviceIdentifier3 = 'service-identifier-3';
+
+    const lookulToIntersectServiceIdentifier3Values = [31, 32, 33, 34];
+
+    for (const value of lookupToIntersectServiceIdentifier2Values) {
+      lookupToIntersect.add(serviceIdentifier2, value);
+    }
+
+    for (const value of lookulToIntersectServiceIdentifier3Values) {
+      lookupToIntersect.add(serviceIdentifier3, value);
+    }
+
+    lookup.removeIntersection(lookupToIntersect);
+
+    expect(lookup.getMap()).to.deep.equal(new Map([
+      [serviceIdentifier1, [...serviceIdentifier1Values]],
+      [serviceIdentifier2, [21, 22]],
+    ]));
+  });
+
 });
