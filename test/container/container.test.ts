@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
 import { postConstruct } from "../../src/annotation/post_construct";
@@ -128,9 +128,21 @@ describe("Container", () => {
     it("Should throw when cannot unbind", () => {
       const serviceIdentifier = "Ninja";
       const container = new Container();
-      const throwFunction = () => { container.unbind("Ninja"); };
+      const throwFunction = () => { container.unbind(serviceIdentifier); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-  });
+    });
+
+    it("Should throw when cannot unbind (async)", async () => {
+        const serviceIdentifier = "Ninja";
+        const container = new Container();
+
+        try {
+            await container.unbindAsync(serviceIdentifier);
+            assert.fail();
+        } catch (err: unknown) {
+            expect((err as Error).message).to.eql(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
+    });
 
     it("Should unbind a binding when requested", () => {
 
@@ -1060,5 +1072,13 @@ describe("Container", () => {
         const services = await container.getAllAsync<string>(serviceIdentifier);
 
         expect(services).to.deep.eq([firstValueBinded, secondValueBinded, thirdValueBinded]);
+    });
+
+    it('should throw an error if skipBaseClassChecks is not a boolean', () => {
+        expect(() =>
+            new Container({
+                skipBaseClassChecks: 'Jolene, Jolene, Jolene, Jolene' as unknown as boolean
+            })
+        ).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK);
     })
 });

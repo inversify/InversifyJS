@@ -335,8 +335,8 @@ describe("ContainerModule", () => {
     expect(deactivationCount).to.equal(0);
 
     expect(activatedNotModule).to.equal("Value");
-    expect(deactivatedNotModule).to.equal("Value")
-  })
+    expect(deactivatedNotModule).to.equal("Value");
+  });
 
   it("should be able to unbindAsync from a module", async () => {
     let _unbindAsync:interfaces.UnbindAsync | undefined
@@ -359,5 +359,5 @@ describe("ContainerModule", () => {
     expect(deactivated).to.deep.equal(["Value","Value2"]);
     //bindings removed
     expect(() => container.getAll(sid)).to.throw(`${NOT_REGISTERED} sid`)
-  })
+  });
 });
