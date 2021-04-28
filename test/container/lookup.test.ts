@@ -200,13 +200,13 @@ describe("Lookup", () => {
 
     const serviceIdentifier3 = 'service-identifier-3';
 
-    const lookulToIntersectServiceIdentifier3Values = [31, 32, 33, 34];
+    const lookupToIntersectServiceIdentifier3Values = [31, 32, 33, 34];
 
     for (const value of lookupToIntersectServiceIdentifier2Values) {
       lookupToIntersect.add(serviceIdentifier2, value);
     }
 
-    for (const value of lookulToIntersectServiceIdentifier3Values) {
+    for (const value of lookupToIntersectServiceIdentifier3Values) {
       lookupToIntersect.add(serviceIdentifier3, value);
     }
 
