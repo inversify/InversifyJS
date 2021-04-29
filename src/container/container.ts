@@ -33,10 +33,10 @@ class Container implements interfaces.Container {
     public static merge(
       container1: interfaces.Container,
       container2: interfaces.Container,
-      ...container3: interfaces.Container[]
+      ...containers: interfaces.Container[]
     ): interfaces.Container {
         const container = new Container();
-        const targetContainers: interfaces.Lookup<interfaces.Binding<any>>[] = [container1, container2, ...container3]
+        const targetContainers: interfaces.Lookup<interfaces.Binding<any>>[] = [container1, container2, ...containers]
             .map((targetContainer) => getBindingDictionary(targetContainer));
         const bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
 

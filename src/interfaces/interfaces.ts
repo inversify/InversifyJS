@@ -202,12 +202,12 @@ namespace interfaces {
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
         unload(...modules: ContainerModuleBase[]): void;
-        unloadAsync(...modules: interfaces.ContainerModuleBase[]): Promise<void>
+        unloadAsync(...modules: ContainerModuleBase[]): Promise<void>
         applyCustomMetadataReader(metadataReader: MetadataReader): void;
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
-        createChild(): Container;
+        createChild(containerOptions?: interfaces.ContainerOptions): Container;
     }
 
     export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
