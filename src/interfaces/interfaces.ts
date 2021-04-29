@@ -207,7 +207,7 @@ namespace interfaces {
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
         restore(): void;
-        createChild(containerOptions?: interfaces.ContainerOptions): Container;
+        createChild(): Container;
     }
 
     export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
