@@ -1,24 +1,38 @@
 # The Container API
 
-The InversifyJS container provides some helpers to resolve multi-injections
-and ambiguous bindings.
+The InversifyJS container is where dependencies are first configured through bind and, possibly later, reconfigured and removed. The container can be worked on directly in this regard or container modules can be utilized.
+You can query the configuration and resolve configured dependencies with resolved and the 'get' methods.
+You can react to resolutions with container activation handlers and unbinding with container deactivation handlers.
+You can create container hierarchies where container ascendants can supply the dependencies for descendants.
+For testing, state can be saved as a snapshot on a stack and later restored.
+For advanced control you can apply middleware to intercept the resolution request and the resolved dependency.
+You can even provide your own annotation solution.
+
 
 ## Container Options
+Container options can be passed to the Container constructor and defaults will be provided if you do not or if you do but omit an option.
+Options can be changed after construction and will be shared by child containers created from the Container if you do not provide options for them.
 
 ### defaultScope
 
-The default scope is `transient` and you can change the scope of a type when declaring a binding:
+The default scope is `transient` when binding to/toSelf/toDynamicValue/toService.
+The other types of bindings are `singleton`.
 
-```ts
-container.bind<Warrior>(TYPES.Warrior).to(Ninja).inSingletonScope();
-container.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
-```
-
-You can use container options to change the default scope used at application level:
+You can use container options to change the default scope for the bindings that default to `transient` at application level:
 
 ```ts
 let container = new Container({ defaultScope: "Singleton" });
 ```
+
+For all types of bindings you can change the scope when declaring:
+
+```ts
+container.bind<Warrior>(TYPES.Warrior).to(Ninja).inSingletonScope();
+container.bind<Warrior>(TYPES.Warrior).to(Ninja).inTransientScope();
+container.bind<Warrior>(TYPES.Warrior).to(Ninja).inRequestScope();
+```
+
+
 
 ### autoBindInjectable
 
@@ -49,9 +63,9 @@ especially useful if any of your @injectable classes extend classes that you don
 let container = new Container({ skipBaseClassChecks: true });
 ```
 
-## Container.merge(a: Container, b: Container)
+## Container.merge(a: interfaces.Container, b: interfaces.Container, ...containers: interfaces.Container[]): interfaces.Container
 
-Merges two containers into one:
+Creates a new Container containing the bindings ( cloned bindings ) of two or more containers:
 
 ```ts
 @injectable()
@@ -99,9 +113,23 @@ expect(gameContainer.get<Samurai>(JAPAN_EXPANSION_TYPES.Samurai).name).to.eql("S
 expect(gameContainer.get<Katana>(JAPAN_EXPANSION_TYPES.Katana).name).to.eql("Katana");
 ```
 
-## container.get<T>(serviceIdentifier: ServiceIdentifier<T>): T
+## container.applyCustomMetadataReader(metadataReader: interfaces.MetadataReader): void
 
-Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
+An advanced feature.... See [middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md).
+## container.applyMiddleware(...middleware: interfaces.Middleware[]): void
+
+An advanced feature that can be used for cross cutting concerns. See [middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md).
+
+## container.bind\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): interfaces.BindingToSyntax\<T>
+
+
+
+## container.createChild(containerOptions?: interfaces.ContainerOptions): Container;
+
+Create a [container hierarchy ](https://github.com/inversify/InversifyJS/blob/master/wiki/hierarchical_di.md).  If you do not provide options the child receives the options of the parent.
+## container.get\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): T
+
+Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding and the binding must be synchronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -110,7 +138,7 @@ container.bind<Weapon>("Weapon").to(Katana);
 let katana = container.get<Weapon>("Weapon");
 ```
 
-## container.getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>
+## container.getAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): Promise\<T>
 
 Resolves a dependency by its runtime identifier. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -125,9 +153,9 @@ container.bind("Level1").toDynamicValue(() => buildLevel1());
 let level1 = await container.getAsync<Level1>("Level1"); // Returns Promise<Level1>
 ```
 
-## container.getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T
+## container.getNamed\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, named: string | number | symbol): T
 
-Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
+Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding and the binding must be synchronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -138,7 +166,7 @@ let katana = container.getNamed<Weapon>("Weapon", "japanese");
 let shuriken = container.getNamed<Weapon>("Weapon", "chinese");
 ```
 
-## container.getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>
+## container.getNamedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, named: string | number | symbol): Promise\<T>
 
 Resolves a dependency by its runtime identifier that matches the given named constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -147,13 +175,13 @@ let container = new Container();
 container.bind<Weapon>("Weapon").toDynamicValue(async () => new Katana()).whenTargetNamed("japanese");
 container.bind<Weapon>("Weapon").toDynamicValue(async () => new Weapon()).whenTargetNamed("chinese");
 
-let katana = container.getNamedAsync<Weapon>("Weapon", "japanese");
-let shuriken = container.getNamedAsync<Weapon>("Weapon", "chinese");
+let katana = await container.getNamedAsync<Weapon>("Weapon", "japanese");
+let shuriken = await container.getNamedAsync<Weapon>("Weapon", "chinese");
 ```
 
-## container.getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T
+## container.getTagged\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): T
 
-Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding and the binding must be syncronously resolved, otherwise an error is thrown:
+Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding and the binding must be synchronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -164,7 +192,7 @@ let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>
+## container.getTaggedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): Promise\<T>
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -173,13 +201,13 @@ let container = new Container();
 container.bind<Weapon>("Weapon").toDynamicValue(async () => new Katana()).whenTargetTagged("faction", "samurai");
 container.bind<Weapon>("Weapon").toDynamicValue(async () => new Weapon()).whenTargetTagged("faction", "ninja");
 
-let katana = container.getTaggedAsync<Weapon>("Weapon", "faction", "samurai");
-let shuriken = container.getTaggedAsync<Weapon>("Weapon", "faction", "ninja");
+let katana = await container.getTaggedAsync<Weapon>("Weapon", "faction", "samurai");
+let shuriken = await container.getTaggedAsync<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[]
+## container.getAll\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): T[]
 
-Get all available bindings for a given identifier. All the bindings must be syncronously resolved, otherwise an error is thrown:
+Get all available bindings for a given identifier. All the bindings must be synchronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -189,7 +217,7 @@ container.bind<Weapon>("Weapon").to(Shuriken);
 let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## container.getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T[]>
+## container.getAllAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): Promise\<T[]>
 
 Get all available bindings for a given identifier:
 
@@ -201,9 +229,9 @@ container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken());
 let weapons = await container.getAllAsync<Weapon>("Weapon");  // returns Promise<Weapon[]>
 ```
 
-## container.getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[]
+## container.getAllNamed\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, named: string | number | symbol): T[]
 
-Resolves all the dependencies by its runtime identifier that matches the given named constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
+Resolves all the dependencies by its runtime identifier that matches the given named constraint. All the binding must be synchronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -230,7 +258,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]>
+## container.getAllNamedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, named: string | number | symbol): Promise\<T[]>
 
 Resolves all the dependencies by its runtime identifier that matches the given named constraint:
 
@@ -248,21 +276,21 @@ container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "au revoir" 
 container.bind<Intl>("Intl").toDynamicValue(async () => ({ hello: "hola" })).whenTargetNamed("es");
 container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "adios" })).whenTargetNamed("es");
 
-let fr = container.getAllNamedAsync<Intl>("Intl", "fr");
+let fr = await container.getAllNamedAsync<Intl>("Intl", "fr");
 expect(fr.length).to.eql(2);
 expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
-let es = container.getAllNamedAsync<Intl>("Intl", "es");
+let es = await container.getAllNamedAsync<Intl>("Intl", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## container.getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[]
+## container.getAllTagged\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): T[]
 
-Resolves all the dependencies by its runtime identifier that matches the given tagged constraint. All the binding must be syncronously resolved, otherwise an error is thrown:
+Resolves all the dependencies by its runtime identifier that matches the given tagged constraint. All the binding must be synchronously resolved, otherwise an error is thrown:
 
 ```ts
 let container = new Container();
@@ -289,7 +317,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllTaggedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T[]>
+## container.getAllTaggedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): Promise\<T[]>
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint:
 
@@ -307,18 +335,18 @@ container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "au revoir" 
 container.bind<Intl>("Intl").toDynamicValue(async () => ({ hello: "hola" })).whenTargetTagged("lang", "es");
 container.bind<Intl>("Intl").toDynamicValue(async () => ({ goodbye: "adios" })).whenTargetTagged("lang", "es");
 
-let fr = container.getAllTaggedAsync<Intl>("Intl", "lang", "fr");
+let fr = await container.getAllTaggedAsync<Intl>("Intl", "lang", "fr");
 expect(fr.length).to.eql(2);
 expect(fr[0].hello).to.eql("bonjour");
 expect(fr[1].goodbye).to.eql("au revoir");
 
-let es = container.getAllTaggedAsync<Intl>("Intl", "lang", "es");
+let es = await container.getAllTaggedAsync<Intl>("Intl", "lang", "es");
 expect(es.length).to.eql(2);
 expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.isBound(serviceIdentifier: ServiceIdentifier)
+## container.isBound(serviceIdentifier: interfaces.ServiceIdentifier\<any>): boolean
 
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
 
@@ -350,7 +378,7 @@ expect(container.isBound(katanaId)).to.eql(false);
 expect(container.isBound(katanaSymbol)).to.eql(false);
 ```
 
-## container.isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string)
+## container.isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier\<any>, named: string): boolean
 
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
 
@@ -375,7 +403,7 @@ expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
 expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
 ```
 
-## container.isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string, value: any)
+## container.isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier\<any>, key: string, value: any): boolean
 
 You can use the `isBoundTagged` method to check if there are registered bindings for a given service identifier with a given tagged constraint.
 
@@ -399,7 +427,15 @@ expect(container.isBoundTagged(zero, isValidDivisor, false)).to.eql(true);
 expect(container.isBoundTagged(zero, isValidDivisor, true)).to.eql(true);
 ```
 
-## container.rebind<T>(serviceIdentifier: ServiceIdentifier<T>)
+## container.load(...modules: interfaces.ContainerModule[]): void
+
+Calls the registration method of each module. See [container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
+
+## container.loadAsync(...modules: interfaces.AsyncContainerModule[]): Promise\<void>
+
+As per load but for asynchronous registration. 
+
+## container.rebind\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): : interfaces.BindingToSyntax\<T>
 
 You can use the `rebind` method to replace all the existing bindings for a given `serviceIdentifier`.
 The function returns an instance of `BindingToSyntax` which allows to create the replacement binding.
@@ -423,7 +459,12 @@ expect(values2[0]).to.eq(3);
 expect(values2[1]).to.eq(undefined);
 ```
 
-## container.resolve<T>(constructor: Newable<T>)
+## container.rebindAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): Promise\<interfaces.BindingToSyntax\<T>>
+
+This is an asynchronous version of rebind. If you know deactivation is asynchronous then this should be used.
+If you are not sure then use this method !
+
+## container.resolve\<T>(constructor: interfaces.Newable\<T>): T
 Resolve is like `container.get<T>(serviceIdentifier: ServiceIdentifier<T>)` but it allows users to create an instance even if no bindings have been declared:
 
 ```ts
@@ -455,7 +496,7 @@ expect(ninja.fight()).to.eql("cut!");
 
 Please note that it only allows to skip declaring a binding for the root element in the dependency graph (composition root). All the sub-dependencies (e.g. `Katana` in the preceding example) will require a binding to be declared.
 
-## container.onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>)
+## container.onActivation\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, onActivation: interfaces.BindingActivation\<T>): void
 
 Adds an activation handler for all dependencies registered with the specified identifier.
 
@@ -470,7 +511,7 @@ container.onActivation("Weapon", (context: interfaces.Context, katana: Katana): 
 let katana = container.get<Weapon>("Weapon");
 ```
 
-## onDeactivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onDeactivation: interfaces.BindingDeactivation<T>)
+## onDeactivation\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, onDeactivation: interfaces.BindingDeactivation\<T>): void
 
 Adds a deactivation handler for the dependencie's identifier.
 
@@ -483,3 +524,47 @@ container.onDeactivation("Weapon", (katana: Katana): void | Promise<void> => {
 
 container.unbind("Weapon");
 ```
+s
+
+## container.restore(): void;
+
+Restore container state to last snapshot.
+
+## container.snapshot(): void
+
+Save the state of the container to be later restored with the restore method.
+## container.unbind(serviceIdentifier: interfaces.ServiceIdentifier\<any>): void
+
+Remove all bindings binded in this container to the service identifer.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+
+## container.unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier\<any>): Promise\<void>
+
+This is the asynchronous version of unbind.  If you know deactivation is asynchronous then this should be used.
+If you are not sure then use this method !
+
+## container.unbindAll(): void
+
+Remove all bindings binded in this container.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+
+## container.unbindAllAsync(): Promise\<void>
+
+This is the asynchronous version of unbindAll.  If you know deactivation is asynchronous then this should be used.
+If you are not sure then use this method !
+
+## container.unload(...modules: interfaces.ContainerModuleBase[]): void
+
+Removes bindings and handlers added by the modules.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+See [container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
+
+## container.unloadAsync(...modules: interfaces.ContainerModuleBase[]): Promise\<void>
+
+Asynchronous version of unload.  If you know deactivation is asynchronous then this should be used.
+If you are not sure then use this method !
+
+## container.parent: Container | null;
+
+Access the container hierarchy.
+
+## container.id: number
+
+An identifier auto generated to be unique.

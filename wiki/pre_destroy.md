@@ -1,6 +1,6 @@
 # Pre Destroy Decorator
 
-It is possible to add a **@preDestroy** decorator for a class method. This decorator will run before a service is unbinded for any cached instance. For this reason, classes related to bindings on transient scope can not contain a method with this decorator sice there is no way to know which instances should be affected.
+It is possible to add a **@preDestroy** decorator for a class method. This decorator will run before a service is unbinded for any cached instance. For this reason, only bindings in singleton scope can contain a method with this decorator.
 
 ```ts
 @injectable()

@@ -1,6 +1,6 @@
 # Activation handler
 
-It is possible to add an activation handler for a type. The activation handler is invoked after a dependency has been resolved and before it is added to a cache (if singleton or request singleton [see scope](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)) and injected. The activation handler will not be invoked if type is resolved from a cache.  The activation handler can be synchronous or asynchronous.
+It is possible to add an activation handler for a type. The activation handler is invoked after a dependency has been resolved and before it is added to a cache (if singleton or request singleton - [see scope](https://github.com/inversify/InversifyJS/blob/master/wiki/scope.md)) and injected. The activation handler will not be invoked if the dependency is taken from a cache.  The activation handler can be synchronous or asynchronous.
 
 Activation handlers are useful to keep our dependencies agnostic of the implementation of crosscutting concerns like caching or logging. 
 
