@@ -153,7 +153,7 @@ class Container implements interfaces.Container {
 
     }
 
-    public unload(...modules: interfaces.ContainerModule[]): void {
+    public unload(...modules: interfaces.ContainerModuleBase[]): void {
         modules.forEach((module) => {
             const deactivations = this._removeModuleBindings(module.id)
             this._deactivateSingletons(deactivations);
@@ -163,7 +163,7 @@ class Container implements interfaces.Container {
 
     }
 
-    public async unloadAsync(...modules: interfaces.ContainerModule[]): Promise<void> {
+    public async unloadAsync(...modules: interfaces.ContainerModuleBase[]): Promise<void> {
         for(const module of modules){
             const deactivations = this._removeModuleBindings(module.id)
             await this._deactivateSingletonsAsync(deactivations)

@@ -201,8 +201,8 @@ namespace interfaces {
         resolve<T>(constructorFunction: interfaces.Newable<T>): T;
         load(...modules: ContainerModule[]): void;
         loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
-        unload(...modules: ContainerModule[]): void;
-        unloadAsync(...modules: interfaces.ContainerModule[]): Promise<void>
+        unload(...modules: ContainerModuleBase[]): void;
+        unloadAsync(...modules: interfaces.ContainerModuleBase[]): Promise<void>
         applyCustomMetadataReader(metadataReader: MetadataReader): void;
         applyMiddleware(...middleware: Middleware[]): void;
         snapshot(): void;
