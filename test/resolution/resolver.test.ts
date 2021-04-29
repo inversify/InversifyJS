@@ -1349,10 +1349,10 @@ describe("Resolve", () => {
   it("Should only call parent async singleton once within child containers", async () => {
       const parent = new Container();
       parent.bind<Date>("Parent").toDynamicValue(() => Promise.resolve(new Date())).inSingletonScope();
-
+      const child = parent.createChild();
       const [subject1, subject2] = await Promise.all([
-          parent.getAsync<Date>("Parent"),
-          parent.getAsync<Date>("Parent")
+          child.getAsync<Date>("Parent"),
+          child.getAsync<Date>("Parent")
       ]);
 
       expect(subject1 === subject2).eql(true);
