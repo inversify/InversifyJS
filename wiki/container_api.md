@@ -457,7 +457,7 @@ Please note that it only allows to skip declaring a binding for the root element
 
 ## container.onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>)
 
-Adds an activation handler for the dependencies's identifier.
+Adds an activation handler for all dependencies registered with the specified identifier.
 
 ```ts
 let container = new Container();
