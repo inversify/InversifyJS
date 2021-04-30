@@ -52,7 +52,7 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 
     } else {
 
-        let result: undefined | T | Promise<T> | (T | Promise<T>)[];
+        let result: undefined | T | Promise<T>;
 
         if (request.target.isOptional() && bindings.length === 0) {
             return undefined;
@@ -101,11 +101,11 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
                 () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
             );
         } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-            result = resolveInstance(
+            result = resolveInstance<T>(
                 binding,
                 binding.implementationType,
                 childRequests,
-                _resolveRequest(requestScope)
+                _resolveRequest<T>(requestScope)
             );
         } else {
             // The user probably created a binding but didn't finish it
