@@ -78,6 +78,10 @@ class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfa
         return this._bindingOnSyntax.onActivation(handler);
     }
 
+    public onDeactivation(handler: (injectable: T) => Promise<void> | void): interfaces.BindingWhenSyntax<T> {
+        return this._bindingOnSyntax.onDeactivation(handler);
+    }
+
 }
 
 export { BindingWhenOnSyntax };

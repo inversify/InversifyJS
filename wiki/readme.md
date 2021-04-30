@@ -25,6 +25,7 @@ Welcome to the InversifyJS wiki!
 - [Auto factory](./auto_factory.md)
 - [Injecting a Provider (asynchronous Factory)](./provider_injection.md)
 - [Activation handler](./activation_handler.md)
+- [Deactivation handler](./deactivation_handler.md)
 - [Post Construct decorator](./post_construct.md)
 - [Middleware](./middleware.md)
 - [Multi-injection](./multi_injection.md)
