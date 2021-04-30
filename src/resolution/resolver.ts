@@ -51,103 +51,110 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
         });
 
     } else {
-
-        let result: undefined | T | Promise<T>;
-
         if (request.target.isOptional() && bindings.length === 0) {
             return undefined;
         }
 
         const binding = bindings[0];
-        const isSingleton = binding.scope === BindingScopeEnum.Singleton;
-        const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
-        if (isSingleton && binding.activated) {
-            return binding.cache;
-        }
+        return _resolveBinding(requestScope, request, binding);
+    }
+};
 
-        if (
-            isRequestSingleton &&
-            requestScope !== null &&
-            requestScope.has(binding.id)
-        ) {
-            return requestScope.get(binding.id);
-        }
+export function _resolveBinding<T>(
+    requestScope: interfaces.RequestScope,
+    request: interfaces.Request,
+    binding:interfaces.Binding<T>,
+): T | Promise<T> {
+    const isSingleton = binding.scope === BindingScopeEnum.Singleton;
+    const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
-        if (binding.type === BindingTypeEnum.ConstantValue) {
-            result = binding.cache;
-            binding.activated = true;
-        } else if (binding.type === BindingTypeEnum.Function) {
-            result = binding.cache;
-            binding.activated = true;
-        } else if (binding.type === BindingTypeEnum.Constructor) {
-            result = binding.implementationType as unknown as T;
-        } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
-            result = invokeFactory(
-                "toDynamicValue",
-                binding.serviceIdentifier,
-                () => (binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
-            );
-        } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
-            result = invokeFactory(
-                "toFactory",
-                binding.serviceIdentifier,
-                () => (binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
-            );
-        } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
-            result = invokeFactory(
-                "toProvider",
-                binding.serviceIdentifier,
-                () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
-            );
-        } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-            result = resolveInstance<T>(
-                binding,
-                binding.implementationType,
-                childRequests,
-                _resolveRequest<T>(requestScope)
-            );
-        } else {
-            // The user probably created a binding but didn't finish it
-            // e.g. container.bind<T>("Something"); missing BindingToSyntax
-            const serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
-            throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
-        }
-
-        if (isPromise(result)) {
-            result = result.then((resolved) => _onActivation(request, binding, resolved));
-        } else {
-            result = _onActivation(request, binding, result);
-        }
-
-        // store in cache if scope is singleton
-        if (isSingleton) {
-            binding.cache = result;
-            binding.activated = true;
-
-            if (isPromise(result)) {
-                result = result.catch((ex) => {
-                    // allow binding to retry in future
-                    binding.cache = null;
-                    binding.activated = false;
-
-                    throw ex;
-                });
-            }
-        }
-
-        if (
-            isRequestSingleton &&
-            requestScope !== null &&
-            !requestScope.has(binding.id)
-        ) {
-            requestScope.set(binding.id, result);
-        }
-
-        return result;
+    if (isSingleton && binding.activated) {
+        return binding.cache as T | Promise<T>;
     }
 
-};
+    if (
+        isRequestSingleton &&
+        requestScope !== null &&
+        requestScope.has(binding.id)
+    ) {
+        return requestScope.get(binding.id);
+    }
+
+    let result: T | Promise<T>;
+
+    if (binding.type === BindingTypeEnum.ConstantValue) {
+        result = binding.cache as T | Promise<T>;
+        binding.activated = true;
+    } else if (binding.type === BindingTypeEnum.Function) {
+        result = binding.cache as T | Promise<T>;
+        binding.activated = true;
+    } else if (binding.type === BindingTypeEnum.Constructor) {
+        result = binding.implementationType as unknown as T;
+    } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
+        result = invokeFactory(
+            "toDynamicValue",
+            binding.serviceIdentifier,
+            () => (binding.dynamicValue as (context: interfaces.Context) => any)(request.parentContext)
+        );
+    } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
+        result = invokeFactory(
+            "toFactory",
+            binding.serviceIdentifier,
+            () => (binding.factory as interfaces.FactoryCreator<any>)(request.parentContext)
+        );
+    } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
+        result = invokeFactory(
+            "toProvider",
+            binding.serviceIdentifier,
+            () => (binding.provider as interfaces.Provider<any>)(request.parentContext)
+        );
+    } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
+        result = resolveInstance<T>(
+            binding,
+            binding.implementationType,
+            request.childRequests,
+            _resolveRequest<T>(requestScope)
+        );
+    } else {
+        // The user probably created a binding but didn't finish it
+        // e.g. container.bind<T>("Something"); missing BindingToSyntax
+        const serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
+        throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
+    }
+
+    if (isPromise(result)) {
+        result = result.then((resolved) => _onActivation(request, binding, resolved));
+    } else {
+        result = _onActivation<T>(request, binding, result);
+    }
+
+    // store in cache if scope is singleton
+    if (isSingleton) {
+        binding.cache = result;
+        binding.activated = true;
+
+        if (isPromise(result)) {
+            result = result.catch((ex) => {
+                // allow binding to retry in future
+                binding.cache = null;
+                binding.activated = false;
+
+                throw ex;
+            });
+        }
+    }
+
+    if (
+        isRequestSingleton &&
+        requestScope !== null &&
+        !requestScope.has(binding.id)
+    ) {
+        requestScope.set(binding.id, result);
+    }
+
+    return result;
+}
 
 function _onActivation<T>(request: interfaces.Request, binding: interfaces.Binding<T>, resolved: T): T | Promise<T> {
     let result = _bindingActivation(request.parentContext, binding, resolved);

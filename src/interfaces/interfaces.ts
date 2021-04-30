@@ -52,21 +52,21 @@ namespace interfaces {
 
     export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
 
-    export interface Binding<T> extends Clonable<Binding<T>> {
+    export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
         moduleId: ContainerModuleBase["id"];
         activated: boolean;
-        serviceIdentifier: ServiceIdentifier<T>;
+        serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
-        dynamicValue: DynamicValue<T> | null;
+        dynamicValue: DynamicValue<TActivated> | null;
         scope: BindingScope;
         type: BindingType;
-        implementationType: Newable<T> | null;
+        implementationType: Newable<TActivated> | null;
         factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
-        onActivation: BindingActivation<T> | null;
-        onDeactivation: BindingDeactivation<T> | null;
-        cache: T | null;
+        onActivation: BindingActivation<TActivated> | null;
+        onDeactivation: BindingDeactivation<TActivated> | null;
+        cache: null | TActivated | Promise<TActivated>;
     }
 
     export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
