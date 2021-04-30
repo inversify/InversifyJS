@@ -1,7 +1,8 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { interfaces } from "../interfaces/interfaces";
+import { isClonable } from "../utils/clonable";
 
-class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
+class Lookup<T> implements interfaces.Lookup<T> {
 
     // dictionary used store multiple values for each key <key>
     private _map: Map<interfaces.ServiceIdentifier<any>, T[]>;
@@ -28,7 +29,6 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         const entry = this._map.get(serviceIdentifier);
         if (entry !== undefined) {
             entry.push(value);
-            this._map.set(serviceIdentifier, entry);
         } else {
             this._map.set(serviceIdentifier, [value]);
         }
@@ -60,18 +60,43 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         if (!this._map.delete(serviceIdentifier)) {
             throw new Error(ERROR_MSGS.KEY_NOT_FOUND);
         }
-
     }
 
-    public removeByCondition(condition: (item: T) => boolean): void {
-        this._map.forEach((entries, key) => {
-            const updatedEntries = entries.filter((entry) => !condition(entry));
-            if (updatedEntries.length > 0) {
-                this._map.set(key, updatedEntries);
-            } else {
-                this._map.delete(key);
+    public removeIntersection(lookup: interfaces.Lookup<T>): void {
+
+        this.traverse(
+            (serviceIdentifier: interfaces.ServiceIdentifier<unknown>, value: T[]) => {
+                const lookupActivations = lookup.hasKey(serviceIdentifier) ? lookup.get(serviceIdentifier) : undefined;
+                if (lookupActivations !== undefined) {
+                    const filteredValues = value.filter(
+                        (lookupValue) =>
+                            !lookupActivations.some((moduleActivation) => lookupValue === moduleActivation)
+                    );
+
+                    this._setValue(serviceIdentifier, filteredValues);
+                }
             }
+        );
+    }
+
+    public removeByCondition(condition: (item: T) => boolean): T[] {
+        const removals: T[] = [];
+        this._map.forEach((entries, key) => {
+            const updatedEntries:T[] = [];
+
+            for (const entry of entries) {
+                const remove = condition(entry);
+                if (remove) {
+                    removals.push(entry);
+                } else {
+                    updatedEntries.push(entry);
+                }
+            }
+
+            this._setValue(key, updatedEntries);
         });
+
+        return removals;
     }
 
     // returns true if _map contains a key (serviceIdentifier)
@@ -91,7 +116,7 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         const copy = new Lookup<T>();
 
         this._map.forEach((value, key) => {
-            value.forEach((b) => copy.add(key, b.clone()));
+            value.forEach((b) => copy.add(key, isClonable<T>(b) ? b.clone() : b));
         });
 
         return copy;
@@ -101,6 +126,14 @@ class Lookup<T extends interfaces.Clonable<T>> implements interfaces.Lookup<T> {
         this._map.forEach((value, key) => {
             func(key, value);
         });
+    }
+
+    private _setValue(serviceIdentifier: interfaces.ServiceIdentifier<unknown>, value: T[]): void {
+        if (value.length > 0) {
+            this._map.set(serviceIdentifier, value);
+        } else {
+            this._map.delete(serviceIdentifier);
+        }
     }
 
 }

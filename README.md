@@ -258,6 +258,7 @@ Let's take a look to the InversifyJS features!
 - [Auto named factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_named_factory.md)
 - [Injecting a Provider (asynchronous Factory)](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md)
 - [Activation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md)
+- [Deactivation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md)
 - [Post Construct decorator](https://github.com/inversify/InversifyJS/blob/master/wiki/post_construct.md)
 - [Middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md)
 - [Multi-injection](https://github.com/inversify/InversifyJS/blob/master/wiki/multi_injection.md)
