@@ -57,7 +57,7 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 
         const binding = bindings[0];
 
-        return _resolveBinding(requestScope, request, binding);
+        return _resolveBinding<T>(requestScope, request, binding);
     }
 };
 
@@ -270,7 +270,7 @@ const _getContainersIterator = (container: interfaces.Container): Iterator<inter
 }
 
 function resolve<T>(context: interfaces.Context): T | Promise<T> | (T | Promise<T>)[] {
-    const _f = _resolveRequest(context.plan.rootRequest.requestScope);
+    const _f = _resolveRequest<T>(context.plan.rootRequest.requestScope);
     return _f(context.plan.rootRequest) as T | Promise<T> | (T | Promise<T>)[];
 }
 
