@@ -67,13 +67,10 @@ const _getResolvedFromBinding = <T>(
     binding:interfaces.Binding<T>) => {
     let result: T | Promise<T>;
     const childRequests = request.childRequests;
-    if (binding.type === BindingTypeEnum.ConstantValue) {
+    if (binding.type === BindingTypeEnum.ConstantValue || binding.type === BindingTypeEnum.Function) {
         result = binding.cache!;
         binding.activated = true;
-    } else if (binding.type === BindingTypeEnum.Function) {
-        result = binding.cache!;
-        binding.activated = true;
-    } else if (binding.type === BindingTypeEnum.Constructor) {
+    } else if (binding.type === BindingTypeEnum.Constructor && binding.implementationType !== null) {
         result = binding.implementationType as T;
     } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
         result = invokeFactory(
@@ -109,35 +106,44 @@ const _getResolvedFromBinding = <T>(
     return result;
 }
 
-const _resolveInScope = <T>(
+const _tryGetFromScope = <T>(
     requestScope: interfaces.RequestScope,
-    binding:interfaces.Binding<T>,
-    resolveFromBinding: () => T | Promise<T>
-): T | Promise<T> => {
-    const isSingleton = binding.scope === BindingScopeEnum.Singleton;
-    const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
+    binding:interfaces.Binding<T>): T | Promise<T> | null => {
 
-    if (isSingleton && binding.activated) {
+    if (_isSingletonScope(binding) && binding.activated) {
         return binding.cache!;
     }
 
     if (
-        isRequestSingleton &&
+        _isRequestScope(binding) &&
         requestScope !== null &&
         requestScope.has(binding.id)
     ) {
         return requestScope.get(binding.id);
     }
+    return null;
+}
 
-    let result = resolveFromBinding();
+const _isSingletonScope = (binding:interfaces.Binding<any>): boolean => {
+    return binding.scope === BindingScopeEnum.Singleton;
+}
 
+const _isRequestScope = (binding:interfaces.Binding<any>): boolean => {
+    return binding.scope === BindingScopeEnum.Request;
+}
+
+const _saveToScope = <T>(
+    requestScope: interfaces.RequestScope,
+    binding:interfaces.Binding<T>,
+    result:T | Promise<T>
+): void => {
     // store in cache if scope is singleton
-    if (isSingleton) {
+    if (_isSingletonScope(binding)) {
         binding.cache = result;
         binding.activated = true;
 
         if (isPromise(result)) {
-            result = result.catch((ex) => {
+            result.catch((ex) => {
                 // allow binding to retry in future
                 binding.cache = null;
                 binding.activated = false;
@@ -148,13 +154,25 @@ const _resolveInScope = <T>(
     }
 
     if (
-        isRequestSingleton &&
+        _isRequestScope(binding) &&
         requestScope !== null &&
         !requestScope.has(binding.id)
     ) {
         requestScope.set(binding.id, result);
     }
+}
 
+const _resolveInScope = <T>(
+    requestScope: interfaces.RequestScope,
+    binding:interfaces.Binding<T>,
+    resolveFromBinding: () => T | Promise<T>
+): T | Promise<T> => {
+    let result = _tryGetFromScope(requestScope,binding);
+    if(result !== null){
+        return result;
+    }
+    result = resolveFromBinding();
+    _saveToScope(requestScope,binding, result);
     return result;
 }
 
