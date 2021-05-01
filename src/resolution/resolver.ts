@@ -47,7 +47,7 @@ const _resolveFactoryFromBinding = <T>(
 ): T | Promise<T> => {
     const factoryDetails = _getFactoryDetails(binding) as FactoryDetails;
     return _tryAndThrowErrorIfStackOverflow(
-        () => (factoryDetails.factory as FactoryTypeFunction)(context),
+        () => (factoryDetails.factory as FactoryTypeFunction).bind(binding)(context),
         () => new Error(
         ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString())
     ));
