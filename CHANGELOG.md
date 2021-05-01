@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Async bindings #1132
+- Async binding resolution (getAllAsync, getAllNamedAsync, getAllTaggedAsync, getAsync, getNamedAsync, getTaggedAsync, rebindAsync, unbindAsync, unbindAllAsync, unloadAsync) #1132
+- Global onActivation / onDeactivation #1132
+- Parent/Child onActivation / onDeactivation #1132
+- Module onActivation / onDeactivation #1132
+- Added @preDestroy decorator #1132
+
+### Changed
+- @postConstruct can target an asyncronous function #1132
+
+## [5.1.1] - 2021-04-25
+-Fix pre-publish for build artifacts
+
+## [5.1.0] - 2021-04-25
+### Added
 - Upgrade information for v4.x to v5.x
 
 ### Fixed
@@ -14,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix injection on optional properties when targeting ES6 #928
 
 ## [5.0.1] - 2018-10-17
-### Added 
+### Added
 - Updating constructor injection wiki document with concrete injection example #922
 
 ### Changed
