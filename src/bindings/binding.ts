@@ -31,10 +31,10 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public type: interfaces.BindingType;
 
     // A factory method used in BindingType.Factory bindings
-    public factory: interfaces.FactoryCreator<any> | null;
+    public factory: interfaces.FactoryCreator<unknown> | null;
 
     // An async factory method used in BindingType.Provider bindings
-    public provider: interfaces.ProviderCreator<any> | null;
+    public provider: interfaces.ProviderCreator<unknown> | null;
 
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: interfaces.Request) => boolean;

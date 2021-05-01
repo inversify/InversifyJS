@@ -62,8 +62,8 @@ namespace interfaces {
         scope: BindingScope;
         type: BindingType;
         implementationType: Newable<TActivated> | TActivated | null;
-        factory: FactoryCreator<any> | null;
-        provider: ProviderCreator<any> | null;
+        factory: FactoryCreator<unknown> | null;
+        provider: ProviderCreator<unknown> | null;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
         cache: null | TActivated | Promise<TActivated>;
