@@ -66,6 +66,7 @@ const _resolveBinding = <T>(
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
+    const childRequests = request.childRequests;
     const isSingleton = binding.scope === BindingScopeEnum.Singleton;
     const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
@@ -113,7 +114,7 @@ const _resolveBinding = <T>(
         result = resolveInstance<T>(
             binding,
             binding.implementationType as interfaces.Newable<T>,
-            request.childRequests,
+            childRequests,
             _resolveRequest<T>(requestScope)
         );
     } else {
