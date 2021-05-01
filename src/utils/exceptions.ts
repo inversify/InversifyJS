@@ -7,14 +7,13 @@ export function isStackOverflowExeption(error: Error) {
     );
 }
 
-export const _tryStackOverflow = <T>(fn:()=>T,errorCallback:()=>Error) => {
+export const _tryAndThrowErrorIfStackOverflow = <T>(fn:()=>T,errorCallback:()=>Error) => {
     try {
         return fn();
     } catch (error) {
         if (isStackOverflowExeption(error)) {
-            throw errorCallback();
-        } else {
-            throw error;
+            error = errorCallback();
         }
+        throw error;
     }
 }

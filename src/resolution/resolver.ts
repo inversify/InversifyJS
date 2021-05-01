@@ -4,7 +4,7 @@ import { getBindingDictionary } from "../planning/planner";
 import { _saveToScope, _tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
 import { FactoryDetails, FactoryTypeFunction, _getFactoryDetails, __ensureFullyBound as _ensureFullyBound } from "../utils/binding_utils";
-import { _tryStackOverflow } from "../utils/exceptions";
+import { _tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
 
 const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
@@ -46,7 +46,7 @@ const _resolveFactoryFromBinding = <T>(
     context:interfaces.Context
 ): T | Promise<T> => {
     const factoryDetails = _getFactoryDetails(binding) as FactoryDetails;
-    return _tryStackOverflow(
+    return _tryAndThrowErrorIfStackOverflow(
         () => (factoryDetails.factory as FactoryTypeFunction)(context),
         () => new Error(
         ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString())
