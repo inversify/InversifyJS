@@ -15,11 +15,11 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     // A runtime identifier because at runtime we don't have interfaces
     public serviceIdentifier: interfaces.ServiceIdentifier<TActivated>;
 
-    // The constructor of a class which must implement T
-    public implementationType: interfaces.Newable<TActivated> | null;
+    // constructor from binding to or toConstructor
+    public implementationType: interfaces.Newable<TActivated> | TActivated | null;
 
     // Cache used to allow singleton scope and BindingType.ConstantValue bindings
-    public cache: TActivated | null;
+    public cache: TActivated | Promise<TActivated> | null;
 
     // Cache used to allow BindingType.DynamicValue bindings
     public dynamicValue: interfaces.DynamicValue<TActivated> | null;
@@ -31,10 +31,10 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public type: interfaces.BindingType;
 
     // A factory method used in BindingType.Factory bindings
-    public factory: interfaces.FactoryCreator<TActivated> | null;
+    public factory: interfaces.FactoryCreator<any> | null;
 
     // An async factory method used in BindingType.Provider bindings
-    public provider: interfaces.ProviderCreator<TActivated> | null;
+    public provider: interfaces.ProviderCreator<any> | null;
 
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: interfaces.Request) => boolean;

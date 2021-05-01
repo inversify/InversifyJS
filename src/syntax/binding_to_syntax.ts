@@ -52,7 +52,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Factory;
-        this._binding.factory = factory as interfaces.FactoryCreator<unknown> as interfaces.FactoryCreator<T>;
+        this._binding.factory = factory;
         this._binding.scope = BindingScopeEnum.Singleton;
         return new BindingWhenOnSyntax<T>(this._binding);
     }
@@ -69,9 +69,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     public toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T> {
         this._binding.type = BindingTypeEnum.Factory;
         this._binding.factory = (context) => {
-            const autofactory = () => context.container.get<T>(
-                serviceIdentifier as interfaces.ServiceIdentifier<unknown> as interfaces.ServiceIdentifier<T>,
-            );
+            const autofactory = () => context.container.get<T2>(serviceIdentifier);
             return autofactory;
         };
         this._binding.scope = BindingScopeEnum.Singleton;

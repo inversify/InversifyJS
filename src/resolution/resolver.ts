@@ -70,7 +70,7 @@ export function _resolveBinding<T>(
     const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
     if (isSingleton && binding.activated) {
-        return binding.cache as T | Promise<T>;
+        return binding.cache!;
     }
 
     if (
@@ -84,13 +84,13 @@ export function _resolveBinding<T>(
     let result: T | Promise<T>;
 
     if (binding.type === BindingTypeEnum.ConstantValue) {
-        result = binding.cache as T | Promise<T>;
+        result = binding.cache!;
         binding.activated = true;
     } else if (binding.type === BindingTypeEnum.Function) {
-        result = binding.cache as T | Promise<T>;
+        result = binding.cache!;
         binding.activated = true;
     } else if (binding.type === BindingTypeEnum.Constructor) {
-        result = binding.implementationType as unknown as T;
+        result = binding.implementationType as T;
     } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
         result = invokeFactory(
             "toDynamicValue",
@@ -112,7 +112,7 @@ export function _resolveBinding<T>(
     } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
         result = resolveInstance<T>(
             binding,
-            binding.implementationType,
+            binding.implementationType as interfaces.Newable<T>,
             request.childRequests,
             _resolveRequest<T>(requestScope)
         );

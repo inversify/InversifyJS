@@ -61,8 +61,8 @@ namespace interfaces {
         dynamicValue: DynamicValue<TActivated> | null;
         scope: BindingScope;
         type: BindingType;
-        implementationType: Newable<TActivated> | null;
-        factory: FactoryCreator<TActivated> | null;
+        implementationType: Newable<TActivated> | TActivated | null;
+        factory: FactoryCreator<any> | null;
         provider: ProviderCreator<any> | null;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
