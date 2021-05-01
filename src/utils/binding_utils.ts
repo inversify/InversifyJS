@@ -5,7 +5,7 @@ export const multiBindToService = (container: interfaces.Container) =>
         (...types: interfaces.ServiceIdentifier<any>[]) =>
             types.forEach((t) => container.bind(t).toService(service));
 
-export const __ensureFullyBound = (binding:interfaces.Binding<unknown>):void => {
+export const _ensureFullyBound = (binding:interfaces.Binding<unknown>):void => {
     let boundValue:unknown = null;
     switch(binding.type){
         case "ConstantValue":
