@@ -12,6 +12,7 @@ export { unmanaged } from "./annotation/unmanaged";
 export { multiInject } from "./annotation/multi_inject";
 export { targetName } from "./annotation/target_name";
 export { postConstruct } from "./annotation/post_construct";
+export { preDestroy } from "./annotation/pre_destroy";
 export { MetadataReader } from "./planning/metadata_reader";
 export { id } from "./utils/id";
 export { interfaces } from "./interfaces/interfaces";

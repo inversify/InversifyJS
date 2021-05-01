@@ -86,10 +86,28 @@ describe("Lookup", () => {
 
   });
 
+  it("Should use use the original non clonable entry if it is not clonable", () => {
+    const lookup = new Lookup<any>();
+    const key1 = Symbol.for("TEST_KEY");
+
+    class Warrior {
+      public kind: string;
+      public constructor(kind: string) {
+        this.kind = kind;
+      }
+    }
+    const warrior = new Warrior("ninja")
+    lookup.add(key1, warrior);
+
+    const copy = lookup.clone();
+    expect(copy.get(key1)[0] === warrior).to.eql(true);
+
+  })
+
   it("Should be able to remove a binding by a condition", () => {
 
-    const moduleId1 = "moduleId1";
-    const moduleId2 = "moduleId2";
+    const moduleId1 = 1;
+    const moduleId2 = 2;
     const warriorId = "Warrior";
     const weaponId = "Weapon";
 
@@ -157,6 +175,47 @@ describe("Lookup", () => {
     expect(lookup2.hasKey(warriorId)).to.eql(false);
     expect(lookup2.hasKey(weaponId)).to.eql(false);
 
+  });
+
+  it('should be able to remove the intersection with another lookup', () => {
+    const lookup = new Lookup<unknown>();
+
+    const serviceIdentifier1 = 'service-identifier-1';
+    const serviceIdentifier2 = 'service-identifier-2';
+
+    const serviceIdentifier1Values = [11, 12, 13, 14];
+    const serviceIdentifier2Values = [21, 22, 23, 24];
+
+    for (const value of serviceIdentifier1Values) {
+      lookup.add(serviceIdentifier1, value);
+    }
+
+    for (const value of serviceIdentifier2Values) {
+      lookup.add(serviceIdentifier2, value);
+    }
+
+    const lookupToIntersect = new Lookup<unknown>();
+
+    const lookupToIntersectServiceIdentifier2Values = [23, 24, 25, 26];
+
+    const serviceIdentifier3 = 'service-identifier-3';
+
+    const lookupToIntersectServiceIdentifier3Values = [31, 32, 33, 34];
+
+    for (const value of lookupToIntersectServiceIdentifier2Values) {
+      lookupToIntersect.add(serviceIdentifier2, value);
+    }
+
+    for (const value of lookupToIntersectServiceIdentifier3Values) {
+      lookupToIntersect.add(serviceIdentifier3, value);
+    }
+
+    lookup.removeIntersection(lookupToIntersect);
+
+    expect(lookup.getMap()).to.deep.equal(new Map([
+      [serviceIdentifier1, [...serviceIdentifier1Values]],
+      [serviceIdentifier2, [21, 22]],
+    ]));
   });
 
 });

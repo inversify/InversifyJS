@@ -243,9 +243,7 @@ function plan(
         if (
             isStackOverflowExeption(error)
         ) {
-            if (context.plan) {
-                circularDependencyToException(context.plan.rootRequest);
-            }
+            circularDependencyToException(context.plan.rootRequest);
         }
         throw error;
     }

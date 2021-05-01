@@ -66,6 +66,7 @@ test/**/*.js.map
 src/**/*.js.map
 src/*.js.map
 type_definitions/**/*.js
+.DS_store
 .idea
 
 .nyc_output

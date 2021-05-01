@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
 import { postConstruct } from "../../src/annotation/post_construct";
@@ -6,6 +6,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { ContainerModule } from "../../src/container/container_module";
+import { ModuleActivationStore } from "../../src/container/module_activation_store";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { getBindingDictionary } from "../../src/planning/planner";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
@@ -26,229 +27,241 @@ describe("Container", () => {
 
     it("Should be able to use modules as configuration", () => {
 
-      interface Ninja {}
-      interface Katana {}
-      interface Shuriken {}
+        interface Ninja { }
+        interface Katana { }
+        interface Shuriken { }
 
-      @injectable()
-      class Katana implements Katana {}
+        @injectable()
+        class Katana implements Katana { }
 
-      @injectable()
-      class Shuriken implements Shuriken {}
+        @injectable()
+        class Shuriken implements Shuriken { }
 
-      @injectable()
-      class Ninja implements Ninja {}
+        @injectable()
+        class Ninja implements Ninja { }
 
-      const warriors = new ContainerModule((bind: interfaces.Bind) => {
-          bind<Ninja>("Ninja").to(Ninja);
-      });
+        const warriors = new ContainerModule((bind: interfaces.Bind) => {
+            bind<Ninja>("Ninja").to(Ninja);
+        });
 
-      const weapons = new ContainerModule((bind: interfaces.Bind) => {
-          bind<Katana>("Katana").to(Katana);
-          bind<Shuriken>("Shuriken").to(Shuriken);
-      });
+        const weapons = new ContainerModule((bind: interfaces.Bind) => {
+            bind<Katana>("Katana").to(Katana);
+            bind<Shuriken>("Shuriken").to(Shuriken);
+        });
 
-      const container = new Container();
-      container.load(warriors, weapons);
+        const container = new Container();
+        container.load(warriors, weapons);
 
-      let map: Dictionary = getBindingDictionary(container).getMap();
-      expect(map.has("Ninja")).equal(true);
-      expect(map.has("Katana")).equal(true);
-      expect(map.has("Shuriken")).equal(true);
-      expect(map.size).equal(3);
+        let map: Dictionary = getBindingDictionary(container).getMap();
+        expect(map.has("Ninja")).equal(true);
+        expect(map.has("Katana")).equal(true);
+        expect(map.has("Shuriken")).equal(true);
+        expect(map.size).equal(3);
 
-      const tryGetNinja = () => { container.get("Ninja"); };
-      const tryGetKatana = () => { container.get("Katana"); };
-      const tryGetShuruken = () => { container.get("Shuriken"); };
+        const tryGetNinja = () => { container.get("Ninja"); };
+        const tryGetKatana = () => { container.get("Katana"); };
+        const tryGetShuruken = () => { container.get("Shuriken"); };
 
-      container.unload(warriors);
-      map = getBindingDictionary(container).getMap();
-      expect(map.size).equal(2);
-      expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
-      expect(tryGetKatana).not.to.throw();
-      expect(tryGetShuruken).not.to.throw();
+        container.unload(warriors);
+        map = getBindingDictionary(container).getMap();
+        expect(map.size).equal(2);
+        expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(tryGetKatana).not.to.throw();
+        expect(tryGetShuruken).not.to.throw();
 
-      container.unload(weapons);
-      map = getBindingDictionary(container).getMap();
-      expect(map.size).equal(0);
-      expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
-      expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
-      expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        container.unload(weapons);
+        map = getBindingDictionary(container).getMap();
+        expect(map.size).equal(0);
+        expect(tryGetNinja).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(tryGetKatana).to.throw(ERROR_MSGS.NOT_REGISTERED);
+        expect(tryGetShuruken).to.throw(ERROR_MSGS.NOT_REGISTERED);
 
-  });
+    });
 
     it("Should be able to store bindings", () => {
 
-      interface Ninja {}
+        interface Ninja { }
 
-      @injectable()
-      class Ninja implements Ninja {}
-      const ninjaId = "Ninja";
+        @injectable()
+        class Ninja implements Ninja { }
+        const ninjaId = "Ninja";
 
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
 
-      const map: Dictionary = getBindingDictionary(container).getMap();
-      expect(map.size).equal(1);
-      expect(map.has(ninjaId)).equal(true);
+        const map: Dictionary = getBindingDictionary(container).getMap();
+        expect(map.size).equal(1);
+        expect(map.has(ninjaId)).equal(true);
 
-  });
+    });
 
     it("Should have an unique identifier", () => {
 
-      const container1 = new Container();
-      const container2 = new Container();
-      expect(container1.id).to.be.a("number");
-      expect(container2.id).to.be.a("number");
-      expect(container1.id).not.equal(container2.id);
+        const container1 = new Container();
+        const container2 = new Container();
+        expect(container1.id).to.be.a("number");
+        expect(container2.id).to.be.a("number");
+        expect(container1.id).not.equal(container2.id);
 
-  });
+    });
 
     it("Should unbind a binding when requested", () => {
 
-      interface Ninja {}
+        interface Ninja { }
 
-      @injectable()
-      class Ninja implements Ninja {}
-      const ninjaId = "Ninja";
+        @injectable()
+        class Ninja implements Ninja { }
+        const ninjaId = "Ninja";
 
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
 
-      const map: Dictionary = getBindingDictionary(container).getMap();
-      expect(map.has(ninjaId)).equal(true);
+        const map: Dictionary = getBindingDictionary(container).getMap();
+        expect(map.has(ninjaId)).equal(true);
 
-      container.unbind(ninjaId);
-      expect(map.has(ninjaId)).equal(false);
-      expect(map.size).equal(0);
+        container.unbind(ninjaId);
+        expect(map.has(ninjaId)).equal(false);
+        expect(map.size).equal(0);
 
-  });
+    });
 
     it("Should throw when cannot unbind", () => {
-      const serviceIdentifier = "Ninja";
-      const container = new Container();
-      const throwFunction = () => { container.unbind("Ninja"); };
-      expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-  });
+        const serviceIdentifier = "Ninja";
+        const container = new Container();
+        const throwFunction = () => { container.unbind(serviceIdentifier); };
+        expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+    });
+
+    it("Should throw when cannot unbind (async)", async () => {
+        const serviceIdentifier = "Ninja";
+        const container = new Container();
+
+        try {
+            await container.unbindAsync(serviceIdentifier);
+            assert.fail();
+        } catch (err: unknown) {
+            expect((err as Error).message).to.eql(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
+    });
 
     it("Should unbind a binding when requested", () => {
 
-      interface Ninja {}
+        interface Ninja { }
 
-      @injectable()
-      class Ninja implements Ninja {}
-      interface Samurai {}
+        @injectable()
+        class Ninja implements Ninja { }
+        interface Samurai { }
 
-      @injectable()
-      class Samurai implements Samurai {}
+        @injectable()
+        class Samurai implements Samurai { }
 
-      const ninjaId = "Ninja";
-      const samuraiId = "Samurai";
+        const ninjaId = "Ninja";
+        const samuraiId = "Samurai";
 
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Samurai>(samuraiId).to(Samurai);
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Samurai>(samuraiId).to(Samurai);
 
-      let map: Dictionary = getBindingDictionary(container).getMap();
+        let map: Dictionary = getBindingDictionary(container).getMap();
 
-      expect(map.size).equal(2);
-      expect(map.has(ninjaId)).equal(true);
-      expect(map.has(samuraiId)).equal(true);
+        expect(map.size).equal(2);
+        expect(map.has(ninjaId)).equal(true);
+        expect(map.has(samuraiId)).equal(true);
 
-      container.unbind(ninjaId);
-      map = getBindingDictionary(container).getMap();
-      expect(map.size).equal(1);
+        container.unbind(ninjaId);
+        map = getBindingDictionary(container).getMap();
+        expect(map.size).equal(1);
 
-  });
+    });
 
     it("Should be able unbound all dependencies", () => {
 
-      interface Ninja {}
+        interface Ninja { }
 
-      @injectable()
-      class Ninja implements Ninja {}
+        @injectable()
+        class Ninja implements Ninja { }
 
-      interface Samurai {}
+        interface Samurai { }
 
-      @injectable()
-      class Samurai implements Samurai {}
+        @injectable()
+        class Samurai implements Samurai { }
 
-      const ninjaId = "Ninja";
-      const samuraiId = "Samurai";
+        const ninjaId = "Ninja";
+        const samuraiId = "Samurai";
 
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Samurai>(samuraiId).to(Samurai);
+        const container = new Container();
+        container.bind<Ninja>(ninjaId).to(Ninja);
+        container.bind<Samurai>(samuraiId).to(Samurai);
 
-      let map: Dictionary = getBindingDictionary(container).getMap();
+        let map: Dictionary = getBindingDictionary(container).getMap();
 
-      expect(map.size).equal(2);
-      expect(map.has(ninjaId)).equal(true);
-      expect(map.has(samuraiId)).equal(true);
+        expect(map.size).equal(2);
+        expect(map.has(ninjaId)).equal(true);
+        expect(map.has(samuraiId)).equal(true);
 
-      container.unbindAll();
-      map = getBindingDictionary(container).getMap();
-      expect(map.size).equal(0);
+        container.unbindAll();
+        map = getBindingDictionary(container).getMap();
+        expect(map.size).equal(0);
 
-  });
+    });
 
     it("Should NOT be able to get unregistered services", () => {
 
-      interface Ninja {}
+        interface Ninja { }
 
-      @injectable()
-      class Ninja implements Ninja {}
-      const ninjaId = "Ninja";
+        @injectable()
+        class Ninja implements Ninja { }
+        const ninjaId = "Ninja";
 
-      const container = new Container();
-      const throwFunction = () => { container.get<Ninja>(ninjaId); };
+        const container = new Container();
+        const throwFunction = () => { container.get<Ninja>(ninjaId); };
 
-      expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
-  });
+        expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
+    });
 
     it("Should NOT be able to get ambiguous match", () => {
 
-      interface Warrior {}
+        interface Warrior { }
 
-      @injectable()
-      class Ninja implements Warrior {}
+        @injectable()
+        class Ninja implements Warrior { }
 
-      @injectable()
-      class Samurai implements Warrior {}
+        @injectable()
+        class Samurai implements Warrior { }
 
-      const warriorId = "Warrior";
+        const warriorId = "Warrior";
 
-      const container = new Container();
-      container.bind<Warrior>(warriorId).to(Ninja);
-      container.bind<Warrior>(warriorId).to(Samurai);
+        const container = new Container();
+        container.bind<Warrior>(warriorId).to(Ninja);
+        container.bind<Warrior>(warriorId).to(Samurai);
 
-      const dictionary: Dictionary = getBindingDictionary(container).getMap();
+        const dictionary: Dictionary = getBindingDictionary(container).getMap();
 
-      expect(dictionary.size).equal(1);
-      dictionary.forEach((value, key) => {
-          expect(key).equal(warriorId);
-          expect(value.length).equal(2);
-      });
+        expect(dictionary.size).equal(1);
+        dictionary.forEach((value, key) => {
+            expect(key).equal(warriorId);
+            expect(value.length).equal(2);
+        });
 
-      const throwFunction = () => { container.get<Warrior>(warriorId); };
-      expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${warriorId}`);
+        const throwFunction = () => { container.get<Warrior>(warriorId); };
+        expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} ${warriorId}`);
 
-  });
+    });
 
     it("Should NOT be able to getAll of an unregistered services", () => {
 
-      interface Ninja {}
+        interface Ninja { }
 
-      @injectable()
-      class Ninja implements Ninja {}
-      const ninjaId = "Ninja";
+        @injectable()
+        class Ninja implements Ninja { }
+        const ninjaId = "Ninja";
 
-      const container = new Container();
-      const throwFunction = () => { container.getAll<Ninja>(ninjaId); };
+        const container = new Container();
+        const throwFunction = () => { container.getAll<Ninja>(ninjaId); };
 
-      expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
+        expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} ${ninjaId}`);
 
-  });
+    });
 
     it("Should be able to get a string literal identifier as a string", () => {
         const Katana = "Katana";
@@ -263,7 +276,7 @@ describe("Container", () => {
     });
 
     it("Should be able to get a class identifier as a string", () => {
-        class Katana {}
+        class Katana { }
         const KatanaStr = getServiceIdentifierAsString(Katana);
         expect(KatanaStr).to.equal("Katana");
     });
@@ -274,10 +287,10 @@ describe("Container", () => {
         }
 
         @injectable()
-        class Ninja implements Warrior {}
+        class Ninja implements Warrior { }
 
         @injectable()
-        class Samurai implements Warrior {}
+        class Samurai implements Warrior { }
 
         const container = new Container();
         container.bind<Warrior>(Ninja).to(Ninja);
@@ -317,8 +330,8 @@ describe("Container", () => {
         @injectable()
         class Ninja {
             @postConstruct()
-            public postConstruct () {
-                timesCalled ++;
+            public postConstruct() {
+                timesCalled++;
             }
         }
 
@@ -334,14 +347,58 @@ describe("Container", () => {
         expect(timesCalled).to.be.equal(1);
     });
 
+    it("Should save and restore the container activations and deactivations when snapshot and restore", () => {
+        const sid = "sid";
+        const container = new Container();
+        container.bind<string>(sid).toConstantValue("Value");
+
+        let activated = false;
+        let deactivated = false
+
+        container.snapshot();
+
+        container.onActivation<string>(sid, (c, i) => {
+            activated = true;
+            return i;
+        });
+        container.onDeactivation(sid, i => {
+            deactivated = true;
+        });
+
+        container.restore();
+
+        container.get(sid);
+        container.unbind(sid);
+
+        expect(activated).to.equal(false);
+        expect(deactivated).to.equal(false);
+    })
+
+    it("Should save and restore the module activation store when snapshot and restore", () => {
+        const container = new Container();
+        const clonedActivationStore = new ModuleActivationStore();
+        const originalActivationStore = {
+            clone() {
+                return clonedActivationStore;
+            }
+        }
+        const anyContainer = container as any;
+        anyContainer._moduleActivationStore = originalActivationStore;
+        container.snapshot();
+        const snapshot: interfaces.ContainerSnapshot = anyContainer._snapshots[0];
+        expect(snapshot.moduleActivationStore === clonedActivationStore).to.equal(true);
+        container.restore();
+        expect(anyContainer._moduleActivationStore === clonedActivationStore).to.equal(true);
+    })
+
     it("Should be able to check is there are bindings available for a given identifier", () => {
 
-        interface Warrior {}
+        interface Warrior { }
         const warriorId = "Warrior";
         const warriorSymbol = Symbol.for("Warrior");
 
         @injectable()
-        class Ninja implements Warrior {}
+        class Ninja implements Warrior { }
 
         const container = new Container();
         container.bind<Warrior>(Ninja).to(Ninja);
@@ -352,12 +409,12 @@ describe("Container", () => {
         expect(container.isBound(warriorId)).equal(true);
         expect(container.isBound(warriorSymbol)).equal(true);
 
-        interface Katana {}
+        interface Katana { }
         const katanaId = "Katana";
         const katanaSymbol = Symbol.for("Katana");
 
         @injectable()
-        class Katana implements Katana {}
+        class Katana implements Katana { }
 
         expect(container.isBound(Katana)).equal(false);
         expect(container.isBound(katanaId)).equal(false);
@@ -369,7 +426,7 @@ describe("Container", () => {
         const weaponIdentifier = "Weapon";
 
         @injectable()
-        class Katana {}
+        class Katana { }
 
         const container = new Container();
         container.bind(weaponIdentifier).to(Katana);
@@ -387,7 +444,7 @@ describe("Container", () => {
         const weaponIdentifier = "Weapon";
 
         @injectable()
-        class Katana {}
+        class Katana { }
 
         const container = new Container();
         container.bind(weaponIdentifier).to(Katana);
@@ -405,10 +462,10 @@ describe("Container", () => {
         const weaponIdentifier = "Weapon";
 
         @injectable()
-        class Katana {}
+        class Katana { }
 
         @injectable()
-        class DivineRapier {}
+        class DivineRapier { }
 
         const container = new Container();
         container.bind(weaponIdentifier).to(Katana);
@@ -523,22 +580,28 @@ describe("Container", () => {
 
     });
 
+    it("Should default binding scope to Transient if no default scope on options", () => {
+        const container = new Container();
+        container.options.defaultScope = undefined;
+        const expectedScope: interfaces.BindingScope = "Transient";
+        expect((container.bind("SID") as any)._binding.scope).to.equal(expectedScope);
+    });
     it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
 
         @injectable()
-        class Katana {}
+        class Katana { }
 
         @injectable()
-        class Shuriken {}
+        class Shuriken { }
 
         @injectable()
         class Ninja {
-            public constructor(public weapon: Katana) {}
+            public constructor(public weapon: Katana) { }
         }
 
-        class Samurai {}
+        class Samurai { }
 
-        const container1 = new Container({autoBindInjectable: true});
+        const container1 = new Container({ autoBindInjectable: true });
         const katana1 = container1.get(Katana);
         const ninja1 = container1.get(Ninja);
         expect(katana1).to.be.an.instanceof(Katana);
@@ -549,7 +612,7 @@ describe("Container", () => {
         expect(ninja1.weapon).to.not.equal(container1.get(Ninja).weapon);
         expect(ninja1.weapon).to.not.equal(katana1);
 
-        const container2 = new Container({defaultScope: BindingScopeEnum.Singleton, autoBindInjectable: true});
+        const container2 = new Container({ defaultScope: BindingScopeEnum.Singleton, autoBindInjectable: true });
         const katana2 = container2.get(Katana);
         const ninja2 = container2.get(Ninja);
         expect(katana2).to.be.an.instanceof(Katana);
@@ -560,7 +623,7 @@ describe("Container", () => {
         expect(ninja2.weapon).to.equal(container2.get(Ninja).weapon);
         expect(ninja2.weapon).to.equal(katana2);
 
-        const container3 = new Container({autoBindInjectable: true});
+        const container3 = new Container({ autoBindInjectable: true });
         container3.bind(Katana).toSelf().inSingletonScope();
         const katana3 = container3.get(Katana);
         const ninja3 = container3.get(Ninja);
@@ -572,7 +635,7 @@ describe("Container", () => {
         expect(ninja3.weapon).to.equal(container3.get(Ninja).weapon);
         expect(ninja3.weapon).to.equal(katana3);
 
-        const container4 = new Container({autoBindInjectable: true});
+        const container4 = new Container({ autoBindInjectable: true });
         container4.bind(Katana).to(Shuriken);
         const katana4 = container4.get(Katana);
         const ninja4 = container4.get(Ninja);
@@ -584,7 +647,7 @@ describe("Container", () => {
         expect(ninja4.weapon).to.not.equal(container4.get(Ninja).weapon);
         expect(ninja4.weapon).to.not.equal(katana4);
 
-        const container5 = new Container({autoBindInjectable: true});
+        const container5 = new Container({ autoBindInjectable: true });
         expect(() => container5.get(Samurai)).to.throw(ERROR_MSGS.NOT_REGISTERED);
 
     });
@@ -896,4 +959,132 @@ describe("Container", () => {
 
     });
 
+    it("Should be able to override a binding using rebindAsync", async () => {
+
+        const TYPES = {
+            someType: "someType"
+        };
+
+        const container = new Container();
+        container.bind<number>(TYPES.someType).toConstantValue(1);
+        container.bind<number>(TYPES.someType).toConstantValue(2);
+        container.onDeactivation(TYPES.someType, () => Promise.resolve())
+
+        const values1 = container.getAll(TYPES.someType);
+        expect(values1[0]).to.eq(1);
+        expect(values1[1]).to.eq(2);
+
+        (await container.rebindAsync<number>(TYPES.someType)).toConstantValue(3);
+        const values2 = container.getAll(TYPES.someType);
+        expect(values2[0]).to.eq(3);
+        expect(values2[1]).to.eq(undefined);
+
+    });
+
+    it("Should be able to resolve named multi-injection (async)", async () => {
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "au revoir" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetNamed("es");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "adios" })).whenTargetNamed("es");
+
+        const fr = await container.getAllNamedAsync<Intl>("Intl", "fr");
+        expect(fr.length).to.equal(2);
+        expect(fr[0]?.hello).to.equal("bonjour");
+        expect(fr[1]?.goodbye).to.equal("au revoir");
+
+        const es = await container.getAllNamedAsync<Intl>("Intl", "es");
+        expect(es.length).to.equal(2);
+        expect(es[0]?.hello).to.equal("hola");
+        expect(es[1]?.goodbye).to.equal("adios");
+
+    });
+
+    it("Should be able to resolve named (async)", async () => {
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetNamed("es");
+
+        const fr = await container.getNamedAsync<Intl>("Intl", "fr");
+        expect(fr.hello).to.equal("bonjour");
+
+        const es = await container.getNamedAsync<Intl>("Intl", "es");
+        expect(es.hello).to.equal("hola");
+    });
+
+    it("Should be able to resolve tagged multi-injection (async)", async () => {
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "au revoir" })).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetTagged("lang", "es");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "adios" })).whenTargetTagged("lang", "es");
+
+        const fr = await container.getAllTaggedAsync<Intl>("Intl", "lang", "fr");
+        expect(fr.length).to.equal(2);
+        expect(fr[0]?.hello).to.equal("bonjour");
+        expect(fr[1]?.goodbye).to.equal("au revoir");
+
+        const es = await container.getAllTaggedAsync<Intl>("Intl", "lang", "es");
+        expect(es.length).to.equal(2);
+        expect(es[0]?.hello).to.equal("hola");
+        expect(es[1]?.goodbye).to.equal("adios");
+
+    });
+
+    it("Should be able to get a tagged binding (async)", async () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        const container = new Container();
+
+        container.bind<number>(zero).toDynamicValue(() => Promise.resolve(0)).whenTargetTagged(isValidDivisor, false);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, false)).to.equal(0);
+
+        container.bind<number>(zero).toDynamicValue(() => Promise.resolve(1)).whenTargetTagged(isValidDivisor, true);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, false)).to.equal(0);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, true)).to.equal(1);
+
+    });
+
+    it("should be able to get all the services binded (async)", async () => {
+        const serviceIdentifier = "service-identifier";
+
+        const container = new Container();
+
+        const firstValueBinded = "value-one";
+        const secondValueBinded = "value-two";
+        const thirdValueBinded = "value-three";
+
+        container.bind(serviceIdentifier).toConstantValue(firstValueBinded);
+        container.bind(serviceIdentifier).toConstantValue(secondValueBinded);
+        container.bind(serviceIdentifier).toDynamicValue(_ => Promise.resolve(thirdValueBinded));
+        const services = await container.getAllAsync<string>(serviceIdentifier);
+
+        expect(services).to.deep.eq([firstValueBinded, secondValueBinded, thirdValueBinded]);
+    });
+
+    it('should throw an error if skipBaseClassChecks is not a boolean', () => {
+        expect(() =>
+            new Container({
+                skipBaseClassChecks: 'Jolene, Jolene, Jolene, Jolene' as unknown as boolean
+            })
+        ).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK);
+    })
 });
