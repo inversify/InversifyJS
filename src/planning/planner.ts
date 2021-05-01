@@ -246,7 +246,9 @@ function plan(
         if (
             isStackOverflowExeption(error)
         ) {
-            circularDependencyToException(context.plan.rootRequest);
+            if (context.plan.rootRequest) {
+                circularDependencyToException(context.plan.rootRequest);
+            }
         }
         throw error;
     }
