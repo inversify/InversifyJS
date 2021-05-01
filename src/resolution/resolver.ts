@@ -1,30 +1,14 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
+import { _saveToScope, _tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
+import { __ensureFullyBound } from "../utils/binding_utils";
 import { isStackOverflowExeption } from "../utils/exceptions";
-import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
 
 type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
-const invokeFactory = (
-    factoryType: FactoryType,
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    fn: () => any
-) => {
-    try {
-        return fn();
-    } catch (error) {
-        if (isStackOverflowExeption(error)) {
-            throw new Error(
-                ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier.toString())
-            );
-        } else {
-            throw error;
-        }
-    }
-};
+type FactoryTypeFunction = (context: interfaces.Context) => any;
 
 const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
     (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
@@ -59,132 +43,61 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
         return _resolveBinding<T>(requestScope, request, binding);
     }
 };
-type FactoryTypeFunction = (context: interfaces.Context) => any;
-const _getFactoryDetails = (
-    binding:interfaces.Binding<unknown>,
-    ): {
-        factory: FactoryTypeFunction | null | undefined,
-        factoryType: FactoryType
-    } => {
-    let factory: ((context: interfaces.Context) => any) | null | undefined;
-    let factoryType:FactoryType = "toDynamicValue"
-    switch(binding.type){
-        case "DynamicValue":
-            factory = binding.dynamicValue;
-            factoryType = "toDynamicValue";
-            break;
-        case "Factory":
-            factory = binding.factory;
-            factoryType = "toFactory";
-            break;
-        case "Provider":
-            factory = binding.provider;
-            factoryType = "toProvider";
-            break;
-    }
-    return {factory, factoryType};
-}
 
-const _newUnfinishedBindingError = (serviceIdentifier: interfaces.ServiceIdentifier<unknown>):Error => {
-     // The user probably created a binding but didn't finish it
-    // e.g. container.bind<T>("Something"); missing BindingToSyntax
-    const serviceIdentifierAsString = getServiceIdentifierAsString(serviceIdentifier);
-    return new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
+const _resolveFactoryFromBinding = <T>(
+    factory:FactoryTypeFunction, factoryType:FactoryType, context:interfaces.Context
+): T => {
+    const serviceIdentifier = context.currentRequest.serviceIdentifier
+    try {
+        return factory(context);
+    } catch (error) {
+        if (isStackOverflowExeption(error)) {
+            throw new Error(
+                ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier.toString())
+            );
+        } else {
+            throw error;
+        }
+    }
 }
 
 const _getResolvedFromBinding = <T>(
     requestScope: interfaces.RequestScope,
     request: interfaces.Request,
-    binding:interfaces.Binding<T>) => {
-    let result: T | Promise<T>;
+    binding:interfaces.Binding<T>): T | Promise<T> => {
+    let result: T | Promise<T> | undefined;
     const childRequests = request.childRequests;
-    if (_isConstantType(binding.type) && binding.cache !== null) {
-        result = binding.cache;
-        binding.activated = true;
-    } else if (binding.type === BindingTypeEnum.Constructor && binding.implementationType !== null) {
-        result = binding.implementationType as T;
-    } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-        result = resolveInstance<T>(
-            binding,
-            binding.implementationType as interfaces.Newable<T>,
-            childRequests,
-            _resolveRequest<T>(requestScope)
-        );
-    } else {
-        const factoryDetails = _getFactoryDetails(binding);
-        if (factoryDetails.factory) {
-            const factory = factoryDetails.factory;
-            result = invokeFactory(factoryDetails.factoryType,binding.serviceIdentifier,() => {
-                return factory(request.parentContext);
-            });
-        } else {
-            throw _newUnfinishedBindingError(request.serviceIdentifier);
-        }
+    const context = request.parentContext;
+    __ensureFullyBound(binding);
+    switch(binding.type){
+        case "ConstantValue":
+        case "Function":
+            result = binding.cache as T | Promise<T>;
+            binding.activated = true;
+            break;
+        case "Constructor":
+            result = binding.implementationType as T;
+            break;
+        case "Instance":
+            result = resolveInstance<T>(
+                binding,
+                binding.implementationType as interfaces.Newable<T>,
+                childRequests,
+                _resolveRequest<T>(requestScope)
+            );
+            break;
+        case "Factory":
+            result = _resolveFactoryFromBinding(binding.factory as FactoryTypeFunction,"toFactory",context);
+            break;
+        case "Provider":
+            result = _resolveFactoryFromBinding(binding.provider as FactoryTypeFunction,"toProvider",context);
+            break;
+        case "DynamicValue":
+            result = _resolveFactoryFromBinding(binding.dynamicValue as FactoryTypeFunction,"toDynamicValue",context);
+            break;
     }
-
-    return result;
+    return result as T | Promise<T>;
 }
-
-const _tryGetFromScope = <T>(
-    requestScope: interfaces.RequestScope,
-    binding:interfaces.Binding<T>): T | Promise<T> | null => {
-
-    if (_isSingletonScope(binding) && binding.activated) {
-        return binding.cache!;
-    }
-
-    if (
-        _isRequestScope(binding) &&
-        requestScope !== null &&
-        requestScope.has(binding.id)
-    ) {
-        return requestScope.get(binding.id);
-    }
-    return null;
-}
-
-const _isSingletonScope = (binding:interfaces.Binding<unknown>): boolean => {
-    return binding.scope === BindingScopeEnum.Singleton;
-}
-
-const _isRequestScope = (binding:interfaces.Binding<unknown>): boolean => {
-    return binding.scope === BindingScopeEnum.Request;
-}
-
-const _isConstantType = (type:interfaces.BindingType): boolean => {
-    return type === BindingTypeEnum.ConstantValue || type === BindingTypeEnum.Function
-}
-
-const _saveToScope = <T>(
-    requestScope: interfaces.RequestScope,
-    binding:interfaces.Binding<T>,
-    result:T | Promise<T>
-): void => {
-    // store in cache if scope is singleton
-    if (_isSingletonScope(binding)) {
-        binding.cache = result;
-        binding.activated = true;
-
-        if (isPromise(result)) {
-            result.catch((ex) => {
-                // allow binding to retry in future
-                binding.cache = null;
-                binding.activated = false;
-
-                throw ex;
-            });
-        }
-    }
-
-    if (
-        _isRequestScope(binding) &&
-        requestScope !== null &&
-        !requestScope.has(binding.id)
-    ) {
-        requestScope.set(binding.id, result);
-    }
-}
-
 const _resolveInScope = <T>(
     requestScope: interfaces.RequestScope,
     binding:interfaces.Binding<T>,
