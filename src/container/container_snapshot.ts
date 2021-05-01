@@ -1,7 +1,6 @@
 import { interfaces } from "../interfaces/interfaces";
 
 class ContainerSnapshot implements interfaces.ContainerSnapshot {
-
     public bindings!: interfaces.Lookup<interfaces.Binding<any>>;
     public activations!: interfaces.Lookup<interfaces.BindingActivation<any>>;
     public deactivations!: interfaces.Lookup<interfaces.BindingDeactivation<any>>;
@@ -15,6 +14,7 @@ class ContainerSnapshot implements interfaces.ContainerSnapshot {
         deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>,
         moduleActivationStore: interfaces.ModuleActivationStore
     ) {
+        console.log('test');
         const snapshot = new ContainerSnapshot();
         snapshot.bindings = bindings;
         snapshot.middleware = middleware;
