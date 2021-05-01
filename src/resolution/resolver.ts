@@ -61,11 +61,11 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
     }
 };
 
-export function _resolveBinding<T>(
+const _resolveBinding = <T>(
     requestScope: interfaces.RequestScope,
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
-): T | Promise<T> {
+): T | Promise<T> => {
     const isSingleton = binding.scope === BindingScopeEnum.Singleton;
     const isRequestSingleton = binding.scope === BindingScopeEnum.Request;
 
