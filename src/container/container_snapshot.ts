@@ -14,7 +14,6 @@ class ContainerSnapshot implements interfaces.ContainerSnapshot {
         deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>,
         moduleActivationStore: interfaces.ModuleActivationStore
     ) {
-        console.log('test');
         const snapshot = new ContainerSnapshot();
         snapshot.bindings = bindings;
         snapshot.middleware = middleware;
