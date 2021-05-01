@@ -6,3 +6,15 @@ export function isStackOverflowExeption(error: Error) {
         error.message === ERROR_MSGS.STACK_OVERFLOW
     );
 }
+
+export const _tryStackOverflow = <T>(fn:()=>T,errorCallback:()=>Error) => {
+    try {
+        return fn();
+    } catch (error) {
+        if (isStackOverflowExeption(error)) {
+            throw errorCallback();
+        } else {
+            throw error;
+        }
+    }
+}

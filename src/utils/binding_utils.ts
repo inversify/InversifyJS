@@ -33,4 +33,22 @@ export const __ensureFullyBound = (binding:interfaces.Binding<unknown>):void => 
         throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
     }
 }
+export type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
+export type FactoryTypeFunction = (context: interfaces.Context) => any;
+
+export interface FactoryDetails {
+    factoryType:FactoryType,
+    factory:FactoryTypeFunction | null
+};
+export const _getFactoryDetails = (binding:interfaces.Binding<unknown>): FactoryDetails | null => {
+    switch(binding.type){
+        case "Factory":
+            return { factory: binding.factory,factoryType:"toFactory"};
+        case "Provider":
+            return { factory: binding.provider,factoryType:"toProvider"};
+        case "DynamicValue":
+            return { factory: binding.dynamicValue,factoryType:"toDynamicValue"};
+    }
+    return null;
+}
 

@@ -5,12 +5,12 @@ export const _tryGetFromScope = <T>(
   requestScope: interfaces.RequestScope,
   binding:interfaces.Binding<T>): T | Promise<T> | null => {
 
-  if (_isSingletonScope(binding) && binding.activated) {
+  if ((binding.scope === BindingScopeEnum.Singleton) && binding.activated) {
       return binding.cache!;
   }
 
   if (
-      _isRequestScope(binding) &&
+      binding.scope === BindingScopeEnum.Request &&
       requestScope !== null &&
       requestScope.has(binding.id)
   ) {
@@ -19,22 +19,13 @@ export const _tryGetFromScope = <T>(
   return null;
 }
 
-const _isSingletonScope = (binding:interfaces.Binding<unknown>): boolean => {
-  return binding.scope === BindingScopeEnum.Singleton;
-}
-
-const _isRequestScope = (binding:interfaces.Binding<unknown>): boolean => {
-  return binding.scope === BindingScopeEnum.Request;
-}
-
-
 export const _saveToScope = <T>(
   requestScope: interfaces.RequestScope,
   binding:interfaces.Binding<T>,
   result:T | Promise<T>
 ): void => {
   // store in cache if scope is singleton
-  if (_isSingletonScope(binding)) {
+  if (binding.scope === BindingScopeEnum.Singleton) {
       binding.cache = result;
       binding.activated = true;
 
@@ -50,7 +41,7 @@ export const _saveToScope = <T>(
   }
 
   if (
-      _isRequestScope(binding) &&
+      binding.scope === BindingScopeEnum.Request &&
       requestScope !== null &&
       !requestScope.has(binding.id)
   ) {

@@ -3,12 +3,9 @@ import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
 import { _saveToScope, _tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
-import { __ensureFullyBound } from "../utils/binding_utils";
-import { isStackOverflowExeption } from "../utils/exceptions";
+import { FactoryDetails, FactoryTypeFunction, _getFactoryDetails, __ensureFullyBound } from "../utils/binding_utils";
+import { _tryStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
-
-type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
-type FactoryTypeFunction = (context: interfaces.Context) => any;
 
 const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
     (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
@@ -45,20 +42,15 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 };
 
 const _resolveFactoryFromBinding = <T>(
-    factory:FactoryTypeFunction, factoryType:FactoryType, context:interfaces.Context
-): T => {
-    const serviceIdentifier = context.currentRequest.serviceIdentifier
-    try {
-        return factory(context);
-    } catch (error) {
-        if (isStackOverflowExeption(error)) {
-            throw new Error(
-                ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryType, serviceIdentifier.toString())
-            );
-        } else {
-            throw error;
-        }
-    }
+    binding:interfaces.Binding<T>,
+    context:interfaces.Context
+): T | Promise<T> => {
+    const factoryDetails = _getFactoryDetails(binding) as FactoryDetails;
+    return _tryStackOverflow(
+        () => (factoryDetails.factory as FactoryTypeFunction)(context),
+        () => new Error(
+        ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString())
+    ));
 }
 
 const _getResolvedFromBinding = <T>(
@@ -67,7 +59,6 @@ const _getResolvedFromBinding = <T>(
     binding:interfaces.Binding<T>): T | Promise<T> => {
     let result: T | Promise<T> | undefined;
     const childRequests = request.childRequests;
-    const context = request.parentContext;
     __ensureFullyBound(binding);
     switch(binding.type){
         case "ConstantValue":
@@ -86,15 +77,8 @@ const _getResolvedFromBinding = <T>(
                 _resolveRequest<T>(requestScope)
             );
             break;
-        case "Factory":
-            result = _resolveFactoryFromBinding(binding.factory as FactoryTypeFunction,"toFactory",context);
-            break;
-        case "Provider":
-            result = _resolveFactoryFromBinding(binding.provider as FactoryTypeFunction,"toProvider",context);
-            break;
-        case "DynamicValue":
-            result = _resolveFactoryFromBinding(binding.dynamicValue as FactoryTypeFunction,"toDynamicValue",context);
-            break;
+        default:
+            result = _resolveFactoryFromBinding(binding,request.parentContext);
     }
     return result as T | Promise<T>;
 }
