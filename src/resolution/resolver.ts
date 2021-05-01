@@ -3,7 +3,7 @@ import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
 import { _saveToScope, _tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
-import { FactoryDetails, FactoryTypeFunction, _getFactoryDetails, __ensureFullyBound } from "../utils/binding_utils";
+import { FactoryDetails, FactoryTypeFunction, _getFactoryDetails, __ensureFullyBound as _ensureFullyBound } from "../utils/binding_utils";
 import { _tryStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
 
@@ -59,7 +59,7 @@ const _getResolvedFromBinding = <T>(
     binding:interfaces.Binding<T>): T | Promise<T> => {
     let result: T | Promise<T> | undefined;
     const childRequests = request.childRequests;
-    __ensureFullyBound(binding);
+    _ensureFullyBound(binding);
     switch(binding.type){
         case "ConstantValue":
         case "Function":
