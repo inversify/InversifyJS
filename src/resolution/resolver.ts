@@ -124,11 +124,11 @@ const _tryGetFromScope = <T>(
     return null;
 }
 
-const _isSingletonScope = (binding:interfaces.Binding<any>): boolean => {
+const _isSingletonScope = (binding:interfaces.Binding<unknown>): boolean => {
     return binding.scope === BindingScopeEnum.Singleton;
 }
 
-const _isRequestScope = (binding:interfaces.Binding<any>): boolean => {
+const _isRequestScope = (binding:interfaces.Binding<unknown>): boolean => {
     return binding.scope === BindingScopeEnum.Request;
 }
 
