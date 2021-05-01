@@ -8,7 +8,6 @@ import { getServiceIdentifierAsString } from "../utils/serialization";
 import { resolveInstance } from "./instantiation";
 
 type FactoryType = "toDynamicValue" | "toFactory" | "toAutoFactory" | "toProvider";
-
 const invokeFactory = (
     factoryType: FactoryType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
@@ -60,6 +59,38 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
         return _resolveBinding<T>(requestScope, request, binding);
     }
 };
+type FactoryTypeFunction = (context: interfaces.Context) => any;
+const _getFactoryDetails = (
+    binding:interfaces.Binding<unknown>,
+    ): {
+        factory: FactoryTypeFunction | null | undefined,
+        factoryType: FactoryType
+    } => {
+    let factory: ((context: interfaces.Context) => any) | null | undefined;
+    let factoryType:FactoryType = "toDynamicValue"
+    switch(binding.type){
+        case "DynamicValue":
+            factory = binding.dynamicValue;
+            factoryType = "toDynamicValue";
+            break;
+        case "Factory":
+            factory = binding.factory;
+            factoryType = "toFactory";
+            break;
+        case "Provider":
+            factory = binding.provider;
+            factoryType = "toProvider";
+            break;
+    }
+    return {factory, factoryType};
+}
+
+const _newUnfinishedBindingError = (serviceIdentifier: interfaces.ServiceIdentifier<unknown>):Error => {
+     // The user probably created a binding but didn't finish it
+    // e.g. container.bind<T>("Something"); missing BindingToSyntax
+    const serviceIdentifierAsString = getServiceIdentifierAsString(serviceIdentifier);
+    return new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
+}
 
 const _getResolvedFromBinding = <T>(
     requestScope: interfaces.RequestScope,
@@ -67,29 +98,11 @@ const _getResolvedFromBinding = <T>(
     binding:interfaces.Binding<T>) => {
     let result: T | Promise<T>;
     const childRequests = request.childRequests;
-    if (binding.type === BindingTypeEnum.ConstantValue || binding.type === BindingTypeEnum.Function) {
-        result = binding.cache!;
+    if (_isConstantType(binding.type) && binding.cache !== null) {
+        result = binding.cache;
         binding.activated = true;
     } else if (binding.type === BindingTypeEnum.Constructor && binding.implementationType !== null) {
         result = binding.implementationType as T;
-    } else if (binding.type === BindingTypeEnum.DynamicValue && binding.dynamicValue !== null) {
-        result = invokeFactory(
-            "toDynamicValue",
-            binding.serviceIdentifier,
-            () => (binding.dynamicValue!)(request.parentContext)
-        );
-    } else if (binding.type === BindingTypeEnum.Factory && binding.factory !== null) {
-        result = invokeFactory(
-            "toFactory",
-            binding.serviceIdentifier,
-            () => (binding.factory!)(request.parentContext)
-        );
-    } else if (binding.type === BindingTypeEnum.Provider && binding.provider !== null) {
-        result = invokeFactory(
-            "toProvider",
-            binding.serviceIdentifier,
-            () => (binding.provider!)(request.parentContext)
-        );
     } else if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
         result = resolveInstance<T>(
             binding,
@@ -98,11 +111,17 @@ const _getResolvedFromBinding = <T>(
             _resolveRequest<T>(requestScope)
         );
     } else {
-        // The user probably created a binding but didn't finish it
-        // e.g. container.bind<T>("Something"); missing BindingToSyntax
-        const serviceIdentifier = getServiceIdentifierAsString(request.serviceIdentifier);
-        throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifier}`);
+        const factoryDetails = _getFactoryDetails(binding);
+        if (factoryDetails.factory) {
+            const factory = factoryDetails.factory;
+            result = invokeFactory(factoryDetails.factoryType,binding.serviceIdentifier,() => {
+                return factory(request.parentContext);
+            });
+        } else {
+            throw _newUnfinishedBindingError(request.serviceIdentifier);
+        }
     }
+
     return result;
 }
 
@@ -130,6 +149,10 @@ const _isSingletonScope = (binding:interfaces.Binding<unknown>): boolean => {
 
 const _isRequestScope = (binding:interfaces.Binding<unknown>): boolean => {
     return binding.scope === BindingScopeEnum.Request;
+}
+
+const _isConstantType = (type:interfaces.BindingType): boolean => {
+    return type === BindingTypeEnum.ConstantValue || type === BindingTypeEnum.Function
 }
 
 const _saveToScope = <T>(
