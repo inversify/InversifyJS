@@ -86,12 +86,12 @@ namespace interfaces {
 
     export type ProviderCreator<T> = (context: Context) => Provider<T>;
 
-    export interface NextArgs {
+    export interface NextArgs<T = unknown> {
         avoidConstraints: boolean;
         contextInterceptor: ((contexts: Context) => Context);
         isMultiInject: boolean;
         targetType: TargetType;
-        serviceIdentifier: interfaces.ServiceIdentifier<any>;
+        serviceIdentifier: interfaces.ServiceIdentifier<T>;
         key?: string | number | symbol;
         value?: any;
     }
