@@ -63,10 +63,12 @@ const _saveToSingletonScope = <T>(
 
 const _saveAsyncResultToSingletonScope = async <T>(
   binding:interfaces.Binding<T>,
-  result: Promise<T>
+  asyncResult: Promise<T>
 ): Promise<void> => {
   try {
-    await result;
+    const result = await asyncResult;
+
+    binding.cache = result;
   } catch (ex: unknown) {
     // allow binding to retry in future
     binding.cache = null;
