@@ -57,12 +57,21 @@ const _saveToSingletonScope = <T>(
   binding.activated = true;
 
   if (isPromise(result)) {
-    result.catch((ex) => {
-        // allow binding to retry in future
-        binding.cache = null;
-        binding.activated = false;
+    void _saveAsyncResultToSingletonScope(binding, result);
+  }
+}
 
-        throw ex;
-    });
+const _saveAsyncResultToSingletonScope = async <T>(
+  binding:interfaces.Binding<T>,
+  result: Promise<T>
+): Promise<void> => {
+  try {
+    await result;
+  } catch (ex: unknown) {
+    // allow binding to retry in future
+    binding.cache = null;
+    binding.activated = false;
+
+    throw ex;
   }
 }
