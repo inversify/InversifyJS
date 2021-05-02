@@ -230,7 +230,7 @@ function plan(
     container: interfaces.Container,
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     key?: string | number | symbol,
     value?: any,
     avoidConstraints = false
