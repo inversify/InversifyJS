@@ -69,7 +69,6 @@ const _getResolvedFromBinding = <T>(
         case BindingTypeEnum.ConstantValue:
         case BindingTypeEnum.Function:
             result = binding.cache as T | Promise<T>;
-            binding.activated = true;
             break;
         case BindingTypeEnum.Constructor:
             result = binding.implementationType as T;
