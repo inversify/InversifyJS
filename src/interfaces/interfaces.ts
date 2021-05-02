@@ -1,3 +1,5 @@
+import { FactoryType } from "../utils/factory_type";
+
 namespace interfaces {
     export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>
     export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[]
@@ -72,6 +74,13 @@ namespace interfaces {
     export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
 
     export type FactoryCreator<T> = (context: Context) => Factory<T>;
+
+    export type FactoryTypeFunction = (context: interfaces.Context) => any;
+
+    export interface FactoryDetails {
+        factoryType: FactoryType,
+        factory: FactoryTypeFunction | null
+    };
 
     export type Provider<T> = (...args: any[]) => (((...args: any[]) => Promise<T>) | Promise<T>);
 

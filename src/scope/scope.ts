@@ -1,7 +1,7 @@
 import { BindingScopeEnum, interfaces } from "../inversify";
 import { isPromise } from "../utils/async";
 
-export const _tryGetFromScope = <T>(
+export const tryGetFromScope = <T>(
   requestScope: interfaces.RequestScope,
   binding:interfaces.Binding<T>): T | Promise<T> | null => {
 
@@ -19,7 +19,7 @@ export const _tryGetFromScope = <T>(
   return null;
 }
 
-export const _saveToScope = <T>(
+export const saveToScope = <T>(
   requestScope: interfaces.RequestScope,
   binding:interfaces.Binding<T>,
   result:T | Promise<T>

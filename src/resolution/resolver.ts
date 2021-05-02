@@ -1,10 +1,11 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
+import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
-import { _saveToScope, _tryGetFromScope } from "../scope/scope";
+import { saveToScope, tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
-import { FactoryDetails, FactoryTypeFunction, _getFactoryDetails, _ensureFullyBound } from "../utils/binding_utils";
-import { _tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
+import { getFactoryDetails, ensureFullyBound } from "../utils/binding_utils";
+import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
 
 const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
@@ -45,31 +46,35 @@ const _resolveFactoryFromBinding = <T>(
     binding:interfaces.Binding<T>,
     context:interfaces.Context
 ): T | Promise<T> => {
-    const factoryDetails = _getFactoryDetails(binding) as FactoryDetails;
-    return _tryAndThrowErrorIfStackOverflow(
-        () => (factoryDetails.factory as FactoryTypeFunction).bind(binding)(context),
+    const factoryDetails = getFactoryDetails(binding);
+    return tryAndThrowErrorIfStackOverflow(
+        () => (factoryDetails.factory as interfaces.FactoryTypeFunction).bind(binding)(context),
         () => new Error(
-        ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString())
+            ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString()
+        ),
     ));
 }
 
 const _getResolvedFromBinding = <T>(
     requestScope: interfaces.RequestScope,
     request: interfaces.Request,
-    binding:interfaces.Binding<T>): T | Promise<T> => {
+    binding:interfaces.Binding<T>,
+): T | Promise<T> => {
     let result: T | Promise<T> | undefined;
     const childRequests = request.childRequests;
-    _ensureFullyBound(binding);
+
+    ensureFullyBound(binding);
+
     switch(binding.type){
-        case "ConstantValue":
-        case "Function":
+        case BindingTypeEnum.ConstantValue:
+        case BindingTypeEnum.Function:
             result = binding.cache as T | Promise<T>;
             binding.activated = true;
             break;
-        case "Constructor":
+        case BindingTypeEnum.Constructor:
             result = binding.implementationType as T;
             break;
-        case "Instance":
+        case BindingTypeEnum.Instance:
             result = resolveInstance<T>(
                 binding,
                 binding.implementationType as interfaces.Newable<T>,
@@ -80,19 +85,21 @@ const _getResolvedFromBinding = <T>(
         default:
             result = _resolveFactoryFromBinding(binding,request.parentContext);
     }
+
     return result as T | Promise<T>;
 }
+
 const _resolveInScope = <T>(
     requestScope: interfaces.RequestScope,
     binding:interfaces.Binding<T>,
     resolveFromBinding: () => T | Promise<T>
 ): T | Promise<T> => {
-    let result = _tryGetFromScope(requestScope,binding);
+    let result = tryGetFromScope(requestScope,binding);
     if(result !== null){
         return result;
     }
     result = resolveFromBinding();
-    _saveToScope(requestScope,binding, result);
+    saveToScope(requestScope,binding, result);
     return result;
 }
 
@@ -102,7 +109,7 @@ const _resolveBinding = <T>(
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
     return _resolveInScope(requestScope,binding, () => {
-        let result = _getResolvedFromBinding<T>(requestScope, request, binding);
+        let result = _getResolvedFromBinding(requestScope, request, binding);
         if (isPromise(result)) {
             result = result.then((resolved) => _onActivation(request, binding, resolved));
         } else {

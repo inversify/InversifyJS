@@ -7,7 +7,7 @@ export function isStackOverflowExeption(error: Error) {
     );
 }
 
-export const _tryAndThrowErrorIfStackOverflow = <T>(fn:()=>T,errorCallback:()=>Error) => {
+export const tryAndThrowErrorIfStackOverflow = <T>(fn: () => T, errorCallback: () => Error) => {
     try {
         return fn();
     } catch (error) {
