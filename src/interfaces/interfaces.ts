@@ -219,15 +219,15 @@ namespace interfaces {
         createChild(): Container;
     }
 
-    export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+    export type Bind = Container["bind"];
 
-    export type Rebind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+    export type Rebind = Container["rebind"];
 
-    export type Unbind = <T>(serviceIdentifier: ServiceIdentifier<T>) => void;
+    export type Unbind = Container["unbind"];
 
-    export type UnbindAsync = <T>(serviceIdentifier: ServiceIdentifier<T>) => Promise<void>;
+    export type UnbindAsync = Container["unbindAsync"];
 
-    export type IsBound = <T>(serviceIdentifier: ServiceIdentifier<T>) => boolean;
+    export type IsBound = Container["isBound"];
 
     export interface ContainerModuleBase{
         id: number;

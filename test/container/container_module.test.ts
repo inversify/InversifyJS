@@ -20,7 +20,7 @@ describe("ContainerModule", () => {
       container.bind<string>("A").toConstantValue("1");
       expect(container.get<string>("A")).to.eql("1");
 
-      const warriors = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind) => {
+      const warriors = new ContainerModule((bind, unbind) => {
         expect(container.get<string>("A")).to.eql("1");
         unbind("A");
         expect(() => { container.get<string>("A"); }).to.throw();
@@ -42,7 +42,7 @@ describe("ContainerModule", () => {
     container.bind<string>("A").toConstantValue("1");
     expect(container.get<string>("A")).to.eql("1");
 
-    const warriors = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound) => {
+    const warriors = new ContainerModule((bind, unbind, isBound) => {
       expect(container.get<string>("A")).to.eql("1");
       expect(isBound("A")).to.eql(true);
       unbind("A");
@@ -63,9 +63,9 @@ describe("ContainerModule", () => {
 
     const module1 = new ContainerModule(
       (
-        bind: interfaces.Bind,
-        unbind: interfaces.Unbind,
-        isBound: interfaces.IsBound
+        bind,
+        unbind,
+        isBound
       ) => {
         bind<number>(TYPES.someType).toConstantValue(1);
         bind<number>(TYPES.someType).toConstantValue(2);
@@ -74,10 +74,10 @@ describe("ContainerModule", () => {
 
     const module2 = new ContainerModule(
       (
-        bind: interfaces.Bind,
-        unbind: interfaces.Unbind,
-        isBound: interfaces.IsBound,
-        rebind: interfaces.Rebind
+        bind,
+        unbind,
+        isBound,
+        rebind
       ) => {
         rebind<number>(TYPES.someType).toConstantValue(3);
       }

@@ -16,10 +16,10 @@ function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdent
 function listRegisteredBindingsForServiceIdentifier(
     container: interfaces.Container,
     serviceIdentifier: string,
-    getBindings: <T>(
+    getBindings: (
         container: interfaces.Container,
-        serviceIdentifier: interfaces.ServiceIdentifier<T>
-    ) => interfaces.Binding<T>[]
+        serviceIdentifier: interfaces.ServiceIdentifier<unknown>
+    ) => interfaces.Binding<unknown>[]
 ): string {
 
     let registeredBindingsList = "";
