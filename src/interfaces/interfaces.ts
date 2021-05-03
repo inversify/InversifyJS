@@ -1,3 +1,5 @@
+import { FactoryType } from "../utils/factory_type";
+
 namespace interfaces {
     export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>
     export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[]
@@ -52,37 +54,44 @@ namespace interfaces {
 
     export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
 
-    export interface Binding<T> extends Clonable<Binding<T>> {
+    export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
         moduleId: ContainerModuleBase["id"];
         activated: boolean;
-        serviceIdentifier: ServiceIdentifier<T>;
+        serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
-        dynamicValue: DynamicValue<T> | null;
+        dynamicValue: DynamicValue<TActivated> | null;
         scope: BindingScope;
         type: BindingType;
-        implementationType: Newable<T> | null;
-        factory: FactoryCreator<any> | null;
-        provider: ProviderCreator<any> | null;
-        onActivation: BindingActivation<T> | null;
-        onDeactivation: BindingDeactivation<T> | null;
-        cache: T | null;
+        implementationType: Newable<TActivated> | TActivated | null;
+        factory: FactoryCreator<unknown> | null;
+        provider: ProviderCreator<unknown> | null;
+        onActivation: BindingActivation<TActivated> | null;
+        onDeactivation: BindingDeactivation<TActivated> | null;
+        cache: null | TActivated | Promise<TActivated>;
     }
 
     export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
 
     export type FactoryCreator<T> = (context: Context) => Factory<T>;
 
+    export type FactoryTypeFunction = (context: interfaces.Context) => any;
+
+    export interface FactoryDetails {
+        factoryType: FactoryType,
+        factory: FactoryTypeFunction | null
+    };
+
     export type Provider<T> = (...args: any[]) => (((...args: any[]) => Promise<T>) | Promise<T>);
 
     export type ProviderCreator<T> = (context: Context) => Provider<T>;
 
-    export interface NextArgs {
+    export interface NextArgs<T = unknown> {
         avoidConstraints: boolean;
         contextInterceptor: ((contexts: Context) => Context);
         isMultiInject: boolean;
         targetType: TargetType;
-        serviceIdentifier: interfaces.ServiceIdentifier<any>;
+        serviceIdentifier: interfaces.ServiceIdentifier<T>;
         key?: string | number | symbol;
         value?: any;
     }

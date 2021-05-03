@@ -14,7 +14,7 @@ import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
 
-type GetArgs = Omit<interfaces.NextArgs,'contextInterceptor'|'targetType'>
+type GetArgs<T> = Omit<interfaces.NextArgs<T>,'contextInterceptor'|'targetType'>
 
 class Container implements interfaces.Container {
 
@@ -545,14 +545,14 @@ class Container implements interfaces.Container {
         });
 
     }
-    private _getAll<T>(getArgs:GetArgs): Promise<T[]>{
+    private _getAll<T>(getArgs:GetArgs<T>): Promise<T[]>{
         return Promise.all(this._get<T>(getArgs) as (Promise<T>|T)[]);
     }
     // Prepares arguments required for resolution and
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
-    private _get<T>(getArgs: GetArgs): interfaces.ContainerResolution<T> {
-        const planAndResolveArgs:interfaces.NextArgs = {
+    private _get<T>(getArgs: GetArgs<T>): interfaces.ContainerResolution<T> {
+        const planAndResolveArgs:interfaces.NextArgs<T> = {
             ...getArgs,
             contextInterceptor:(context) => context,
             targetType: TargetTypeEnum.Variable
@@ -569,7 +569,7 @@ class Container implements interfaces.Container {
     }
 
     private _getButThrowIfAsync<T>(
-        getArgs: GetArgs,
+        getArgs: GetArgs<T>,
     ): (T | T[]) {
         const result = this._get<T>(getArgs);
 
@@ -580,8 +580,8 @@ class Container implements interfaces.Container {
         return result as (T | T[]);
     }
 
-    private _getAllArgs<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): GetArgs {
-        const getAllArgs: GetArgs = {
+    private _getAllArgs<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): GetArgs<T> {
+        const getAllArgs: GetArgs<T> = {
             avoidConstraints: true,
             isMultiInject: true,
             serviceIdentifier,
@@ -595,8 +595,8 @@ class Container implements interfaces.Container {
         isMultiInject: boolean,
         key?: string | number | symbol,
         value?: any,
-    ): GetArgs {
-        const getNotAllArgs: GetArgs = {
+    ): GetArgs<T> {
+        const getNotAllArgs: GetArgs<T> = {
             avoidConstraints: false,
             isMultiInject,
             serviceIdentifier,
@@ -610,8 +610,8 @@ class Container implements interfaces.Container {
     // Planner creates a plan and Resolver resolves a plan
     // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
-    private _planAndResolve<T>(): (args: interfaces.NextArgs) => interfaces.ContainerResolution<T> {
-        return (args: interfaces.NextArgs) => {
+    private _planAndResolve<T>(): (args: interfaces.NextArgs<T>) => interfaces.ContainerResolution<T> {
+        return (args: interfaces.NextArgs<T>) => {
 
             // create a plan
             let context = plan(
