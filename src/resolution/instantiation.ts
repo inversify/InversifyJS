@@ -116,13 +116,15 @@ function _postConstruct<T>(constr: interfaces.Newable<T>, instance: T): void | P
 }
 
 function _validateInstanceResolution(binding: interfaces.Binding<unknown>, constr: interfaces.Newable<unknown>): void {
-    if (binding.scope === "Transient") {
+    if (binding.scope !== "Singleton") {
+        const scopeMessage = binding.scope === "Request" ? "request" : "transient";
+        const scopeErrorMessage = `Class cannot be instantiated in ${scopeMessage} scope.`;
         if (typeof binding.onDeactivation === "function") {
-            throw new Error(ON_DEACTIVATION_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
+            throw new Error(ON_DEACTIVATION_ERROR(constr.name, scopeErrorMessage));
         }
 
         if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
-            throw new Error(PRE_DESTROY_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
+            throw new Error(PRE_DESTROY_ERROR(constr.name, scopeErrorMessage));
         }
     }
 }
