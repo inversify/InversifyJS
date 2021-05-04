@@ -36,6 +36,9 @@ describe("BindingToSyntax", () => {
             },
             initialize(b){
                 //expect called
+            },
+            clone(){
+                return null as any;
             }
         }
 
@@ -46,6 +49,9 @@ describe("BindingToSyntax", () => {
             },
             initialize(b){
                 //expect called
+            },
+            clone(){
+                return null as any;
             }
         }
 
@@ -53,6 +59,9 @@ describe("BindingToSyntax", () => {
             factoryType:"toDynamicValue",
             valueFrom:null as any,
             provideValue(){
+                return null as any;
+            },
+            clone(){
                 return null as any;
             }
         }
@@ -65,6 +74,9 @@ describe("BindingToSyntax", () => {
             },
             initialize(b){
                 //expect called
+            },
+            clone(){
+                return null as any;
             }
         }
 
@@ -76,6 +88,9 @@ describe("BindingToSyntax", () => {
             },
             initialize(b){
                 //expect called
+            },
+            clone(){
+                return null as any;
             }
         }
 
@@ -84,6 +99,9 @@ describe("BindingToSyntax", () => {
             provideValue(){
                 return null as any;
             },
+            clone(){
+                return null as any;
+            }
         }
 
         const mockConstantValueProvider = sinon.mock(constantValueProvider);

@@ -56,6 +56,7 @@ namespace interfaces {
         valueFrom:TValueFrom
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
         initialize?:(binding:Binding<TActivated>) => void;
+        clone(binding:Binding<TActivated>):ValueProvider<TActivated,TValueFrom>
     }
 
     export type FactoryType = keyof Pick<BindingToSyntax<unknown>,"toFactory"|"toProvider"|"toDynamicValue">;
@@ -128,7 +129,7 @@ namespace interfaces {
         onDeactivation: BindingDeactivation<TActivated> | null;
         cache: null | TActivated | Promise<TActivated>;
 
-        valueProvider: ValueProvider<TActivated,unknown> | null;
+        valueProvider: ValueProvider<TActivated,unknown> | null | undefined;
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>;
     }
 

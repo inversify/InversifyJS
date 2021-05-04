@@ -42,6 +42,9 @@ describe("Binding", () => {
           throw new Error("did not pass through arguments");
         }
         return providedFoo;
+      },
+      clone(){
+        return null as any;
       }
     }
     fooBinding.valueProvider = valueProvider;

@@ -10,4 +10,5 @@ export abstract class FactoryValueProviderBase<TActivated>
   initialize(binding:interfaces.Binding<TActivated>){
       binding.scope = BindingScopeEnum.Singleton;
   }
+  abstract clone(binding:interfaces.Binding<TActivated>):FactoryValueProviderBase<TActivated>
 }

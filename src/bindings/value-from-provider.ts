@@ -9,4 +9,5 @@ export abstract class ValueFromProvider<TActivated> implements interfaces.Initia
   initialize(binding:interfaces.Binding<TActivated>){
       binding.scope = BindingScopeEnum.Singleton;
   }
+  abstract clone(binding:interfaces.Binding<TActivated>):ValueFromProvider<TActivated>
 }

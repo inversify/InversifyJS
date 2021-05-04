@@ -33,7 +33,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     // The kind of binding
     public type: interfaces.BindingType;
 
-    public valueProvider:interfaces.ValueProvider<TActivated,unknown> | null;
+    public valueProvider:interfaces.ValueProvider<TActivated,unknown> | null | undefined;
 
     // A factory method used in BindingType.Factory bindings
     public factory: interfaces.FactoryCreator<unknown> | null;
@@ -98,6 +98,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
     public clone(): interfaces.Binding<TActivated> {
         const clone = new Binding(this.serviceIdentifier, this.scope);
+        clone.valueProvider = this.valueProvider?.clone(clone);
         clone.activated = (clone.scope === BindingScopeEnum.Singleton) ? this.activated : false;
         clone.implementationType = this.implementationType;
         clone.dynamicValue = this.dynamicValue;
