@@ -2,10 +2,11 @@ import { expect } from "chai";
 import { injectable } from "../../src/annotation/injectable";
 import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
+import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
 import * as sinon from 'sinon';
+import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
 
 describe("BindingToSyntax", () => {
 
@@ -179,6 +180,18 @@ describe("BindingToSyntax", () => {
         mockSyntax.expects("toFactory").calledWith(sinon.match.func);
     })
 
+    it("Should return BindingInWhenOnSyntax<T>(this._binding)", () => {
+        class Sid {}
+        const binding = new Binding(Sid,"Request");
+        const bindingToSyntax = new BindingToSyntax(binding);
+
+        function expectBindingInWhenOnSyntax(bindingInWhenOn:any){
+            expect(bindingInWhenOn).to.be.instanceOf(BindingInWhenOnSyntax);
+            expect(bindingInWhenOn._binding === binding).to.equal(true);
+        }
+        expectBindingInWhenOnSyntax(bindingToSyntax.to(Sid));
+    })
+
     it("Should be able to configure the type of a binding", () => {
 
         interface Ninja {}
@@ -191,12 +204,6 @@ describe("BindingToSyntax", () => {
         // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
         const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
-        expect(binding.type).eql(BindingTypeEnum.Invalid);
-
-        bindingToSyntax.to(Ninja);
-        expect(binding.type).eql(BindingTypeEnum.Instance);
-        expect(binding.implementationType).not.to.eql(null);
-
 //        (bindingToSyntax as any)._binding = bindingWithClassAsId;
 //        bindingToSyntax.toSelf();
 //        expect(binding.type).eql(BindingTypeEnum.Instance);
@@ -204,45 +211,11 @@ describe("BindingToSyntax", () => {
 
         (bindingToSyntax as any)._binding = binding;
         bindingToSyntax.toConstantValue(new Ninja());
-        expect(binding.type).eql(BindingTypeEnum.ConstantValue);
         expect(binding.cache instanceof Ninja).eql(true);
-
-        bindingToSyntax.toDynamicValue((context: interfaces.Context) => new Ninja());
-        expect(binding.type).eql(BindingTypeEnum.DynamicValue);
-        expect(typeof binding.dynamicValue).eql("function");
-
-        const dynamicValueFactory: any = binding.dynamicValue;
-        expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
-
-        bindingToSyntax.toConstructor<Ninja>(Ninja);
-        expect(binding.type).eql(BindingTypeEnum.Constructor);
-        expect(binding.implementationType).not.to.eql(null);
-
-        bindingToSyntax.toFactory<Ninja>((context: interfaces.Context) =>
-            () =>
-                new Ninja());
-
-        expect(binding.type).eql(BindingTypeEnum.Factory);
-        expect(binding.factory).not.to.eql(null);
 
         const f = () => "test";
         bindingToSyntax.toFunction(f);
-        expect(binding.type).eql(BindingTypeEnum.Function);
         expect(binding.cache === f).eql(true);
-
-        bindingToSyntax.toAutoFactory<Ninja>(ninjaIdentifier);
-
-        expect(binding.type).eql(BindingTypeEnum.Factory);
-        expect(binding.factory).not.to.eql(null);
-
-        bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) =>
-            () =>
-                new Promise<Ninja>((resolve) => {
-                    resolve(new Ninja());
-                }));
-
-        expect(binding.type).eql(BindingTypeEnum.Provider);
-        expect(binding.provider).not.to.eql(null);
 
     });
 

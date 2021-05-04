@@ -41,7 +41,7 @@ const typeConstraint = (type: (Function | string)) => (request: interfaces.Reque
             const serviceIdentifier = binding.serviceIdentifier;
             return serviceIdentifier === type;
         } else {
-            const constructor = request.bindings[0].implementationType;
+            const constructor = binding.valueProvider?.valueFrom;
             return type === constructor;
         }
     }

@@ -10,7 +10,7 @@ import { preDestroy } from "../../src/annotation/pre_destroy";
 import { tagged } from "../../src/annotation/tagged";
 import { targetName } from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingTypeEnum, TargetTypeEnum } from "../../src/constants/literal_types";
+import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { MetadataReader } from "../../src/planning/metadata_reader";
@@ -237,7 +237,7 @@ describe("Resolve", () => {
           resolveTyped(context);
       };
 
-      expect(context.plan.rootRequest.bindings[0].type).eql(BindingTypeEnum.Invalid);
+      expect(context.plan.rootRequest.bindings[0].valueProvider === undefined);
       expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
 
   });

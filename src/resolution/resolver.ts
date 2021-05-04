@@ -1,4 +1,4 @@
-import { BindingTypeEnum } from "../constants/literal_types";
+import { InstanceValueProvider } from "../bindings/instance-value-provider";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
 import { saveToScope, tryGetFromScope } from "../scope/scope";
@@ -39,58 +39,22 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
     }
 };
 
-/* const _resolveFactoryFromBinding = <T>(
-    binding:interfaces.Binding<T>,
-    context:interfaces.Context
-): T | Promise<T> => {
-    const factoryDetails = getFactoryDetails(binding);
-    return tryAndThrowErrorIfStackOverflow(
-        () => (factoryDetails.factory as interfaces.FactoryTypeFunction).bind(binding)(context),
-        () => new Error(
-            ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString()
-        ),
-    ));
-} */
-
 const _getResolvedFromBinding = <T>(
     requestScope: interfaces.RequestScope,
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
     const childRequests = request.childRequests;
-    if(binding.type === BindingTypeEnum.Instance){
+    if(binding.valueProvider instanceof InstanceValueProvider){
         return resolveInstance<T>(
             binding,
-            binding.implementationType as interfaces.Newable<T>,
+            binding.valueProvider.valueFrom,
             childRequests,
             _resolveRequest<T>(requestScope)
         );
     }
 
     return binding.provideValue(request.parentContext, childRequests)
-    /* ensureFullyBound(binding);
-
-    switch(binding.type){
-        case BindingTypeEnum.ConstantValue:
-        case BindingTypeEnum.Function:
-            result = binding.cache as T | Promise<T>;
-            break;
-        case BindingTypeEnum.Constructor:
-            result = binding.implementationType as T;
-            break;
-        case BindingTypeEnum.Instance:
-            result = resolveInstance<T>(
-                binding,
-                binding.implementationType as interfaces.Newable<T>,
-                childRequests,
-                _resolveRequest<T>(requestScope)
-            );
-            break;
-        default:
-            result = _resolveFactoryFromBinding(binding,request.parentContext);
-    }
-
-    return result as T | Promise<T>; */
 }
 
 const _resolveInScope = <T>(

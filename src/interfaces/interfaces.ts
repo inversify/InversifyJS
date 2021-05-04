@@ -118,12 +118,7 @@ namespace interfaces {
         activated: boolean;
         serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
-        dynamicValue: DynamicValue<TActivated> | null;
         scope: BindingScope;
-        type: BindingType;
-        implementationType: Newable<TActivated> | TActivated | null;
-        factory: FactoryCreator<unknown> | null;
-        provider: ProviderCreator<unknown> | null;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
         cache: null | TActivated | Promise<TActivated>;

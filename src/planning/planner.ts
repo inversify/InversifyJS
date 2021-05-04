@@ -1,6 +1,7 @@
 import { BindingCount } from "../bindings/binding_count";
+import { InstanceValueProvider } from "../bindings/instance-value-provider";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
+import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { isStackOverflowExeption } from "../utils/exceptions";
@@ -176,19 +177,19 @@ function _createSubRequests(
             }
             subChildRequest = childRequest;
         }
-
-        if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-
-            const dependencies = getDependencies(metadataReader, binding.implementationType);
+        const valueProvider = binding.valueProvider;
+        if(valueProvider instanceof InstanceValueProvider && valueProvider.valueFrom != null){
+            const implementationType = valueProvider.valueFrom;
+            const dependencies = getDependencies(metadataReader, implementationType);
 
             if (!context.container.options.skipBaseClassChecks) {
                 // Throw if a derived class does not implement its constructor explicitly
                 // We do this to prevent errors when a base class (parent) has dependencies
                 // and one of the derived classes (children) has no dependencies
-                const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, binding.implementationType);
+                const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, implementationType);
 
                 if (dependencies.length < baseClassDependencyCount) {
-                    const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(binding.implementationType));
+                    const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(implementationType));
                     throw new Error(error);
                 }
             }

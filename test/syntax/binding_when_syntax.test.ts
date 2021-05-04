@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Binding } from "../../src/bindings/binding";
+import { InstanceValueProvider } from "../../src/bindings/instance-value-provider";
 import { BindingScopeEnum, TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
@@ -124,12 +125,14 @@ describe("BindingWhenSyntax", () => {
         const context = new Context(new Container());
 
         const samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
-        samuraiBinding.implementationType = Samurai;
+        samuraiBinding.valueProvider = new InstanceValueProvider();
+        samuraiBinding.valueProvider.valueFrom = Samurai;
         const samuraiTarget = new Target(TargetTypeEnum.Variable, "", "Samurai");
         const samuraiRequest = new Request("Samurai", context, null, samuraiBinding, samuraiTarget);
 
         const ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
-        ninjaBinding.implementationType = Ninja;
+        ninjaBinding.valueProvider = new InstanceValueProvider();
+        ninjaBinding.valueProvider.valueFrom = Ninja;
         const ninjaTarget = new Target(TargetTypeEnum.Variable, "", "Ninja");
         const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
 
@@ -206,15 +209,16 @@ describe("BindingWhenSyntax", () => {
         }
 
         const samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
-        samuraiBinding.implementationType = Samurai;
+        samuraiBinding.valueProvider = new InstanceValueProvider();
+        samuraiBinding.valueProvider.valueFrom = Samurai;
 
         const context = new Context(new Container());
 
         const samuraiTarget = new Target(TargetTypeEnum.ConstructorArgument, "", "Samurai", "japonese");
         const samuraiRequest = new Request("Samurai", context, null, samuraiBinding, samuraiTarget);
         const ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
-
-        ninjaBinding.implementationType = Ninja;
+        ninjaBinding.valueProvider = new InstanceValueProvider();
+        ninjaBinding.valueProvider.valueFrom = Ninja;
 
         const ninjaTarget = new Target(TargetTypeEnum.ConstructorArgument, "", "Ninja", "chinese");
         const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
@@ -272,13 +276,15 @@ describe("BindingWhenSyntax", () => {
         const context = new Context(new Container());
 
         const samuraiBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
-        samuraiBinding.implementationType = Samurai;
+        samuraiBinding.valueProvider = new InstanceValueProvider();
+        samuraiBinding.valueProvider.valueFrom = Samurai;
 
         const samuraiTarget = new Target(TargetTypeEnum.ConstructorArgument, "", "Samurai", new Metadata("sneaky", false));
         const samuraiRequest = new Request("Samurai", context, null, samuraiBinding, samuraiTarget);
 
         const ninjaBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
-        ninjaBinding.implementationType = Ninja;
+        ninjaBinding.valueProvider = new InstanceValueProvider();
+        ninjaBinding.valueProvider.valueFrom = Ninja;
         const ninjaTarget = new Target(TargetTypeEnum.ConstructorArgument, "", "Ninja", new Metadata("sneaky", true));
         const ninjaRequest = new Request("Ninja", context, null, ninjaBinding, ninjaTarget);
 
@@ -371,10 +377,12 @@ describe("BindingWhenSyntax", () => {
 
         // Samurai
         const samuraiMasterBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
-        samuraiMasterBinding.implementationType = SamuraiMaster;
+        samuraiMasterBinding.valueProvider = new InstanceValueProvider();
+        samuraiMasterBinding.valueProvider.valueFrom = SamuraiMaster;
 
         const samuraiStudentBinding = new Binding<Samurai>("Samurai", BindingScopeEnum.Transient);
-        samuraiStudentBinding.implementationType = SamuraiStudent;
+        samuraiStudentBinding.valueProvider = new InstanceValueProvider();
+        samuraiStudentBinding.valueProvider.valueFrom = SamuraiStudent;
 
         const samuraiTarget = new Target(TargetTypeEnum.ConstructorArgument, "", "Samurai", new Metadata("sneaky", false));
         const samuraiMasterRequest = new Request("Samurai", context, null, samuraiMasterBinding, samuraiTarget);
@@ -382,10 +390,12 @@ describe("BindingWhenSyntax", () => {
 
         // Ninja
         const ninjaMasterBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
-        ninjaMasterBinding.implementationType = NinjaMaster;
+        ninjaMasterBinding.valueProvider = new InstanceValueProvider();
+        ninjaMasterBinding.valueProvider.valueFrom = NinjaMaster;
 
         const ninjaStudentBinding = new Binding<Ninja>("Ninja", BindingScopeEnum.Transient);
-        ninjaStudentBinding.implementationType = NinjaStudent;
+        ninjaStudentBinding.valueProvider = new InstanceValueProvider();
+        ninjaStudentBinding.valueProvider.valueFrom = NinjaStudent;
 
         const ninjaTarget = new Target(TargetTypeEnum.ConstructorArgument, "", "Ninja", new Metadata("sneaky", true));
         const ninjaMasterRequest = new Request("Ninja", context, null, ninjaMasterBinding, ninjaTarget);
@@ -393,7 +403,8 @@ describe("BindingWhenSyntax", () => {
 
         // Katana
         const katanaBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        katanaBinding.implementationType = Katana;
+        katanaBinding.valueProvider = new InstanceValueProvider();
+        katanaBinding.valueProvider.valueFrom = Katana;
         const katanaBindingWhenSyntax = new BindingWhenSyntax<Weapon>(katanaBinding);
         const katanaTarget = new Target(TargetTypeEnum.ConstructorArgument, "katana", "Weapon");
         const ironKatanaRequest = new Request("Weapon", context, samuraiMasterRequest, katanaBinding, katanaTarget);
@@ -401,7 +412,8 @@ describe("BindingWhenSyntax", () => {
 
         // Shuriken
         const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
-        shurikenBinding.implementationType = Shuriken;
+        shurikenBinding.valueProvider = new InstanceValueProvider();
+        shurikenBinding.valueProvider.valueFrom = Shuriken;
         const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
         const shurikenTarget = new Target(TargetTypeEnum.ConstructorArgument, "shuriken", "Weapon");
         const ironShurikenRequest = new Request("Weapon", context, ninjaMasterRequest, shurikenBinding, shurikenTarget);
