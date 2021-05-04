@@ -52,11 +52,10 @@ namespace interfaces {
 
     export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
 
-    export interface ValueProvider<TActivated,TValueFrom>{
+    export interface ValueProvider<TActivated,TValueFrom> extends Clonable<ValueProvider<TActivated,TValueFrom>>{
         valueFrom:TValueFrom
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
         initialize?:(binding:Binding<TActivated>) => void;
-        clone(binding:Binding<TActivated>):ValueProvider<TActivated,TValueFrom>
     }
 
     export type FactoryType = keyof Pick<BindingToSyntax<unknown>,"toFactory"|"toProvider"|"toDynamicValue">;
