@@ -417,7 +417,7 @@ class Container implements interfaces.Container {
         return this._bindingDictionary.removeByCondition(binding => binding.moduleId === moduleId);
     }
 
-    private _deactivate<T>(binding: Binding<T>, instance: T): void | Promise<void> {
+    private _deactivate<T>(binding: interfaces.Binding<T>, instance: T): void | Promise<void> {
         const constructor = Object.getPrototypeOf(instance).constructor;
 
         try {
@@ -636,7 +636,7 @@ class Container implements interfaces.Container {
         };
     }
 
-    private _deactivateIfSingleton(binding: Binding<any>): Promise<void> | void {
+    private _deactivateIfSingleton(binding: interfaces.Binding<any>): Promise<void> | void {
         if (!binding.cache) {
             return;
         }
@@ -648,7 +648,7 @@ class Container implements interfaces.Container {
         return this._deactivate(binding, binding.cache);
     }
 
-    private _deactivateSingletons(bindings: Binding<any>[]): void {
+    private _deactivateSingletons(bindings: interfaces.Binding<any>[]): void {
         for (const binding of bindings) {
             const result = this._deactivateIfSingleton(binding);
 
@@ -658,12 +658,12 @@ class Container implements interfaces.Container {
         }
     }
 
-    private async _deactivateSingletonsAsync(bindings: Binding<any>[]): Promise<void> {
+    private async _deactivateSingletonsAsync(bindings: interfaces.Binding<any>[]): Promise<void> {
         await Promise.all(bindings.map(b => this._deactivateIfSingleton(b)))
     }
 
     private _propagateContainerDeactivationThenBindingAndPreDestroy<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): void | Promise<void> {
@@ -675,7 +675,7 @@ class Container implements interfaces.Container {
     }
 
     private async _propagateContainerDeactivationThenBindingAndPreDestroyAsync<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): Promise<void> {
@@ -695,7 +695,7 @@ class Container implements interfaces.Container {
     }
 
     private _bindingDeactivationAndPreDestroy<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): void | Promise<void> {
@@ -711,7 +711,7 @@ class Container implements interfaces.Container {
     }
 
     private async _bindingDeactivationAndPreDestroyAsync<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): Promise<void> {

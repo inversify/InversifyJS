@@ -50,6 +50,7 @@ describe("BindingToSyntax", () => {
         }
 
         const dynamicValueProvider:interfaces.DynamicValueProvider<unknown> = {
+            factoryType:"toDynamicValue",
             valueFrom:null as any,
             provideValue(){
                 return null as any;
@@ -57,6 +58,7 @@ describe("BindingToSyntax", () => {
         }
 
         const factoryValueProvider:interfaces.FactoryValueProvider<unknown> = {
+            factoryType:"toFactory",
             valueFrom:null as any,
             provideValue(){
                 return null as any;
@@ -67,6 +69,7 @@ describe("BindingToSyntax", () => {
         }
 
         const providerValueProvider:interfaces.ProviderValueProvider<unknown> = {
+            factoryType:"toProvider",
             valueFrom:null as any,
             provideValue(){
                 return null as any;

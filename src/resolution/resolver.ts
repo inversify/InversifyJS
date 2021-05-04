@@ -1,11 +1,8 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
 import { saveToScope, tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
-import { getFactoryDetails, ensureFullyBound } from "../utils/binding_utils";
-import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
 
 const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
@@ -42,7 +39,7 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
     }
 };
 
-const _resolveFactoryFromBinding = <T>(
+/* const _resolveFactoryFromBinding = <T>(
     binding:interfaces.Binding<T>,
     context:interfaces.Context
 ): T | Promise<T> => {
@@ -53,17 +50,25 @@ const _resolveFactoryFromBinding = <T>(
             ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString()
         ),
     ));
-}
+} */
 
 const _getResolvedFromBinding = <T>(
     requestScope: interfaces.RequestScope,
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
-    let result: T | Promise<T> | undefined;
     const childRequests = request.childRequests;
+    if(binding.type === BindingTypeEnum.Instance){
+        return resolveInstance<T>(
+            binding,
+            binding.implementationType as interfaces.Newable<T>,
+            childRequests,
+            _resolveRequest<T>(requestScope)
+        );
+    }
 
-    ensureFullyBound(binding);
+    return binding.provideValue(request.parentContext, childRequests)
+    /* ensureFullyBound(binding);
 
     switch(binding.type){
         case BindingTypeEnum.ConstantValue:
@@ -85,7 +90,7 @@ const _getResolvedFromBinding = <T>(
             result = _resolveFactoryFromBinding(binding,request.parentContext);
     }
 
-    return result as T | Promise<T>;
+    return result as T | Promise<T>; */
 }
 
 const _resolveInScope = <T>(
