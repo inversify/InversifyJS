@@ -1,10 +1,8 @@
-import { InstanceValueProvider } from "../bindings/instance-value-provider";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
 import { isPromise } from "../utils/async";
-import { resolveInstance } from "./instantiation";
 
-const _resolveRequest = <T>(request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
+const resolveRequest = <T>(request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
 
     request.parentContext.setCurrentRequest(request);
 
@@ -22,7 +20,7 @@ const _resolveRequest = <T>(request: interfaces.Request): undefined | T | Promis
 
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {
-            return _resolveRequest(childRequest) as T | Promise<T>
+            return resolveRequest(childRequest) as T | Promise<T>
         });
 
     } else {
@@ -41,15 +39,6 @@ const _getResolvedFromBinding = <T>(
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
     const childRequests = request.childRequests;
-    if(binding.valueProvider instanceof InstanceValueProvider){
-        return resolveInstance<T>(
-            binding,
-            binding.valueProvider.valueFrom,
-            childRequests,
-            _resolveRequest
-        );
-    }
-
     return binding.provideValue(request.parentContext, childRequests)
 }
 
@@ -194,7 +183,7 @@ const _getContainersIterator = (container: interfaces.Container): Iterator<inter
 }
 
 function resolve<T>(context: interfaces.Context): T | Promise<T> | (T | Promise<T>)[] {
-    return _resolveRequest<T>(context.plan.rootRequest)  as T | Promise<T> | (T | Promise<T>)[];
+    return resolveRequest<T>(context.plan.rootRequest)  as T | Promise<T> | (T | Promise<T>)[];
 }
 
-export { resolve };
+export { resolve, resolveRequest };

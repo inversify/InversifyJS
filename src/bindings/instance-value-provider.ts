@@ -1,9 +1,15 @@
 import { interfaces } from "../interfaces/interfaces";
+import { resolveInstance } from "../resolution/instantiation";
 
 export class InstanceValueProvider<TActivated> implements interfaces.InstanceValueProvider<TActivated>{
   valueFrom: interfaces.Newable<TActivated>;
-  provideValue(context:interfaces.Context, _:interfaces.Request[]): TActivated {
-      throw new Error("Not implemented");
+  provideValue(context:interfaces.Context, childRequests:interfaces.Request[]): TActivated {
+    const binding = context.currentRequest.bindings[0];
+      return resolveInstance(
+        binding,
+        binding.valueProvider!.valueFrom as interfaces.Newable<TActivated>,
+        childRequests,
+    );
   }
   clone(){
     const clone = new InstanceValueProvider<TActivated>();

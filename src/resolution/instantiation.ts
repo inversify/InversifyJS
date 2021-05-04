@@ -4,6 +4,7 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
 import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
+import { resolveRequest } from "./resolver";
 
 interface InstanceCreationInstruction{
     constructorInjections: unknown[],
@@ -20,8 +21,7 @@ interface CreateInstanceWithInjectionArg<T> extends InstanceCreationInstruction{
 }
 
 function _resolveRequests(
-    childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler
+    childRequests: interfaces.Request[]
 ) : ResolvedRequests {
     return childRequests.reduce<ResolvedRequests>((resolvedRequests,childRequest)=> {
         const injection = resolveRequest(childRequest)
@@ -41,13 +41,12 @@ function _resolveRequests(
 
 function _createInstance<T>(
     constr: interfaces.Newable<T>,
-    childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler,
+    childRequests: interfaces.Request[]
 ): T | Promise<T> {
     let result: T | Promise<T>;
 
     if (childRequests.length > 0) {
-        const resolved = _resolveRequests(childRequests,resolveRequest)
+        const resolved = _resolveRequests(childRequests)
         const createInstanceWithInjectionsArg: CreateInstanceWithInjectionArg<T> = {...resolved,constr}
         if(resolved.isAsync){
             result = createInstanceWithInjectionsAsync(createInstanceWithInjectionsArg)
@@ -131,11 +130,10 @@ function resolveInstance<T>(
     binding: interfaces.Binding<T>,
     constr: interfaces.Newable<T>,
     childRequests: interfaces.Request[],
-    resolveRequest: interfaces.ResolveRequestHandler,
-): T | Promise<T> {
+    ): T | Promise<T> {
     _validateInstanceResolution(binding, constr);
 
-    const result = _createInstance(constr, childRequests, resolveRequest);
+    const result = _createInstance(constr, childRequests);
 
     if (isPromise(result)) {
         return result.then((resolvedResult) => _getInstanceAfterPostConstruct(constr, resolvedResult));
