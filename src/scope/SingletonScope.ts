@@ -2,7 +2,7 @@ import { interfaces } from "../inversify";
 import { isPromise } from "../utils/async";
 
 export class SingletonScope<T> implements interfaces.Scope<T> {
-    private resolved: T | Promise<T> | undefined;
+    public resolved: T | Promise<T> | undefined;
     get(binding: interfaces.Binding<T>, _: interfaces.Request): Promise<T> | T | null {
         if(this.resolved){
             return this.resolved;
@@ -23,7 +23,9 @@ export class SingletonScope<T> implements interfaces.Scope<T> {
 
     clone(){
         const clone = new SingletonScope<T>();
-        clone.resolved = this.resolved;
+        if(this.resolved){
+            clone.set(null as any, null as any,this.resolved);
+        }
         return clone;
     }
 }
