@@ -59,6 +59,36 @@ namespace interfaces {
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
         initialize?:(binding:Binding<TActivated>) => void;
     }
+    export interface NonInitializingValueProvider<TActivated,TValueFrom> extends ValueProvider<TActivated, TValueFrom>{
+        initialize?:undefined;
+    }
+
+    export interface InitializingValueProvider<TActivated,TValueFrom> extends ValueProvider<TActivated, TValueFrom>{
+        initialize:(binding:Binding<TActivated>) => void;
+    }
+
+    export interface ConstantValueProvider<TActivated> extends InitializingValueProvider<TActivated,TActivated>{}
+
+    export interface InstanceValueProvider<TActivated> extends NonInitializingValueProvider<TActivated,interfaces.Newable<TActivated>>{}
+
+    export interface DynamicValueProvider<TActivated> extends
+        NonInitializingValueProvider<TActivated,interfaces.DynamicValue<TActivated>>{}
+
+    export interface ConstructorValueProvider<TActivated> extends InitializingValueProvider<TActivated,TActivated>{}
+
+    export interface FactoryValueProvider<TActivated> extends
+        InitializingValueProvider<TActivated, (context:interfaces.Context) => TActivated>{}
+
+    export interface ProviderValueProvider<TActivated> extends
+        InitializingValueProvider<TActivated, (context:interfaces.Context) => TActivated>{}
+    export interface ValueProviderFactory<T>{
+        toInstance():InstanceValueProvider<T>
+        toConstantValue():ConstantValueProvider<T>
+        toDynamicValue():DynamicValueProvider<T>
+        toConstructor():ConstructorValueProvider<T>
+        toFactory(): FactoryValueProvider<T>
+        toProvider(): ProviderValueProvider<T>
+    }
 
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
