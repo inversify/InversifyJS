@@ -8,7 +8,7 @@ export abstract class FactoryValueProviderBase<TActivated>
     return this.valueFrom(context);
   }
   initialize(binding:interfaces.Binding<TActivated>){
-      binding.scope = BindingScopeEnum.Singleton;
+      binding.setScope(BindingScopeEnum.Singleton);
   }
   abstract clone():FactoryValueProviderBase<TActivated>
 }

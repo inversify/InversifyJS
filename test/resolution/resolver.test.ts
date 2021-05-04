@@ -1126,9 +1126,6 @@ describe("Resolve", () => {
       expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
       expect(katanaFactoryBinding.activated).eql(true);
-
-      expect(katanaFactoryBinding.activated).eql(true);
-
     });
 
   it("Should run the @PostConstruct method", () => {

@@ -1,12 +1,10 @@
 import { InstanceValueProvider } from "../bindings/instance-value-provider";
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
-import { saveToScope, tryGetFromScope } from "../scope/scope";
 import { isPromise } from "../utils/async";
 import { resolveInstance } from "./instantiation";
 
-const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
-    (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
+const _resolveRequest = <T>(request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
 
     request.parentContext.setCurrentRequest(request);
 
@@ -24,8 +22,7 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 
         // Create an array instead of creating an instance
         return childRequests.map((childRequest: interfaces.Request) => {
-            const _f = _resolveRequest(requestScope);
-            return _f(childRequest) as T | Promise<T>;
+            return _resolveRequest(childRequest) as T | Promise<T>
         });
 
     } else {
@@ -35,12 +32,11 @@ const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
 
         const binding = bindings[0];
 
-        return _resolveBinding<T>(requestScope, request, binding);
+        return _resolveBinding<T>(request, binding);
     }
 };
 
 const _getResolvedFromBinding = <T>(
-    requestScope: interfaces.RequestScope,
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
@@ -50,7 +46,7 @@ const _getResolvedFromBinding = <T>(
             binding,
             binding.valueProvider.valueFrom,
             childRequests,
-            _resolveRequest<T>(requestScope)
+            _resolveRequest
         );
     }
 
@@ -58,26 +54,23 @@ const _getResolvedFromBinding = <T>(
 }
 
 const _resolveInScope = <T>(
-    requestScope: interfaces.RequestScope,
+    request:interfaces.Request,
     binding:interfaces.Binding<T>,
     resolveFromBinding: () => T | Promise<T>
 ): T | Promise<T> => {
-    let result = tryGetFromScope(requestScope,binding);
-    if(result !== null){
-        return result;
+    const fromScope = binding.resolveScope.get(binding,request);
+    if(fromScope !==null){
+        return fromScope;
     }
-    result = resolveFromBinding();
-    saveToScope(requestScope,binding, result);
-    return result;
+    return binding.resolveScope.set(binding,request, resolveFromBinding());
 }
 
 const _resolveBinding = <T>(
-    requestScope: interfaces.RequestScope,
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
-    return _resolveInScope(requestScope,binding, () => {
-        let result = _getResolvedFromBinding(requestScope, request, binding);
+    return _resolveInScope(request,binding, () => {
+        let result = _getResolvedFromBinding(request, binding);
         if (isPromise(result)) {
             result = result.then((resolved) => _onActivation(request, binding, resolved));
         } else {
@@ -201,8 +194,7 @@ const _getContainersIterator = (container: interfaces.Container): Iterator<inter
 }
 
 function resolve<T>(context: interfaces.Context): T | Promise<T> | (T | Promise<T>)[] {
-    const _f = _resolveRequest<T>(context.plan.rootRequest.requestScope);
-    return _f(context.plan.rootRequest) as T | Promise<T> | (T | Promise<T>)[];
+    return _resolveRequest<T>(context.plan.rootRequest)  as T | Promise<T> | (T | Promise<T>)[];
 }
 
 export { resolve };

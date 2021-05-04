@@ -4,6 +4,7 @@ import { id } from "../utils/id";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
+import { getResolveScope } from "../scope/getResolveScope";
 
 class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
@@ -23,6 +24,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
     // The scope mode to be used
     public scope: interfaces.BindingScope;
+    public resolveScope: interfaces.Scope<TActivated>;
 
     public valueProvider:interfaces.ValueProvider<TActivated,unknown> | null | undefined;
 
@@ -64,12 +66,16 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
         return this.valueProvider.provideValue(context, childRequests);
     }
 
+    public setScope(scope:interfaces.BindingScope): void {
+        this.scope = scope;
+        this.resolveScope = getResolveScope<TActivated>(scope);
+    }
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>, scope: interfaces.BindingScope) {
         this.id = id();
         this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
-        this.scope = scope;
+        this.setScope(scope);
         this.constraint = (request: interfaces.Request) => true;
         this.cache = null;
         this.onActivation = null;
@@ -80,7 +86,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
         const clone = new Binding(this.serviceIdentifier, this.scope);
         clone.valueProvider = this.valueProvider?.clone();
         clone.activated = (clone.scope === BindingScopeEnum.Singleton) ? this.activated : false;
-        clone.scope = this.scope;
+        clone.setScope(this.scope);
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;
         clone.onDeactivation = this.onDeactivation;

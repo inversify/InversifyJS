@@ -7,7 +7,7 @@ export abstract class ValueFromProvider<TActivated> implements interfaces.Initia
       return this.valueFrom;
   }
   initialize(binding:interfaces.Binding<TActivated>){
-      binding.scope = BindingScopeEnum.Singleton;
+      binding.setScope(BindingScopeEnum.Singleton);
   }
   abstract clone():ValueFromProvider<TActivated>
 }

@@ -11,20 +11,21 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
     }
 
     public inRequestScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScopeEnum.Request;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        return this.setScope(BindingScopeEnum.Request);
     }
 
     public inSingletonScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        return this.setScope(BindingScopeEnum.Singleton);
     }
 
     public inTransientScope(): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.scope = BindingScopeEnum.Transient;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        return this.setScope(BindingScopeEnum.Transient);
     }
 
+    private setScope(scope:interfaces.BindingScope): interfaces.BindingWhenOnSyntax<T>{
+        this._binding.setScope(scope);
+        return new BindingWhenOnSyntax<T>(this._binding);
+    }
 }
 
 export { BindingInSyntax };
