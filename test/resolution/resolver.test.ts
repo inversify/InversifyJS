@@ -14,7 +14,7 @@ import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { MetadataReader } from "../../src/planning/metadata_reader";
-import { getBindingDictionary, plan } from "../../src/planning/planner";
+import { /*getBindingDictionary,*/ plan } from "../../src/planning/planner";
 import { resolveInstance } from "../../src/resolution/instantiation";
 import { resolve } from "../../src/resolution/resolver";
 
@@ -108,90 +108,6 @@ describe("Resolve", () => {
       expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
       expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
-
-  });
-
-  it("Should store singleton type bindings in cache", () => {
-
-      const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaId = "Katana";
-      const katanaHandlerId = "KatanaHandler";
-      const katanaBladeId = "KatanaBlade";
-
-      interface Blade { }
-
-      @injectable()
-      class KatanaBlade implements Blade { }
-
-      interface Handler { }
-
-      @injectable()
-      class KatanaHandler implements Handler { }
-
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: Handler;
-          public blade: Blade;
-          public constructor(
-              @inject(katanaHandlerId) @targetName("handler") handler: Handler,
-              @inject(katanaBladeId) @targetName("blade") blade: Blade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken { }
-
-      @injectable()
-      class Shuriken implements Shuriken { }
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
-          public katana: Katana;
-          public shuriken: Shuriken;
-          public constructor(
-              @inject(katanaId) @targetName("katana") katana: Katana,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
-          ) {
-              this.katana = katana;
-              this.shuriken = shuriken;
-          }
-      }
-
-      const container = new Container();
-      container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana).inSingletonScope(); // SINGLETON!
-      container.bind<KatanaBlade>(katanaBladeId).to(KatanaBlade);
-      container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler).inSingletonScope(); // SINGLETON!
-
-      const bindingDictionary = getBindingDictionary(container);
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
-      const katanaBinding = bindingDictionary.get(katanaId)[0];
-      expect(katanaBinding.cache === null).eql(true);
-      expect(katanaBinding.activated).eql(false);
-
-      const ninja = resolveTyped<Ninja>(context);
-      expect(ninja instanceof Ninja).eql(true);
-
-      const ninja2 = resolveTyped<Ninja>(context);
-      expect(ninja2 instanceof Ninja).eql(true);
-
-      expect(katanaBinding.cache instanceof Katana).eql(true);
-      expect(katanaBinding.activated).eql(true);
 
   });
 
@@ -303,12 +219,7 @@ describe("Resolve", () => {
 
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
-      const katanaBinding = getBindingDictionary(container).get(katanaId)[0];
-      expect(katanaBinding.activated).eql(false);
-
       const ninja = resolveTyped<Ninja>(context);
-
-      expect(katanaBinding.activated).eql(true);
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
@@ -1112,9 +1023,6 @@ describe("Resolve", () => {
 
       container.bind<KatanaFactory>(katanaFactoryId).toFunction(katanaFactoryInstance);
 
-      const katanaFactoryBinding = getBindingDictionary(container).get(katanaFactoryId)[0];
-      expect(katanaFactoryBinding.activated).eql(false);
-
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
 
       const ninja = resolveTyped<Ninja>(context);
@@ -1125,7 +1033,6 @@ describe("Resolve", () => {
       expect(ninja.katanaFactory().handler instanceof KatanaHandler).eql(true);
       expect(ninja.katanaFactory().blade instanceof KatanaBlade).eql(true);
       expect(ninja.shuriken instanceof Shuriken).eql(true);
-      expect(katanaFactoryBinding.activated).eql(true);
     });
 
   it("Should run the @PostConstruct method", () => {

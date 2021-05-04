@@ -16,4 +16,8 @@ export class RequestResolveScope<T> implements interfaces.Scope<T> {
     _getRequestStore(request: interfaces.Request): interfaces.RequestScope {
         return request.parentContext.plan.rootRequest.requestScope;
     }
+
+    clone(){
+        return this;
+    }
 }

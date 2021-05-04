@@ -27,12 +27,10 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     }
 
     public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.cache = value;
         return this.initialize("toConstantValue", value);
     }
 
     public toDynamicValue(func: interfaces.DynamicValue<T>): interfaces.BindingInWhenOnSyntax<T> {
-        this._binding.cache = null;
         return this.initialize("toDynamicValue",func);
     }
 

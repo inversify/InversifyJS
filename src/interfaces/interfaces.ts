@@ -112,7 +112,7 @@ namespace interfaces {
         toProvider(): ProviderValueProvider<T>
     }
 
-    export interface Scope<T>{
+    export interface Scope<T> extends Clonable<Scope<T>>{
         get(binding:Binding<T>,request:Request):Promise<T>|T|null
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
     }
@@ -120,7 +120,6 @@ namespace interfaces {
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
         moduleId: ContainerModuleBase["id"];
-        activated: boolean;
         serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
         scope: BindingScope;
@@ -128,8 +127,6 @@ namespace interfaces {
         resolveScope: Scope<TActivated>
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
-        cache: null | TActivated | Promise<TActivated>;
-
         valueProvider: ValueProvider<TActivated,unknown> | null | undefined;
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>;
     }

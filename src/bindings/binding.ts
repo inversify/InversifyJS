@@ -1,4 +1,3 @@
-import { BindingScopeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { id } from "../utils/id";
 import * as ERROR_MSGS from "../constants/error_msgs";
@@ -11,16 +10,8 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public id: number;
     public moduleId: interfaces.ContainerModuleBase["id"];
 
-    // Determines whether the bindings has been already activated
-    // The activation action takes place when an instance is resolved
-    // If the scope is singleton it only happens once
-    public activated: boolean;
-
     // A runtime identifier because at runtime we don't have interfaces
     public serviceIdentifier: interfaces.ServiceIdentifier<TActivated>;
-
-    // Cache used to allow singleton scope and BindingType.ConstantValue bindings
-    public cache: TActivated | Promise<TActivated> | null;
 
     // The scope mode to be used
     public scope: interfaces.BindingScope;
@@ -73,11 +64,9 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>, scope: interfaces.BindingScope) {
         this.id = id();
-        this.activated = false;
         this.serviceIdentifier = serviceIdentifier;
         this.setScope(scope);
         this.constraint = (request: interfaces.Request) => true;
-        this.cache = null;
         this.onActivation = null;
         this.onDeactivation = null;
     }
@@ -85,12 +74,12 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public clone(): interfaces.Binding<TActivated> {
         const clone = new Binding(this.serviceIdentifier, this.scope);
         clone.valueProvider = this.valueProvider?.clone();
-        clone.activated = (clone.scope === BindingScopeEnum.Singleton) ? this.activated : false;
-        clone.setScope(this.scope);
+        clone.scope = this.scope;
+        clone.resolveScope = this.resolveScope.clone();
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;
         clone.onDeactivation = this.onDeactivation;
-        clone.cache = this.cache;
+
         return clone;
     }
 

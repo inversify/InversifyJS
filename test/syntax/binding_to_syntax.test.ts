@@ -192,33 +192,6 @@ describe("BindingToSyntax", () => {
         expectBindingInWhenOnSyntax(bindingToSyntax.to(Sid));
     })
 
-    it("Should be able to configure the type of a binding", () => {
-
-        interface Ninja {}
-
-        @injectable()
-        class Ninja implements Ninja {}
-        const ninjaIdentifier = "Ninja";
-
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
-
-//        (bindingToSyntax as any)._binding = bindingWithClassAsId;
-//        bindingToSyntax.toSelf();
-//        expect(binding.type).eql(BindingTypeEnum.Instance);
-//        expect(binding.implementationType).not.to.eql(null);
-
-        (bindingToSyntax as any)._binding = binding;
-        bindingToSyntax.toConstantValue(new Ninja());
-        expect(binding.cache instanceof Ninja).eql(true);
-
-        const f = () => "test";
-        bindingToSyntax.toFunction(f);
-        expect(binding.cache === f).eql(true);
-
-    });
-
     it("Should prevent invalid function bindings", () => {
 
         interface Ninja {}

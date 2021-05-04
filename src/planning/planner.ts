@@ -167,15 +167,14 @@ function _createSubRequests(
 
     activeBindings.forEach((binding) => {
 
-        let subChildRequest: interfaces.Request | null = null;
+        let subChildRequest = childRequest;
 
         if (target.isArray()) {
             subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
         } else {
-            if (binding.cache) {
+            if (binding.resolveScope.get(binding,subChildRequest)) {
                 return;
             }
-            subChildRequest = childRequest;
         }
         const valueProvider = binding.valueProvider;
         if(valueProvider instanceof InstanceValueProvider && valueProvider.valueFrom != null){

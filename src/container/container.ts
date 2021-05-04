@@ -637,15 +637,19 @@ class Container implements interfaces.Container {
     }
 
     private _deactivateIfSingleton(binding: interfaces.Binding<any>): Promise<void> | void {
-        if (!binding.cache) {
+        if(binding.scope !== "Singleton"){
+            return;
+        }
+        const cached = binding.resolveScope.get(binding, null as any);
+        if (cached === null) {
             return;
         }
 
-        if (isPromise(binding.cache)) {
-            return binding.cache.then((resolved: any) => this._deactivate(binding, resolved));
+        if (isPromise(cached)) {
+            return cached.then((resolved: any) => this._deactivate(binding, resolved));
         }
 
-        return this._deactivate(binding, binding.cache);
+        return this._deactivate(binding, cached);
     }
 
     private _deactivateSingletons(bindings: interfaces.Binding<any>[]): void {
