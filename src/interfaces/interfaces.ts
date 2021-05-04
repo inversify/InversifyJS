@@ -54,6 +54,12 @@ namespace interfaces {
 
     export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
 
+    export interface ValueProvider<TActivated,TValueFrom>{
+        valueFrom:TValueFrom
+        provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
+        initialize?:(binding:Binding<TActivated>) => void;
+    }
+
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
         moduleId: ContainerModuleBase["id"];
@@ -69,6 +75,9 @@ namespace interfaces {
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
         cache: null | TActivated | Promise<TActivated>;
+
+        valueProvider: ValueProvider<TActivated,unknown> | null;
+        provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>;
     }
 
     export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);

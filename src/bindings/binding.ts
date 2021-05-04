@@ -1,6 +1,8 @@
 import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { id } from "../utils/id";
+import * as ERROR_MSGS from "../constants/error_msgs";
+import { getServiceIdentifierAsString } from "../utils/serialization";
 
 class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
@@ -30,6 +32,8 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     // The kind of binding
     public type: interfaces.BindingType;
 
+    public valueProvider:interfaces.ValueProvider<TActivated,unknown> | null;
+
     // A factory method used in BindingType.Factory bindings
     public factory: interfaces.FactoryCreator<unknown> | null;
 
@@ -44,6 +48,16 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
     // On deactivation handler (invoked just before an instance is unbinded and removed from container)
     public onDeactivation: interfaces.BindingDeactivation<TActivated> | null;
+
+    public provideValue(context:interfaces.Context, childRequests:interfaces.Request[]):TActivated|Promise<TActivated>{
+        if(!this.valueProvider){
+            // The user created a binding but didn't finish it
+            // e.g. container.bind<T>("Something"); missing BindingToSyntax
+            const serviceIdentifierAsString = getServiceIdentifierAsString(this.serviceIdentifier);
+            throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
+        }
+        return this.valueProvider.provideValue(context, childRequests);
+    }
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>, scope: interfaces.BindingScope) {
         this.id = id();
