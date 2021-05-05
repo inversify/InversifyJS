@@ -55,7 +55,6 @@ namespace interfaces {
     export interface ValueProvider<TActivated,TValueFrom> extends Clonable<ValueProvider<TActivated,TValueFrom>>{
         valueFrom:TValueFrom
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
-        initialize?:(binding:Binding<TActivated>) => void;
     }
 
     export type FactoryType = keyof Pick<BindingToSyntax<unknown>,"toFactory"|"toProvider"|"toDynamicValue">;
@@ -64,42 +63,25 @@ namespace interfaces {
         factoryType:FactoryType
     }
 
-    export interface InitializingFactoryTypeValueProvider<TActivated,TValueFrom> extends FactoryTypeValueProvider<TActivated,TValueFrom>{
-        initialize?:(binding:Binding<TActivated>) => void;
-    }
-    export interface NonInitializingFactoryTypeValueProvider<TActivated,TValueFrom> extends FactoryTypeValueProvider<TActivated,TValueFrom>{
-        initialize?:undefined
-    }
+    export interface ConstantValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{}
 
-    export interface NonInitializingValueProvider<TActivated,TValueFrom> extends ValueProvider<TActivated, TValueFrom> {
-        initialize?:undefined;
-    }
-
-
-    export interface InitializingValueProvider<TActivated,TValueFrom> extends ValueProvider<TActivated, TValueFrom>{
-        initialize:(binding:Binding<TActivated>) => void;
-    }
-
-
-    export interface ConstantValueProvider<TActivated> extends InitializingValueProvider<TActivated,TActivated>{}
-
-    export interface InstanceValueProvider<TActivated> extends NonInitializingValueProvider<TActivated,interfaces.Newable<TActivated>>{}
+    export interface InstanceValueProvider<TActivated> extends ValueProvider<TActivated,interfaces.Newable<TActivated>>{}
 
     export interface DynamicValueProvider<TActivated> extends
-        NonInitializingFactoryTypeValueProvider<TActivated,interfaces.DynamicValue<TActivated>>
+        FactoryTypeValueProvider<TActivated,interfaces.DynamicValue<TActivated>>
         {
             factoryType: "toDynamicValue"
         }
 
-    export interface ConstructorValueProvider<TActivated> extends InitializingValueProvider<TActivated,TActivated>{}
+    export interface ConstructorValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{}
 
     export interface FactoryValueProvider<TActivated> extends
-        InitializingFactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
+        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
         factoryType:"toFactory";
     }
 
     export interface ProviderValueProvider<TActivated> extends
-        InitializingFactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
+        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
         factoryType:"toProvider";
     }
 

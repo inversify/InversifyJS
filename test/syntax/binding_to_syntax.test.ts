@@ -35,9 +35,6 @@ describe("BindingToSyntax", () => {
             provideValue(){
                 return null as any;
             },
-            initialize(b){
-                //expect called
-            },
             clone(){
                 return null as any;
             }
@@ -47,9 +44,6 @@ describe("BindingToSyntax", () => {
             valueFrom:null as any,
             provideValue(){
                 return null as any;
-            },
-            initialize(b){
-                //expect called
             },
             clone(){
                 return null as any;
@@ -73,9 +67,6 @@ describe("BindingToSyntax", () => {
             provideValue(){
                 return null as any;
             },
-            initialize(b){
-                //expect called
-            },
             clone(){
                 return null as any;
             }
@@ -86,9 +77,6 @@ describe("BindingToSyntax", () => {
             valueFrom:null as any,
             provideValue(){
                 return null as any;
-            },
-            initialize(b){
-                //expect called
             },
             clone(){
                 return null as any;
@@ -104,11 +92,6 @@ describe("BindingToSyntax", () => {
                 return null as any;
             }
         }
-
-        const mockConstantValueProvider = sinon.mock(constantValueProvider);
-        const mockConstructorValueProvider = sinon.mock(constructorValueProvider);
-        const mockFactoryValueProvider = sinon.mock(factoryValueProvider);
-        const mockProviderValueProvider = sinon.mock(providerValueProvider);
 
         const mockValueProviderFactory:interfaces.ValueProviderFactory<unknown> = {
             toConstantValue(){
@@ -139,7 +122,6 @@ describe("BindingToSyntax", () => {
         syntax.toConstantValue(constantValue);
         expect(binding.valueProvider === constantValueProvider);
         expect(constantValueProvider.valueFrom === constantValue).to.equal(true);
-        mockConstantValueProvider.expects("initialize").calledWithExactly(binding);
 
         const dynamicValue:interfaces.DynamicValue<unknown> = () => new Ninja();
         syntax.toDynamicValue(dynamicValue);
@@ -149,19 +131,16 @@ describe("BindingToSyntax", () => {
         syntax.toConstructor(Ninja);
         expect(binding.valueProvider === constructorValueProvider);
         expect(constructorValueProvider.valueFrom === Ninja).to.equal(true);
-        mockConstructorValueProvider.expects("initialize").calledWithExactly(binding);
 
         const factoryCreator:interfaces.FactoryCreator<any> = (context:interfaces.Context) => () => new Ninja();
         syntax.toFactory(factoryCreator);
         expect(binding.valueProvider === factoryValueProvider);
         expect(factoryValueProvider.valueFrom === factoryCreator).to.equal(true);
-        mockFactoryValueProvider.expects("initialize").calledWithExactly(binding);
 
         const providerCreator:interfaces.ProviderCreator<any> = (context:interfaces.Context) => () => Promise.resolve(new Ninja());
         syntax.toProvider(providerCreator);
         expect(binding.valueProvider === providerValueProvider);
         expect(providerValueProvider.valueFrom === providerCreator).to.equal(true);
-        mockProviderValueProvider.expects("initialize").calledWithExactly(binding);
 
         syntax.to(Ninja);
         expect(binding.valueProvider === instanceValueProvider);
@@ -179,6 +158,29 @@ describe("BindingToSyntax", () => {
         syntax.toAutoFactory("sid");
         mockSyntax.expects("toFactory").calledWith(sinon.match.func);
     })
+
+    function expectSetsSingletonScope(toCallback:(bindingTo:interfaces.BindingToSyntax<unknown>) => void): void {
+        const binding = new Binding<unknown>("","Request");
+        const setScopeSpy = sinon.spy(binding,"setScope");
+        const bindingToSyntax = new BindingToSyntax(binding);
+        toCallback(bindingToSyntax);
+        expect(setScopeSpy.calledWithExactly("Singleton")).to.equal(true);
+    }
+    it("Should set singletonscope for toConstantValue ( and toFunction )", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toConstantValue("constant"));
+    });
+
+    it("Should set singletonscope for toFactory ( and toAutoFactory )", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toFactory(()=>()=>"value"));
+    });
+
+    it("Should set singletonscope for toProvider", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toProvider(()=>()=>Promise.resolve("value")));
+    });
+
+    it("Should set singletonscope for toConstructor", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toConstructor(Boolean));
+    });
 
     it("Should return BindingInWhenOnSyntax<T>(this._binding)", () => {
         class Sid {}
