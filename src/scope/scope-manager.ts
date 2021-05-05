@@ -8,7 +8,7 @@ export class ScopeManager<T> implements interfaces.ScopeManager<T>{
   resolveScope: interfaces.Scope<T> | undefined;
 
   scopeFactory:interfaces.ResolveScopeFactory<T> = new ResolveScopeFactory<T>();
-  get(binding: interfaces.Binding<T>, request: interfaces.Request): T | Promise<T> | null {
+  get(binding: interfaces.Binding<T>, request: interfaces.Request): T | Promise<T> | undefined {
     if(this.resolveScope){
       return this.resolveScope.get(binding, request);
     }

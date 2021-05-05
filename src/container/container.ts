@@ -642,7 +642,7 @@ class Container implements interfaces.Container {
             return;
         }
         const cached = binding.scopeManager.get(binding, null as any);
-        if (cached === null) {
+        if (cached === undefined) {
             return;
         }
 

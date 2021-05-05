@@ -104,7 +104,7 @@ namespace interfaces {
     }
 
     export interface Scoped<T>{
-        get(binding:Binding<T>,request:Request):Promise<T>|T|null
+        get(binding:Binding<T>,request:Request):Promise<T>|T|undefined
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
     }
 

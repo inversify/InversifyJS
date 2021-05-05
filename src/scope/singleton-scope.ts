@@ -3,13 +3,10 @@ import { isPromise } from "../utils/async";
 
 export class SingletonScope<T> implements interfaces.Scope<T> {
     public resolved: T | Promise<T> | undefined;
-    get(binding: interfaces.Binding<T>, _: interfaces.Request): Promise<T> | T | null {
-        if(this.resolved){
-            return this.resolved;
-        }
-        return null;
+    get(_: interfaces.Binding<T>, __: interfaces.Request): Promise<T> | T | undefined {
+        return this.resolved;
     }
-    set(binding: interfaces.Binding<T>, _: interfaces.Request, resolved: T | Promise<T>): T | Promise<T> {
+    set(_: interfaces.Binding<T>, __: interfaces.Request, resolved: T | Promise<T>): T | Promise<T> {
         if (isPromise(resolved)) {
             resolved = resolved.catch((ex) => {
                 // allow binding to retry in future

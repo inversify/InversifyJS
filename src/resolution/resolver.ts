@@ -48,7 +48,7 @@ const _resolveInScope = <T>(
     resolveFromBinding: () => T | Promise<T>
 ): T | Promise<T> => {
     const fromScope = binding.scopeManager.get(binding,request);
-    if(fromScope !==null){
+    if(fromScope !== undefined){
         return fromScope;
     }
     return binding.scopeManager.set(binding,request, resolveFromBinding());
