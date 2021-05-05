@@ -46,14 +46,24 @@ describe("BindingInWhenOnSyntax", () => {
         // stubs for BindingWhenSyntax methods
         const inSingletonScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inSingletonScope").returns(null);
         const inTransientScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inTransientScope").returns(null);
+        const inRequestScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inRequestScope").returns(null);
+        const inRootRequestScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inRootRequestScope").returns(null);
+        const inCustomScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inCustomScope").returns(null);
 
         // invoke BindingWhenOnSyntax methods
         bindingInWhenOnSyntax.inSingletonScope();
         bindingInWhenOnSyntax.inTransientScope();
+        bindingInWhenOnSyntax.inRequestScope();
+        bindingInWhenOnSyntax.inRootRequestScope();
+        const customScope:any = {custom:true};
+        bindingInWhenOnSyntax.inCustomScope(customScope);
 
         // assert invoked BindingWhenSyntax methods
         expect(inSingletonScopeStub.callCount).eql(1);
         expect(inTransientScopeStub.callCount).eql(1);
+        expect(inRequestScopeStub.callCount).eql(1);
+        expect(inRootRequestScopeStub.callCount).eql(1);
+        expect(inCustomScopeStub.calledWithExactly(customScope)).eql(true);
 
     });
 

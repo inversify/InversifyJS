@@ -11,6 +11,7 @@ class Request implements interfaces.Request {
     public childRequests: interfaces.Request[];
     public target: interfaces.Target;
     public requestScope: interfaces.RequestScope;
+    public rootRequestScope: interfaces.RequestScope;
 
     public constructor(
         serviceIdentifier: interfaces.ServiceIdentifier<any>,

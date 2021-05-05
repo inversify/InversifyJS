@@ -652,7 +652,7 @@ describe("Container", () => {
 
     });
 
-    it("Should be throw an exception if incorrect options is provided", () => {
+    it("Should throw an exception if incorrect options is provided", () => {
 
         const invalidOptions1: any = () => 0;
         const wrong1 = () => new Container(invalidOptions1);

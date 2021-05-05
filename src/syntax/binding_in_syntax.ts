@@ -22,6 +22,15 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
         return this.setScope(BindingScopeEnum.Transient);
     }
 
+    public inRootRequestScope(): interfaces.BindingWhenOnSyntax<T> {
+        return this.setScope(BindingScopeEnum.RootRequest);
+    }
+
+    inCustomScope(customScope: interfaces.Scope<T>): interfaces.BindingWhenOnSyntax<T> {
+        this._binding.scopeManager.setCustomScope(customScope);
+        return new BindingWhenOnSyntax<T>(this._binding);
+    }
+
     private setScope(scope:interfaces.BindingScope): interfaces.BindingWhenOnSyntax<T>{
         this._binding.scopeManager.setScope(scope);
         return new BindingWhenOnSyntax<T>(this._binding);

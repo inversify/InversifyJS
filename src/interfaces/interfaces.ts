@@ -6,8 +6,8 @@ namespace interfaces {
         TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>
         : never;
 
-    export type BindingScope = "Singleton" | "Transient" | "Request";
-    export type ConfigurableBindingScope = BindingScope | "NotConfigured";
+    export type BindingScope = "Singleton" | "Transient" | "Request" | "RootRequest";
+    export type ConfigurableBindingScope = BindingScope | "NotConfigured" | "Custom";
 
     export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
         "Function" | "Instance" | "Invalid" | "Provider";
@@ -18,6 +18,7 @@ namespace interfaces {
         Request: interfaces.BindingScope;
         Singleton: interfaces.BindingScope;
         Transient: interfaces.BindingScope;
+        RootRequest: interfaces.BindingScope;
     }
 
     export interface ConfigurableBindingScopeEnum {
@@ -25,6 +26,7 @@ namespace interfaces {
         Singleton: interfaces.ConfigurableBindingScope;
         Transient: interfaces.ConfigurableBindingScope;
         NotConfigured: interfaces.ConfigurableBindingScope;
+        Custom: interfaces.ConfigurableBindingScope;
     }
 
 
@@ -115,8 +117,9 @@ namespace interfaces {
     }
 
     export interface ScopeManager<TActivated> extends Clonable<ScopeManager<TActivated>>,Scoped<TActivated>{
-        scope: ConfigurableBindingScope;
+        scope: ConfigurableBindingScope | "Custom";
         setScope(scope:BindingScope): void;
+        setCustomScope(customScope:Scope<TActivated>): void;
         resolveScope: Scope<TActivated> | undefined;
     }
 
@@ -161,8 +164,10 @@ namespace interfaces {
         container: Container;
         plan: Plan;
         currentRequest: Request;
+        parentContext:Context | undefined;
         addPlan(plan: Plan): void;
         setCurrentRequest(request: Request): void;
+        inRootRequestScope():Context;
     }
 
     export interface ReflectResult {
@@ -202,6 +207,7 @@ namespace interfaces {
         target: Target;
         bindings: Binding<any>[];
         requestScope: RequestScope;
+        rootRequestScope: RequestScope;
         addChildRequest(
             serviceIdentifier: ServiceIdentifier<any>,
             bindings: (Binding<any> | Binding<any>[]),
@@ -237,6 +243,7 @@ namespace interfaces {
         id: number;
         parent: Container | null;
         options: ContainerOptions;
+        contextStack:Stack<interfaces.Context>;
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
         rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>>
@@ -346,6 +353,12 @@ namespace interfaces {
         traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;
     }
 
+    export interface Stack<T> {
+        push(entry: T): void;
+        pop(): T | undefined;
+        peek(): T | undefined;
+    }
+
     export interface BindingOnSyntax<T> {
         onActivation(fn: (context: Context, injectable: T) => T | Promise<T>): BindingWhenSyntax<T>;
         onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
@@ -375,6 +388,8 @@ namespace interfaces {
         inSingletonScope(): BindingWhenOnSyntax<T>;
         inTransientScope(): BindingWhenOnSyntax<T>;
         inRequestScope(): BindingWhenOnSyntax<T>;
+        inRootRequestScope(): BindingWhenOnSyntax<T>;
+        inCustomScope(customScope:Scope<T>): BindingWhenOnSyntax<T>;
     }
 
     export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }

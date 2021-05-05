@@ -29,6 +29,7 @@ describe("BindingInSyntax", () => {
         const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
         const setScopeSpy = sinon.spy(binding.scopeManager,"setScope");
+        const setCustomScopeSpy = sinon.spy(binding.scopeManager,"setCustomScope");
 
         // singleton scope
         bindingInSyntax.inSingletonScope();
@@ -39,6 +40,13 @@ describe("BindingInSyntax", () => {
 
         bindingInSyntax.inRequestScope();
         expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Request)).to.equal(true);
+
+        bindingInSyntax.inRootRequestScope();
+        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.RootRequest)).to.equal(true);
+
+        const customScope:any = {customScope:true};
+        bindingInSyntax.inCustomScope(customScope);
+        expect(setCustomScopeSpy.calledWithExactly(customScope)).to.equal(true);
 
     });
 

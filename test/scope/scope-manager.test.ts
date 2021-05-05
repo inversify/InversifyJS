@@ -88,6 +88,7 @@ describe("ScopeManager", () => {
     scopeTest(BindingScopeEnum.Singleton);
     scopeTest(BindingScopeEnum.Request);
     scopeTest(BindingScopeEnum.Transient);
+    scopeTest(BindingScopeEnum.RootRequest);
 
   });
 
@@ -110,5 +111,13 @@ describe("ScopeManager", () => {
     expect(notConfiguredScopeManagerClone.scope).to.equal(ConfigurableBindingScopeEnum.NotConfigured);
     // tslint:disable-next-line: no-unused-expression
     expect(notConfiguredScopeManagerClone.resolveScope).to.be.undefined;
+  });
+
+  it("Should set the scope to custom and set the resolveScope when setCustomScope", () => {
+    const scopeManager = new ScopeManager();
+    const customScope:any = {}
+    scopeManager.setCustomScope(customScope);
+    expect(scopeManager.scope).to.equal(ConfigurableBindingScopeEnum.Custom);
+    expect(scopeManager.resolveScope).to.equal(customScope);
   })
 })

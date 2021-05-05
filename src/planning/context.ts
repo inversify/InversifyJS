@@ -7,6 +7,7 @@ class Context implements interfaces.Context {
     public container: interfaces.Container;
     public plan: interfaces.Plan;
     public currentRequest: interfaces.Request;
+    public parentContext: interfaces.Context | undefined;
 
     public constructor(
         container: interfaces.Container) {
@@ -22,6 +23,10 @@ class Context implements interfaces.Context {
         this.currentRequest = currentRequest;
     }
 
+    public inRootRequestScope(): Context {
+        this.container.contextStack.push(this);
+        return this;
+    }
 }
 
 export { Context };

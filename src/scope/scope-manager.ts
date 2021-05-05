@@ -4,7 +4,7 @@ import { ConfigurableBindingScopeEnum } from "../constants/literal_types";
 import { ResolveScopeFactory } from "./resolve-scope-factory";
 
 export class ScopeManager<T> implements interfaces.ScopeManager<T>{
-  scope = ConfigurableBindingScopeEnum.NotConfigured
+  scope:interfaces.ConfigurableBindingScope  = ConfigurableBindingScopeEnum.NotConfigured
   resolveScope: interfaces.Scope<T> | undefined;
 
   scopeFactory:interfaces.ResolveScopeFactory<T> = new ResolveScopeFactory<T>();
@@ -31,6 +31,12 @@ export class ScopeManager<T> implements interfaces.ScopeManager<T>{
   setScope(scope:interfaces.BindingScope): void{
     this.scope = scope;
     this.resolveScope = this.scopeFactory.get(scope);
+  }
+
+  setCustomScope(customScope: interfaces.Scope<T>): void {
+    this.scope = "Custom";
+    this.resolveScope = customScope;
+
   }
   private throwNotConfigured():never{
     throw new Error(ERROR_MSGS.SCOPE_NOT_CONFIGURED);

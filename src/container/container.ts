@@ -13,6 +13,7 @@ import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
+import { Stack } from "./stack";
 
 type GetArgs<T> = Omit<interfaces.NextArgs<T>,'contextInterceptor'|'targetType'>
 
@@ -21,6 +22,7 @@ class Container implements interfaces.Container {
     public id: number;
     public parent: interfaces.Container | null;
     public readonly options: interfaces.ContainerOptions;
+    public contextStack:interfaces.Stack<interfaces.Context> = new Stack<interfaces.Context>();
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
@@ -71,7 +73,8 @@ class Container implements interfaces.Container {
         } else if (
             options.defaultScope !== BindingScopeEnum.Singleton &&
             options.defaultScope !== BindingScopeEnum.Transient &&
-            options.defaultScope !== BindingScopeEnum.Request
+            options.defaultScope !== BindingScopeEnum.Request &&
+            options.defaultScope !== BindingScopeEnum.RootRequest
         ) {
             throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
         }
@@ -626,11 +629,15 @@ class Container implements interfaces.Container {
                 args.avoidConstraints
             );
 
+            context.parentContext = this.contextStack.peek();
+            this.contextStack.push(context);
+
             // apply context interceptor
             context = args.contextInterceptor(context);
 
             // resolve plan
             const result = resolve<T>(context);
+            this.contextStack.pop();
 
             return result;
 
