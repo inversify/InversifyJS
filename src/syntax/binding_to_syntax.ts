@@ -9,7 +9,7 @@ type ExtractValueFrom<P> = P extends interfaces.ValueProvider<any,infer T> ? T :
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     private _binding: interfaces.Binding<T>;
-    private _valueProviderFactory: interfaces.ValueProviderFactory<T> = new ValueProviderFactory();
+    valueProviderFactory: interfaces.ValueProviderFactory<T> = new ValueProviderFactory();
 
     public constructor(binding: interfaces.Binding<T>) {
         this._binding = binding;
@@ -71,7 +71,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         valueFrom:ExtractValueFrom<ReturnType<interfaces.ValueProviderFactory<T>[TKey]>>,
         singleton:boolean
     ): interfaces.BindingInWhenOnSyntax<T>{
-        const valueProvider = this._valueProviderFactory[valueProviderType]();
+        const valueProvider = this.valueProviderFactory[valueProviderType]();
         valueProvider.valueFrom = valueFrom;
         this._binding.valueProvider = valueProvider;
         if(singleton){

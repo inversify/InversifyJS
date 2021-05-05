@@ -6,6 +6,7 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
 import * as sinon from 'sinon';
 import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
+import { ValueProviderFactory } from "../../src/bindings/value-provider-factory";
 
 describe("BindingToSyntax", () => {
 
@@ -115,7 +116,7 @@ describe("BindingToSyntax", () => {
 
         const binding = new Binding(irrelevant);
         const syntax = new BindingToSyntax(binding);
-        (syntax as any)._valueProviderFactory = mockValueProviderFactory;
+        syntax.valueProviderFactory = mockValueProviderFactory;
 
         const constantValue = new Ninja();
         syntax.toConstantValue(constantValue);
@@ -156,6 +157,11 @@ describe("BindingToSyntax", () => {
         mockSyntax.expects("toDynamicValue").calledWith(sinon.match.func);
         syntax.toAutoFactory("sid");
         mockSyntax.expects("toFactory").calledWith(sinon.match.func);
+    })
+
+    it("Should use instanceof ValueProviderFactory", () => {
+        const bindingToSyntax = new BindingToSyntax(null as any);
+        expect(bindingToSyntax.valueProviderFactory).to.be.instanceOf(ValueProviderFactory);
     })
 
     function expectSetsSingletonScope(toCallback:(bindingTo:interfaces.BindingToSyntax<unknown>) => void): void {
