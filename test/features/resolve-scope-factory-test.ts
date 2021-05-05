@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { BindingScopeEnum } from "../../src/inversify";
-import { RequestResolveScope } from "../../src/scope/RequestResolveScope";
+import { RequestResolveScope } from "../../src/scope/request-resolve-scope";
 import { ResolveScopeFactory } from "../../src/scope/resolve-scope-factory"
-import { SingletonScope } from "../../src/scope/SingletonScope";
-import { TransientScope } from "../../src/scope/TransientScope";
+import { SingletonScope } from "../../src/scope/singleton-scope";
+import { TransientScope } from "../../src/scope/transient-scope";
 
 describe("ResolveScopeFactory", () => {
   it("Should return a new instance of SingletonScope for BindingScopeEnum.Singleton", () => {

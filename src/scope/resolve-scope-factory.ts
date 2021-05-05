@@ -1,8 +1,8 @@
 import { interfaces } from "../interfaces/interfaces";
 import { BindingScopeEnum } from "../inversify";
-import { RequestResolveScope } from "./RequestResolveScope";
-import { SingletonScope } from "./SingletonScope";
-import { TransientScope } from "./TransientScope";
+import { RequestResolveScope } from "./request-resolve-scope";
+import { SingletonScope } from "./singleton-scope";
+import { TransientScope } from "./transient-scope";
 
 const transientScope = new TransientScope<any>();
 const requestScope = new RequestResolveScope<any>();

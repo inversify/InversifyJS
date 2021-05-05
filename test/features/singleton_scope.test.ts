@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { SingletonScope } from "../../src/scope/SingletonScope"
+import { SingletonScope } from "../../src/scope/singleton-scope"
 
 describe("singleton scope", () => {
   it("should work the same in a clone when promise fails", async () => {
