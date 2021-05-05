@@ -171,13 +171,10 @@ function _createSubRequests(
 
         if (target.isArray()) {
             subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
-        } else {
-            if (binding.scopeManager.get(binding,subChildRequest)) {
-                return;
-            }
         }
         const valueProvider = binding.valueProvider;
-        if(valueProvider instanceof InstanceValueProvider && valueProvider.valueFrom != null){
+        const subRequestsRequiredAsNotInstantiated = !binding.scopeManager.get(binding,subChildRequest);
+        if(subRequestsRequiredAsNotInstantiated && valueProvider instanceof InstanceValueProvider && valueProvider.valueFrom != null){
             const implementationType = valueProvider.valueFrom;
             const dependencies = getDependencies(metadataReader, implementationType);
 
