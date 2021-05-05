@@ -38,7 +38,7 @@ function listRegisteredBindingsForServiceIdentifier(
 
             // Use function name if available
             if (binding.valueProvider instanceof InstanceValueProvider || binding.valueProvider instanceof ConstructorValueProvider) {
-                if(binding.valueProvider.valueFrom !== null){
+                if(binding.valueProvider.valueFrom){
                     name = getFunctionName(binding.valueProvider.valueFrom);
                 }
             }

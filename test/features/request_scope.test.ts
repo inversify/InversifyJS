@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import * as now from "performance-now";
 import { Container, inject, injectable, named } from "../../src/inversify";
+import { RequestResolveScope } from "../../src/scope/request-resolve-scope";
 
 describe("inRequestScope", () => {
 
@@ -171,4 +172,8 @@ describe("inRequestScope", () => {
 
     });
 
+    it("Should return itself when cloning", () => {
+        const requestResolveScope = new RequestResolveScope();
+        expect(requestResolveScope.clone()).to.equal(requestResolveScope);
+    })
 });
