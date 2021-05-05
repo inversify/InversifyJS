@@ -53,3 +53,5 @@ export const CIRCULAR_DEPENDENCY_IN_FACTORY = (factoryType: string, serviceIdent
     `service identifier '${serviceIdentifier}'.`;
 
 export const STACK_OVERFLOW = "Maximum call stack size exceeded";
+
+export const SCOPE_NOT_CONFIGURED = "Scope has not been configured";

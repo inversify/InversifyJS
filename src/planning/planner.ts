@@ -172,7 +172,7 @@ function _createSubRequests(
         if (target.isArray()) {
             subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
         } else {
-            if (binding.resolveScope.get(binding,subChildRequest)) {
+            if (binding.scopeManager.get(binding,subChildRequest)) {
                 return;
             }
         }

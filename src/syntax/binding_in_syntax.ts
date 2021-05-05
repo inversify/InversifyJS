@@ -23,7 +23,7 @@ class BindingInSyntax<T> implements interfaces.BindingInSyntax<T> {
     }
 
     private setScope(scope:interfaces.BindingScope): interfaces.BindingWhenOnSyntax<T>{
-        this._binding.setScope(scope);
+        this._binding.scopeManager.setScope(scope);
         return new BindingWhenOnSyntax<T>(this._binding);
     }
 }

@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import * as Proxy from "harmony-proxy";
 import { Binding } from "../../src/bindings/binding";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingOnSyntax } from "../../src/syntax/binding_on_syntax";
 
@@ -12,7 +11,7 @@ describe("BindingOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingOnSyntax = new BindingOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -27,7 +26,7 @@ describe("BindingOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingOnSyntax = new BindingOnSyntax<Ninja>(binding);
 
         bindingOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) => {

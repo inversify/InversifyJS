@@ -583,8 +583,8 @@ describe("Container", () => {
     it("Should default binding scope to Transient if no default scope on options", () => {
         const container = new Container();
         container.options.defaultScope = undefined;
-        const expectedScope:interfaces.BindingScope = "Transient";
-        expect((container.bind("SID") as any)._binding.scope).to.equal(expectedScope);
+        const binding:interfaces.Binding<unknown> = (container.bind("SID") as any)._binding;
+        expect(binding.scopeManager.scope).to.equal(BindingScopeEnum.Transient);
     });
     it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
 

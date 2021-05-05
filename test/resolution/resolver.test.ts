@@ -9,6 +9,7 @@ import { postConstruct } from "../../src/annotation/post_construct";
 import { preDestroy } from "../../src/annotation/pre_destroy";
 import { tagged } from "../../src/annotation/tagged";
 import { targetName } from "../../src/annotation/target_name";
+import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
@@ -1092,8 +1093,9 @@ describe("Resolve", () => {
               throw new Error("Original Message");
           }
       }
-
-      expect(() => resolveInstance({} as interfaces.Binding<any>, Katana, []))
+      const binding = new Binding("");
+      binding.scopeManager.setScope("Singleton");
+      expect(() => resolveInstance(binding, Katana, []))
           .to.throw("@postConstruct error in class Katana: Original Message");
   });
 

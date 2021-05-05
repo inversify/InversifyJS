@@ -2,7 +2,6 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
 import { Binding } from "../../src/bindings/binding";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
 
@@ -23,7 +22,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -38,7 +37,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -73,7 +72,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -151,7 +150,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props

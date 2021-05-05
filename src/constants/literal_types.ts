@@ -6,6 +6,11 @@ const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Transient: "Transient"
 };
 
+const ConfigurableBindingScopeEnum: interfaces.ConfigurableBindingScopeEnum = {
+    ...BindingScopeEnum,
+    NotConfigured: "NotConfigured"
+};
+
 const BindingTypeEnum: interfaces.BindingTypeEnum = {
     ConstantValue: "ConstantValue",
     Constructor: "Constructor",
@@ -23,4 +28,4 @@ const TargetTypeEnum: interfaces.TargetTypeEnum = {
     Variable: "Variable"
 };
 
-export { BindingScopeEnum, BindingTypeEnum, TargetTypeEnum };
+export { BindingScopeEnum, ConfigurableBindingScopeEnum, BindingTypeEnum, TargetTypeEnum };

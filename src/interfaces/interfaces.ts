@@ -7,6 +7,7 @@ namespace interfaces {
         : never;
 
     export type BindingScope = "Singleton" | "Transient" | "Request";
+    export type ConfigurableBindingScope = BindingScope | "NotConfigured";
 
     export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
         "Function" | "Instance" | "Invalid" | "Provider";
@@ -18,6 +19,14 @@ namespace interfaces {
         Singleton: interfaces.BindingScope;
         Transient: interfaces.BindingScope;
     }
+
+    export interface ConfigurableBindingScopeEnum {
+        Request: interfaces.ConfigurableBindingScope;
+        Singleton: interfaces.ConfigurableBindingScope;
+        Transient: interfaces.ConfigurableBindingScope;
+        NotConfigured: interfaces.ConfigurableBindingScope;
+    }
+
 
     export interface BindingTypeEnum {
         ConstantValue: interfaces.BindingType;
@@ -94,9 +103,21 @@ namespace interfaces {
         toProvider(): ProviderValueProvider<T>
     }
 
-    export interface Scope<T> extends Clonable<Scope<T>>{
+    export interface Scoped<T>{
         get(binding:Binding<T>,request:Request):Promise<T>|T|null
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
+    }
+
+    export interface Scope<T> extends Clonable<Scope<T>>, Scoped<T>{ }
+
+    export interface ResolveScopeFactory<T>{
+        get(scope:interfaces.BindingScope):interfaces.Scope<T>
+    }
+
+    export interface ScopeManager<TActivated> extends Clonable<ScopeManager<TActivated>>,Scoped<TActivated>{
+        scope: ConfigurableBindingScope;
+        setScope(scope:BindingScope): void;
+        resolveScope: Scope<TActivated> | undefined;
     }
 
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
@@ -104,9 +125,7 @@ namespace interfaces {
         moduleId: ContainerModuleBase["id"];
         serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
-        scope: BindingScope;
-        setScope(scope:interfaces.BindingScope): void;
-        resolveScope: Scope<TActivated>
+        scopeManager: ScopeManager<TActivated>
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
         valueProvider: ValueProvider<TActivated,unknown> | null | undefined;

@@ -75,7 +75,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         valueProvider.valueFrom = valueFrom;
         this._binding.valueProvider = valueProvider;
         if(singleton){
-            this._binding.setScope(BindingScopeEnum.Singleton);
+            this._binding.scopeManager.setScope(BindingScopeEnum.Singleton);
         }
         return new BindingInWhenOnSyntax<T>(this._binding);
     }

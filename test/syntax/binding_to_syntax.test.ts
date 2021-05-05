@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { injectable } from "../../src/annotation/injectable";
 import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
 import * as sinon from 'sinon';
@@ -15,7 +14,7 @@ describe("BindingToSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -114,7 +113,7 @@ describe("BindingToSyntax", () => {
             }
         }
 
-        const binding = new Binding(irrelevant, BindingScopeEnum.Transient);
+        const binding = new Binding(irrelevant);
         const syntax = new BindingToSyntax(binding);
         (syntax as any)._valueProviderFactory = mockValueProviderFactory;
 
@@ -160,8 +159,8 @@ describe("BindingToSyntax", () => {
     })
 
     function expectSetsSingletonScope(toCallback:(bindingTo:interfaces.BindingToSyntax<unknown>) => void): void {
-        const binding = new Binding<unknown>("","Request");
-        const setScopeSpy = sinon.spy(binding,"setScope");
+        const binding = new Binding<unknown>("");
+        const setScopeSpy = sinon.spy(binding.scopeManager,"setScope");
         const bindingToSyntax = new BindingToSyntax(binding);
         toCallback(bindingToSyntax);
         expect(setScopeSpy.calledWithExactly("Singleton")).to.equal(true);
@@ -184,7 +183,7 @@ describe("BindingToSyntax", () => {
 
     it("Should return BindingInWhenOnSyntax<T>(this._binding)", () => {
         class Sid {}
-        const binding = new Binding(Sid,"Request");
+        const binding = new Binding(Sid);
         const bindingToSyntax = new BindingToSyntax(binding);
 
         function expectBindingInWhenOnSyntax(bindingInWhenOn:any){
@@ -202,7 +201,7 @@ describe("BindingToSyntax", () => {
         class Ninja implements Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
 
         const f = function () {

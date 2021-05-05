@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import sinon = require("sinon");
 import { Binding } from "../../src/bindings/binding";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { BindingInSyntax } from "../../src/syntax/binding_in_syntax";
@@ -10,7 +11,7 @@ describe("BindingInSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -25,19 +26,19 @@ describe("BindingInSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
-
-        // default scope is transient
-        expect(binding.scope).eql(BindingScopeEnum.Transient);
+        const setScopeSpy = sinon.spy(binding.scopeManager,"setScope");
 
         // singleton scope
         bindingInSyntax.inSingletonScope();
-        expect(binding.scope).eql(BindingScopeEnum.Singleton);
+        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Singleton)).to.equal(true);
 
-        // set transient scope explicitly
         bindingInSyntax.inTransientScope();
-        expect(binding.scope).eql(BindingScopeEnum.Transient);
+        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Transient)).to.equal(true);
+
+        bindingInSyntax.inRequestScope();
+        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Request)).to.equal(true);
 
     });
 

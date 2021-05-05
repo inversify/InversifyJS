@@ -3,7 +3,7 @@ import { id } from "../utils/id";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
-import { getResolveScope } from "../scope/getResolveScope";
+import { ScopeManager } from "../scope/scope-manager";
 
 class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
@@ -13,9 +13,8 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     // A runtime identifier because at runtime we don't have interfaces
     public serviceIdentifier: interfaces.ServiceIdentifier<TActivated>;
 
-    // The scope mode to be used
-    public scope: interfaces.BindingScope;
-    public resolveScope: interfaces.Scope<TActivated>;
+    // configures Scope and calls through
+    public scopeManager: interfaces.ScopeManager<TActivated> = new ScopeManager<TActivated>();
 
     public valueProvider:interfaces.ValueProvider<TActivated,unknown> | null | undefined;
 
@@ -57,25 +56,18 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
         return this.valueProvider.provideValue(context, childRequests);
     }
 
-    public setScope(scope:interfaces.BindingScope): void {
-        this.scope = scope;
-        this.resolveScope = getResolveScope<TActivated>(scope);
-    }
-
-    public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>, scope: interfaces.BindingScope) {
+    public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>) {
         this.id = id();
         this.serviceIdentifier = serviceIdentifier;
-        this.setScope(scope);
         this.constraint = (request: interfaces.Request) => true;
         this.onActivation = null;
         this.onDeactivation = null;
     }
 
     public clone(): interfaces.Binding<TActivated> {
-        const clone = new Binding(this.serviceIdentifier, this.scope);
+        const clone = new Binding(this.serviceIdentifier);
         clone.valueProvider = this.valueProvider?.clone();
-        clone.scope = this.scope;
-        clone.resolveScope = this.resolveScope.clone();
+        clone.scopeManager = this.scopeManager.clone();
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;
         clone.onDeactivation = this.onDeactivation;

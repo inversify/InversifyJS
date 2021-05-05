@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Lookup } from "../../src/container/lookup";
 import { interfaces } from "../../src/interfaces/interfaces";
 
@@ -113,16 +112,16 @@ describe("Lookup", () => {
 
     const getLookup = () => {
 
-      const ninjaBinding = new Binding(warriorId, BindingScopeEnum.Transient);
+      const ninjaBinding = new Binding(warriorId);
       ninjaBinding.moduleId = moduleId1;
 
-      const samuraiBinding = new Binding(warriorId, BindingScopeEnum.Transient);
+      const samuraiBinding = new Binding(warriorId);
       samuraiBinding.moduleId = moduleId2;
 
-      const shurikenBinding = new Binding(weaponId, BindingScopeEnum.Transient);
+      const shurikenBinding = new Binding(weaponId);
       shurikenBinding.moduleId = moduleId1;
 
-      const katanaBinding = new Binding(weaponId, BindingScopeEnum.Transient);
+      const katanaBinding = new Binding(weaponId);
       katanaBinding.moduleId = moduleId2;
 
       const lookup = new Lookup<Binding<any>>();

@@ -176,7 +176,8 @@ class Container implements interfaces.Container {
     // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         const scope = this.options.defaultScope || BindingScopeEnum.Transient;
-        const binding = new Binding<T>(serviceIdentifier, scope);
+        const binding = new Binding<T>(serviceIdentifier);
+        binding.scopeManager.setScope(scope);
         this._bindingDictionary.add(serviceIdentifier, binding);
         return new BindingToSyntax<T>(binding);
     }
@@ -637,10 +638,10 @@ class Container implements interfaces.Container {
     }
 
     private _deactivateIfSingleton(binding: interfaces.Binding<any>): Promise<void> | void {
-        if(binding.scope !== "Singleton"){
+        if(binding.scopeManager.scope !== "Singleton"){
             return;
         }
-        const cached = binding.resolveScope.get(binding, null as any);
+        const cached = binding.scopeManager.get(binding, null as any);
         if (cached === null) {
             return;
         }

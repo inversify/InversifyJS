@@ -115,7 +115,7 @@ function _postConstruct<T>(constr: interfaces.Newable<T>, instance: T): void | P
 }
 
 function _validateInstanceResolution(binding: interfaces.Binding<unknown>, constr: interfaces.Newable<unknown>): void {
-    if (binding.scope === "Transient") {
+    if (binding.scopeManager.scope === "Transient") {
         if (typeof binding.onDeactivation === "function") {
             throw new Error(ON_DEACTIVATION_ERROR(constr.name, "Class cannot be instantiated in transient scope."));
         }
