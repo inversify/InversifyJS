@@ -1,6 +1,7 @@
 import { interfaces } from "../inversify";
 
-export class TransientScope<T> implements interfaces.Scope<T> {
+export class TransientScope<T> implements interfaces.TransientScope<T> {
+    type:"Transient" = "Transient"
     get(): T | undefined {
         return undefined;
     }

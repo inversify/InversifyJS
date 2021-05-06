@@ -1,8 +1,12 @@
 import { expect } from "chai";
-import sinon = require("sinon");
 import { Binding } from "../../src/bindings/binding";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { BindingInSyntax } from "../../src/syntax/binding_in_syntax";
+import { BindingScopeScopeFactory } from "../../src/scope/binding-scope-scope-factory-interface";
+import { SingletonScope } from "../../src/scope/singleton-scope";
+import { TransientScope } from "../../src/scope/transient-scope";
+import { RequestResolveScope } from "../../src/scope/request-resolve-scope";
+import { RootRequestScope } from "../../src/scope/root-request-scope";
 
 describe("BindingInSyntax", () => {
 
@@ -28,25 +32,44 @@ describe("BindingInSyntax", () => {
 
         const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
-        const setScopeSpy = sinon.spy(binding.scopeManager,"setScope");
-        const setCustomScopeSpy = sinon.spy(binding.scopeManager,"setCustomScope");
+        const singletonScope = new SingletonScope<Ninja>();
+        const transientScope = new TransientScope<Ninja>();
+        const requestScope = new RequestResolveScope<Ninja>();
+        const rootRequestScope = new RootRequestScope<Ninja>();
+        const bindingScopeScopeFactory:BindingScopeScopeFactory<Ninja> = {
+            get(scope){
+                switch(scope){
+                    case BindingScopeEnum.Singleton:
+                        return singletonScope;
+                    case BindingScopeEnum.Transient:
+                        return transientScope;
+                    case BindingScopeEnum.RootRequest:
+                        return rootRequestScope;
+                    case BindingScopeEnum.Request:
+                        return requestScope;
+                    default:
+                        throw new Error();
+                }
+            }
+        }
+        bindingInSyntax.bindingScopeScopeFactoryInterface = bindingScopeScopeFactory;
 
         // singleton scope
         bindingInSyntax.inSingletonScope();
-        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Singleton)).to.equal(true);
+        expect(binding.scope).to.equal(singletonScope);
 
         bindingInSyntax.inTransientScope();
-        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Transient)).to.equal(true);
+        expect(binding.scope).to.equal(transientScope);
 
         bindingInSyntax.inRequestScope();
-        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.Request)).to.equal(true);
+        expect(binding.scope).to.equal(requestScope);
 
         bindingInSyntax.inRootRequestScope();
-        expect(setScopeSpy.calledWithExactly(BindingScopeEnum.RootRequest)).to.equal(true);
+        expect(binding.scope).to.equal(rootRequestScope);
 
         const customScope:any = {customScope:true};
         bindingInSyntax.inCustomScope(customScope);
-        expect(setCustomScopeSpy.calledWithExactly(customScope)).to.equal(true);
+        expect(binding.scope).to.equal(customScope);
 
     });
 

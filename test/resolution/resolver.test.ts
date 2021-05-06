@@ -1094,7 +1094,6 @@ describe("Resolve", () => {
           }
       }
       const binding = new Binding("");
-      binding.scopeManager.setScope("Singleton");
       expect(() => resolveInstance(binding, Katana, []))
           .to.throw("@postConstruct error in class Katana: Original Message");
   });

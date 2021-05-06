@@ -47,11 +47,11 @@ const _resolveInScope = <T>(
     binding:interfaces.Binding<T>,
     resolveFromBinding: () => T | Promise<T>
 ): T | Promise<T> => {
-    const fromScope = binding.scopeManager.get(binding,request);
+    const fromScope = binding.scope.get(binding,request);
     if(fromScope !== undefined){
         return fromScope;
     }
-    return binding.scopeManager.set(binding,request, resolveFromBinding());
+    return binding.scope.set(binding,request, resolveFromBinding());
 }
 
 const _resolveBinding = <T>(

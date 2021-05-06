@@ -1,6 +1,6 @@
 import { Binding } from "../bindings/binding";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum, ConfigurableBindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { MetadataReader } from "../planning/metadata_reader";
@@ -180,9 +180,8 @@ class Container implements interfaces.Container {
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         const scope = this.options.defaultScope || BindingScopeEnum.Transient;
         const binding = new Binding<T>(serviceIdentifier);
-        binding.scopeManager.setScope(scope);
         this._bindingDictionary.add(serviceIdentifier, binding);
-        return new BindingToSyntax<T>(binding);
+        return new BindingToSyntax<T>(binding, scope);
     }
 
     public rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
@@ -645,19 +644,20 @@ class Container implements interfaces.Container {
     }
 
     private _deactivateIfSingleton(binding: interfaces.Binding<any>): Promise<void> | void {
-        if(binding.scopeManager.scope !== "Singleton"){
-            return;
-        }
-        const cached = binding.scopeManager.get(binding, null as any);
-        if (cached === undefined) {
-            return;
+        const scope = binding.scope;
+        if(scope.type === ConfigurableBindingScopeEnum.Singleton){
+            const cached = scope.resolved;
+            if (cached === undefined) {
+                return;
+            }
+
+            if (isPromise(cached)) {
+                return cached.then((resolved: any) => this._deactivate(binding, resolved));
+            }
+
+            return this._deactivate(binding, cached);
         }
 
-        if (isPromise(cached)) {
-            return cached.then((resolved: any) => this._deactivate(binding, resolved));
-        }
-
-        return this._deactivate(binding, cached);
     }
 
     private _deactivateSingletons(bindings: interfaces.Binding<any>[]): void {

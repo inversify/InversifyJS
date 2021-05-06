@@ -3,7 +3,7 @@ import { id } from "../utils/id";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
-import { ScopeManager } from "../scope/scope-manager";
+import { TransientScope } from "../scope/transient-scope";
 
 class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
@@ -14,7 +14,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public serviceIdentifier: interfaces.ServiceIdentifier<TActivated>;
 
     // configures Scope and calls through
-    public scopeManager: interfaces.ScopeManager<TActivated> = new ScopeManager<TActivated>();
+    public scope: interfaces.ResolveScope<TActivated> = new TransientScope<TActivated>();
 
     public valueProvider:interfaces.ValueProviderType<TActivated> | null | undefined;
 
@@ -67,7 +67,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public clone(): interfaces.Binding<TActivated> {
         const clone = new Binding(this.serviceIdentifier);
         clone.valueProvider = this.valueProvider?.clone() as interfaces.ValueProviderType<TActivated>;
-        clone.scopeManager = this.scopeManager.clone();
+        clone.scope = this.scope.clone();
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;
         clone.onDeactivation = this.onDeactivation;

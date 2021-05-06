@@ -77,12 +77,12 @@ describe("Binding", () => {
       expect(clone.onDeactivation).to.equal(binding.onDeactivation);
     });
 
-    it("Should clone the scope manager", () => {
+    it("Should clone the scope", () => {
       const binding = new Binding("");
-      const clonedScopeManager = {} as any;
-      sinon.stub(binding.scopeManager,"clone").returns(clonedScopeManager);
+      const clonedScope = {} as any;
+      sinon.stub(binding.scope,"clone").returns(clonedScope);
       const clone = binding.clone();
-      expect(clone.scopeManager).to.equal(clonedScopeManager);
+      expect(clone.scope).to.equal(clonedScope);
     });
 
     it("Should clone the value provider if set", () => {

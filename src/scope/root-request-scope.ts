@@ -1,6 +1,7 @@
 import { interfaces } from "../interfaces/interfaces";
 
-export class RootRequestScope<T> implements interfaces.Scope<T>{
+export class RootRequestScope<T> implements interfaces.RootRequestScope<T>{
+  type: "RootRequest" = "RootRequest";
   get(binding:interfaces.Binding<T>,request: interfaces.Request): T | Promise<T> | undefined {
       const store = this._getRootContextRootRequestStore(request.parentContext)!;
       return store.get(binding.id);

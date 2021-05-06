@@ -6,8 +6,13 @@ namespace interfaces {
         TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>
         : never;
 
-    export type BindingScope = "Singleton" | "Transient" | "Request" | "RootRequest";
-    export type ConfigurableBindingScope = BindingScope | "NotConfigured" | "Custom";
+    export type BindingScope = (
+        SingletonScope<any> |
+        TransientScope<any> |
+        RequestResolveScope<any>|
+        RootRequestScope<any>
+    )["type"]
+    export type ConfigurableBindingScope = BindingScope | CustomScope<any>["type"];
 
     export type BindingType =
         (
@@ -22,28 +27,24 @@ namespace interfaces {
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
 
     export interface BindingScopeEnum {
-        Request: interfaces.BindingScope;
-        Singleton: interfaces.BindingScope;
-        Transient: interfaces.BindingScope;
-        RootRequest: interfaces.BindingScope;
+        Request: RequestResolveScope<any>["type"]
+        Singleton: SingletonScope<any>["type"];
+        Transient: TransientScope<any>["type"];
+        RootRequest: RootRequestScope<any>["type"]
     }
 
-    export interface ConfigurableBindingScopeEnum {
-        Request: interfaces.ConfigurableBindingScope;
-        Singleton: interfaces.ConfigurableBindingScope;
-        Transient: interfaces.ConfigurableBindingScope;
-        NotConfigured: interfaces.ConfigurableBindingScope;
-        Custom: interfaces.ConfigurableBindingScope;
+    export interface ConfigurableBindingScopeEnum extends BindingScopeEnum{
+        Custom: CustomScope<any>["type"];
     }
 
 
     export interface BindingTypeEnum {
-        ConstantValue: interfaces.BindingType;
-        Constructor: interfaces.BindingType;
-        DynamicValue: interfaces.BindingType;
-        Factory: interfaces.BindingType;
-        Instance: interfaces.BindingType;
-        Provider: interfaces.BindingType;
+        ConstantValue: ConstantValueProvider<unknown>["type"];
+        Constructor: ConstructorValueProvider<unknown>["type"];
+        DynamicValue: DynamicValueProvider<unknown>["type"];
+        Factory: FactoryValueProvider<unknown>["type"];
+        Instance: InstanceValueProvider<unknown>["type"];
+        Provider: ProviderValueProvider<unknown>["type"]
     }
 
     export interface TargetTypeEnum {
@@ -117,26 +118,43 @@ namespace interfaces {
         ConstructorValueProvider<TActivated> |
         FactoryValueProvider<TActivated> |
         ProviderValueProvider<TActivated>
-    export interface Scoped<T>{
+
+    export interface Scope<T>{
         get(binding:Binding<T>,request:Request):Promise<T>|T|undefined
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
     }
 
-    export interface Scope<T> extends Clonable<Scope<T>>, Scoped<T>{ }
-
-    export interface ScopeManager<TActivated> extends Clonable<ScopeManager<TActivated>>,Scoped<TActivated>{
-        scope: ConfigurableBindingScope | "Custom";
-        setScope(scope:BindingScope): void;
-        setCustomScope(customScope:Scope<TActivated>): void;
-        resolveScope: Scope<TActivated> | undefined;
+    export interface SingletonScope<T> extends Scope<T>, Clonable<SingletonScope<T>>{
+        type:"Singleton",
+        resolved: T | Promise<T> | undefined;
     }
+
+    export interface TransientScope<T> extends Scope<T>,Clonable<TransientScope<T>>{
+        type:"Transient"
+    }
+
+    export interface RequestResolveScope<T> extends Scope<T>, Clonable<RequestResolveScope<T>>{
+        type:"Request"
+    }
+
+    export interface RootRequestScope<T> extends Scope<T>,Clonable<RootRequestScope<T>>{
+        type:"RootRequest"
+    }
+
+    export interface CustomScope<T> extends Scope<T>,Clonable<CustomScope<T>>{
+        type:"Custom"
+    }
+
+    export type ResolveScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T> | CustomScope<T>
+
+    export type BindingScopeScope<T> = Exclude<interfaces.ResolveScope<T>,interfaces.CustomScope<T>>;
 
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
         moduleId: ContainerModuleBase["id"];
         serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
-        scopeManager: ScopeManager<TActivated>
+        scope: ResolveScope<TActivated>;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
         valueProvider: ValueProviderType<TActivated> | null | undefined;

@@ -172,7 +172,7 @@ function _createSubRequests(
             subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
         }
         const valueProvider = binding.valueProvider;
-        const subRequestsRequiredAsNotInstantiated = !binding.scopeManager.get(binding,subChildRequest);
+        const subRequestsRequiredAsNotInstantiated = !binding.scope.get(binding,subChildRequest);
         if(
             subRequestsRequiredAsNotInstantiated &&
             valueProvider &&

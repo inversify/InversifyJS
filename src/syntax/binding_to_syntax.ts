@@ -4,15 +4,20 @@ import { BindingScopeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
 import { ValueProviderFactory as ValueProviderFactoryInterface } from "../bindings/value-provider-factory-interface"
+import { BindingScopeScopeFactory as BindingScopeScopeFactoryInterface } from "../scope/binding-scope-scope-factory-interface";
+import { BindingScopeScopeFactory } from "../scope/binding-scope-scope-factory";
 
 type ExtractValueFrom<P> = P extends interfaces.ValueProvider<any,infer T> ? T : never;
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     private _binding: interfaces.Binding<T>;
+    private _scope: interfaces.BindingScope;
+    public bindingScopeScopeFactory:BindingScopeScopeFactoryInterface<T> = new BindingScopeScopeFactory<T>();
     valueProviderFactory: ValueProviderFactoryInterface<T> = new ValueProviderFactory();
 
-    public constructor(binding: interfaces.Binding<T>) {
+    public constructor(binding: interfaces.Binding<T>,scope: interfaces.BindingScope) {
+        this._scope = scope;
         this._binding = binding;
     }
 
@@ -75,9 +80,11 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
         const valueProvider = this.valueProviderFactory[valueProviderType]();
         valueProvider.valueFrom = valueFrom;
         this._binding.valueProvider = valueProvider;
+        let scope = this._scope;
         if(singleton){
-            this._binding.scopeManager.setScope(BindingScopeEnum.Singleton);
+            scope = BindingScopeEnum.Singleton;
         }
+        this._binding.scope = this.bindingScopeScopeFactory.get(scope);
         return new BindingInWhenOnSyntax<T>(this._binding);
     }
 }

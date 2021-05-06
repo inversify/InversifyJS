@@ -1,6 +1,7 @@
 import { interfaces } from "../inversify";
 
-export class RequestResolveScope<T> implements interfaces.Scope<T> {
+export class RequestResolveScope<T> implements interfaces.RequestResolveScope<T> {
+    type:"Request" = "Request";
     get(binding: interfaces.Binding<T>, request: interfaces.Request): Promise<T> | T | undefined {
         const store = this._getRequestStore(request)!;
         return store.get(binding.id);

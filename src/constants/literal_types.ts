@@ -9,7 +9,6 @@ const BindingScopeEnum: interfaces.BindingScopeEnum = {
 
 const ConfigurableBindingScopeEnum: interfaces.ConfigurableBindingScopeEnum = {
     ...BindingScopeEnum,
-    NotConfigured: "NotConfigured",
     Custom:"Custom"
 };
 
