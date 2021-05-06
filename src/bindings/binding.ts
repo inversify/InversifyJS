@@ -16,7 +16,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     // configures Scope and calls through
     public scope: interfaces.ResolveScope<TActivated> = new TransientScope<TActivated>();
 
-    public valueProvider:interfaces.ValueProviderType<TActivated> | null | undefined;
+    public valueProvider:interfaces.ValueProviderType<TActivated> | undefined;
 
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: interfaces.Request) => boolean;

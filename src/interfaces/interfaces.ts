@@ -157,7 +157,7 @@ namespace interfaces {
         scope: ResolveScope<TActivated>;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
-        valueProvider: ValueProviderType<TActivated> | null | undefined;
+        valueProvider: ValueProviderType<TActivated> | undefined;
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>;
     }
 
