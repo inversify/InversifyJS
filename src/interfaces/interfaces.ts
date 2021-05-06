@@ -6,46 +6,7 @@ namespace interfaces {
         TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>
         : never;
 
-    export type BindingScope = (
-        SingletonScope<any> |
-        TransientScope<any> |
-        RequestResolveScope<any>|
-        RootRequestScope<any>
-    )["type"]
-    export type ConfigurableBindingScope = BindingScope | CustomScope<any>["type"];
-
-    export type BindingType =
-        (
-            InstanceValueProvider<unknown> |
-            ConstantValueProvider<unknown> |
-            DynamicValueProvider<unknown> |
-            FactoryValueProvider<unknown> |
-            ProviderValueProvider<unknown> |
-            ConstructorValueProvider<unknown>
-        )["type"]
-
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
-
-    export interface BindingScopeEnum {
-        Request: RequestResolveScope<any>["type"]
-        Singleton: SingletonScope<any>["type"];
-        Transient: TransientScope<any>["type"];
-        RootRequest: RootRequestScope<any>["type"]
-    }
-
-    export interface ConfigurableBindingScopeEnum extends BindingScopeEnum{
-        Custom: CustomScope<any>["type"];
-    }
-
-
-    export interface BindingTypeEnum {
-        ConstantValue: ConstantValueProvider<unknown>["type"];
-        Constructor: ConstructorValueProvider<unknown>["type"];
-        DynamicValue: DynamicValueProvider<unknown>["type"];
-        Factory: FactoryValueProvider<unknown>["type"];
-        Instance: InstanceValueProvider<unknown>["type"];
-        Provider: ProviderValueProvider<unknown>["type"]
-    }
 
     export interface TargetTypeEnum {
         ConstructorArgument: interfaces.TargetType;
@@ -119,6 +80,17 @@ namespace interfaces {
         FactoryValueProvider<TActivated> |
         ProviderValueProvider<TActivated>
 
+    export type BindingType = ValueProviderType<unknown>["type"];
+
+    export interface BindingTypeEnum {
+        ConstantValue: ConstantValueProvider<unknown>["type"];
+        Constructor: ConstructorValueProvider<unknown>["type"];
+        DynamicValue: DynamicValueProvider<unknown>["type"];
+        Factory: FactoryValueProvider<unknown>["type"];
+        Instance: InstanceValueProvider<unknown>["type"];
+        Provider: ProviderValueProvider<unknown>["type"]
+    }
+
     export interface Scope<T>{
         get(binding:Binding<T>,request:Request):Promise<T>|T|undefined
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
@@ -145,8 +117,22 @@ namespace interfaces {
         type:"Custom"
     }
 
-    export type ResolveScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T> | CustomScope<T>
+    export type BindingScopeScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T>;
+    export type ResolveScope<T> =  BindingScopeScope<T> | CustomScope<T>;
 
+    export type BindingScope = BindingScopeScope<unknown>["type"];
+    export type ConfigurableBindingScope = ResolveScope<unknown>["type"];
+
+    export interface BindingScopeEnum {
+        Request: RequestResolveScope<any>["type"]
+        Singleton: SingletonScope<any>["type"];
+        Transient: TransientScope<any>["type"];
+        RootRequest: RootRequestScope<any>["type"]
+    }
+
+    export interface ConfigurableBindingScopeEnum extends BindingScopeEnum{
+        Custom: CustomScope<any>["type"];
+    }
 
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
