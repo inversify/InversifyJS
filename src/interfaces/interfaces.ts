@@ -9,8 +9,15 @@ namespace interfaces {
     export type BindingScope = "Singleton" | "Transient" | "Request" | "RootRequest";
     export type ConfigurableBindingScope = BindingScope | "NotConfigured" | "Custom";
 
-    export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
-        "Function" | "Instance" | "Invalid" | "Provider";
+    export type BindingType =
+        (
+            InstanceValueProvider<unknown> |
+            ConstantValueProvider<unknown> |
+            DynamicValueProvider<unknown> |
+            FactoryValueProvider<unknown> |
+            ProviderValueProvider<unknown> |
+            ConstructorValueProvider<unknown>
+        )["type"]
 
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
 
@@ -35,9 +42,7 @@ namespace interfaces {
         Constructor: interfaces.BindingType;
         DynamicValue: interfaces.BindingType;
         Factory: interfaces.BindingType;
-        Function: interfaces.BindingType;
         Instance: interfaces.BindingType;
-        Invalid: interfaces.BindingType;
         Provider: interfaces.BindingType;
     }
 
@@ -74,28 +79,44 @@ namespace interfaces {
         factoryType:FactoryType
     }
 
-    export interface ConstantValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{}
+    export interface ConstantValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{
+        type:"ConstantValue"
+    }
 
-    export interface InstanceValueProvider<TActivated> extends ValueProvider<TActivated,interfaces.Newable<TActivated>>{}
+    export interface InstanceValueProvider<TActivated> extends ValueProvider<TActivated,interfaces.Newable<TActivated>>{
+        type:"Instance"
+    }
 
     export interface DynamicValueProvider<TActivated> extends
         FactoryTypeValueProvider<TActivated,interfaces.DynamicValue<TActivated>>
         {
             factoryType: "toDynamicValue"
+            type: "DynamicValue"
         }
 
-    export interface ConstructorValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{}
+    export interface ConstructorValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{
+        type:"Constructor"
+    }
 
     export interface FactoryValueProvider<TActivated> extends
         FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
         factoryType:"toFactory";
+        type: "Factory"
     }
 
     export interface ProviderValueProvider<TActivated> extends
         FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
         factoryType:"toProvider";
+        type: "Provider"
     }
 
+    export type ValueProviderType<TActivated> =
+        ConstantValueProvider<TActivated> |
+        InstanceValueProvider<TActivated> |
+        DynamicValueProvider<TActivated> |
+        ConstructorValueProvider<TActivated> |
+        FactoryValueProvider<TActivated> |
+        ProviderValueProvider<TActivated>
     export interface Scoped<T>{
         get(binding:Binding<T>,request:Request):Promise<T>|T|undefined
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
@@ -118,7 +139,7 @@ namespace interfaces {
         scopeManager: ScopeManager<TActivated>
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
-        valueProvider: ValueProvider<TActivated,unknown> | null | undefined;
+        valueProvider: ValueProviderType<TActivated> | null | undefined;
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>;
     }
 

@@ -1,7 +1,6 @@
 import { BindingCount } from "../bindings/binding_count";
-import { InstanceValueProvider } from "../bindings/instance-value-provider";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { TargetTypeEnum } from "../constants/literal_types";
+import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { isStackOverflowExeption } from "../utils/exceptions";
@@ -174,7 +173,12 @@ function _createSubRequests(
         }
         const valueProvider = binding.valueProvider;
         const subRequestsRequiredAsNotInstantiated = !binding.scopeManager.get(binding,subChildRequest);
-        if(subRequestsRequiredAsNotInstantiated && valueProvider instanceof InstanceValueProvider && valueProvider.valueFrom != null){
+        if(
+            subRequestsRequiredAsNotInstantiated &&
+            valueProvider &&
+            valueProvider.type === BindingTypeEnum.Instance &&
+            valueProvider.valueFrom != null
+        ){
             const implementationType = valueProvider.valueFrom;
             const dependencies = getDependencies(metadataReader, implementationType);
 

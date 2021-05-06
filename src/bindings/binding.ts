@@ -16,7 +16,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     // configures Scope and calls through
     public scopeManager: interfaces.ScopeManager<TActivated> = new ScopeManager<TActivated>();
 
-    public valueProvider:interfaces.ValueProvider<TActivated,unknown> | null | undefined;
+    public valueProvider:interfaces.ValueProviderType<TActivated> | null | undefined;
 
     // A constraint used to limit the contexts in which this binding is applicable
     public constraint: (request: interfaces.Request) => boolean;
@@ -66,7 +66,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
     public clone(): interfaces.Binding<TActivated> {
         const clone = new Binding(this.serviceIdentifier);
-        clone.valueProvider = this.valueProvider?.clone();
+        clone.valueProvider = this.valueProvider?.clone() as interfaces.ValueProviderType<TActivated>;
         clone.scopeManager = this.scopeManager.clone();
         clone.constraint = this.constraint;
         clone.onActivation = this.onActivation;

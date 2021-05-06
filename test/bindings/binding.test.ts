@@ -32,7 +32,8 @@ describe("Binding", () => {
     }
     const ctx = {} as any;
     const kidRequests:interfaces.Request[] = [];
-    const valueProvider:interfaces.ValueProvider<Stubs.FooInterface,Stubs.FooInterface> = {
+    const valueProvider:interfaces.ConstantValueProvider<Stubs.FooInterface> = {
+      type:"ConstantValue",
       valueFrom:null as any,
       provideValue(context, childRequests){
         if(context !== ctx || childRequests !== kidRequests){

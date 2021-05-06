@@ -18,9 +18,7 @@ const BindingTypeEnum: interfaces.BindingTypeEnum = {
     Constructor: "Constructor",
     DynamicValue: "DynamicValue",
     Factory: "Factory",
-    Function: "Function",
     Instance: "Instance",
-    Invalid: "Invalid",
     Provider: "Provider"
 };
 

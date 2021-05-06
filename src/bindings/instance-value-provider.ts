@@ -2,6 +2,7 @@ import { interfaces } from "../interfaces/interfaces";
 import { resolveInstance } from "../resolution/instantiation";
 
 export class InstanceValueProvider<TActivated> implements interfaces.InstanceValueProvider<TActivated>{
+  type: "Instance" = "Instance";
   valueFrom: interfaces.Newable<TActivated>;
   provideValue(context:interfaces.Context, childRequests:interfaces.Request[]): TActivated {
     const binding = context.currentRequest.bindings[0];

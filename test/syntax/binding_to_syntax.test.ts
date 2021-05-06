@@ -33,6 +33,7 @@ describe("BindingToSyntax", () => {
         const irrelevant = Ninja as any;
 
         const constantValueProvider:interfaces.ConstantValueProvider<unknown> = {
+            type:"ConstantValue",
             valueFrom:null as any,
             provideValue(){
                 return null as any;
@@ -43,6 +44,7 @@ describe("BindingToSyntax", () => {
         }
 
         const constructorValueProvider:interfaces.ConstructorValueProvider<unknown> = {
+            type:"Constructor",
             valueFrom:null as any,
             provideValue(){
                 return null as any;
@@ -53,6 +55,7 @@ describe("BindingToSyntax", () => {
         }
 
         const dynamicValueProvider:interfaces.DynamicValueProvider<unknown> = {
+            type:"DynamicValue",
             factoryType:"toDynamicValue",
             valueFrom:null as any,
             provideValue(){
@@ -64,6 +67,7 @@ describe("BindingToSyntax", () => {
         }
 
         const factoryValueProvider:interfaces.FactoryValueProvider<unknown> = {
+            type:"Factory",
             factoryType:"toFactory",
             valueFrom:null as any,
             provideValue(){
@@ -75,6 +79,7 @@ describe("BindingToSyntax", () => {
         }
 
         const providerValueProvider:interfaces.ProviderValueProvider<unknown> = {
+            type:"Provider",
             factoryType:"toProvider",
             valueFrom:null as any,
             provideValue(){
@@ -86,6 +91,7 @@ describe("BindingToSyntax", () => {
         }
 
         const instanceValueProvider:interfaces.InstanceValueProvider<unknown> = {
+            type:"Instance",
             valueFrom:null as any,
             provideValue(){
                 return null as any;

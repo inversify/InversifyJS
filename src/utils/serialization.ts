@@ -1,6 +1,5 @@
-import { ConstructorValueProvider } from "../bindings/constructor-value-provider";
-import { InstanceValueProvider } from "../bindings/instance-value-provider";
 import * as ERROR_MSGS from "../constants/error_msgs";
+import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
@@ -37,10 +36,13 @@ function listRegisteredBindingsForServiceIdentifier(
             let name = "Object";
 
             // Use function name if available
-            if (binding.valueProvider instanceof InstanceValueProvider || binding.valueProvider instanceof ConstructorValueProvider) {
-                if(binding.valueProvider.valueFrom){
-                    name = getFunctionName(binding.valueProvider.valueFrom);
-                }
+            const valueProvider = binding.valueProvider;
+            if(
+                valueProvider &&
+                valueProvider.valueFrom &&
+                (valueProvider.type === BindingTypeEnum.Instance || valueProvider.type === BindingTypeEnum.Constructor)
+            ){
+                name = getFunctionName(valueProvider.valueFrom);
             }
 
             registeredBindingsList = `${registeredBindingsList}\n ${name}`;
