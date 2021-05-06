@@ -7,6 +7,8 @@ import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
 import * as sinon from 'sinon';
 import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
 import { ValueProviderFactory } from "../../src/bindings/value-provider-factory";
+import { ValueProviderFactory as ValueProviderFactoryInterface } from "../../src/bindings/value-provider-factory"
+
 
 describe("BindingToSyntax", () => {
 
@@ -93,7 +95,7 @@ describe("BindingToSyntax", () => {
             }
         }
 
-        const mockValueProviderFactory:interfaces.ValueProviderFactory<unknown> = {
+        const mockValueProviderFactory:ValueProviderFactoryInterface<unknown> = {
             toConstantValue(){
                 return constantValueProvider;
             },

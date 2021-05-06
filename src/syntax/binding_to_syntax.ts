@@ -3,13 +3,14 @@ import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingScopeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
+import { ValueProviderFactory as ValueProviderFactoryInterface } from "../bindings/value-provider-factory-interface"
 
 type ExtractValueFrom<P> = P extends interfaces.ValueProvider<any,infer T> ? T : never;
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     private _binding: interfaces.Binding<T>;
-    valueProviderFactory: interfaces.ValueProviderFactory<T> = new ValueProviderFactory();
+    valueProviderFactory: ValueProviderFactoryInterface<T> = new ValueProviderFactory();
 
     public constructor(binding: interfaces.Binding<T>) {
         this._binding = binding;
@@ -66,9 +67,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
             (context) => context.container.get<T>(service)
         );
     }
-    private initialize<TKey extends keyof interfaces.ValueProviderFactory<T>>(
+    private initialize<TKey extends keyof ValueProviderFactoryInterface<T>>(
         valueProviderType:TKey,
-        valueFrom:ExtractValueFrom<ReturnType<interfaces.ValueProviderFactory<T>[TKey]>>,
+        valueFrom:ExtractValueFrom<ReturnType<ValueProviderFactoryInterface<T>[TKey]>>,
         singleton:boolean
     ): interfaces.BindingInWhenOnSyntax<T>{
         const valueProvider = this.valueProviderFactory[valueProviderType]();

@@ -96,25 +96,12 @@ namespace interfaces {
         factoryType:"toProvider";
     }
 
-    export interface ValueProviderFactory<T>{
-        toInstance():InstanceValueProvider<T>
-        toConstantValue():ConstantValueProvider<T>
-        toDynamicValue():DynamicValueProvider<T>
-        toConstructor():ConstructorValueProvider<T>
-        toFactory(): FactoryValueProvider<T>
-        toProvider(): ProviderValueProvider<T>
-    }
-
     export interface Scoped<T>{
         get(binding:Binding<T>,request:Request):Promise<T>|T|undefined
         set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
     }
 
     export interface Scope<T> extends Clonable<Scope<T>>, Scoped<T>{ }
-
-    export interface ResolveScopeFactory<T>{
-        get(scope:interfaces.BindingScope):interfaces.Scope<T>
-    }
 
     export interface ScopeManager<TActivated> extends Clonable<ScopeManager<TActivated>>,Scoped<TActivated>{
         scope: ConfigurableBindingScope | "Custom";

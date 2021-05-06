@@ -5,6 +5,8 @@ import { ScopeManager } from "../../src/scope/scope-manager"
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as sinon from "sinon";
 import { ResolveScopeFactory } from "../../src/scope/resolve-scope-factory";
+import { ResolveScopeFactory as ResolveScopeFactoryInterface} from "../../src/scope/resolve-scope-factory"
+
 
 describe("ScopeManager", () => {
   it("Should initially have scope NotConfigured", () => {
@@ -69,7 +71,7 @@ describe("ScopeManager", () => {
     const scopeManager = new ScopeManager();
     const scope:any = {};
     let factoryScope:interfaces.BindingScope | undefined;
-    const scopeFactory:interfaces.ResolveScopeFactory<unknown> = {
+    const scopeFactory:ResolveScopeFactoryInterface<unknown> = {
       get(bindingScope){
         factoryScope = bindingScope;
         return scope;

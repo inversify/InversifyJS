@@ -2,12 +2,13 @@ import { interfaces } from "../interfaces/interfaces";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { ConfigurableBindingScopeEnum } from "../constants/literal_types";
 import { ResolveScopeFactory } from "./resolve-scope-factory";
+import { ResolveScopeFactory as ResolveScopeFactoryInterface} from "./resolve-scope-factory-interface"
 
 export class ScopeManager<T> implements interfaces.ScopeManager<T>{
   scope:interfaces.ConfigurableBindingScope  = ConfigurableBindingScopeEnum.NotConfigured
   resolveScope: interfaces.Scope<T> | undefined;
 
-  scopeFactory:interfaces.ResolveScopeFactory<T> = new ResolveScopeFactory<T>();
+  scopeFactory:ResolveScopeFactoryInterface<T> = new ResolveScopeFactory<T>();
   get(binding: interfaces.Binding<T>, request: interfaces.Request): T | Promise<T> | undefined {
     if(this.resolveScope){
       return this.resolveScope.get(binding, request);

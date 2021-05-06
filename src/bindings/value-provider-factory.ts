@@ -5,8 +5,9 @@ import { DynamicValueProvider } from "./dynamic-value-provider";
 import { FactoryValueProvider } from "./factory-value-provider";
 import { InstanceValueProvider } from "./instance-value-provider";
 import { ProviderValueProvider } from "./provider-value-provider";
+import { ValueProviderFactory as ValueProviderFactoryInterface } from "./value-provider-factory-interface"
 
-export class ValueProviderFactory<T> implements interfaces.ValueProviderFactory<T>{
+export class ValueProviderFactory<T> implements ValueProviderFactoryInterface<T>{
   toInstance(): interfaces.InstanceValueProvider<T> {
       return new InstanceValueProvider<T>();
   }
