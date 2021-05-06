@@ -15,7 +15,7 @@ import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { MetadataReader } from "../../src/planning/metadata_reader";
-import { /*getBindingDictionary,*/ plan } from "../../src/planning/planner";
+import { plan } from "../../src/planning/planner";
 import { resolveInstance } from "../../src/resolution/instantiation";
 import { resolve } from "../../src/resolution/resolver";
 
@@ -147,14 +147,10 @@ describe("Resolve", () => {
       const container = new Container();
       container.bind<Ninja>(ninjaId); // IMPORTANT! (Invalid binding)
 
-      // context and plan
-      const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
-
       const throwFunction = () => {
-          resolveTyped(context);
+        plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
       };
 
-      expect(context.plan.rootRequest.bindings[0].valueProvider === undefined);
       expect(throwFunction).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${ninjaId}`);
 
   });

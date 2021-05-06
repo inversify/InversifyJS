@@ -117,8 +117,14 @@ namespace interfaces {
         type:"Custom"
     }
 
+    export interface NotConfiguredScope<T> extends Scope<T>,Clonable<NotConfiguredScope<T>>{
+        type:"NotConfigured",
+        get(binding:Binding<T>,request:Request):never
+        set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):never
+    }
+
     export type BindingScopeScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T>;
-    export type ResolveScope<T> =  BindingScopeScope<T> | CustomScope<T>;
+    export type ResolveScope<T> =  BindingScopeScope<T> | CustomScope<T> | NotConfiguredScope<T>;
 
     export type BindingScope = BindingScopeScope<unknown>["type"];
     export type ConfigurableBindingScope = ResolveScope<unknown>["type"];

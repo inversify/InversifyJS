@@ -4,6 +4,7 @@ import * as Stubs from "../utils/stubs";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { interfaces } from "../../src/inversify";
 import * as sinon from "sinon";
+import { NotConfiguredScope } from "../../src/scope/not-configured-scope";
 
 describe("Binding", () => {
 
@@ -13,6 +14,11 @@ describe("Binding", () => {
     const fooBinding =  new Binding<Stubs.FooInterface>(fooIdentifier);
     expect(fooBinding.serviceIdentifier).eql(fooIdentifier);
     expect(fooBinding.id).to.be.a("number");
+  });
+
+  it("Should initialize with NotConfiguredScope", () => {
+    const binding = new Binding("");
+    expect(binding.scope).to.be.instanceOf(NotConfiguredScope);
   });
 
   it("Should throw error when provideValue called amd no valueProvider", () => {
