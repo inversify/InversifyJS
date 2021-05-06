@@ -147,7 +147,6 @@ namespace interfaces {
 
     export type ResolveScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T> | CustomScope<T>
 
-    export type BindingScopeScope<T> = Exclude<interfaces.ResolveScope<T>,interfaces.CustomScope<T>>;
 
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
