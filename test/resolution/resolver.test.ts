@@ -2551,4 +2551,29 @@ describe("Resolve", () => {
       expect(() => container.get<string>("async")).to.throw(`You are attempting to construct 'async' in a synchronous way
  but it has asynchronous dependencies.`);
   });
+
+  it("Should cache a a resolved value on singleton when possible", async () => {
+    const container = new Container();
+
+    const asyncServiceIdentifier = "async";
+
+    const asyncServiceDynamicResolvedValue = "foobar";
+    const asyncServiceDynamicValue = Promise.resolve(asyncServiceDynamicResolvedValue);
+    const asyncServiceDynamicValueCallback = sinon.spy(() => asyncServiceDynamicValue);
+
+    container
+        .bind<string>(asyncServiceIdentifier)
+        .toDynamicValue(asyncServiceDynamicValueCallback)
+        .inSingletonScope();
+
+    const serviceFromGetAsync = await container.getAsync(asyncServiceIdentifier);
+
+    await asyncServiceDynamicValue;
+
+    const serviceFromGet = container.get(asyncServiceIdentifier);
+
+    expect(asyncServiceDynamicValueCallback.callCount).to.eq(1);
+    expect(serviceFromGetAsync).eql(asyncServiceDynamicResolvedValue);
+    expect(serviceFromGet).eql(asyncServiceDynamicResolvedValue);
+  });
 });
