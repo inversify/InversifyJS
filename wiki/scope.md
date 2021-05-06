@@ -31,6 +31,10 @@ In terms of how scope behaves we can group these types of bindings in two main g
 - Bindings that will inject an `object`
 - Bindings that will inject a `function`
 
+Last but not least, those bindings can inject a value or a promise to a value. There are some caveats regarding the injection of a promise to a value:
+
+- Bindings that will inject a `Promise`
+
 ### Bindings that will inject an `object`
 
 In this group are included the following types of binding:
@@ -79,6 +83,10 @@ container.bind<Katana>("Katana").to(Katana).inTransientScope();
 // or
 container.bind<Katana>("Katana").to(Katana).inSingletonScope();
 ```
+
+### Bindings that will inject a `Promise`
+
+- When injecting a promise to a value, the container firstly caches the promise itself the first time a user tries to get the service. Once the promise is fulfilled, the container caches the resolved value instead in order to allow users to get the service syncronously.
 
 ## About `inRequestScope`
 
