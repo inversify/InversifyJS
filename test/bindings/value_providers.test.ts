@@ -13,6 +13,8 @@ import { getBindingDictionary } from "../../src/planning/planner";
 import { Metadata } from "../../src/planning/metadata";
 import { Target } from "../../src/planning/target";
 import { InstanceValueProvider } from "../../src/bindings/instance-value-provider";
+import { NotConfiguredValueProvider } from "../../src/bindings/not-configured-value-provider";
+import * as ERROR_MSGS from "../../src/constants/error_msgs";
 
 describe("value providers", () => {
   describe("ConstantValueProvider", () => {
@@ -167,5 +169,18 @@ describe("value providers", () => {
       const clone = instanceValueProvider.clone();
       expect(clone.valueFrom).to.equal(ChuckNorris);
     })
-  })
+  });
+
+  describe("NotConfiguredValueProvider", () => {
+    it("Should throw when provideValue is invoke", () => {
+      const notConfiguredValueProvider = new NotConfiguredValueProvider("Sid");
+      expect(() => notConfiguredValueProvider.provideValue()).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} Sid`);
+    });
+
+    it("Should return itself when clone", () => {
+      const notConfiguredValueProvider = new NotConfiguredValueProvider("sid");
+      expect(notConfiguredValueProvider.clone()).to.equal(notConfiguredValueProvider);
+    });
+
+  });
 })

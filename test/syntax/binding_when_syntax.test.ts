@@ -592,10 +592,4 @@ describe("BindingWhenSyntax", () => {
 
     });
 
-    it("should not match type constraint when no valueProvider", () => {
-        const binding = new Binding("sid");
-        const request = new Request("sid",null as any, null, [binding],null as any)
-        expect(typeConstraint(Boolean)(request)).to.equal(false);
-    })
-
 });

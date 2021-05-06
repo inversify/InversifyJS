@@ -1,10 +1,9 @@
 import { expect } from "chai";
 import { Binding } from "../../src/bindings/binding";
 import * as Stubs from "../utils/stubs";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { interfaces } from "../../src/inversify";
 import * as sinon from "sinon";
 import { NotConfiguredScope } from "../../src/scope/not-configured-scope";
+import { NotConfiguredValueProvider } from "../../src/bindings/not-configured-value-provider";
 
 describe("Binding", () => {
 
@@ -17,43 +16,21 @@ describe("Binding", () => {
   });
 
   it("Should initialize with NotConfiguredScope", () => {
-    const binding = new Binding("");
-    expect(binding.scope).to.be.instanceOf(NotConfiguredScope);
+    const serviceIdentifier:any = {};
+    const binding = new Binding(serviceIdentifier);
+    const scope = binding.scope as NotConfiguredScope;
+    expect(scope).to.be.instanceOf(NotConfiguredScope);
+    expect(scope.serviceIdentifier).to.equal(serviceIdentifier);
   });
 
-  it("Should throw error when provideValue called amd no valueProvider", () => {
-    const fooIdentifier = "FooInterface";
-    const fooBinding =  new Binding<Stubs.FooInterface>(fooIdentifier);
-    expect(()=>fooBinding.provideValue(null as any, [])).to.throw(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${fooIdentifier}`)
-  })
-
-  it("Should get the value from the ValueProvider", () => {
-    const fooIdentifier = "FooInterface";
-    const fooBinding =  new Binding<Stubs.FooInterface>(fooIdentifier);
-    const providedFoo: Stubs.FooInterface = {
-      name:"provided foo",
-      greet(){
-        return "from value provider";
-      }
-    }
-    const ctx = {} as any;
-    const kidRequests:interfaces.Request[] = [];
-    const valueProvider:interfaces.ConstantValueProvider<Stubs.FooInterface> = {
-      type:"ConstantValue",
-      valueFrom:null as any,
-      provideValue(context, childRequests){
-        if(context !== ctx || childRequests !== kidRequests){
-          throw new Error("did not pass through arguments");
-        }
-        return providedFoo;
-      },
-      clone(){
-        return null as any;
-      }
-    }
-    fooBinding.valueProvider = valueProvider;
-    expect(fooBinding.provideValue(ctx, kidRequests) === providedFoo).to.equal(true);
+  it("Should initialize with NotConfiguredValueProvider", () => {
+    const serviceIdentifier:any = {};
+    const binding = new Binding(serviceIdentifier);
+    const valueProvider = binding.valueProvider as NotConfiguredValueProvider;
+    expect(valueProvider).to.be.instanceOf(NotConfiguredValueProvider);
+    expect(valueProvider.serviceIdentifier).to.equal(serviceIdentifier);
   });
+
 
   describe("Binding from clone", () => {
     it("Should be a new instance of Binding", () => {
@@ -91,19 +68,15 @@ describe("Binding", () => {
       expect(clone.scope).to.equal(clonedScope);
     });
 
-    it("Should clone the value provider if set", () => {
+    it("Should clone the value provider", () => {
       const binding = new Binding("");
-      let clone = binding.clone();
-      // tslint:disable-next-line: no-unused-expression
-      expect(clone.valueProvider).to.be.undefined;
-
       const clonedValueProvider:any = {};
       binding.valueProvider = {
         clone(){
           return clonedValueProvider;
         }
       } as any;
-      clone = binding.clone();
+      const clone = binding.clone();
       expect(clone.valueProvider).to.equal(clonedValueProvider);
     })
   });

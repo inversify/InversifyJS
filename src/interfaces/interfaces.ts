@@ -30,7 +30,7 @@ namespace interfaces {
 
     export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
 
-    export interface ValueProvider<TActivated,TValueFrom> extends Clonable<ValueProvider<TActivated,TValueFrom>>{
+    export interface ValueProvider<TActivated,TValueFrom>{
         valueFrom:TValueFrom
         provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
     }
@@ -41,35 +41,43 @@ namespace interfaces {
         factoryType:FactoryType
     }
 
-    export interface ConstantValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{
-        type:"ConstantValue"
+    export interface ConstantValueProvider<TActivated>
+        extends ValueProvider<TActivated,TActivated>, Clonable<ConstantValueProvider<TActivated>>
+    {
+        type:"ConstantValue";
     }
 
-    export interface InstanceValueProvider<TActivated> extends ValueProvider<TActivated,interfaces.Newable<TActivated>>{
-        type:"Instance"
+    export interface InstanceValueProvider<TActivated>
+        extends ValueProvider<TActivated,interfaces.Newable<TActivated>>, Clonable<InstanceValueProvider<TActivated>>{
+        type:"Instance";
     }
 
     export interface DynamicValueProvider<TActivated> extends
-        FactoryTypeValueProvider<TActivated,interfaces.DynamicValue<TActivated>>
+        FactoryTypeValueProvider<TActivated,interfaces.DynamicValue<TActivated>>, Clonable<DynamicValueProvider<TActivated>>
         {
-            factoryType: "toDynamicValue"
-            type: "DynamicValue"
+            factoryType: "toDynamicValue";
+            type: "DynamicValue";
         }
 
-    export interface ConstructorValueProvider<TActivated> extends ValueProvider<TActivated,TActivated>{
-        type:"Constructor"
+    export interface ConstructorValueProvider<TActivated>
+        extends ValueProvider<TActivated,TActivated>, Clonable<ConstructorValueProvider<TActivated>>{
+        type: "Constructor";
     }
 
     export interface FactoryValueProvider<TActivated> extends
-        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
+        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated>, Clonable<FactoryValueProvider<TActivated>> {
         factoryType:"toFactory";
         type: "Factory"
     }
 
     export interface ProviderValueProvider<TActivated> extends
-        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated> {
+        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated>, Clonable<ProviderValueProvider<TActivated>> {
         factoryType:"toProvider";
-        type: "Provider"
+        type: "Provider";
+    }
+
+    export interface NotConfiguredValueProvider extends ValueProvider<never,never>, Clonable<NotConfiguredValueProvider>{
+        type: "NotConfigured";
     }
 
     export type ValueProviderType<TActivated> =
@@ -78,7 +86,8 @@ namespace interfaces {
         DynamicValueProvider<TActivated> |
         ConstructorValueProvider<TActivated> |
         FactoryValueProvider<TActivated> |
-        ProviderValueProvider<TActivated>
+        ProviderValueProvider<TActivated> |
+        NotConfiguredValueProvider
 
     export type BindingType = ValueProviderType<unknown>["type"];
 
@@ -117,14 +126,14 @@ namespace interfaces {
         type:"Custom"
     }
 
-    export interface NotConfiguredScope<T> extends Scope<T>,Clonable<NotConfiguredScope<T>>{
+    export interface NotConfiguredScope extends Scope<never>,Clonable<NotConfiguredScope>{
         type:"NotConfigured",
-        get(binding:Binding<T>,request:Request):never
-        set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):never
+        get():never
+        set():never
     }
 
     export type BindingScopeScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T>;
-    export type ResolveScope<T> =  BindingScopeScope<T> | CustomScope<T> | NotConfiguredScope<T>;
+    export type ResolveScope<T> =  BindingScopeScope<T> | CustomScope<T> | NotConfiguredScope;
 
     export type BindingScope = BindingScopeScope<unknown>["type"];
     export type ConfigurableBindingScope = ResolveScope<unknown>["type"];
@@ -148,8 +157,7 @@ namespace interfaces {
         scope: ResolveScope<TActivated>;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
-        valueProvider: ValueProviderType<TActivated> | undefined;
-        provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>;
+        valueProvider: ValueProviderType<TActivated>;
     }
 
     export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);

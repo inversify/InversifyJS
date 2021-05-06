@@ -1,6 +1,8 @@
 import { interfaces } from "../interfaces/interfaces";
 import { getBindingDictionary } from "../planning/planner";
 import { isPromise } from "../utils/async";
+import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
+import * as ERROR_MSGS from "../constants/error_msgs";
 
 const resolveRequest = <T>(request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
 
@@ -34,12 +36,35 @@ const resolveRequest = <T>(request: interfaces.Request): undefined | T | Promise
     }
 };
 
+const isFactoryTypeValueProvider = <TActivated>(valueProvider:interfaces.ValueProvider<TActivated,unknown>):
+    valueProvider is interfaces.FactoryTypeValueProvider<TActivated,unknown> => {
+        return (valueProvider as interfaces.FactoryTypeValueProvider<TActivated,unknown>).factoryType !== undefined;
+}
+
+const invokeFactory = <TActivated>(
+    context:interfaces.Context,
+    childRequests:interfaces.Request[],
+    factory:interfaces.FactoryTypeValueProvider<TActivated,unknown>
+): TActivated|Promise<TActivated> => {
+    return tryAndThrowErrorIfStackOverflow(
+        () => factory.provideValue.bind(factory)(context,childRequests),
+        () => new Error(
+                ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factory.factoryType, context.currentRequest.serviceIdentifier.toString())
+            )
+    );
+}
+
 const _getResolvedFromBinding = <T>(
     request: interfaces.Request,
     binding:interfaces.Binding<T>,
 ): T | Promise<T> => {
     const childRequests = request.childRequests;
-    return binding.provideValue(request.parentContext, childRequests)
+    const context = request.parentContext;
+    const valueProvider = binding.valueProvider;
+    if(isFactoryTypeValueProvider(valueProvider)){
+        return invokeFactory(context, childRequests,valueProvider);
+    }
+    return valueProvider.provideValue(context, childRequests);
 }
 
 const _resolveInScope = <T>(
