@@ -26,35 +26,6 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
     // On deactivation handler (invoked just before an instance is unbinded and removed from container)
     public onDeactivation: interfaces.BindingDeactivation<TActivated> | null;
-    private isFactoryTypeValueProvider(valueProvider:interfaces.ValueProvider<TActivated,unknown>):
-        valueProvider is interfaces.FactoryTypeValueProvider<TActivated,unknown> {
-        return (valueProvider as interfaces.FactoryTypeValueProvider<TActivated,unknown>).factoryType !== undefined;
-    }
-    private invokeFactory(
-        context:interfaces.Context,
-        childRequests:interfaces.Request[],
-        factory:interfaces.FactoryTypeValueProvider<TActivated,unknown>
-      ): TActivated|Promise<TActivated>{
-        return tryAndThrowErrorIfStackOverflow(
-          () => factory.provideValue.bind(factory)(context,childRequests),
-          () => new Error(
-                  ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factory.factoryType, context.currentRequest.serviceIdentifier.toString())
-                )
-        );
-      }
-
-    public provideValue(context:interfaces.Context, childRequests:interfaces.Request[]):TActivated|Promise<TActivated>{
-        if(!this.valueProvider){
-            // The user created a binding but didn't finish it
-            // e.g. container.bind<T>("Something"); missing BindingToSyntax
-            const serviceIdentifierAsString = getServiceIdentifierAsString(this.serviceIdentifier);
-            throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
-        }
-        if(this.isFactoryTypeValueProvider(this.valueProvider)){
-            return this.invokeFactory(context, childRequests,this.valueProvider);
-        }
-        return this.valueProvider.provideValue(context, childRequests);
-    }
 
     public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>) {
         this.id = id();
@@ -74,6 +45,37 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
         clone.onDeactivation = this.onDeactivation;
 
         return clone;
+    }
+
+    public provideValue(context:interfaces.Context, childRequests:interfaces.Request[]):TActivated|Promise<TActivated>{
+        if(!this.valueProvider){
+            // The user created a binding but didn't finish it
+            // e.g. container.bind<T>("Something"); missing BindingToSyntax
+            const serviceIdentifierAsString = getServiceIdentifierAsString(this.serviceIdentifier);
+            throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
+        }
+        if(this.isFactoryTypeValueProvider(this.valueProvider)){
+            return this.invokeFactory(context, childRequests,this.valueProvider);
+        }
+        return this.valueProvider.provideValue(context, childRequests);
+    }
+
+    private isFactoryTypeValueProvider(valueProvider:interfaces.ValueProvider<TActivated,unknown>):
+        valueProvider is interfaces.FactoryTypeValueProvider<TActivated,unknown> {
+            return (valueProvider as interfaces.FactoryTypeValueProvider<TActivated,unknown>).factoryType !== undefined;
+    }
+
+    private invokeFactory(
+        context:interfaces.Context,
+        childRequests:interfaces.Request[],
+        factory:interfaces.FactoryTypeValueProvider<TActivated,unknown>
+    ): TActivated|Promise<TActivated> {
+        return tryAndThrowErrorIfStackOverflow(
+            () => factory.provideValue.bind(factory)(context,childRequests),
+            () => new Error(
+                    ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factory.factoryType, context.currentRequest.serviceIdentifier.toString())
+                )
+        );
     }
 
 }
