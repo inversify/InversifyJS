@@ -9,9 +9,6 @@ import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_synta
 import { ValueProviderFactory } from "../../src/bindings/value-provider-factory";
 import { ValueProviderFactory as ValueProviderFactoryInterface } from "../../src/bindings/value-provider-factory"
 import { SingletonScope } from "../../src/scope/singleton-scope";
-//import { TransientScope } from "../../src/scope/transient-scope";
-//import { RequestResolveScope } from "../../src/scope/request-resolve-scope";
-//import { RootRequestScope } from "../../src/scope/root-request-scope";
 import { BindingScopeScopeFactory } from "../../src/scope/binding-scope-scope-factory-interface";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 
