@@ -580,12 +580,28 @@ describe("Container", () => {
 
     });
 
+    const scopes: interfaces.BindingScope[] = [
+        "Singleton",
+        "Request",
+        "RootRequest",
+        "Transient"
+    ];
+    scopes.forEach(scope => {
+        it("Should pass options defaultScope to syntax when bind", () => {
+            const container = new Container();
+            container.options.defaultScope = scope;
+            const bindingToSyntax = container.bind("");
+            expect((bindingToSyntax as any)._scope).to.equal(container.options.defaultScope);
+        });
+    });
+
     it("Should default binding scope to Transient if no default scope on options", () => {
         const container = new Container();
         container.options.defaultScope = undefined;
-        const expectedScope:interfaces.BindingScope = "Transient";
-        expect((container.bind("SID") as any)._binding.scope).to.equal(expectedScope);
+        const bindingToSyntax = container.bind("");
+        expect((bindingToSyntax as any)._scope).to.equal(BindingScopeEnum.Transient);
     });
+
     it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
 
         @injectable()
@@ -652,7 +668,7 @@ describe("Container", () => {
 
     });
 
-    it("Should be throw an exception if incorrect options is provided", () => {
+    it("Should throw an exception if incorrect options is provided", () => {
 
         const invalidOptions1: any = () => 0;
         const wrong1 = () => new Container(invalidOptions1);

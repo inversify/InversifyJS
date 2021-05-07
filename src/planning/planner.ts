@@ -166,29 +166,30 @@ function _createSubRequests(
 
     activeBindings.forEach((binding) => {
 
-        let subChildRequest: interfaces.Request | null = null;
+        let subChildRequest = childRequest;
 
         if (target.isArray()) {
             subChildRequest = childRequest.addChildRequest(binding.serviceIdentifier, binding, target);
-        } else {
-            if (binding.cache) {
-                return;
-            }
-            subChildRequest = childRequest;
         }
-
-        if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
-
-            const dependencies = getDependencies(metadataReader, binding.implementationType);
+        const valueProvider = binding.valueProvider;
+        const subRequestsRequiredAsNotInstantiated = !binding.scope.get(binding,subChildRequest);
+        if(
+            subRequestsRequiredAsNotInstantiated &&
+            valueProvider &&
+            valueProvider.type === BindingTypeEnum.Instance &&
+            valueProvider.valueFrom != null
+        ){
+            const implementationType = valueProvider.valueFrom;
+            const dependencies = getDependencies(metadataReader, implementationType);
 
             if (!context.container.options.skipBaseClassChecks) {
                 // Throw if a derived class does not implement its constructor explicitly
                 // We do this to prevent errors when a base class (parent) has dependencies
                 // and one of the derived classes (children) has no dependencies
-                const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, binding.implementationType);
+                const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, implementationType);
 
                 if (dependencies.length < baseClassDependencyCount) {
-                    const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(binding.implementationType));
+                    const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(implementationType));
                     throw new Error(error);
                 }
             }

@@ -1,4 +1,5 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
+import { BindingTypeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
@@ -35,8 +36,13 @@ function listRegisteredBindingsForServiceIdentifier(
             let name = "Object";
 
             // Use function name if available
-            if (binding.implementationType !== null) {
-                name = getFunctionName(binding.implementationType);
+            const valueProvider = binding.valueProvider;
+            if(
+                valueProvider &&
+                valueProvider.valueFrom &&
+                (valueProvider.type === BindingTypeEnum.Instance || valueProvider.type === BindingTypeEnum.Constructor)
+            ){
+                name = getFunctionName(valueProvider.valueFrom);
             }
 
             registeredBindingsList = `${registeredBindingsList}\n ${name}`;

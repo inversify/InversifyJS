@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Lookup } from "../../src/container/lookup";
 import { interfaces } from "../../src/interfaces/interfaces";
 
@@ -113,28 +112,16 @@ describe("Lookup", () => {
 
     const getLookup = () => {
 
-      interface Warrior {}
-
-      class Ninja implements Warrior {}
-      const ninjaBinding = new Binding(warriorId, BindingScopeEnum.Transient);
-      ninjaBinding.implementationType = Ninja;
+      const ninjaBinding = new Binding(warriorId);
       ninjaBinding.moduleId = moduleId1;
 
-      class Samurai implements Warrior {}
-      const samuraiBinding = new Binding(warriorId, BindingScopeEnum.Transient);
-      samuraiBinding.implementationType = Samurai;
+      const samuraiBinding = new Binding(warriorId);
       samuraiBinding.moduleId = moduleId2;
 
-      interface Weapon {}
-
-      class Shuriken implements Weapon {}
-      const shurikenBinding = new Binding(weaponId, BindingScopeEnum.Transient);
-      shurikenBinding.implementationType = Shuriken;
+      const shurikenBinding = new Binding(weaponId);
       shurikenBinding.moduleId = moduleId1;
 
-      class Katana implements Weapon {}
-      const katanaBinding = new Binding(weaponId, BindingScopeEnum.Transient);
-      katanaBinding.implementationType = Katana;
+      const katanaBinding = new Binding(weaponId);
       katanaBinding.moduleId = moduleId2;
 
       const lookup = new Lookup<Binding<any>>();

@@ -1,21 +1,28 @@
+import { ValueProviderFactory } from "../bindings/value-provider-factory";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum } from "../constants/literal_types";
 import { interfaces } from "../interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "./binding_in_when_on_syntax";
-import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
+import { ValueProviderFactory as ValueProviderFactoryInterface } from "../bindings/value-provider-factory-interface"
+import { BindingScopeScopeFactory as BindingScopeScopeFactoryInterface } from "../scope/binding-scope-scope-factory-interface";
+import { BindingScopeScopeFactory } from "../scope/binding-scope-scope-factory";
+
+type ExtractValueFrom<P> = P extends interfaces.ValueProvider<any,infer T> ? T : never;
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
     private _binding: interfaces.Binding<T>;
+    private _scope: interfaces.BindingScope;
+    public bindingScopeScopeFactory:BindingScopeScopeFactoryInterface<T> = new BindingScopeScopeFactory<T>();
+    valueProviderFactory: ValueProviderFactoryInterface<T> = new ValueProviderFactory();
 
-    public constructor(binding: interfaces.Binding<T>) {
+    public constructor(binding: interfaces.Binding<T>,scope: interfaces.BindingScope) {
+        this._scope = scope;
         this._binding = binding;
     }
 
     public to(constructor: new (...args: any[]) => T): interfaces.BindingInWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.Instance;
-        this._binding.implementationType = constructor;
-        return new BindingInWhenOnSyntax<T>(this._binding);
+        return this.initialize("toInstance",constructor,false);
     }
 
     public toSelf(): interfaces.BindingInWhenOnSyntax<T> {
@@ -27,60 +34,37 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     }
 
     public toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.ConstantValue;
-        this._binding.cache = value;
-        this._binding.dynamicValue = null;
-        this._binding.implementationType = null;
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        return this.initialize("toConstantValue", value,true);
     }
 
     public toDynamicValue(func: interfaces.DynamicValue<T>): interfaces.BindingInWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.DynamicValue;
-        this._binding.cache = null;
-        this._binding.dynamicValue = func;
-        this._binding.implementationType = null;
-        return new BindingInWhenOnSyntax<T>(this._binding);
+        return this.initialize("toDynamicValue",func, false);
     }
 
     public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.Constructor;
-        this._binding.implementationType = constructor as any;
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        //tbd change generics
+        return this.initialize("toConstructor", constructor as unknown as T, true);
     }
 
     public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.Factory;
-        this._binding.factory = factory;
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        return this.initialize("toFactory",factory as unknown as (context:interfaces.Context)=>T, true);
     }
 
     public toFunction(func: T): interfaces.BindingWhenOnSyntax<T> {
         // toFunction is an alias of toConstantValue
         if (typeof func !== "function") { throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING); }
-        const bindingWhenOnSyntax = this.toConstantValue(func);
-        this._binding.type = BindingTypeEnum.Function;
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return bindingWhenOnSyntax;
+        return this.toConstantValue(func);
     }
 
     public toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.Factory;
-        this._binding.factory = (context) => {
+        return this.toFactory((context) => {
             const autofactory = () => context.container.get<T2>(serviceIdentifier);
             return autofactory;
-        };
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        });
     }
 
     public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
-        this._binding.type = BindingTypeEnum.Provider;
-        this._binding.provider = provider;
-        this._binding.scope = BindingScopeEnum.Singleton;
-        return new BindingWhenOnSyntax<T>(this._binding);
+        return this.initialize("toProvider",provider as unknown as (context:interfaces.Context)=>T, true);
     }
 
     public toService(service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>): void {
@@ -88,7 +72,21 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
             (context) => context.container.get<T>(service)
         );
     }
-
+    private initialize<TKey extends keyof ValueProviderFactoryInterface<T>>(
+        valueProviderType:TKey,
+        valueFrom:ExtractValueFrom<ReturnType<ValueProviderFactoryInterface<T>[TKey]>>,
+        singleton:boolean
+    ): interfaces.BindingInWhenOnSyntax<T>{
+        const valueProvider = this.valueProviderFactory[valueProviderType]();
+        valueProvider.valueFrom = valueFrom;
+        this._binding.valueProvider = valueProvider;
+        let scope = this._scope;
+        if(singleton){
+            scope = BindingScopeEnum.Singleton;
+        }
+        this._binding.scope = this.bindingScopeScopeFactory.get(scope);
+        return new BindingInWhenOnSyntax<T>(this._binding);
+    }
 }
 
 export { BindingToSyntax };

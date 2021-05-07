@@ -2,9 +2,15 @@ import { expect } from "chai";
 import { injectable } from "../../src/annotation/injectable";
 import { Binding } from "../../src/bindings/binding";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
+import * as sinon from 'sinon';
+import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
+import { ValueProviderFactory } from "../../src/bindings/value-provider-factory";
+import { ValueProviderFactory as ValueProviderFactoryInterface } from "../../src/bindings/value-provider-factory"
+import { SingletonScope } from "../../src/scope/singleton-scope";
+import { BindingScopeScopeFactory } from "../../src/scope/binding-scope-scope-factory-interface";
+import { BindingScopeEnum } from "../../src/constants/literal_types";
 
 describe("BindingToSyntax", () => {
 
@@ -13,82 +19,242 @@ describe("BindingToSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
+        const bindingToSyntax = new BindingToSyntax<Ninja>(binding,"Request");
 
         // cast to any to be able to access private props
         const _bindingToSyntax: any = bindingToSyntax;
 
         expect(_bindingToSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
+        expect(_bindingToSyntax._scope).eql("Request");
 
     });
 
-    it("Should be able to configure the type of a binding", () => {
-
-        interface Ninja {}
-
+    it("Should set up the value providers", () => {
         @injectable()
-        class Ninja implements Ninja {}
-        const ninjaIdentifier = "Ninja";
+        class Ninja {}
+        const irrelevant = Ninja as any;
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+        const constantValueProvider:interfaces.ConstantValueProvider<unknown> = {
+            type:"ConstantValue",
+            valueFrom:null as any,
+            provideValue(){
+                return null as any;
+            },
+            clone(){
+                return null as any;
+            }
+        }
 
-        expect(binding.type).eql(BindingTypeEnum.Invalid);
+        const constructorValueProvider:interfaces.ConstructorValueProvider<unknown> = {
+            type:"Constructor",
+            valueFrom:null as any,
+            provideValue(){
+                return null as any;
+            },
+            clone(){
+                return null as any;
+            }
+        }
 
-        bindingToSyntax.to(Ninja);
-        expect(binding.type).eql(BindingTypeEnum.Instance);
-        expect(binding.implementationType).not.to.eql(null);
+        const dynamicValueProvider:interfaces.DynamicValueProvider<unknown> = {
+            type:"DynamicValue",
+            factoryType:"toDynamicValue",
+            valueFrom:null as any,
+            provideValue(){
+                return null as any;
+            },
+            clone(){
+                return null as any;
+            }
+        }
 
-//        (bindingToSyntax as any)._binding = bindingWithClassAsId;
-//        bindingToSyntax.toSelf();
-//        expect(binding.type).eql(BindingTypeEnum.Instance);
-//        expect(binding.implementationType).not.to.eql(null);
+        const factoryValueProvider:interfaces.FactoryValueProvider<unknown> = {
+            type:"Factory",
+            factoryType:"toFactory",
+            valueFrom:null as any,
+            provideValue(){
+                return null as any;
+            },
+            clone(){
+                return null as any;
+            }
+        }
 
-        (bindingToSyntax as any)._binding = binding;
-        bindingToSyntax.toConstantValue(new Ninja());
-        expect(binding.type).eql(BindingTypeEnum.ConstantValue);
-        expect(binding.cache instanceof Ninja).eql(true);
+        const providerValueProvider:interfaces.ProviderValueProvider<unknown> = {
+            type:"Provider",
+            factoryType:"toProvider",
+            valueFrom:null as any,
+            provideValue(){
+                return null as any;
+            },
+            clone(){
+                return null as any;
+            }
+        }
 
-        bindingToSyntax.toDynamicValue((context: interfaces.Context) => new Ninja());
-        expect(binding.type).eql(BindingTypeEnum.DynamicValue);
-        expect(typeof binding.dynamicValue).eql("function");
+        const instanceValueProvider:interfaces.InstanceValueProvider<unknown> = {
+            type:"Instance",
+            valueFrom:null as any,
+            provideValue(){
+                return null as any;
+            },
+            clone(){
+                return null as any;
+            }
+        }
 
-        const dynamicValueFactory: any = binding.dynamicValue;
-        expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
+        const mockValueProviderFactory:ValueProviderFactoryInterface<unknown> = {
+            toConstantValue(){
+                return constantValueProvider;
+            },
+            toConstructor(){
+                return constructorValueProvider;
+            },
+            toDynamicValue(){
+               return dynamicValueProvider;
+            },
+            toFactory(){
+                return factoryValueProvider;
+            },
+            toInstance(){
+                return instanceValueProvider;
+            },
+            toProvider(){
+                return providerValueProvider;
+            }
+        }
 
-        bindingToSyntax.toConstructor<Ninja>(Ninja);
-        expect(binding.type).eql(BindingTypeEnum.Constructor);
-        expect(binding.implementationType).not.to.eql(null);
+        const binding = new Binding(irrelevant);
+        const syntax = new BindingToSyntax(binding,"Request");
+        syntax.valueProviderFactory = mockValueProviderFactory;
 
-        bindingToSyntax.toFactory<Ninja>((context: interfaces.Context) =>
-            () =>
-                new Ninja());
+        const constantValue = new Ninja();
+        syntax.toConstantValue(constantValue);
+        expect(binding.valueProvider === constantValueProvider);
+        expect(constantValueProvider.valueFrom === constantValue).to.equal(true);
 
-        expect(binding.type).eql(BindingTypeEnum.Factory);
-        expect(binding.factory).not.to.eql(null);
+        const dynamicValue:interfaces.DynamicValue<unknown> = () => new Ninja();
+        syntax.toDynamicValue(dynamicValue);
+        expect(binding.valueProvider === dynamicValueProvider);
+        expect(dynamicValueProvider.valueFrom === dynamicValue).to.equal(true);
 
-        const f = () => "test";
-        bindingToSyntax.toFunction(f);
-        expect(binding.type).eql(BindingTypeEnum.Function);
-        expect(binding.cache === f).eql(true);
+        syntax.toConstructor(Ninja);
+        expect(binding.valueProvider === constructorValueProvider);
+        expect(constructorValueProvider.valueFrom === Ninja).to.equal(true);
 
-        bindingToSyntax.toAutoFactory<Ninja>(ninjaIdentifier);
+        const factoryCreator:interfaces.FactoryCreator<any> = (context:interfaces.Context) => () => new Ninja();
+        syntax.toFactory(factoryCreator);
+        expect(binding.valueProvider === factoryValueProvider);
+        expect(factoryValueProvider.valueFrom === factoryCreator).to.equal(true);
 
-        expect(binding.type).eql(BindingTypeEnum.Factory);
-        expect(binding.factory).not.to.eql(null);
+        const providerCreator:interfaces.ProviderCreator<any> = (context:interfaces.Context) => () => Promise.resolve(new Ninja());
+        syntax.toProvider(providerCreator);
+        expect(binding.valueProvider === providerValueProvider);
+        expect(providerValueProvider.valueFrom === providerCreator).to.equal(true);
 
-        bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) =>
-            () =>
-                new Promise<Ninja>((resolve) => {
-                    resolve(new Ninja());
-                }));
+        syntax.to(Ninja);
+        expect(binding.valueProvider === instanceValueProvider);
+        expect(instanceValueProvider.valueFrom === Ninja).to.equal(true);
 
-        expect(binding.type).eql(BindingTypeEnum.Provider);
-        expect(binding.provider).not.to.eql(null);
+        //helpers
+        const mockSyntax = sinon.mock(syntax);
+        syntax.toSelf();
+        mockSyntax.expects("to").calledWithExactly(irrelevant);
+        const fn = () => true;
+        syntax.toFunction(fn);
+        mockSyntax.expects("toConstantValue").calledWithExactly(fn);
+        syntax.toService("service");
+        mockSyntax.expects("toDynamicValue").calledWith(sinon.match.func);
+        syntax.toAutoFactory("sid");
+        mockSyntax.expects("toFactory").calledWith(sinon.match.func);
+    })
 
+    it("Should use instanceof ValueProviderFactory", () => {
+        const bindingToSyntax = new BindingToSyntax(null as any,"Request");
+        expect(bindingToSyntax.valueProviderFactory).to.be.instanceOf(ValueProviderFactory);
+    })
+
+    function expectSetsSingletonScope(toCallback:(bindingTo:interfaces.BindingToSyntax<unknown>) => void): void {
+        const binding = new Binding<unknown>("");
+        const singletonScope = new SingletonScope<unknown>();
+        const bindingScopeScopeFactory:BindingScopeScopeFactory<unknown> = {
+            get(scope){
+                switch(scope){
+                    case BindingScopeEnum.Singleton:
+                        return singletonScope;
+                    default:
+                        throw new Error();
+                }
+            }
+        }
+        const bindingToSyntax = new BindingToSyntax(binding, "Request");
+        bindingToSyntax.bindingScopeScopeFactory = bindingScopeScopeFactory;
+        toCallback(bindingToSyntax);
+        expect(binding.scope).to.equal(singletonScope);
+    }
+    it("Should set singletonscope for toConstantValue ( and toFunction )", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toConstantValue("constant"));
     });
+
+    it("Should set singletonscope for toFactory ( and toAutoFactory )", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toFactory(()=>()=>"value"));
+    });
+
+    it("Should set singletonscope for toProvider", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toProvider(()=>()=>Promise.resolve("value")));
+    });
+
+    it("Should set singletonscope for toConstructor", () => {
+        expectSetsSingletonScope(bindingTo => bindingTo.toConstructor(Boolean));
+    });
+
+    const scopes: interfaces.BindingScope[] = [
+        "Singleton",
+        "Request",
+        "RootRequest",
+        "Transient"
+    ];
+    scopes.forEach(ctorArgScope => {
+        function shouldSetTheScopeFromCtorArgScope(toDynamicValue:boolean){
+            const binding = new Binding<unknown>("");
+            let scopeFromFactory:any
+            const bindingScopeScopeFactory:BindingScopeScopeFactory<unknown> = {
+                get(scope){
+                    expect(scope).to.equal(ctorArgScope);
+                    scopeFromFactory = {scope};
+                    return scopeFromFactory;
+                }
+            }
+            const bindingToSyntax = new BindingToSyntax(binding, ctorArgScope);
+            bindingToSyntax.bindingScopeScopeFactory = bindingScopeScopeFactory;
+            if(toDynamicValue){
+                bindingToSyntax.toDynamicValue(()=>"value");
+            }else{
+                bindingToSyntax.to(Boolean);
+            }
+            expect(binding.scope).to.equal(scopeFromFactory);
+        }
+        it("should set the scope from ctor arg scope for 'to'", () => {
+            shouldSetTheScopeFromCtorArgScope(false);
+        });
+
+        it("should set the scope from ctor arg scope for 'toDynamicValue'", () => {
+            shouldSetTheScopeFromCtorArgScope(true);
+        });
+    });
+
+    it("Should return BindingInWhenOnSyntax<T>(this._binding)", () => {
+        class Sid {}
+        const binding = new Binding(Sid);
+        const bindingToSyntax = new BindingToSyntax(binding,"Request");
+
+        function expectBindingInWhenOnSyntax(bindingInWhenOn:any){
+            expect(bindingInWhenOn).to.be.instanceOf(BindingInWhenOnSyntax);
+            expect(bindingInWhenOn._binding === binding).to.equal(true);
+        }
+        expectBindingInWhenOnSyntax(bindingToSyntax.to(Sid));
+    })
 
     it("Should prevent invalid function bindings", () => {
 
@@ -98,8 +264,8 @@ describe("BindingToSyntax", () => {
         class Ninja implements Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-        const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
+        const bindingToSyntax = new BindingToSyntax<Ninja>(binding,"Request");
 
         const f = function () {
             bindingToSyntax.toFunction(5);

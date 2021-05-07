@@ -1,9 +1,22 @@
 import { interfaces } from "../interfaces/interfaces";
 
+const ContextHierarchyOptionEnum: interfaces.ContextHierarchyOptionEnum = {
+    Disallow: "Disallow",
+    Allow: "Allow",
+    IfBindedInCustomOrRootRequestScope: "IfBindedInCustomOrRootRequestScope"
+}
+
 const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Request: "Request",
     Singleton: "Singleton",
-    Transient: "Transient"
+    Transient: "Transient",
+    RootRequest: "RootRequest",
+};
+
+const ConfigurableBindingScopeEnum: interfaces.ConfigurableBindingScopeEnum = {
+    ...BindingScopeEnum,
+    Custom:"Custom",
+    NotConfigured: "NotConfigured"
 };
 
 const BindingTypeEnum: interfaces.BindingTypeEnum = {
@@ -11,10 +24,9 @@ const BindingTypeEnum: interfaces.BindingTypeEnum = {
     Constructor: "Constructor",
     DynamicValue: "DynamicValue",
     Factory: "Factory",
-    Function: "Function",
     Instance: "Instance",
-    Invalid: "Invalid",
-    Provider: "Provider"
+    Provider: "Provider",
+    NotConfigured: "NotConfigured"
 };
 
 const TargetTypeEnum: interfaces.TargetTypeEnum = {
@@ -23,4 +35,4 @@ const TargetTypeEnum: interfaces.TargetTypeEnum = {
     Variable: "Variable"
 };
 
-export { BindingScopeEnum, BindingTypeEnum, TargetTypeEnum };
+export { BindingScopeEnum, ConfigurableBindingScopeEnum, BindingTypeEnum, TargetTypeEnum, ContextHierarchyOptionEnum };

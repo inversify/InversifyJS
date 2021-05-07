@@ -1,7 +1,9 @@
 import { expect } from "chai";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
+import { Container } from "../../src/inversify";
+import { getBindingDictionary } from "../../src/planning/planner";
 import { Target } from "../../src/planning/target";
-import { getFunctionName, listMetadataForTarget } from "../../src/utils/serialization";
+import { getFunctionName, listMetadataForTarget, listRegisteredBindingsForServiceIdentifier } from "../../src/utils/serialization";
 
 describe("Serialization", () => {
 
@@ -32,4 +34,11 @@ describe("Serialization", () => {
         expect(list).to.eql(` ${serviceIdentifier}`);
     });
 
+    it("Should not throw when listRegisteredBindingsForServiceIdentifier InstanceValueProvider no valueFrom", () => {
+        const container = new Container();
+        container.bind("Instance").to(Boolean);
+        const binding = getBindingDictionary(container).get("Instance")[0];
+        binding.valueProvider!.valueFrom = null;
+        expect(() => listRegisteredBindingsForServiceIdentifier(null as any, "Instance",() => [binding])).not.throw();
+    })
 });

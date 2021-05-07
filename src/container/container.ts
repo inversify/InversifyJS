@@ -1,6 +1,6 @@
 import { Binding } from "../bindings/binding";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum, ConfigurableBindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { MetadataReader } from "../planning/metadata_reader";
@@ -11,6 +11,7 @@ import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
+import { ContextStack } from "./context-stack";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
 
@@ -28,7 +29,8 @@ class Container implements interfaces.Container {
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
     private _appliedMiddleware: interfaces.Middleware[] = [];
-    private _moduleActivationStore: interfaces.ModuleActivationStore
+    private _moduleActivationStore: interfaces.ModuleActivationStore;
+    private _contextStack: ContextStack;
 
     public static merge(
       container1: interfaces.Container,
@@ -71,7 +73,8 @@ class Container implements interfaces.Container {
         } else if (
             options.defaultScope !== BindingScopeEnum.Singleton &&
             options.defaultScope !== BindingScopeEnum.Transient &&
-            options.defaultScope !== BindingScopeEnum.Request
+            options.defaultScope !== BindingScopeEnum.Request &&
+            options.defaultScope !== BindingScopeEnum.RootRequest
         ) {
             throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
         }
@@ -95,7 +98,8 @@ class Container implements interfaces.Container {
         this.options = {
             autoBindInjectable: options.autoBindInjectable,
             defaultScope: options.defaultScope,
-            skipBaseClassChecks: options.skipBaseClassChecks
+            skipBaseClassChecks: options.skipBaseClassChecks,
+            contextHierarchy: options.contextHierarchy
         };
 
         this.id = id();
@@ -106,7 +110,8 @@ class Container implements interfaces.Container {
         this._deactivations = new Lookup<interfaces.BindingDeactivation<any>>();
         this.parent = null;
         this._metadataReader = new MetadataReader();
-        this._moduleActivationStore = new ModuleActivationStore()
+        this._moduleActivationStore = new ModuleActivationStore();
+        this._contextStack = new ContextStack(this)
     }
 
     public load(...modules: interfaces.ContainerModule[]) {
@@ -176,9 +181,9 @@ class Container implements interfaces.Container {
     // Registers a type binding
     public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
         const scope = this.options.defaultScope || BindingScopeEnum.Transient;
-        const binding = new Binding<T>(serviceIdentifier, scope);
+        const binding = new Binding<T>(serviceIdentifier);
         this._bindingDictionary.add(serviceIdentifier, binding);
-        return new BindingToSyntax<T>(binding);
+        return new BindingToSyntax<T>(binding, scope);
     }
 
     public rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
@@ -399,6 +404,10 @@ class Container implements interfaces.Container {
         return tempContainer.get<T>(constructorFunction);
     }
 
+    public inRootRequestScope(context:interfaces.Context):void {
+        this._contextStack.inRootRequestScope(context);
+    }
+
     private _preDestroy(constructor: any, instance: any): Promise<void> | void {
         if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constructor)) {
             const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constructor);
@@ -417,7 +426,7 @@ class Container implements interfaces.Container {
         return this._bindingDictionary.removeByCondition(binding => binding.moduleId === moduleId);
     }
 
-    private _deactivate<T>(binding: Binding<T>, instance: T): void | Promise<void> {
+    private _deactivate<T>(binding: interfaces.Binding<T>, instance: T): void | Promise<void> {
         const constructor = Object.getPrototypeOf(instance).constructor;
 
         try {
@@ -625,30 +634,38 @@ class Container implements interfaces.Container {
                 args.avoidConstraints
             );
 
+            this._contextStack.planCompleted(context);
+
             // apply context interceptor
             context = args.contextInterceptor(context);
 
             // resolve plan
             const result = resolve<T>(context);
+            this._contextStack.resolved();
 
             return result;
 
         };
     }
 
-    private _deactivateIfSingleton(binding: Binding<any>): Promise<void> | void {
-        if (!binding.cache) {
-            return;
+    private _deactivateIfSingleton(binding: interfaces.Binding<any>): Promise<void> | void {
+        const scope = binding.scope;
+        if(scope.type === ConfigurableBindingScopeEnum.Singleton){
+            const cached = scope.resolved;
+            if (cached === undefined) {
+                return;
+            }
+
+            if (isPromise(cached)) {
+                return cached.then((resolved: any) => this._deactivate(binding, resolved));
+            }
+
+            return this._deactivate(binding, cached);
         }
 
-        if (isPromise(binding.cache)) {
-            return binding.cache.then((resolved: any) => this._deactivate(binding, resolved));
-        }
-
-        return this._deactivate(binding, binding.cache);
     }
 
-    private _deactivateSingletons(bindings: Binding<any>[]): void {
+    private _deactivateSingletons(bindings: interfaces.Binding<any>[]): void {
         for (const binding of bindings) {
             const result = this._deactivateIfSingleton(binding);
 
@@ -658,12 +675,12 @@ class Container implements interfaces.Container {
         }
     }
 
-    private async _deactivateSingletonsAsync(bindings: Binding<any>[]): Promise<void> {
+    private async _deactivateSingletonsAsync(bindings: interfaces.Binding<any>[]): Promise<void> {
         await Promise.all(bindings.map(b => this._deactivateIfSingleton(b)))
     }
 
     private _propagateContainerDeactivationThenBindingAndPreDestroy<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): void | Promise<void> {
@@ -675,7 +692,7 @@ class Container implements interfaces.Container {
     }
 
     private async _propagateContainerDeactivationThenBindingAndPreDestroyAsync<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): Promise<void> {
@@ -695,7 +712,7 @@ class Container implements interfaces.Container {
     }
 
     private _bindingDeactivationAndPreDestroy<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): void | Promise<void> {
@@ -711,7 +728,7 @@ class Container implements interfaces.Container {
     }
 
     private async _bindingDeactivationAndPreDestroyAsync<T>(
-        binding: Binding<T>,
+        binding: interfaces.Binding<T>,
         instance: T,
         constructor: any
     ): Promise<void> {

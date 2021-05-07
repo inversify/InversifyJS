@@ -2,7 +2,6 @@ import { expect } from "chai";
 import * as sinon from "sinon";
 import { injectable } from "../../src/annotation/injectable";
 import { Binding } from "../../src/bindings/binding";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingInWhenOnSyntax } from "../../src/syntax/binding_in_when_on_syntax";
 
@@ -23,7 +22,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -38,7 +37,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -47,14 +46,24 @@ describe("BindingInWhenOnSyntax", () => {
         // stubs for BindingWhenSyntax methods
         const inSingletonScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inSingletonScope").returns(null);
         const inTransientScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inTransientScope").returns(null);
+        const inRequestScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inRequestScope").returns(null);
+        const inRootRequestScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inRootRequestScope").returns(null);
+        const inCustomScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, "inCustomScope").returns(null);
 
         // invoke BindingWhenOnSyntax methods
         bindingInWhenOnSyntax.inSingletonScope();
         bindingInWhenOnSyntax.inTransientScope();
+        bindingInWhenOnSyntax.inRequestScope();
+        bindingInWhenOnSyntax.inRootRequestScope();
+        const customScope:any = {custom:true};
+        bindingInWhenOnSyntax.inCustomScope(customScope);
 
         // assert invoked BindingWhenSyntax methods
         expect(inSingletonScopeStub.callCount).eql(1);
         expect(inTransientScopeStub.callCount).eql(1);
+        expect(inRequestScopeStub.callCount).eql(1);
+        expect(inRootRequestScopeStub.callCount).eql(1);
+        expect(inCustomScopeStub.calledWithExactly(customScope)).eql(true);
 
     });
 
@@ -73,7 +82,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props
@@ -151,7 +160,7 @@ describe("BindingInWhenOnSyntax", () => {
         interface Ninja {}
         const ninjaIdentifier = "Ninja";
 
-        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const binding = new Binding<Ninja>(ninjaIdentifier);
         const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
 
         // cast to any to be able to access private props

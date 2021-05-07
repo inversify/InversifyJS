@@ -1,5 +1,3 @@
-import { FactoryType } from "../utils/factory_type";
-
 namespace interfaces {
     export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>
     export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[]
@@ -8,29 +6,7 @@ namespace interfaces {
         TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>
         : never;
 
-    export type BindingScope = "Singleton" | "Transient" | "Request";
-
-    export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
-        "Function" | "Instance" | "Invalid" | "Provider";
-
     export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
-
-    export interface BindingScopeEnum {
-        Request: interfaces.BindingScope;
-        Singleton: interfaces.BindingScope;
-        Transient: interfaces.BindingScope;
-    }
-
-    export interface BindingTypeEnum {
-        ConstantValue: interfaces.BindingType;
-        Constructor: interfaces.BindingType;
-        DynamicValue: interfaces.BindingType;
-        Factory: interfaces.BindingType;
-        Function: interfaces.BindingType;
-        Instance: interfaces.BindingType;
-        Invalid: interfaces.BindingType;
-        Provider: interfaces.BindingType;
-    }
 
     export interface TargetTypeEnum {
         ConstructorArgument: interfaces.TargetType;
@@ -54,33 +30,141 @@ namespace interfaces {
 
     export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
 
+    export interface ValueProvider<TActivated,TValueFrom>{
+        valueFrom:TValueFrom
+        provideValue(context:Context, childRequests:Request[]):TActivated|Promise<TActivated>
+    }
+
+    export type FactoryType = keyof Pick<BindingToSyntax<unknown>,"toFactory"|"toProvider"|"toDynamicValue">;
+
+    export interface FactoryTypeValueProvider<TActivated,TValueFrom> extends ValueProvider<TActivated,TValueFrom>{
+        factoryType:FactoryType
+    }
+
+    export interface ConstantValueProvider<TActivated>
+        extends ValueProvider<TActivated,TActivated>, Clonable<ConstantValueProvider<TActivated>>
+    {
+        type:"ConstantValue";
+    }
+
+    export interface InstanceValueProvider<TActivated>
+        extends ValueProvider<TActivated,interfaces.Newable<TActivated>>, Clonable<InstanceValueProvider<TActivated>>{
+        type:"Instance";
+    }
+
+    export interface DynamicValueProvider<TActivated> extends
+        FactoryTypeValueProvider<TActivated,interfaces.DynamicValue<TActivated>>, Clonable<DynamicValueProvider<TActivated>>
+        {
+            factoryType: "toDynamicValue";
+            type: "DynamicValue";
+        }
+
+    export interface ConstructorValueProvider<TActivated>
+        extends ValueProvider<TActivated,TActivated>, Clonable<ConstructorValueProvider<TActivated>>{
+        type: "Constructor";
+    }
+
+    export interface FactoryValueProvider<TActivated> extends
+        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated>, Clonable<FactoryValueProvider<TActivated>> {
+        factoryType:"toFactory";
+        type: "Factory"
+    }
+
+    export interface ProviderValueProvider<TActivated> extends
+        FactoryTypeValueProvider<TActivated, (context:interfaces.Context) => TActivated>, Clonable<ProviderValueProvider<TActivated>> {
+        factoryType:"toProvider";
+        type: "Provider";
+    }
+
+    export interface NotConfiguredValueProvider extends ValueProvider<never,never>, Clonable<NotConfiguredValueProvider>{
+        type: "NotConfigured";
+    }
+
+    export type ValueProviderType<TActivated> =
+        ConstantValueProvider<TActivated> |
+        InstanceValueProvider<TActivated> |
+        DynamicValueProvider<TActivated> |
+        ConstructorValueProvider<TActivated> |
+        FactoryValueProvider<TActivated> |
+        ProviderValueProvider<TActivated> |
+        NotConfiguredValueProvider
+
+    export type BindingType = ValueProviderType<unknown>["type"];
+
+    export interface BindingTypeEnum {
+        ConstantValue: ConstantValueProvider<unknown>["type"];
+        Constructor: ConstructorValueProvider<unknown>["type"];
+        DynamicValue: DynamicValueProvider<unknown>["type"];
+        Factory: FactoryValueProvider<unknown>["type"];
+        Instance: InstanceValueProvider<unknown>["type"];
+        Provider: ProviderValueProvider<unknown>["type"];
+        NotConfigured: NotConfiguredValueProvider["type"];
+    }
+
+    export interface Scope<T>{
+        get(binding:Binding<T>,request:Request):Promise<T>|T|undefined
+        set(binding:interfaces.Binding<T>,request:Request,resolved:T|Promise<T>):T | Promise<T>
+    }
+
+    export interface SingletonScope<T> extends Scope<T>, Clonable<SingletonScope<T>>{
+        type:"Singleton",
+        resolved: T | Promise<T> | undefined;
+    }
+
+    export interface TransientScope<T> extends Scope<T>,Clonable<TransientScope<T>>{
+        type:"Transient"
+    }
+
+    export interface RequestResolveScope<T> extends Scope<T>, Clonable<RequestResolveScope<T>>{
+        type:"Request"
+    }
+
+    export interface RootRequestScope<T> extends Scope<T>,Clonable<RootRequestScope<T>>{
+        type:"RootRequest"
+    }
+
+    export interface CustomScope<T> extends Scope<T>,Clonable<CustomScope<T>>{
+        type:"Custom"
+    }
+
+    export interface NotConfiguredScope extends Scope<never>,Clonable<NotConfiguredScope>{
+        type:"NotConfigured",
+        get():never
+        set():never
+    }
+
+    export type BindingScopeScope<T> = SingletonScope<T> | TransientScope<T> | RequestResolveScope<T> | RootRequestScope<T>;
+    export type ResolveScope<T> =  BindingScopeScope<T> | CustomScope<T> | NotConfiguredScope;
+
+    export type BindingScope = BindingScopeScope<unknown>["type"];
+    export type ConfigurableBindingScope = ResolveScope<unknown>["type"];
+
+    export interface BindingScopeEnum {
+        Request: RequestResolveScope<any>["type"]
+        Singleton: SingletonScope<any>["type"];
+        Transient: TransientScope<any>["type"];
+        RootRequest: RootRequestScope<any>["type"];
+    }
+
+    export interface ConfigurableBindingScopeEnum extends BindingScopeEnum{
+        Custom: CustomScope<any>["type"];
+        NotConfigured: NotConfiguredScope["type"];
+    }
+
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
         id: number;
         moduleId: ContainerModuleBase["id"];
-        activated: boolean;
         serviceIdentifier: ServiceIdentifier<TActivated>;
         constraint: ConstraintFunction;
-        dynamicValue: DynamicValue<TActivated> | null;
-        scope: BindingScope;
-        type: BindingType;
-        implementationType: Newable<TActivated> | TActivated | null;
-        factory: FactoryCreator<unknown> | null;
-        provider: ProviderCreator<unknown> | null;
+        scope: ResolveScope<TActivated>;
         onActivation: BindingActivation<TActivated> | null;
         onDeactivation: BindingDeactivation<TActivated> | null;
-        cache: null | TActivated | Promise<TActivated>;
+        valueProvider: ValueProviderType<TActivated>;
     }
 
     export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
 
     export type FactoryCreator<T> = (context: Context) => Factory<T>;
-
-    export type FactoryTypeFunction = (context: interfaces.Context) => any;
-
-    export interface FactoryDetails {
-        factoryType: FactoryType,
-        factory: FactoryTypeFunction | null
-    };
 
     export type Provider<T> = (...args: any[]) => (((...args: any[]) => Promise<T>) | Promise<T>);
 
@@ -107,8 +191,10 @@ namespace interfaces {
         container: Container;
         plan: Plan;
         currentRequest: Request;
+        parentContext:Context | undefined;
         addPlan(plan: Plan): void;
         setCurrentRequest(request: Request): void;
+        inRootRequestScope():Context;
     }
 
     export interface ReflectResult {
@@ -148,6 +234,7 @@ namespace interfaces {
         target: Target;
         bindings: Binding<any>[];
         requestScope: RequestScope;
+        rootRequestScope: RequestScope;
         addChildRequest(
             serviceIdentifier: ServiceIdentifier<any>,
             bindings: (Binding<any> | Binding<any>[]),
@@ -173,16 +260,28 @@ namespace interfaces {
         matchesTag(key: string | number | symbol): (value: any) => boolean;
     }
 
+    type DisallowContextHierarchy = "Disallow";
+    type AllowContextHierarchy = "Allow";
+    type AllowIfBindedInCustomOrRootRequestScope = "IfBindedInCustomOrRootRequestScope";
+
+    export type ContextHierarchyOption = DisallowContextHierarchy | AllowContextHierarchy | AllowIfBindedInCustomOrRootRequestScope;
+    export interface ContextHierarchyOptionEnum {
+        Disallow: DisallowContextHierarchy,
+        Allow: AllowContextHierarchy,
+        IfBindedInCustomOrRootRequestScope: AllowIfBindedInCustomOrRootRequestScope;
+    }
     export interface ContainerOptions {
         autoBindInjectable?: boolean;
         defaultScope?: BindingScope;
         skipBaseClassChecks?: boolean;
+        contextHierarchy?: ContextHierarchyOption;
     }
 
     export interface Container {
         id: number;
         parent: Container | null;
         options: ContainerOptions;
+
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
         rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>>
@@ -217,6 +316,7 @@ namespace interfaces {
         snapshot(): void;
         restore(): void;
         createChild(): Container;
+        inRootRequestScope(context:Context):void;
     }
 
     export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
@@ -292,6 +392,12 @@ namespace interfaces {
         traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;
     }
 
+    export interface Stack<T> {
+        push(entry: T): void;
+        pop(): T | undefined;
+        peek(): T | undefined;
+    }
+
     export interface BindingOnSyntax<T> {
         onActivation(fn: (context: Context, injectable: T) => T | Promise<T>): BindingWhenSyntax<T>;
         onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
@@ -321,6 +427,8 @@ namespace interfaces {
         inSingletonScope(): BindingWhenOnSyntax<T>;
         inTransientScope(): BindingWhenOnSyntax<T>;
         inRequestScope(): BindingWhenOnSyntax<T>;
+        inRootRequestScope(): BindingWhenOnSyntax<T>;
+        inCustomScope(customScope:CustomScope<T>): BindingWhenOnSyntax<T>;
     }
 
     export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
