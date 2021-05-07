@@ -97,7 +97,8 @@ namespace interfaces {
         DynamicValue: DynamicValueProvider<unknown>["type"];
         Factory: FactoryValueProvider<unknown>["type"];
         Instance: InstanceValueProvider<unknown>["type"];
-        Provider: ProviderValueProvider<unknown>["type"]
+        Provider: ProviderValueProvider<unknown>["type"];
+        NotConfigured: NotConfiguredValueProvider["type"];
     }
 
     export interface Scope<T>{
@@ -142,7 +143,9 @@ namespace interfaces {
         Request: RequestResolveScope<any>["type"]
         Singleton: SingletonScope<any>["type"];
         Transient: TransientScope<any>["type"];
-        RootRequest: RootRequestScope<any>["type"]
+        RootRequest: RootRequestScope<any>["type"];
+        Custom: CustomScope<any>["type"];
+        NotConfigured: NotConfiguredScope["type"];
     }
 
     export interface ConfigurableBindingScopeEnum extends BindingScopeEnum{

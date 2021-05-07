@@ -10,7 +10,9 @@ const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Request: "Request",
     Singleton: "Singleton",
     Transient: "Transient",
-    RootRequest: "RootRequest"
+    RootRequest: "RootRequest",
+    Custom: "Custom",
+    NotConfigured: "NotConfigured"
 };
 
 const ConfigurableBindingScopeEnum: interfaces.ConfigurableBindingScopeEnum = {
@@ -24,7 +26,8 @@ const BindingTypeEnum: interfaces.BindingTypeEnum = {
     DynamicValue: "DynamicValue",
     Factory: "Factory",
     Instance: "Instance",
-    Provider: "Provider"
+    Provider: "Provider",
+    NotConfigured: "NotConfigured"
 };
 
 const TargetTypeEnum: interfaces.TargetTypeEnum = {
