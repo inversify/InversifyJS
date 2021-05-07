@@ -1360,10 +1360,8 @@ describe("Resolve", () => {
 
   it("should not deactivate a non activated constant value", () => {
     const container = new Container();
-    let deactivated = false;
-    container.bind<string>("ConstantValue").toConstantValue("Constant").onDeactivation(_ => {deactivated = true;})
+    container.bind<string>("ConstantValue").toConstantValue("Constant").onDeactivation(sinon.mock().never());
     container.unbind("ConstantValue");
-    expect(deactivated).to.equal(false);
   });
 
 
