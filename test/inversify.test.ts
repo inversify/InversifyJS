@@ -653,17 +653,8 @@ describe("InversifyJS", () => {
 
     it("Should support the injection of class constructors", () => {
 
-        interface Ninja {
-            fight(): string;
-            sneak(): string;
-        }
-
         interface Katana {
             hit(): string;
-        }
-
-        interface Shuriken {
-            throw(): string;
         }
 
         @injectable()
@@ -674,40 +665,26 @@ describe("InversifyJS", () => {
         }
 
         @injectable()
-        class Shuriken implements Shuriken {
-            public throw() {
-                return "hit!";
-            }
-        }
-
-        @injectable()
-        class Ninja implements Ninja {
+        class Ninja{
 
             private _katana: Katana;
-            private _shuriken: Shuriken;
 
             public constructor(
-                @inject("Newable<Katana>") katana: interfaces.Newable<Katana>,
-                @inject("Shuriken") shuriken: Shuriken
+                @inject("Newable<Katana>") katana: interfaces.Newable<Katana>
             ) {
-                this._katana = new Katana();
-                this._shuriken = shuriken;
+                this._katana = new katana();
             }
 
             public fight() { return this._katana.hit(); }
-            public sneak() { return this._shuriken.throw(); }
-
         }
 
         const container = new Container();
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
 
         const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
-        expect(ninja.sneak()).eql("hit!");
 
     });
 
