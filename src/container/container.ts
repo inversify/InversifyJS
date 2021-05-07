@@ -637,7 +637,7 @@ class Container implements interfaces.Container {
     }
 
     private _deactivateIfSingleton(binding: Binding<any>): Promise<void> | void {
-        if (!binding.cache) {
+        if (!binding.activated) {
             return;
         }
 
