@@ -1310,6 +1310,13 @@ describe("Resolve", () => {
       expect(subject1 === subject2).eql(true);
   });
 
+  it("should not deactivate a non activated constant value", () => {
+    const container = new Container();
+    container.bind<string>("ConstantValue").toConstantValue("Constant").onDeactivation(sinon.mock().never());
+    container.unbind("ConstantValue");
+  });
+
+
   it("Should return resolved instance to onDeactivation when binding is async", async () => {
       @injectable()
       class Destroyable {
