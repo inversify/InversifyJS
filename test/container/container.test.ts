@@ -1088,7 +1088,7 @@ describe("Container", () => {
         ).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK);
     });
 
-    it.only("container resolve should come from the same container", () => {
+    it("container resolve should come from the same container", () => {
         @injectable()
         class CompositionRoot{}
         class DerivedContainer extends Container{
