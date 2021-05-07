@@ -11,13 +11,12 @@ const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Singleton: "Singleton",
     Transient: "Transient",
     RootRequest: "RootRequest",
-    Custom: "Custom",
-    NotConfigured: "NotConfigured"
 };
 
 const ConfigurableBindingScopeEnum: interfaces.ConfigurableBindingScopeEnum = {
     ...BindingScopeEnum,
-    Custom:"Custom"
+    Custom:"Custom",
+    NotConfigured: "NotConfigured"
 };
 
 const BindingTypeEnum: interfaces.BindingTypeEnum = {

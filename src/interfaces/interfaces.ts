@@ -144,12 +144,11 @@ namespace interfaces {
         Singleton: SingletonScope<any>["type"];
         Transient: TransientScope<any>["type"];
         RootRequest: RootRequestScope<any>["type"];
-        Custom: CustomScope<any>["type"];
-        NotConfigured: NotConfiguredScope["type"];
     }
 
     export interface ConfigurableBindingScopeEnum extends BindingScopeEnum{
         Custom: CustomScope<any>["type"];
+        NotConfigured: NotConfiguredScope["type"];
     }
 
     export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
