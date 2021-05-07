@@ -32,7 +32,7 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
     inRootRequestScope(): interfaces.BindingWhenOnSyntax<T> {
         return this._bindingInSyntax.inRootRequestScope();
     }
-    inCustomScope(customScope: interfaces.Scope<T>): interfaces.BindingWhenOnSyntax<T> {
+    inCustomScope(customScope: interfaces.CustomScope<T>): interfaces.BindingWhenOnSyntax<T> {
         return this._bindingInSyntax.inCustomScope(customScope);
     }
 

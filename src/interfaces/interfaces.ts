@@ -414,7 +414,7 @@ namespace interfaces {
         inTransientScope(): BindingWhenOnSyntax<T>;
         inRequestScope(): BindingWhenOnSyntax<T>;
         inRootRequestScope(): BindingWhenOnSyntax<T>;
-        inCustomScope(customScope:Scope<T>): BindingWhenOnSyntax<T>;
+        inCustomScope(customScope:CustomScope<T>): BindingWhenOnSyntax<T>;
     }
 
     export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
