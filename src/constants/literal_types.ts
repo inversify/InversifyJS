@@ -1,5 +1,11 @@
 import { interfaces } from "../interfaces/interfaces";
 
+const ContextHierarchyOptionEnum: interfaces.ContextHierarchyOptionEnum = {
+    Disallow: "Disallow",
+    Allow: "Allow",
+    IfBindedInCustomOrRootRequestScope: "IfBindedInCustomOrRootRequestScope"
+}
+
 const BindingScopeEnum: interfaces.BindingScopeEnum = {
     Request: "Request",
     Singleton: "Singleton",
@@ -27,4 +33,4 @@ const TargetTypeEnum: interfaces.TargetTypeEnum = {
     Variable: "Variable"
 };
 
-export { BindingScopeEnum, ConfigurableBindingScopeEnum, BindingTypeEnum, TargetTypeEnum };
+export { BindingScopeEnum, ConfigurableBindingScopeEnum, BindingTypeEnum, TargetTypeEnum, ContextHierarchyOptionEnum };

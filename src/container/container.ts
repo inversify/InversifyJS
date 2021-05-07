@@ -11,9 +11,9 @@ import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
 import { ContainerSnapshot } from "./container_snapshot";
+import { ContextStack } from "./context-stack";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
-import { Stack } from "./stack";
 
 type GetArgs<T> = Omit<interfaces.NextArgs<T>,'contextInterceptor'|'targetType'>
 
@@ -22,7 +22,6 @@ class Container implements interfaces.Container {
     public id: number;
     public parent: interfaces.Container | null;
     public readonly options: interfaces.ContainerOptions;
-    public contextStack:interfaces.Stack<interfaces.Context> = new Stack<interfaces.Context>();
     private _middleware: interfaces.Next | null;
     private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
     private _activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
@@ -30,7 +29,8 @@ class Container implements interfaces.Container {
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
     private _appliedMiddleware: interfaces.Middleware[] = [];
-    private _moduleActivationStore: interfaces.ModuleActivationStore
+    private _moduleActivationStore: interfaces.ModuleActivationStore;
+    private _contextStack: ContextStack;
 
     public static merge(
       container1: interfaces.Container,
@@ -98,7 +98,8 @@ class Container implements interfaces.Container {
         this.options = {
             autoBindInjectable: options.autoBindInjectable,
             defaultScope: options.defaultScope,
-            skipBaseClassChecks: options.skipBaseClassChecks
+            skipBaseClassChecks: options.skipBaseClassChecks,
+            contextHierarchy: options.contextHierarchy
         };
 
         this.id = id();
@@ -109,7 +110,8 @@ class Container implements interfaces.Container {
         this._deactivations = new Lookup<interfaces.BindingDeactivation<any>>();
         this.parent = null;
         this._metadataReader = new MetadataReader();
-        this._moduleActivationStore = new ModuleActivationStore()
+        this._moduleActivationStore = new ModuleActivationStore();
+        this._contextStack = new ContextStack(this)
     }
 
     public load(...modules: interfaces.ContainerModule[]) {
@@ -402,6 +404,10 @@ class Container implements interfaces.Container {
         return tempContainer.get<T>(constructorFunction);
     }
 
+    public inRootRequestScope(context:interfaces.Context):void {
+        this._contextStack.inRootRequestScope(context);
+    }
+
     private _preDestroy(constructor: any, instance: any): Promise<void> | void {
         if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constructor)) {
             const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constructor);
@@ -628,15 +634,14 @@ class Container implements interfaces.Container {
                 args.avoidConstraints
             );
 
-            context.parentContext = this.contextStack.peek();
-            this.contextStack.push(context);
+            this._contextStack.planCompleted(context);
 
             // apply context interceptor
             context = args.contextInterceptor(context);
 
             // resolve plan
             const result = resolve<T>(context);
-            this.contextStack.pop();
+            this._contextStack.resolved();
 
             return result;
 

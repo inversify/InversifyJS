@@ -258,17 +258,28 @@ namespace interfaces {
         matchesTag(key: string | number | symbol): (value: any) => boolean;
     }
 
+    type DisallowContextHierarchy = "Disallow";
+    type AllowContextHierarchy = "Allow";
+    type AllowIfBindedInCustomOrRootRequestScope = "IfBindedInCustomOrRootRequestScope";
+
+    export type ContextHierarchyOption = DisallowContextHierarchy | AllowContextHierarchy | AllowIfBindedInCustomOrRootRequestScope;
+    export interface ContextHierarchyOptionEnum {
+        Disallow: DisallowContextHierarchy,
+        Allow: AllowContextHierarchy,
+        IfBindedInCustomOrRootRequestScope: AllowIfBindedInCustomOrRootRequestScope;
+    }
     export interface ContainerOptions {
         autoBindInjectable?: boolean;
         defaultScope?: BindingScope;
         skipBaseClassChecks?: boolean;
+        contextHierarchy?: ContextHierarchyOption;
     }
 
     export interface Container {
         id: number;
         parent: Container | null;
         options: ContainerOptions;
-        contextStack:Stack<interfaces.Context>;
+
         bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
         rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
         rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>>
@@ -303,6 +314,7 @@ namespace interfaces {
         snapshot(): void;
         restore(): void;
         createChild(): Container;
+        inRootRequestScope(context:Context):void;
     }
 
     export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;

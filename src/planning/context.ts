@@ -24,7 +24,7 @@ class Context implements interfaces.Context {
     }
 
     public inRootRequestScope(): Context {
-        this.container.contextStack.push(this);
+        this.container.inRootRequestScope(this);
         return this;
     }
 }
