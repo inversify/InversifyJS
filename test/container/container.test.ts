@@ -1086,5 +1086,32 @@ describe("Container", () => {
                 skipBaseClassChecks: 'Jolene, Jolene, Jolene, Jolene' as unknown as boolean
             })
         ).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK);
+    });
+
+    it.only("container resolve should come from the same container", () => {
+        @injectable()
+        class CompositionRoot{}
+        class DerivedContainer extends Container{
+            public planningForCompositionRoot(): void {
+                //
+            }
+        }
+        const middleware:interfaces.Middleware = (next) =>
+            (nextArgs) => {
+                const contextInterceptor = nextArgs.contextInterceptor;
+                nextArgs.contextInterceptor = context => {
+                    if(context.plan.rootRequest.serviceIdentifier === CompositionRoot){
+                        (context.container as DerivedContainer).planningForCompositionRoot();
+                    }
+                    return contextInterceptor(context);
+                }
+                return next(nextArgs)
+            }
+
+        const myContainer = new DerivedContainer();
+        myContainer.applyMiddleware(middleware);
+        myContainer.resolve(CompositionRoot);
+        // tslint:disable-next-line: no-unused-expression
+        expect(() => myContainer.resolve(CompositionRoot)).not.to.throw;
     })
 });
