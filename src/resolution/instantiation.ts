@@ -119,11 +119,11 @@ function _validateInstanceResolution(binding: interfaces.Binding<unknown>, const
     if (binding.scope !== BindingScopeEnum.Singleton) {
         const scopeErrorMessage = `Class cannot be instantiated in ${binding.scope === BindingScopeEnum.Request ? "request" : "transient"} scope.`;
         if (typeof binding.onDeactivation === "function") {
-            throw new Error(ON_DEACTIVATION_ERROR(constr.name, `Class cannot be instantiated in ${scopeErrorMessage} scope.`));
+            throw new Error(ON_DEACTIVATION_ERROR(constr.name, scopeErrorMessage));
         }
 
         if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constr)) {
-            throw new Error(PRE_DESTROY_ERROR(constr.name, `Class cannot be instantiated in ${scopeErrorMessage} scope.`));
+            throw new Error(PRE_DESTROY_ERROR(constr.name, scopeErrorMessage));
         }
     }
 }
