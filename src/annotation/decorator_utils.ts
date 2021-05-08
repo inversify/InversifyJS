@@ -74,14 +74,14 @@ function _tagParameterOrProperty(
 
 function createTaggedDecorator(
     metadata:interfaces.MetadataOrMetadataArray,
-    callback?:(target: any, targetKey: string, index?: number | PropertyDescriptor) => void
+    callback?:(target: any, targetKey: string, indexOrPropertyDescriptor?: number | PropertyDescriptor) => void
 ) {
-    return function(target: any, targetKey: string, index?: number | PropertyDescriptor) {
+    return function(target: any, targetKey: string, indexOrPropertyDescriptor?: number | PropertyDescriptor) {
         if(callback){
-            callback(target, targetKey, index);
+            callback(target, targetKey, indexOrPropertyDescriptor);
         }
-        if (typeof index === "number") {
-            tagParameter(target, targetKey, index, metadata);
+        if (typeof indexOrPropertyDescriptor === "number") {
+            tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
         } else {
             tagProperty(target, targetKey, metadata);
         }
