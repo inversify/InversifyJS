@@ -23,12 +23,7 @@ function tagProperty(
     _tagParameterOrProperty(METADATA_KEY.TAGGED_PROP, annotationTarget.constructor, propertyName, metadata);
 }
 
-function _tagParameterOrProperty(
-    metadataKey: string,
-    annotationTarget: any,
-    key: string,
-    metadata: interfaces.MetadataOrMetadataArray,
-) {
+function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataArray):interfaces.Metadata[]{
     let metadatas: interfaces.Metadata[] = [];
     if(Array.isArray(metadata)){
         metadatas = metadata;
@@ -39,6 +34,17 @@ function _tagParameterOrProperty(
     }else{
         metadatas = [metadata];
     }
+    return metadatas;
+}
+
+
+function _tagParameterOrProperty(
+    metadataKey: string,
+    annotationTarget: any,
+    key: string,
+    metadata: interfaces.MetadataOrMetadataArray,
+) {
+    const metadatas: interfaces.Metadata[] = _ensureNoMetadataKeyDuplicates(metadata);
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
 
