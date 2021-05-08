@@ -1,13 +1,13 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
-import { Metadata } from "../planning/metadata";
+import { getArrayDuplicate } from "../utils/js";
 
 function tagParameter(
     annotationTarget: any,
     propertyName: string,
     parameterIndex: number,
-    metadata: interfaces.Metadata
+    metadata: interfaces.MetadataOrMetadataArray
 ) {
     const metadataKey = METADATA_KEY.TAGGED;
     _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
@@ -16,7 +16,7 @@ function tagParameter(
 function tagProperty(
     annotationTarget: any,
     propertyName: string,
-    metadata: interfaces.Metadata
+    metadata: interfaces.MetadataOrMetadataArray
 ) {
     const metadataKey = METADATA_KEY.TAGGED_PROP;
     _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
@@ -26,9 +26,19 @@ function _tagParameterOrProperty(
     metadataKey: string,
     annotationTarget: any,
     propertyName: string,
-    metadata: interfaces.Metadata,
+    metadata: interfaces.MetadataOrMetadataArray,
     parameterIndex?: number
 ) {
+    let metadatas: interfaces.Metadata[] = [];
+    if(Array.isArray(metadata)){
+        metadatas = metadata;
+        const duplicate = getArrayDuplicate(metadatas.map(md => md.key));
+        if(duplicate !== undefined) {
+            throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${duplicate.toString()}`);
+        }
+    }else{
+        metadatas = [metadata];
+    }
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
     const isParameterDecorator = (typeof parameterIndex === "number");
@@ -51,22 +61,23 @@ function _tagParameterOrProperty(
         paramOrPropertyMetadata = [];
     } else {
         for (const m of paramOrPropertyMetadata) {
-            if (m.key === metadata.key) {
+            if (metadatas.some(md => md.key === m.key)) {
                 throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${m.key.toString()}`);
             }
         }
     }
 
     // set metadata
-    paramOrPropertyMetadata.push(metadata);
+    paramOrPropertyMetadata.push(...metadatas);
     paramsOrPropertiesMetadata[key] = paramOrPropertyMetadata;
     Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 
 }
 
 function createTaggedDecorator(
-    metadata:Metadata,
-    callback?:(target: any, targetKey: string, index?: number | PropertyDescriptor) => void) {
+    metadata:interfaces.MetadataOrMetadataArray,
+    callback?:(target: any, targetKey: string, index?: number | PropertyDescriptor) => void
+) {
     return function(target: any, targetKey: string, index?: number | PropertyDescriptor) {
         if(callback){
             callback(target, targetKey, index);

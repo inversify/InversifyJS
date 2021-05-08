@@ -3,6 +3,7 @@ export const METADATA_KEY = keys;
 export { Container } from "./container/container";
 export { BindingScopeEnum, BindingTypeEnum, TargetTypeEnum } from "./constants/literal_types";
 export { AsyncContainerModule, ContainerModule } from "./container/container_module";
+export { createTaggedDecorator } from "./annotation/decorator_utils"
 export { injectable } from "./annotation/injectable";
 export { tagged } from "./annotation/tagged";
 export { named } from "./annotation/named";

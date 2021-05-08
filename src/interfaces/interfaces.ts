@@ -115,6 +115,8 @@ namespace interfaces {
         [key: string]: Metadata[];
     }
 
+    export type MetadataOrMetadataArray = Metadata | Metadata[];
+
     export interface Metadata {
         key: string | number | symbol;
         value: any;
