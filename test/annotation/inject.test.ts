@@ -113,7 +113,7 @@ describe("@inject", () => {
 
   });
 
-  it("Should throw when not applayed to a constructor", () => {
+  it("Should throw when not applied to a constructor", () => {
 
     const useDecoratorOnMethodThatIsNotAConstructor = function() {
       __decorate([ __param(0, inject("Katana")) ],

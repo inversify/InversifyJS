@@ -72,7 +72,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should be able to to do setter injection and property injection", () => {
+    it("Should be able to do setter injection and property injection", () => {
         @injectable()
         class Shuriken {
             public throw() {
