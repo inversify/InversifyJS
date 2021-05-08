@@ -9,8 +9,10 @@ function tagParameter(
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
-    const metadataKey = METADATA_KEY.TAGGED;
-    _tagParameterOrProperty(metadataKey, annotationTarget, propertyName, metadata, parameterIndex);
+    if(propertyName !== undefined) {
+        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
+    }
+    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget, parameterIndex.toString(), metadata);
 }
 
 function tagProperty(
@@ -18,16 +20,14 @@ function tagProperty(
     propertyName: string,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
-    const metadataKey = METADATA_KEY.TAGGED_PROP;
-    _tagParameterOrProperty(metadataKey, annotationTarget.constructor, propertyName, metadata);
+    _tagParameterOrProperty(METADATA_KEY.TAGGED_PROP, annotationTarget.constructor, propertyName, metadata);
 }
 
 function _tagParameterOrProperty(
     metadataKey: string,
     annotationTarget: any,
-    propertyName: string,
+    key: string,
     metadata: interfaces.MetadataOrMetadataArray,
-    parameterIndex?: number
 ) {
     let metadatas: interfaces.Metadata[] = [];
     if(Array.isArray(metadata)){
@@ -41,23 +41,15 @@ function _tagParameterOrProperty(
     }
 
     let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
-    const isParameterDecorator = (typeof parameterIndex === "number");
-    const key: string = (parameterIndex !== undefined && isParameterDecorator) ? parameterIndex.toString() : propertyName;
-
-    // if the decorator is used as a parameter decorator, the property name must be provided
-    if (isParameterDecorator && propertyName !== undefined) {
-        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
-    }
 
     // read metadata if available
     if (Reflect.hasOwnMetadata(metadataKey, annotationTarget)) {
         paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
     }
 
-    // get metadata for the decorated parameter by its index
-    let paramOrPropertyMetadata: interfaces.Metadata[] = paramsOrPropertiesMetadata[key];
+    let paramOrPropertyMetadata: interfaces.Metadata[] | undefined = paramsOrPropertiesMetadata[key];
 
-    if (!Array.isArray(paramOrPropertyMetadata)) {
+    if (paramOrPropertyMetadata === undefined) {
         paramOrPropertyMetadata = [];
     } else {
         for (const m of paramOrPropertyMetadata) {
