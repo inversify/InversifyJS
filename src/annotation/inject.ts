@@ -2,7 +2,7 @@ import { UNDEFINED_INJECT_ANNOTATION } from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { Metadata } from "../planning/metadata";
-import { tagParameter, tagProperty } from "./decorator_utils";
+import { createTaggedDecorator } from "./decorator_utils";
 
 export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<any> | LazyServiceIdentifer;
 
@@ -18,20 +18,11 @@ export class LazyServiceIdentifer<T = any> {
 }
 
 function inject(serviceIdentifier: ServiceIdentifierOrFunc) {
-  return function(target: any, targetKey: string, index?: number | PropertyDescriptor): void {
+  return createTaggedDecorator(new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier),target => {
     if (serviceIdentifier === undefined) {
       throw new Error(UNDEFINED_INJECT_ANNOTATION(target.name));
     }
-
-    const metadata = new Metadata(METADATA_KEY.INJECT_TAG, serviceIdentifier);
-
-    if (typeof index === "number") {
-      tagParameter(target, targetKey, index, metadata);
-    } else {
-      tagProperty(target, targetKey, metadata);
-    }
-
-  };
+  })
 }
 
 export { inject };

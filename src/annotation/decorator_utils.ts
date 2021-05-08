@@ -1,6 +1,7 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
+import { Metadata } from "../planning/metadata";
 
 function tagParameter(
     annotationTarget: any,
@@ -63,6 +64,21 @@ function _tagParameterOrProperty(
 
 }
 
+function createTaggedDecorator(
+    metadata:Metadata,
+    callback?:(target: any, targetKey: string, index?: number | PropertyDescriptor) => void) {
+    return function(target: any, targetKey: string, index?: number | PropertyDescriptor) {
+        if(callback){
+            callback(target, targetKey, index);
+        }
+        if (typeof index === "number") {
+            tagParameter(target, targetKey, index, metadata);
+        } else {
+            tagProperty(target, targetKey, metadata);
+        }
+    };
+}
+
 function _decorate(decorators: any[], target: any): void {
     Reflect.decorate(decorators, target);
 }
@@ -90,4 +106,4 @@ function decorate(
     }
 }
 
-export { decorate, tagParameter, tagProperty };
+export { decorate, tagParameter, tagProperty, createTaggedDecorator };
