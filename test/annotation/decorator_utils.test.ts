@@ -4,6 +4,15 @@ import { createTaggedDecorator, tagParameter, tagProperty } from "../../src/anno
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Container, inject, injectable } from "../../src/inversify";
 describe("createTaggedDecorator", () => {
+  let sandbox:sinon.SinonSandbox
+  beforeEach(function () {
+      sandbox = sinon.createSandbox();
+  });
+
+  afterEach(function () {
+      sandbox.restore();
+  });
+
   it("should call the callback when decorated", () => {
     class Target {}
     const callback = sinon.spy();
@@ -20,7 +29,7 @@ describe("createTaggedDecorator", () => {
     class Target {}
     const metadata = {key:"1",value:"2"};
     const decorator = createTaggedDecorator(metadata);
-    const spiedTagParameter = sinon.spy(tagParameter);
+    const spiedTagParameter = sandbox.spy(tagParameter);
     decorator(Target,undefined as any,1);
     expect(spiedTagParameter.calledWithExactly(Target, undefined as any, 1, metadata));
   });
@@ -29,7 +38,7 @@ describe("createTaggedDecorator", () => {
     class Target {}
     const metadata = {key:"2",value:"2"};
     const decorator = createTaggedDecorator(metadata);
-    const spiedTagProperty = sinon.spy(tagProperty);
+    const spiedTagProperty = sandbox.spy(tagProperty);
     decorator(Target,"PropertyName");
     expect(spiedTagProperty.calledWithExactly(Target, "PropertyName", metadata));
   });
