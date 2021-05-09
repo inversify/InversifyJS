@@ -388,9 +388,14 @@ class Container implements interfaces.Container {
     }
 
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
-        this.bind<T>(constructorFunction).toSelf();
+        const isBound = this.isBound(constructorFunction);
+        if (!isBound) {
+            this.bind<T>(constructorFunction).toSelf();
+        }
 		const resolved =  this.get<T>(constructorFunction);
-		this.unbind(constructorFunction);
+        if (!isBound) {
+            this.unbind(constructorFunction);
+        }
         return resolved;
     }
 
