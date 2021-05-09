@@ -158,6 +158,7 @@ namespace interfaces {
         serviceIdentifier: ServiceIdentifier<any>;
         type: TargetType;
         name: QueryableString;
+        identifier: string | symbol;
         metadata: Metadata[];
         getNamedTag(): interfaces.Metadata | null;
         getCustomTags(): interfaces.Metadata[] | null;

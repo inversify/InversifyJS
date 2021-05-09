@@ -130,10 +130,10 @@ function getConstructorArgsAsTargets(
     return targets;
 }
 
-function _getServiceIdentifierForProperty(inject:any,multiInject:any,propertyName:string, className: string):any {
+function _getServiceIdentifierForProperty(inject:any,multiInject:any,propertyName:string | symbol, className: string):any {
     const serviceIdentifier = (inject || multiInject);
     if(serviceIdentifier === undefined) {
-        const msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property ${propertyName} in class ${className}.`;
+        const msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property ${String(propertyName)} in class ${className}.`;
         throw new Error(msg);
     }
     return serviceIdentifier;
@@ -141,9 +141,11 @@ function _getServiceIdentifierForProperty(inject:any,multiInject:any,propertyNam
 
 function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function, constructorName:string) {
 
-    const classPropsMetadata = metadataReader.getPropertiesMetadata(constructorFunc);
+    const classPropsMetadata:any = metadataReader.getPropertiesMetadata(constructorFunc);
     let targets: interfaces.Target[] = [];
-    const keys = Object.keys(classPropsMetadata);
+    const symbolKeys = Object.getOwnPropertySymbols(classPropsMetadata);
+    const stringKeys:(string | symbol)[] = Object.keys(classPropsMetadata);
+    const keys:(string | symbol)[] = stringKeys.concat(symbolKeys);
 
     for (const key of keys) {
 
@@ -153,14 +155,13 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
         // the metadata formatted for easier access
         const metadata = formatTargetMetadata(classPropsMetadata[key]);
 
-        // the name of the property being injected
-        const targetName = metadata.targetName || key;
+        const identifier = metadata.targetName || key;
 
         // Take types to be injected from user-generated metadata
         const serviceIdentifier = _getServiceIdentifierForProperty(metadata.inject,metadata.multiInject,key,constructorName);
 
         // The property target
-        const target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIdentifier);
+        const target = new Target(TargetTypeEnum.ClassProperty, identifier, serviceIdentifier);
         target.metadata = targetMetadata;
         targets.push(target);
     }

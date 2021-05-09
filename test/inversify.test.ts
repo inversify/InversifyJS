@@ -110,6 +110,43 @@ describe("InversifyJS", () => {
         expect(ninja.sneak()).to.eql("hit!");
         expect(ninja.fight()).to.eql("cut!");
     });
+
+    it("Should be able to inject when symbol property key ", () => {
+        const weaponProperty = Symbol();
+        interface Weapon {}
+        @injectable()
+        class Shuriken implements Weapon { }
+        @injectable()
+        class Ninja{
+            @inject("Weapon")
+            [weaponProperty]: Weapon
+        }
+        const container = new Container();
+        container.bind("Weapon").to(Shuriken);
+        const myNinja = container.resolve(Ninja);
+        const weapon = myNinja[weaponProperty];
+        expect(weapon).to.be.instanceOf(Shuriken);
+    });
+
+    it("Should be possible to constrain to a symbol description", () => {
+        const throwableWeapon = Symbol("throwable");
+        interface Weapon {}
+        @injectable()
+        class Shuriken implements Weapon { }
+        @injectable()
+        class Ninja{
+            @inject("Weapon")
+            [throwableWeapon]: Weapon
+        }
+        const container = new Container();
+        container.bind("Weapon").to(Shuriken).when(request => {
+            return request.target.name.equals("throwable");
+        })
+        const myNinja = container.resolve(Ninja);
+        const weapon = myNinja[throwableWeapon];
+        expect(weapon).to.be.instanceOf(Shuriken);
+    })
+
     it("Should be able to resolve and inject dependencies in VanillaJS", () => {
 
         const TYPES = {
