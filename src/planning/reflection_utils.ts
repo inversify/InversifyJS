@@ -130,6 +130,15 @@ function getConstructorArgsAsTargets(
     return targets;
 }
 
+function _getServiceIdentifierForProperty(inject:any,multiInject:any,propertyName:string, className: string):any {
+    const serviceIdentifier = (inject || multiInject);
+    if(serviceIdentifier === undefined) {
+        const msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property ${propertyName} in class ${className}.`;
+        throw new Error(msg);
+    }
+    return serviceIdentifier;
+}
+
 function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function, constructorName:string) {
 
     const classPropsMetadata = metadataReader.getPropertiesMetadata(constructorFunc);
@@ -148,12 +157,7 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
         const targetName = metadata.targetName || key;
 
         // Take types to be injected from user-generated metadata
-        const serviceIdentifier = (metadata.inject || metadata.multiInject);
-        if(serviceIdentifier === undefined) {
-            const msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property ${key} in class ${constructorName}.`;
-			throw new Error(msg);
-
-        }
+        const serviceIdentifier = _getServiceIdentifierForProperty(metadata.inject,metadata.multiInject,key,constructorName);
 
         // The property target
         const target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIdentifier);
