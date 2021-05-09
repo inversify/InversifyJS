@@ -111,10 +111,6 @@ namespace interfaces {
         setCurrentRequest(request: Request): void;
     }
 
-    export interface ReflectResult {
-        [key: string]: Metadata[];
-    }
-
     export type MetadataOrMetadataArray = Metadata | Metadata[];
 
     export interface Metadata {

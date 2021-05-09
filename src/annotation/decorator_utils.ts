@@ -5,7 +5,7 @@ import { getFirstArrayDuplicate } from "../utils/js";
 
 function tagParameter(
     annotationTarget: any,
-    propertyName: string,
+    propertyName: string | symbol | undefined,
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
@@ -17,7 +17,7 @@ function tagParameter(
 
 function tagProperty(
     annotationTarget: any,
-    propertyName: string,
+    propertyName: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
     _tagParameterOrProperty(METADATA_KEY.TAGGED_PROP, annotationTarget.constructor, propertyName, metadata);
@@ -37,17 +37,15 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
     return metadatas;
 }
 
-
 function _tagParameterOrProperty(
     metadataKey: string,
     annotationTarget: any,
-    key: string,
+    key: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray,
 ) {
     const metadatas: interfaces.Metadata[] = _ensureNoMetadataKeyDuplicates(metadata);
 
-    let paramsOrPropertiesMetadata: interfaces.ReflectResult = {};
-
+    let paramsOrPropertiesMetadata:any = {};
     // read metadata if available
     if (Reflect.hasOwnMetadata(metadataKey, annotationTarget)) {
         paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
@@ -74,14 +72,14 @@ function _tagParameterOrProperty(
 
 function createTaggedDecoratorInternal(
     metadata:interfaces.MetadataOrMetadataArray,
-    callback?:(target: any, targetKey: string, indexOrPropertyDescriptor?: number | PropertyDescriptor) => void
+    callback?:(target: any, targetKey: string | symbol, indexOrPropertyDescriptor?: number | PropertyDescriptor) => void
 ) {
-    return function(target: any, targetKey: string, indexOrPropertyDescriptor?: number | PropertyDescriptor) {
+    return function(target: any, targetKey: string | symbol, indexOrPropertyDescriptor?: number | PropertyDescriptor) {
         if(callback){
             callback(target, targetKey, indexOrPropertyDescriptor);
         }
         if (typeof indexOrPropertyDescriptor === "number") {
-            tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
+            tagParameter(target, targetKey as unknown as string | symbol | undefined, indexOrPropertyDescriptor, metadata);
         } else {
             tagProperty(target, targetKey, metadata);
         }
