@@ -69,12 +69,16 @@ function _tagParameterOrProperty(
     Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 
 }
-
+type ParameterOrPropertyDecorator = (
+    target: any,
+    targetKey: string | symbol,
+    indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<unknown>
+) => void;
 function createTaggedDecoratorInternal(
     metadata:interfaces.MetadataOrMetadataArray,
-    callback?:(target: any, targetKey: string | symbol, indexOrPropertyDescriptor?: number | PropertyDescriptor) => void
+    callback?:ParameterOrPropertyDecorator
 ) {
-    return function(target: any, targetKey: string | symbol, indexOrPropertyDescriptor?: number | PropertyDescriptor) {
+    const decorator:ParameterOrPropertyDecorator = (target, targetKey, indexOrPropertyDescriptor) => {
         if(callback){
             callback(target, targetKey, indexOrPropertyDescriptor);
         }
@@ -84,6 +88,7 @@ function createTaggedDecoratorInternal(
             tagProperty(target, targetKey, metadata);
         }
     };
+    return decorator;
 }
 
 function createTaggedDecorator(metadata:interfaces.MetadataOrMetadataArray) {
