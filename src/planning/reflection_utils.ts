@@ -48,7 +48,7 @@ function getTargets(
     );
 
     // Target instances that represent properties to be injected
-    const propertyTargets = getClassPropsAsTargets(metadataReader, func);
+    const propertyTargets = getClassPropsAsTargets(metadataReader, func, constructorName);
 
     const targets = [
         ...constructorTargets,
@@ -130,7 +130,7 @@ function getConstructorArgsAsTargets(
     return targets;
 }
 
-function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function) {
+function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function, constructorName:string) {
 
     const classPropsMetadata = metadataReader.getPropertiesMetadata(constructorFunc);
     let targets: interfaces.Target[] = [];
@@ -149,6 +149,11 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
 
         // Take types to be injected from user-generated metadata
         const serviceIdentifier = (metadata.inject || metadata.multiInject);
+        if(serviceIdentifier === undefined) {
+            const msg = `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property ${key} in class ${constructorName}.`;
+			throw new Error(msg);
+
+        }
 
         // The property target
         const target = new Target(TargetTypeEnum.ClassProperty, targetName, serviceIdentifier);
@@ -161,7 +166,7 @@ function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, const
 
     if (baseConstructor !== Object) {
 
-        const baseTargets = getClassPropsAsTargets(metadataReader, baseConstructor);
+        const baseTargets = getClassPropsAsTargets(metadataReader, baseConstructor,constructorName);
 
         targets = [
             ...targets,
