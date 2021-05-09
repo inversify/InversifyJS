@@ -1480,7 +1480,7 @@ describe("Resolve", () => {
       class Destroyable {
           @preDestroy()
           public myPreDestroyMethod() {
-              //
+              return;
           }
       }
 
