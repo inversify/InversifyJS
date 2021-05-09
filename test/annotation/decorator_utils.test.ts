@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
-import { createTaggedDecorator, tagParameter, tagProperty } from "../../src/annotation/decorator_utils"
+import { createTaggedDecorator, createTaggedDecoratorInternal, tagParameter, tagProperty } from "../../src/annotation/decorator_utils"
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Container, inject, injectable } from "../../src/inversify";
-describe("createTaggedDecorator", () => {
+describe("createTaggedDecoratorInternal", () => {
   let sandbox:sinon.SinonSandbox
   beforeEach(function () {
       sandbox = sinon.createSandbox();
@@ -16,7 +16,7 @@ describe("createTaggedDecorator", () => {
   it("should call the callback when decorated", () => {
     class Target {}
     const callback = sinon.spy();
-    const decorator = createTaggedDecorator({key:"1",value:"2"},callback);
+    const decorator = createTaggedDecoratorInternal({key:"1",value:"2"},callback);
     try {
       decorator(Target, "key", 1);
     }catch(e){
@@ -28,7 +28,7 @@ describe("createTaggedDecorator", () => {
   it("should pass to tagParameter for parameter decorators", () => {
     class Target {}
     const metadata = {key:"1",value:"2"};
-    const decorator = createTaggedDecorator(metadata);
+    const decorator = createTaggedDecoratorInternal(metadata);
     const spiedTagParameter = sandbox.spy(tagParameter);
     decorator(Target,undefined as any,1);
     expect(spiedTagParameter.calledWithExactly(Target, undefined as any, 1, metadata));
@@ -37,7 +37,7 @@ describe("createTaggedDecorator", () => {
   it("should pass to tagProperty for property decorators", () => {
     class Target {}
     const metadata = {key:"2",value:"2"};
-    const decorator = createTaggedDecorator(metadata);
+    const decorator = createTaggedDecoratorInternal(metadata);
     const spiedTagProperty = sandbox.spy(tagProperty);
     decorator(Target,"PropertyName");
     expect(spiedTagProperty.calledWithExactly(Target, "PropertyName", metadata));
@@ -47,6 +47,7 @@ describe("createTaggedDecorator", () => {
     function multipleMetadataDecorator(key1Value:string, key2Value: string) {
       return createTaggedDecorator([{key:"key1",value:key1Value},{key:"key2",value:key2Value}]);
     }
+
     interface Thing{
       type:string
     }
@@ -74,7 +75,14 @@ describe("createTaggedDecorator", () => {
       return key1Metadata.value === "Key1Value" && key2Metadata.value === "Key2Value";
     });
     container.resolve(Root);
-  })
+  });
+
+  it("should be exposed without callback as createTaggedDecorator", () => {
+    const spy = sandbox.spy(createTaggedDecoratorInternal);
+    createTaggedDecorator({key:"key",value:"value"});
+    expect(spy.calledWithExactly({key:"key",value:"value"}));
+  });
+
 });
 
 describe("tagParameter", () => {

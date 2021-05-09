@@ -1,11 +1,11 @@
-export function getArrayDuplicate<T>(array:T[]):T | undefined {
-  const seenValues: any= {}
+export function getFirstArrayDuplicate<T>(array:T[]):T | undefined {
+  const seenValues = new Set<T>()
 
   for (const entry of array) {
-    if (seenValues[entry]) {
+    if (seenValues.has(entry)) {
       return entry;
     } else {
-      seenValues[entry] = true
+      seenValues.add(entry);
     }
   }
 }

@@ -1,7 +1,7 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
-import { getArrayDuplicate } from "../utils/js";
+import { getFirstArrayDuplicate } from "../utils/js";
 
 function tagParameter(
     annotationTarget: any,
@@ -27,7 +27,7 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
     let metadatas: interfaces.Metadata[] = [];
     if(Array.isArray(metadata)){
         metadatas = metadata;
-        const duplicate = getArrayDuplicate(metadatas.map(md => md.key));
+        const duplicate = getFirstArrayDuplicate(metadatas.map(md => md.key));
         if(duplicate !== undefined) {
             throw new Error(`${ERROR_MSGS.DUPLICATED_METADATA} ${duplicate.toString()}`);
         }
@@ -72,7 +72,7 @@ function _tagParameterOrProperty(
 
 }
 
-function createTaggedDecorator(
+function createTaggedDecoratorInternal(
     metadata:interfaces.MetadataOrMetadataArray,
     callback?:(target: any, targetKey: string, indexOrPropertyDescriptor?: number | PropertyDescriptor) => void
 ) {
@@ -86,6 +86,10 @@ function createTaggedDecorator(
             tagProperty(target, targetKey, metadata);
         }
     };
+}
+
+function createTaggedDecorator(metadata:interfaces.MetadataOrMetadataArray) {
+    return createTaggedDecoratorInternal(metadata);
 }
 
 function _decorate(decorators: any[], target: any): void {
@@ -115,4 +119,4 @@ function decorate(
     }
 }
 
-export { decorate, tagParameter, tagProperty, createTaggedDecorator };
+export { decorate, tagParameter, tagProperty, createTaggedDecoratorInternal, createTaggedDecorator };
