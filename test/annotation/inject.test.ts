@@ -3,7 +3,8 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 
 import { expect } from "chai";
 import { decorate } from "../../src/annotation/decorator_utils";
-import { inject, LazyServiceIdentifer } from "../../src/annotation/inject";
+import { inject } from "../../src/annotation/inject";
+import { LazyServiceIdentifer } from "../../src/annotation/lazy_service_identifier";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";

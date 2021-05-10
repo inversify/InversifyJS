@@ -7,7 +7,8 @@ export { createTaggedDecorator } from "./annotation/decorator_utils"
 export { injectable } from "./annotation/injectable";
 export { tagged } from "./annotation/tagged";
 export { named } from "./annotation/named";
-export { inject, LazyServiceIdentifer } from "./annotation/inject";
+export { inject } from "./annotation/inject";
+export { LazyServiceIdentifer } from "./annotation/lazy_service_identifier"
 export { optional } from "./annotation/optional";
 export { unmanaged } from "./annotation/unmanaged";
 export { multiInject } from "./annotation/multi_inject";

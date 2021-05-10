@@ -1,4 +1,4 @@
-import { LazyServiceIdentifer } from "../annotation/inject";
+import { LazyServiceIdentifer } from "../annotation/lazy_service_identifier";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { TargetTypeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
