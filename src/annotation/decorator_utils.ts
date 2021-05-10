@@ -45,13 +45,13 @@ function _tagParameterOrProperty(
 ) {
     const metadatas: interfaces.Metadata[] = _ensureNoMetadataKeyDuplicates(metadata);
 
-    let paramsOrPropertiesMetadata:any = {};
+    let paramsOrPropertiesMetadata:Record<string | symbol, interfaces.Metadata[] | undefined>  = {};
     // read metadata if available
     if (Reflect.hasOwnMetadata(metadataKey, annotationTarget)) {
         paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
     }
 
-    let paramOrPropertyMetadata: interfaces.Metadata[] | undefined = paramsOrPropertiesMetadata[key];
+    let paramOrPropertyMetadata: interfaces.Metadata[] | undefined = paramsOrPropertiesMetadata[key as any];
 
     if (paramOrPropertyMetadata === undefined) {
         paramOrPropertyMetadata = [];
@@ -65,34 +65,21 @@ function _tagParameterOrProperty(
 
     // set metadata
     paramOrPropertyMetadata.push(...metadatas);
-    paramsOrPropertiesMetadata[key] = paramOrPropertyMetadata;
+    paramsOrPropertiesMetadata[key as any] = paramOrPropertyMetadata;
     Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 
 }
-type ParameterOrPropertyDecorator = (
-    target: any,
-    targetKey: string | symbol,
-    indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<unknown>
-) => void;
-function createTaggedDecoratorInternal(
+
+function createTaggedDecorator(
     metadata:interfaces.MetadataOrMetadataArray,
-    callback?:ParameterOrPropertyDecorator
 ) {
-    const decorator:ParameterOrPropertyDecorator = (target, targetKey, indexOrPropertyDescriptor) => {
-        if(callback){
-            callback(target, targetKey, indexOrPropertyDescriptor);
-        }
+    return (target:any, targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
         if (typeof indexOrPropertyDescriptor === "number") {
-            tagParameter(target, targetKey as unknown as string | symbol | undefined, indexOrPropertyDescriptor, metadata);
+            tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
         } else {
-            tagProperty(target, targetKey, metadata);
+            tagProperty(target, targetKey as any, metadata);
         }
     };
-    return decorator;
-}
-
-function createTaggedDecorator(metadata:interfaces.MetadataOrMetadataArray) {
-    return createTaggedDecoratorInternal(metadata);
 }
 
 function _decorate(decorators: any[], target: any): void {
@@ -122,4 +109,4 @@ function decorate(
     }
 }
 
-export { decorate, tagParameter, tagProperty, createTaggedDecoratorInternal, createTaggedDecorator };
+export { decorate, tagParameter, tagProperty, createTaggedDecorator };
