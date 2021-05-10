@@ -29,7 +29,7 @@ const taggedConstraint = (key: string | number | symbol) => (value: any) => {
 
 const namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
-const typeConstraint = (type: (Function | string | symbol)) => (request: interfaces.Request | null) => {
+const typeConstraint = (type: interfaces.ServiceIdentifier<any>) => (request: interfaces.Request | null) => {
 
     // Using index 0 because constraints are applied
     // to one binding at a time (see Planner class)
@@ -37,15 +37,32 @@ const typeConstraint = (type: (Function | string | symbol)) => (request: interfa
 
     if (request !== null) {
         binding = request.bindings[0];
-        if (typeof type === "string" || typeof type === "symbol") {
-            const serviceIdentifier = binding.serviceIdentifier;
+        const serviceIdentifier = binding.serviceIdentifier;
+        if (typeof type === "string") {
             return serviceIdentifier === type;
+        } else if (typeof type === "symbol" && typeof serviceIdentifier === "symbol") {
+            return symbolMatch(serviceIdentifier, type);
         } else {
             const constructor = binding.implementationType;
-            return type === constructor;
+            if (type === constructor) {
+                return true;
+            }
+            // Abstract<T>
+            return (type as any).isPrototypeOf(constructor);
         }
     }
 
+    return false;
+};
+
+const symbolMatch = (serviceIdentifier: symbol, matchSymbol: symbol): boolean => {
+    if (serviceIdentifier === matchSymbol) {
+        return serviceIdentifier === matchSymbol;
+    }
+    const matchOnSymbolKey = false;
+    if (matchOnSymbolKey) {
+        return Symbol.keyFor(serviceIdentifier) === Symbol.keyFor(matchSymbol);
+    }
     return false;
 };
 

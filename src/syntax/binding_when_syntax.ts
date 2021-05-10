@@ -6,7 +6,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 
     private _binding: interfaces.Binding<T>;
 
-    private whenAnyAncestorIsConstraint(ancestor: (Function | string | symbol)  | (Function | string | symbol)[]) {
+    private whenAnyAncestorIsConstraint(ancestor: interfaces.ServiceIdentifierOrArray<any>) {
         let constraint: interfaces.ConstraintFunction;
         if (Array.isArray(ancestor)) {
             constraint = orConstraint(
@@ -52,7 +52,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
         return new BindingOnSyntax<T>(this._binding);
     }
 
-    public whenInjectedInto(parent: (Function | string | symbol) | (Function | string | symbol)[]): interfaces.BindingOnSyntax<T> {
+    public whenInjectedInto(parent: interfaces.ServiceIdentifierOrArray<any>): interfaces.BindingOnSyntax<T> {
         if (Array.isArray(parent)) {
             this._binding.constraint = orConstraint(
                 ...parent.map((p) => (request: interfaces.Request) => typeConstraint(p)(request.parentRequest))
@@ -75,12 +75,12 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
             taggedConstraint(tag)(value)(request.parentRequest);
         return new BindingOnSyntax<T>(this._binding);
     }
-    public whenAnyAncestorIs(ancestor: (Function | string | symbol)  | (Function | string | symbol)[]): interfaces.BindingOnSyntax<T> {
+    public whenAnyAncestorIs(ancestor: interfaces.ServiceIdentifierOrArray<any>): interfaces.BindingOnSyntax<T> {
         this._binding.constraint = this.whenAnyAncestorIsConstraint(ancestor);
         return new BindingOnSyntax<T>(this._binding);
     }
 
-    public whenNoAncestorIs(ancestor: (Function | string | symbol)  | (Function | string | symbol)[]): interfaces.BindingOnSyntax<T> {
+    public whenNoAncestorIs(ancestor: interfaces.ServiceIdentifierOrArray<any>): interfaces.BindingOnSyntax<T> {
         this._binding.constraint = notConstraint(this.whenAnyAncestorIsConstraint(ancestor));
         return new BindingOnSyntax<T>(this._binding);
     }
