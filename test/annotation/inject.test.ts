@@ -8,6 +8,7 @@ import { LazyServiceIdentifer } from "../../src/annotation/lazy_service_identifi
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
+import { multiInject } from "../../src/inversify";
 
 interface Katana {}
 interface Shuriken {}
@@ -174,6 +175,25 @@ describe("@inject", () => {
     // no more metadata should be available
     expect(paramsMetadata["2"]).to.eq(undefined);
 
+  });
+
+  it("should throw when applied inject decorator with undefined service identifier to a property", () => {
+    expect(() => {
+      //@ts-ignore
+      class WithUndefinedInject{
+        @inject(undefined as any)
+        property:string
+      }
+    }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("WithUndefinedInject")}`)
+  });
+
+  it("should throw when applied multiInject decorator with undefined service identifier to a constructor parameter", () => {
+    expect(() => {
+      //@ts-ignore
+      class WithUndefinedInject{
+        constructor(@multiInject(undefined as any) readonly dependency:string[]){}
+      }
+    }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("WithUndefinedInject")}`)
   });
 
 });

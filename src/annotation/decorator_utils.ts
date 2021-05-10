@@ -4,7 +4,7 @@ import { interfaces } from "../interfaces/interfaces";
 import { getFirstArrayDuplicate } from "../utils/js";
 
 function tagParameter(
-    annotationTarget: any,
+    annotationTarget: Object,
     propertyName: string | symbol | undefined,
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
@@ -16,7 +16,7 @@ function tagParameter(
 }
 
 function tagProperty(
-    annotationTarget: any,
+    annotationTarget: Object,
     propertyName: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
@@ -39,7 +39,7 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
 
 function _tagParameterOrProperty(
     metadataKey: string,
-    annotationTarget: any,
+    annotationTarget: Object,
     key: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray,
 ) {
@@ -73,7 +73,7 @@ function _tagParameterOrProperty(
 function createTaggedDecorator(
     metadata:interfaces.MetadataOrMetadataArray,
 ) {
-    return (target:any, targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
+    return (target:Object, targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
         if (typeof indexOrPropertyDescriptor === "number") {
             tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
         } else {
