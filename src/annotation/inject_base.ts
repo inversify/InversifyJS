@@ -5,7 +5,7 @@ import { ServiceIdentifierOrFunc } from "./lazy_service_identifier";
 
 export function injectBase(metadataKey:string){
   return (serviceIdentifier: ServiceIdentifierOrFunc) => {
-    return (target:any, targetKey:string | symbol, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
+    return (target:any, targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
       if (serviceIdentifier === undefined) {
         throw new Error(UNDEFINED_INJECT_ANNOTATION(target.name));
       }

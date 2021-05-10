@@ -77,7 +77,7 @@ function createTaggedDecorator(
         if (typeof indexOrPropertyDescriptor === "number") {
             tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
         } else {
-            tagProperty(target, targetKey as any, metadata);
+            tagProperty(target, targetKey as string | symbol, metadata);
         }
     };
 }
