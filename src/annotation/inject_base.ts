@@ -8,12 +8,7 @@ export function injectBase(metadataKey:string){
     return (target: Object,
        targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
       if (serviceIdentifier === undefined) {
-        let className = "";
-        if(typeof target === "function"){
-          className = target.name;
-        }else{
-          className = target.constructor.name;
-        }
+        const className = typeof target === "function" ? target.name : target.constructor.name;
         throw new Error(UNDEFINED_INJECT_ANNOTATION(className));
       }
       return createTaggedDecorator(
