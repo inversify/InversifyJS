@@ -1,6 +1,7 @@
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { id } from "../utils/id";
+import { getSymbolDescription } from "../utils/serialization";
 import { Metadata } from "./metadata";
 import { QueryableString } from "./queryable_string";
 
@@ -24,7 +25,7 @@ class Target implements interfaces.Target {
         this.id = id();
         this.type = type;
         this.serviceIdentifier = serviceIdentifier;
-        const queryableName = typeof identifier === 'symbol' ? identifier.toString().slice(7,-1) : identifier;
+        const queryableName = typeof identifier === 'symbol' ? getSymbolDescription(identifier): identifier;
         this.name = new QueryableString(queryableName || "");
         this.identifier = identifier;
         this.metadata = new Array<Metadata>();
