@@ -27,7 +27,7 @@ describe("createTaggedDecorator", () => {
     const metadata = {key:"2",value:"2"};
     const decorator = createTaggedDecorator(metadata);
     const spiedTagProperty = sandbox.spy(tagProperty);
-    decorator(Target,"PropertyName");
+    decorator(Target.prototype,"PropertyName");
     expect(spiedTagProperty.calledWithExactly(Target, "PropertyName", metadata));
   });
 
@@ -80,7 +80,20 @@ describe("tagProperty", () => {
   it("should throw if multiple metadata with same key", () => {
     class Target {}
     expect(
-      () => tagProperty(Target,"Property", [{key:"Duplicate",value:"1"},{key:"Duplicate",value:"2"}])
+      () => tagProperty(Target.prototype,"Property", [{key:"Duplicate",value:"1"},{key:"Duplicate",value:"2"}])
     ).to.throw(`${ERROR_MSGS.DUPLICATED_METADATA} Duplicate`);
   });
+
+  it("should throw for static properties", () => {
+    class Target {}
+
+    // does not throw
+    tagProperty(Target.prototype,"Property", {key:"key",value:"value"})
+
+    expect(
+      () => tagProperty(Target,"StaticProperty", {key:"key",value:"value"})
+    ).to.throw(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
+
+  });
+
 });

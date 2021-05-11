@@ -3,8 +3,17 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { getFirstArrayDuplicate } from "../utils/js";
 
+interface ConstructorFunction {
+    new(...args:any[]):unknown,
+    readonly prototype:unknown
+}
+interface Prototype {
+    constructor: Function;
+}
+export type DecoratorTarget = Prototype | ConstructorFunction;
+
 function tagParameter(
-    annotationTarget: Object,
+    annotationTarget: DecoratorTarget,
     propertyName: string | symbol | undefined,
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
@@ -12,14 +21,17 @@ function tagParameter(
     if(propertyName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
-    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget, parameterIndex.toString(), metadata);
+    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget as Function, parameterIndex.toString(), metadata);
 }
 
 function tagProperty(
-    annotationTarget: Object,
+    annotationTarget: DecoratorTarget,
     propertyName: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
+    if(annotationTarget.constructor === Function) {
+        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
+    }
     _tagParameterOrProperty(METADATA_KEY.TAGGED_PROP, annotationTarget.constructor, propertyName, metadata);
 }
 
@@ -39,7 +51,7 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
 
 function _tagParameterOrProperty(
     metadataKey: string,
-    annotationTarget: Object,
+    annotationTarget: Function,
     key: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray,
 ) {
@@ -73,7 +85,8 @@ function _tagParameterOrProperty(
 function createTaggedDecorator(
     metadata:interfaces.MetadataOrMetadataArray,
 ) {
-    return (target:Object, targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
+    return (target:DecoratorTarget,
+        targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
         if (typeof indexOrPropertyDescriptor === "number") {
             tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
         } else {
