@@ -3,17 +3,8 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { getFirstArrayDuplicate } from "../utils/js";
 
-interface ConstructorFunction {
-    new(...args:any[]):unknown,
-    readonly prototype:unknown
-}
-interface Prototype {
-    constructor: Function;
-}
-export type DecoratorTarget = Prototype | ConstructorFunction;
-
 function tagParameter(
-    annotationTarget: DecoratorTarget,
+    annotationTarget: object,
     propertyName: string | symbol | undefined,
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
@@ -21,11 +12,11 @@ function tagParameter(
     if(propertyName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
-    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget as Function, parameterIndex.toString(), metadata);
+    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget, parameterIndex.toString(), metadata);
 }
 
 function tagProperty(
-    annotationTarget: DecoratorTarget,
+    annotationTarget: object,
     propertyName: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
@@ -49,9 +40,9 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
     return metadatas;
 }
 
-function _tagParameterOrProperty(
+function _tagParameterOrProperty<T>(
     metadataKey: string,
-    annotationTarget: Function,
+    annotationTarget: object,
     key: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray,
 ) {
@@ -83,10 +74,13 @@ function _tagParameterOrProperty(
 }
 
 function createTaggedDecorator(
-    metadata:interfaces.MetadataOrMetadataArray,
+    metadata: interfaces.MetadataOrMetadataArray,
 ) {
-    return (target:DecoratorTarget,
-        targetKey:string | symbol | undefined, indexOrPropertyDescriptor?:number | TypedPropertyDescriptor<unknown>) => {
+    return (
+        target: object,
+        targetKey?: string | symbol,
+        indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<unknown>,
+    ) => {
         if (typeof indexOrPropertyDescriptor === "number") {
             tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
         } else {
@@ -110,7 +104,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
     decorator: (ClassDecorator | ParameterDecorator | MethodDecorator),
-    target: DecoratorTarget,
+    target: object,
     parameterIndexOrProperty?: number | string): void {
 
     if (typeof parameterIndexOrProperty === "number") {
