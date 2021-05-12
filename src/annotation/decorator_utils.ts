@@ -3,16 +3,20 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { getFirstArrayDuplicate } from "../utils/js";
 
+function _throwIfMethodParameter(parameterName:string | symbol | undefined):void {
+    if(parameterName !== undefined) {
+        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
+    }
+}
+
 function tagParameter(
     annotationTarget: object,
-    propertyName: string | symbol | undefined,
+    parameterName: string | symbol | undefined,
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
-    if(propertyName !== undefined) {
-        throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
-    }
-    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget, parameterIndex.toString(), metadata);
+    _throwIfMethodParameter(parameterName);
+    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget as Function, parameterIndex.toString(), metadata);
 }
 
 function tagProperty(
@@ -42,7 +46,7 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
 
 function _tagParameterOrProperty<T>(
     metadataKey: string,
-    annotationTarget: object,
+    annotationTarget: Function,
     key: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray,
 ) {
