@@ -7,12 +7,19 @@ function targetIsConstructorFunction<T = Object>(target:DecoratorTarget<T>): tar
     return (target as ConstructorFunction<T>).prototype !== undefined;
 }
 
+type Prototype<T> = {
+    [Property in keyof T ]:
+        T[Property] extends Function?
+            T[Property] :
+            T[Property] | undefined
+} & {constructor:Function}
+
 interface ConstructorFunction<T = Object>{
     new (...args:unknown[]): T,
-    prototype:T
+    prototype:Prototype<T>
 }
 
-export type DecoratorTarget<T = Object> = ConstructorFunction<T> |  T
+export type DecoratorTarget<T = Object> = ConstructorFunction<T> |  Prototype<T>
 
 function _throwIfMethodParameter(parameterName:string | symbol | undefined):void {
     if(parameterName !== undefined) {
