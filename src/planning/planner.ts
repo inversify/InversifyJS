@@ -26,18 +26,14 @@ function _createTarget(
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     name: string,
-    key?: string | number | symbol,
-    value?: any
+    tags?: interfaces.Tag[]
 ): interfaces.Target {
 
     const metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
     const injectMetadata = new Metadata(metadataKey, serviceIdentifier);
     const target = new Target(targetType, name, serviceIdentifier, injectMetadata);
 
-    if (key !== undefined) {
-        const tagMetadata = new Metadata(key, value);
-        target.metadata.push(tagMetadata);
-    }
+    tags?.forEach(([key, value]) => target.metadata.push(new Metadata(key, value)))
 
     return target;
 
@@ -231,13 +227,12 @@ function plan(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-    key?: string | number | symbol,
-    value?: any,
-    avoidConstraints = false
+    avoidConstraints = false,
+    tags?: interfaces.Tag[]
 ): interfaces.Context {
 
     const context = new Context(container);
-    const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
+    const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", tags);
 
     try {
         _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
@@ -256,11 +251,11 @@ function plan(
 function createMockRequest(
     container: interfaces.Container,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    key: string | number | symbol,
-    value: any
+    tags: interfaces.Tag[]
 ): interfaces.Request {
 
-    const target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
+    const target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier);
+    tags.forEach(([key, value]) => target.metadata.push(new Metadata(key, value)))
     const context = new Context(container);
     const request = new Request(serviceIdentifier, context, null, [], target);
     return request;

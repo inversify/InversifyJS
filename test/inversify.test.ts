@@ -6,7 +6,7 @@ import * as ERROR_MSGS from "../src/constants/error_msgs";
 import { interfaces } from "../src/interfaces/interfaces";
 import {
     Container, ContainerModule, decorate, inject,
-    injectable, LazyServiceIdentifer, multiInject, named, tagged, targetName,
+    injectable, LazyServiceIdentifer, multiInject, named, tagged, taggedConstraint, targetName,
     typeConstraint, unmanaged
 } from "../src/inversify";
 
@@ -2808,4 +2808,89 @@ describe("InversifyJS", () => {
 
     });
 
+    describe("Injection of values with multiple tags", () => {
+        it("Should be able to resolve instance", () => {
+
+            interface Weapon {
+                use(): string;
+            }
+
+            @injectable()
+            class Katana implements Weapon {
+                public use() {
+                    return "katana!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements Weapon {
+                constructor(private readonly spikes: number) { }
+                public use() {
+                    return `${this.spikes} spikes shuriken!`;
+                }
+            }
+
+            const container = new Container();
+            const throwableConstraint = taggedConstraint('throwable')
+            const spikesConstraint = taggedConstraint('spikes')
+
+            const allConstraints = (...constraints: interfaces.ConstraintFunction[]) =>
+                (request: interfaces.Request) => constraints.every(constraint => constraint(request))
+
+            container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
+                .when(allConstraints(throwableConstraint(true), spikesConstraint(3)))
+            container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(4))
+                .when(allConstraints(throwableConstraint(true), spikesConstraint(4)))
+            container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
+            const threeSpikesShuriken = container.getTagged<Weapon>('Weapon', [['throwable', true], ['spikes', 3]])
+            const fourSpikesShuriken = container.getTagged<Weapon>('Weapon', [['throwable', true], ['spikes', 4]])
+            const katana = container.getTagged<Weapon>('Weapon', 'throwable', false)
+
+            expect(threeSpikesShuriken.use()).eql("3 spikes shuriken!");
+            expect(fourSpikesShuriken.use()).eql("4 spikes shuriken!");
+            expect(katana.use()).eql("katana!");
+        })
+
+        it("Should be able to verify if it is bound", () => {
+
+            interface Weapon {
+                use(): string;
+            }
+
+            @injectable()
+            class Katana implements Weapon {
+                public use() {
+                    return "katana!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements Weapon {
+                constructor(private readonly spikes: number) { }
+                public use() {
+                    return `${this.spikes} spikes shuriken!`;
+                }
+            }
+
+            const container = new Container();
+            const throwableConstraint = taggedConstraint('throwable')
+            const spikesConstraint = taggedConstraint('spikes')
+
+            const allConstraints = (...constraints: interfaces.ConstraintFunction[]) =>
+                (request: interfaces.Request) => constraints.every(constraint => constraint(request))
+
+            container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
+                .when(allConstraints(throwableConstraint(true), spikesConstraint(3)))
+            container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(4))
+                .when(allConstraints(throwableConstraint(true), spikesConstraint(4)))
+            container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
+            expect(container.isBoundTagged('Weapon', [['throwable', true], ['spikes', 3]])).eq(true)
+            expect(container.isBoundTagged('Weapon', [['throwable', true], ['spikes', 4]])).eq(true)
+            expect(container.isBoundTagged('Weapon', [['throwable', true], ['spikes', 5]])).eq(false)
+            expect(container.isBoundTagged('Weapon', 'throwable', false)).eq(true)
+            expect(container.isBound('Weapon')).eq(true)
+        })
+    })
 });

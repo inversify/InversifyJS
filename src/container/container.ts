@@ -10,6 +10,7 @@ import { BindingToSyntax } from "../syntax/binding_to_syntax";
 import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
+import { normalizeTags } from "../utils/tags";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
@@ -255,19 +256,19 @@ class Container implements interfaces.Container {
     }
 
     // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
-    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean {
+    public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier<any>, ...tags: interfaces.Tags): boolean {
         let bound = false;
 
         // verify if there are bindings available for serviceIdentifier on current binding dictionary
         if (this._bindingDictionary.hasKey(serviceIdentifier)) {
             const bindings = this._bindingDictionary.get(serviceIdentifier);
-            const request = createMockRequest(this, serviceIdentifier, key, value);
+            const request = createMockRequest(this, serviceIdentifier, normalizeTags(tags));
             bound = bindings.some((b) => b.constraint(request));
         }
 
         // verify if there is a parent container that could solve the request
         if (!bound && this.parent) {
-            bound = this.parent.isBoundTagged(serviceIdentifier, key, value);
+            bound = this.parent.isBoundTagged(serviceIdentifier, ...tags);
         }
 
         return bound;
@@ -328,17 +329,16 @@ class Container implements interfaces.Container {
         return  this._get<T>(getArgs) as Promise<T>|T;
     }
 
-    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T {
-        const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
+    public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Tags): T {
+        const getArgs = this._getNotAllArgs(serviceIdentifier, false, normalizeTags(tags));
 
         return this._getButThrowIfAsync<T>(getArgs) as T;
     }
 
     public async getTaggedAsync<T>(
         serviceIdentifier: interfaces.ServiceIdentifier<T>,
-        key: string | number | symbol,
-        value: any): Promise<T> {
-            const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
+        ...tags: interfaces.Tags): Promise<T> {
+            const getArgs = this._getNotAllArgs(serviceIdentifier, false, normalizeTags(tags));
 
             return this._get<T>(getArgs) as Promise<T>|T;
     }
@@ -365,18 +365,17 @@ class Container implements interfaces.Container {
         return this._getAll(getArgs);
     }
 
-    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: any): T[] {
-        const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
+    public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, ...tags: interfaces.Tags): T[] {
+        const getArgs = this._getNotAllArgs(serviceIdentifier, true, normalizeTags(tags));
 
         return this._getButThrowIfAsync<T>(getArgs) as T[];
     }
 
     public getAllTaggedAsync<T>(
       serviceIdentifier: interfaces.ServiceIdentifier<T>,
-      key: string | number | symbol,
-      value: any
+      ...tags: interfaces.Tags
     ): Promise<T[]> {
-        const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
+        const getArgs = this._getNotAllArgs(serviceIdentifier, true, normalizeTags(tags));
 
         return this._getAll(getArgs);
     }
@@ -593,15 +592,15 @@ class Container implements interfaces.Container {
     private _getNotAllArgs<T>(
         serviceIdentifier: interfaces.ServiceIdentifier<T>,
         isMultiInject: boolean,
-        key?: string | number | symbol,
-        value?: any,
+        tags?: interfaces.Tag[]
     ): GetArgs<T> {
         const getNotAllArgs: GetArgs<T> = {
             avoidConstraints: false,
             isMultiInject,
             serviceIdentifier,
-            key,
-            value,
+            key: tags?.[0]?.[0],
+            value: tags?.[0]?.[1],
+            tags
         };
 
         return getNotAllArgs;
@@ -620,9 +619,8 @@ class Container implements interfaces.Container {
                 args.isMultiInject,
                 args.targetType,
                 args.serviceIdentifier,
-                args.key,
-                args.value,
-                args.avoidConstraints
+                args.avoidConstraints,
+                args.tags
             );
 
             // apply context interceptor

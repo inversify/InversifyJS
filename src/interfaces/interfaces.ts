@@ -92,8 +92,11 @@ namespace interfaces {
         isMultiInject: boolean;
         targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<T>;
+        /** @deprecated */
         key?: string | number | symbol;
+        /** @deprecated */
         value?: any;
+        tags?: Tag[];
     }
 
     export type Next = (args: NextArgs) => (any | any[]);
@@ -179,6 +182,10 @@ namespace interfaces {
         skipBaseClassChecks?: boolean;
     }
 
+    export type Tag = [key: string | number | symbol, value: any];
+
+    export type Tags = Tag | [Tag[]]
+
     export interface Container {
         id: number;
         parent: Container | null;
@@ -192,18 +199,18 @@ namespace interfaces {
         unbindAllAsync(): Promise<void>;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
         isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
-        isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
+        isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, ...tags: Tags): boolean;
         get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
         getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
-        getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
+        getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, ...tags: Tags): T;
         getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-        getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+        getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, ...tags: Tags): T[];
         getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
         getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>;
         getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>;
-        getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>;
+        getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, ...tags: Tags): Promise<T>;
         getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T[]>;
-        getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T[]>;
+        getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, ...tags: Tags): Promise<T[]>;
         getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]>;
         onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
         onDeactivation<T>(serviceIdentifier: ServiceIdentifier<T>, onDeactivation: BindingDeactivation<T>): void;
