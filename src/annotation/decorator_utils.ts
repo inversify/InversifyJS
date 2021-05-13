@@ -4,7 +4,7 @@ import { interfaces } from "../interfaces/interfaces";
 import { getFirstArrayDuplicate } from "../utils/js";
 
 function targetIsConstructorFunction<T = Object>(target:DecoratorTarget<T>): target is ConstructorFunction<T>{
-    return (target as any).prototype !== undefined;
+    return (target as ConstructorFunction<T>).prototype !== undefined;
 }
 
 interface ConstructorFunction<T = Object>{
