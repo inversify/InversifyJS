@@ -3,28 +3,40 @@ import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { getFirstArrayDuplicate } from "../utils/js";
 
+function targetIsConstructorFunction<T = Object>(target:DecoratorTarget<T>): target is ConstructorFunction<T>{
+    return (target as any).prototype !== undefined;
+}
+
+interface ConstructorFunction<T = Object>{
+    new (...args:unknown[]): T,
+    prototype:T
+}
+
+export type DecoratorTarget<T = Object> = ConstructorFunction<T> |  T
+
 function _throwIfMethodParameter(parameterName:string | symbol | undefined):void {
     if(parameterName !== undefined) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
 }
 
+
 function tagParameter(
-    annotationTarget: object,
+    annotationTarget: DecoratorTarget,
     parameterName: string | symbol | undefined,
     parameterIndex: number,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
     _throwIfMethodParameter(parameterName);
-    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget as Function, parameterIndex.toString(), metadata);
+    _tagParameterOrProperty(METADATA_KEY.TAGGED, annotationTarget as ConstructorFunction, parameterIndex.toString(), metadata);
 }
 
 function tagProperty(
-    annotationTarget: object,
+    annotationTarget: DecoratorTarget,
     propertyName: string | symbol,
     metadata: interfaces.MetadataOrMetadataArray
 ) {
-    if(annotationTarget.constructor === Function) {
+    if(targetIsConstructorFunction(annotationTarget)) {
         throw new Error(ERROR_MSGS.INVALID_DECORATOR_OPERATION);
     }
     _tagParameterOrProperty(METADATA_KEY.TAGGED_PROP, annotationTarget.constructor, propertyName, metadata);
@@ -44,7 +56,7 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
     return metadatas;
 }
 
-function _tagParameterOrProperty<T>(
+function _tagParameterOrProperty(
     metadataKey: string,
     annotationTarget: Function,
     key: string | symbol,
@@ -81,7 +93,7 @@ function createTaggedDecorator(
     metadata: interfaces.MetadataOrMetadataArray,
 ) {
     return (
-        target: object,
+        target: DecoratorTarget,
         targetKey?: string | symbol,
         indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<unknown>,
     ) => {
