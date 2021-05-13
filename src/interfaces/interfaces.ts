@@ -182,7 +182,7 @@ namespace interfaces {
         skipBaseClassChecks?: boolean;
     }
 
-    export type Tag = [key: string | number | symbol, value: any];
+    export type Tag = [key: string | number | symbol, value: unknown];
 
     export type Tags = Tag | [Tag[]]
 
