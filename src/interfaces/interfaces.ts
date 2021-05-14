@@ -112,9 +112,7 @@ namespace interfaces {
         setCurrentRequest(request: Request): void;
     }
 
-    export interface ReflectResult {
-        [key: string]: Metadata[];
-    }
+    export type MetadataOrMetadataArray = Metadata | Metadata[];
 
     export interface Metadata {
         key: string | number | symbol;
@@ -161,6 +159,7 @@ namespace interfaces {
         serviceIdentifier: ServiceIdentifier<any>;
         type: TargetType;
         name: QueryableString;
+        identifier: string | symbol;
         metadata: Metadata[];
         getNamedTag(): interfaces.Metadata | null;
         getCustomTags(): interfaces.Metadata[] | null;

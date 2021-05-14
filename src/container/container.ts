@@ -27,7 +27,6 @@ class Container implements interfaces.Container {
     private _deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>;
     private _snapshots: interfaces.ContainerSnapshot[];
     private _metadataReader: interfaces.MetadataReader;
-    private _appliedMiddleware: interfaces.Middleware[] = [];
     private _moduleActivationStore: interfaces.ModuleActivationStore
 
     public static merge(
@@ -302,7 +301,6 @@ class Container implements interfaces.Container {
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
-        this._appliedMiddleware = this._appliedMiddleware.concat(middlewares);
         const initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
         this._middleware = middlewares.reduce(
             (prev, curr) => curr(prev),
@@ -390,13 +388,15 @@ class Container implements interfaces.Container {
     }
 
     public resolve<T>(constructorFunction: interfaces.Newable<T>) {
-        const tempContainer = this.createChild();
-        tempContainer.bind<T>(constructorFunction).toSelf();
-        this._appliedMiddleware.forEach((m) => {
-            tempContainer.applyMiddleware(m);
-        });
-
-        return tempContainer.get<T>(constructorFunction);
+        const isBound = this.isBound(constructorFunction);
+        if (!isBound) {
+            this.bind<T>(constructorFunction).toSelf();
+        }
+		const resolved =  this.get<T>(constructorFunction);
+        if (!isBound) {
+            this.unbind(constructorFunction);
+        }
+        return resolved;
     }
 
     private _preDestroy(constructor: any, instance: any): Promise<void> | void {
