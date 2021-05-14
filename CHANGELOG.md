@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - @postConstruct can target an asyncronous function #1132
 
+### Fixed
+- Container.resolve should resolve in that container #1338
 ## [5.1.1] - 2021-04-25
 -Fix pre-publish for build artifacts
 
