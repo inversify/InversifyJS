@@ -39,6 +39,15 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
         return new BindingOnSyntax<T>(this._binding);
     }
 
+    public whenTargetMultiTagged(...tags: [interfaces.Tag, ...interfaces.Tag[]]): interfaces.BindingOnSyntax<T> {
+        this._binding.constraint = (request: interfaces.Request) =>
+            request.target.getCustomTags()?.every((requestTag) =>
+                tags.some(([key, value]) =>
+                    requestTag.key === key && requestTag.value === value)
+            ) ?? tags.length === 0
+        return new BindingOnSyntax<T>(this._binding);
+    }
+
     public whenInjectedInto(parent: (Function | string)): interfaces.BindingOnSyntax<T> {
         this._binding.constraint = (request: interfaces.Request) =>
             typeConstraint(parent)(request.parentRequest);

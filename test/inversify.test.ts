@@ -6,7 +6,7 @@ import * as ERROR_MSGS from "../src/constants/error_msgs";
 import { interfaces } from "../src/interfaces/interfaces";
 import {
     Container, ContainerModule, decorate, inject,
-    injectable, LazyServiceIdentifer, multiInject, named, tagged, taggedConstraint, targetName,
+    injectable, LazyServiceIdentifer, multiInject, named, tagged, targetName,
     typeConstraint, unmanaged
 } from "../src/inversify";
 
@@ -2831,16 +2831,11 @@ describe("InversifyJS", () => {
             }
 
             const container = new Container();
-            const throwableConstraint = taggedConstraint('throwable')
-            const spikesConstraint = taggedConstraint('spikes')
-
-            const allConstraints = (...constraints: interfaces.ConstraintFunction[]) =>
-                (request: interfaces.Request) => constraints.every(constraint => constraint(request))
 
             container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
-                .when(allConstraints(throwableConstraint(true), spikesConstraint(3)))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
             container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(4))
-                .when(allConstraints(throwableConstraint(true), spikesConstraint(4)))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 4]);
             container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
 
             const threeSpikesShuriken = container.getTagged<Weapon>('Weapon', [['throwable', true], ['spikes', 3]])
@@ -2874,21 +2869,18 @@ describe("InversifyJS", () => {
             }
 
             const container = new Container();
-            const throwableConstraint = taggedConstraint('throwable')
-            const spikesConstraint = taggedConstraint('spikes')
-
-            const allConstraints = (...constraints: interfaces.ConstraintFunction[]) =>
-                (request: interfaces.Request) => constraints.every(constraint => constraint(request))
 
             container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
-                .when(allConstraints(throwableConstraint(true), spikesConstraint(3)))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
             container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(4))
-                .when(allConstraints(throwableConstraint(true), spikesConstraint(4)))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 4]);
             container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
 
             expect(container.isBoundTagged('Weapon', [['throwable', true], ['spikes', 3]])).eq(true)
             expect(container.isBoundTagged('Weapon', [['throwable', true], ['spikes', 4]])).eq(true)
             expect(container.isBoundTagged('Weapon', [['throwable', true], ['spikes', 5]])).eq(false)
+            expect(container.getAllTagged('Weapon', 'throwable', true)).to.have.length(2)
+            expect(container.isBoundTagged('Weapon', 'spikes', 3)).eq(true)
             expect(container.isBoundTagged('Weapon', 'throwable', false)).eq(true)
             expect(container.isBound('Weapon')).eq(true)
         })
