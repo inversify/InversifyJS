@@ -619,8 +619,8 @@ class Container implements interfaces.Container {
                 args.isMultiInject,
                 args.targetType,
                 args.serviceIdentifier,
-                args.avoidConstraints,
-                args.tags
+                args.tags,
+                args.avoidConstraints
             );
 
             // apply context interceptor

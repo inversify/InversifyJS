@@ -227,8 +227,8 @@ function plan(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-    avoidConstraints = false,
-    tags?: interfaces.Tag[]
+    tags?: interfaces.Tag[],
+    avoidConstraints = false
 ): interfaces.Context {
 
     const context = new Context(container);
