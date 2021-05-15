@@ -2884,5 +2884,22 @@ describe("InversifyJS", () => {
             expect(container.isBoundTagged('Weapon', 'throwable', false)).eq(true)
             expect(container.isBound('Weapon')).eq(true)
         })
+
+        it("Should respect changes of tags in a middleware", () => {
+            const middleware:interfaces.Middleware = (next => {
+                return (nextArgs => {
+                    if(nextArgs.key === "tag" && nextArgs.value === 1){
+                        nextArgs.value = 2;
+                    }
+                    return next(nextArgs);
+                })
+            })
+
+            const container = new Container();
+            container.applyMiddleware(middleware);
+            container.bind('Sid').toConstantValue("One").whenTargetTagged("tag", 1);
+            container.bind('Sid').toConstantValue("Two").whenTargetTagged("tag", 2);
+            expect(container.getTagged<string>("Sid", "tag", 1)).to.equal("Two");
+        })
     })
 });

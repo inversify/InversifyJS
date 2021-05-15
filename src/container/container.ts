@@ -600,7 +600,7 @@ class Container implements interfaces.Container {
             serviceIdentifier,
             key: tags?.[0]?.[0],
             value: tags?.[0]?.[1],
-            tags
+            tags: tags?.slice(1)
         };
 
         return getNotAllArgs;
@@ -611,6 +611,10 @@ class Container implements interfaces.Container {
     // with the Resolver and that is what this function is about
     private _planAndResolve<T>(): (args: interfaces.NextArgs<T>) => interfaces.ContainerResolution<T> {
         return (args: interfaces.NextArgs<T>) => {
+
+            if (args.key !== undefined) {
+                args.tags = [[args.key, args.value], ...(args.tags ?? [])]
+            }
 
             // create a plan
             let context = plan(

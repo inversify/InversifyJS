@@ -92,9 +92,7 @@ namespace interfaces {
         isMultiInject: boolean;
         targetType: TargetType;
         serviceIdentifier: interfaces.ServiceIdentifier<T>;
-        /** @deprecated */
         key?: string | number | symbol;
-        /** @deprecated */
         value?: any;
         tags?: Tag[];
     }
