@@ -45,7 +45,7 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
         return this._bindingWhenSyntax.whenTargetTagged(tag, value);
     }
 
-    public whenTargetMultiTagged(...tags: [interfaces.Tag, ...interfaces.Tag[]]): interfaces.BindingOnSyntax<T> {
+    public whenTargetMultiTagged(...tags: [interfaces.Tag, interfaces.Tag, ...interfaces.Tag[]]): interfaces.BindingOnSyntax<T> {
         return this._bindingWhenSyntax.whenTargetMultiTagged(...tags);
     }
 

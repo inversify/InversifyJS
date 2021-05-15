@@ -309,7 +309,7 @@ namespace interfaces {
         whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
         whenTargetIsDefault(): BindingOnSyntax<T>;
         whenTargetTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
-        whenTargetMultiTagged(...tags: [interfaces.Tag, ...interfaces.Tag[]]): BindingOnSyntax<T>;
+        whenTargetMultiTagged(...tags: [interfaces.Tag, interfaces.Tag, ...interfaces.Tag[]]): BindingOnSyntax<T>;
         whenInjectedInto(parent: (Function | string)): BindingOnSyntax<T>;
         whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
         whenParentTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
