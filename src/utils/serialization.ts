@@ -45,6 +45,10 @@ function listRegisteredBindingsForServiceIdentifier(
                 registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
             }
 
+            if (binding.constraint.multiMetaData) {
+                registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.multiMetaData.join(', ')}`;
+            }
+
         });
 
     }

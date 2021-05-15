@@ -17,6 +17,6 @@ export { MetadataReader } from "./planning/metadata_reader";
 export { id } from "./utils/id";
 export { interfaces } from "./interfaces/interfaces";
 export { decorate } from "./annotation/decorator_utils";
-export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
+export { traverseAncerstors, taggedConstraint, multiTaggedConstraint, namedConstraint, typeConstraint } from "./syntax/constraint_helpers";
 export { getServiceIdentifierAsString } from "./utils/serialization";
 export { multiBindToService } from "./utils/binding_utils";

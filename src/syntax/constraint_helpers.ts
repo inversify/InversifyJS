@@ -27,6 +27,18 @@ const taggedConstraint = (key: string | number | symbol) => (value: any) => {
     return constraint;
 };
 
+const multiTaggedConstraint = (...tags: [interfaces.Tag, ...interfaces.Tag[]]) => {
+    const constraint: interfaces.ConstraintFunction = (request: interfaces.Request) =>
+            request.target.getCustomTags()?.every((requestTag) =>
+                tags.some(([key, value]) =>
+                    requestTag.key === key && requestTag.value === value)
+            ) ?? tags.length === 0
+
+    constraint.multiMetaData = tags.map(([key, value]) => new Metadata(key, value))
+
+    return constraint
+}
+
 const namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
 const typeConstraint = (type: (Function | string)) => (request: interfaces.Request | null) => {
@@ -49,4 +61,4 @@ const typeConstraint = (type: (Function | string)) => (request: interfaces.Reque
     return false;
 };
 
-export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint };
+export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint, multiTaggedConstraint };

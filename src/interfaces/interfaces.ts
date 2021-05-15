@@ -346,6 +346,7 @@ namespace interfaces {
 
     export interface ConstraintFunction extends Function {
         metaData?: Metadata;
+        multiMetaData?: Metadata[];
         (request: Request | null): boolean;
     }
 

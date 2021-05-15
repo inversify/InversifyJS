@@ -1,6 +1,6 @@
 import { interfaces } from "../interfaces/interfaces";
 import { BindingOnSyntax } from "./binding_on_syntax";
-import { namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from "./constraint_helpers";
+import { multiTaggedConstraint, namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from "./constraint_helpers";
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 
@@ -40,11 +40,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     }
 
     public whenTargetMultiTagged(...tags: [interfaces.Tag, ...interfaces.Tag[]]): interfaces.BindingOnSyntax<T> {
-        this._binding.constraint = (request: interfaces.Request) =>
-            request.target.getCustomTags()?.every((requestTag) =>
-                tags.some(([key, value]) =>
-                    requestTag.key === key && requestTag.value === value)
-            ) ?? tags.length === 0
+        this._binding.constraint = multiTaggedConstraint(...tags)
         return new BindingOnSyntax<T>(this._binding);
     }
 
