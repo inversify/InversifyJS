@@ -7,9 +7,11 @@ import { tagged } from "../../src/annotation/tagged";
 import { targetName } from "../../src/annotation/target_name";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
+import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { named } from "../../src/inversify";
+import { Metadata } from "../../src/planning/metadata";
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import { plan } from "../../src/planning/planner";
 
@@ -86,7 +88,7 @@ describe("Planner", () => {
         container.bind<KatanaHandler>(katanaHandlerId).to(KatanaHandler);
 
         // Actual
-        const actualPlan = plan(new MetadataReader(),  container, false, TargetTypeEnum.Variable, ninjaId).plan;
+        const actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
         const actualNinjaRequest = actualPlan.rootRequest;
         const actualKatanaRequest = actualNinjaRequest.childRequests[0];
         const actualKatanaHandlerRequest = actualKatanaRequest.childRequests[0];
@@ -488,7 +490,7 @@ describe("Planner", () => {
         class Ninja {
             @named("name")
             // tslint:disable-next-line: no-empty
-            set weapon(weapon : Weapon){
+            set weapon(weapon: Weapon) {
 
             }
         }
@@ -513,7 +515,7 @@ describe("Planner", () => {
         @injectable()
         class Test2 extends Test { }
 
-        const container = new Container({skipBaseClassChecks: true});
+        const container = new Container({ skipBaseClassChecks: true });
         container.bind(Test2).toSelf();
         container.get(Test2);
     });
@@ -524,7 +526,7 @@ describe("Planner", () => {
         @injectable()
         class Test2 extends Test { }
 
-        const container = new Container({skipBaseClassChecks: true});
+        const container = new Container({ skipBaseClassChecks: true });
         container.resolve(Test2);
     });
 
@@ -593,4 +595,42 @@ describe("Planner", () => {
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
     });
+
+    it("Should set metadata on target with tags", () => {
+        interface Weapon {
+            use(): string;
+        }
+
+        @injectable()
+        class Katana implements Weapon {
+            public use() {
+                return "katana!";
+            }
+        }
+
+        @injectable()
+        class Shuriken implements Weapon {
+            constructor(private readonly spikes: number) { }
+            public use() {
+                return `${this.spikes} spikes shuriken!`;
+            }
+        }
+
+        const container = new Container();
+        container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
+            .whenTargetMultiTagged(['throwable', true], ["spikes", 3]);
+        container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(4))
+            .whenTargetMultiTagged(['throwable', true], ["spikes", 4]);
+        container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
+        const actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable,
+            "Weapon", [["throwable", false]]).plan;
+        const actualKatanaRequest = actualPlan.rootRequest;
+        const actualKatanaTarget = actualKatanaRequest.target
+
+        expect(actualKatanaTarget.metadata).to.deep.eq([
+            new Metadata(METADATA_KEY.INJECT_TAG, "Weapon"),
+            new Metadata('throwable', false)
+        ])
+    })
 });
