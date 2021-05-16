@@ -9,6 +9,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
+import { named } from "../../src/inversify";
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import { plan } from "../../src/planning/planner";
 
@@ -465,7 +466,7 @@ describe("Planner", () => {
 
     });
 
-    it("Should be throw when a class has a missing @injectable annotation", () => {
+    it("Should throw when a class has a missing @injectable annotation", () => {
 
         interface Weapon { }
 
@@ -480,6 +481,30 @@ describe("Planner", () => {
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
 
+    });
+
+    it("Should throw when apply a metadata decorator without @inject or @multiInject", () => {
+        @injectable()
+        class Ninja {
+            @named("name")
+            // tslint:disable-next-line: no-empty
+            set weapon(weapon : Weapon){
+
+            }
+        }
+        interface Weapon { }
+
+        class Katana implements Weapon { }
+
+        const container = new Container();
+        container.bind<Weapon>("Weapon").to(Katana);
+        container.bind(Ninja).toSelf();
+
+        const throwFunction = () => {
+            plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, Ninja);
+        };
+
+        expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property weapon in class Ninja.`);
     });
 
     it("Should ignore checking base classes for @injectable when skipBaseClassChecks is set on the container", () => {

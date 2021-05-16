@@ -29,6 +29,7 @@ describe("Container.prototype.resolve", () => {
 
         const ninja = container.resolve(Ninja);
         expect(ninja.fight()).to.eql("cut!");
+        expect(container.isBound(Ninja)).to.equal(false);
 
     });
     describe("Should use middleware", () => {
