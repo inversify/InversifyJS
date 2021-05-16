@@ -57,6 +57,7 @@ describe("BindingWhenOnSyntax", () => {
         // stubs for BindingWhenSyntax methods
         const whenStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "when").returns(null);
         const whenTargetNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetNamed").returns(null);
+        const whenTargetMultiTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetMultiTagged").returns(null);
         const whenTargetTaggedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenTargetTagged").returns(null);
         const whenInjectedIntoStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenInjectedInto").returns(null);
         const whenParentNamedStub = sinon.stub(_bindingWhenOnSyntax._bindingWhenSyntax, "whenParentNamed").returns(null);
@@ -90,6 +91,7 @@ describe("BindingWhenOnSyntax", () => {
         bindingWhenOnSyntax.when((request: interfaces.Request) => true);
         bindingWhenOnSyntax.whenTargetNamed("test");
         bindingWhenOnSyntax.whenTargetTagged("test", true);
+        bindingWhenOnSyntax.whenTargetMultiTagged(["test", true], ['test-2', false]);
         bindingWhenOnSyntax.whenInjectedInto("army");
         bindingWhenOnSyntax.whenInjectedInto(Army);
         bindingWhenOnSyntax.whenParentNamed("test");
@@ -107,6 +109,7 @@ describe("BindingWhenOnSyntax", () => {
         expect(whenStub.callCount).eql(1);
         expect(whenTargetNamedStub.callCount).eql(1);
         expect(whenTargetTaggedStub.callCount).eql(1);
+        expect(whenTargetMultiTaggedStub.callCount).eql(1);
         expect(whenInjectedIntoStub.callCount).eql(2);
         expect(whenParentNamedStub.callCount).eql(1);
         expect(whenParentTaggedStub.callCount).eql(1);

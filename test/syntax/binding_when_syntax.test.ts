@@ -93,6 +93,31 @@ describe("BindingWhenSyntax", () => {
 
     });
 
+    it("Should be able to constraint a binding to a tagged target", () => {
+
+        interface Ninja {}
+        const ninjaIdentifier = "Ninja";
+
+        const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
+        const bindingWhenSyntax = new BindingWhenSyntax<Ninja>(binding);
+
+        bindingWhenSyntax.whenTargetMultiTagged(["canSwim", true], ["canFly", true]);
+        expect(binding.constraint).not.to.eql(null);
+
+        const context = new Context(new Container());
+
+        const target = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier, new Metadata("canSwim", true));
+        target.metadata.push(new Metadata("canFly", true))
+        const request = new Request(ninjaIdentifier, context, null, binding, target);
+        expect(binding.constraint(request)).eql(true);
+
+        const target2 = new Target(TargetTypeEnum.ConstructorArgument, "ninja", ninjaIdentifier, new Metadata("canSwim", true));
+        target2.metadata.push(new Metadata("canFly", false))
+        const request2 = new Request(ninjaIdentifier, context, null, binding, target2);
+        expect(binding.constraint(request2)).eql(false);
+
+    });
+
     it("Should be able to constraint a binding to its parent", () => {
 
         interface Weapon {
