@@ -2903,6 +2903,104 @@ describe("InversifyJS", () => {
             expect(container.isBound('Weapon')).eq(true)
         })
 
+        it("Should be able to get all multi tagged", () => {
+
+            interface Weapon {
+                use(): string;
+            }
+
+            @injectable()
+            class Katana implements Weapon {
+                public use() {
+                    return "katana!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements Weapon {
+                constructor(private readonly spikes: number) { }
+                public use() {
+                    return `${this.spikes} spikes shuriken!`;
+                }
+            }
+
+            const container = new Container();
+
+            container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
+            container.bind<Weapon>("Weapon").toConstantValue(new Shuriken(3))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
+            container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
+            expect(container.getAllTagged('Weapon', [['throwable', true], ['spikes', 3]])).to.have.length(2)
+        })
+
+        it("Should be able to get async multi tagged", async () => {
+
+            interface Weapon {
+                use(): string;
+            }
+
+            @injectable()
+            class Katana implements Weapon {
+                public use() {
+                    return "katana!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements Weapon {
+                constructor(private readonly spikes: number) { }
+                public use() {
+                    return `${this.spikes} spikes shuriken!`;
+                }
+            }
+
+            const container = new Container();
+
+            container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken(3))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
+            container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken(4))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 4]);
+            container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
+            const threeSpikesShuriken = await container.getTaggedAsync<Weapon>('Weapon', [['throwable', true], ['spikes', 3]]);
+            expect(threeSpikesShuriken.use()).eql("3 spikes shuriken!");
+        })
+
+        it("Should be able to get async all multi tagged", async () => {
+
+            interface Weapon {
+                use(): string;
+            }
+
+            @injectable()
+            class Katana implements Weapon {
+                public use() {
+                    return "katana!";
+                }
+            }
+
+            @injectable()
+            class Shuriken implements Weapon {
+                constructor(private readonly spikes: number) { }
+                public use() {
+                    return `${this.spikes} spikes shuriken!`;
+                }
+            }
+
+            const container = new Container();
+
+            container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken(3))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
+            container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken(3))
+                .whenTargetMultiTagged(['throwable', true], ['spikes', 3]);
+            container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
+
+            const weapons = await container.getAllTaggedAsync('Weapon', [['throwable', true], ['spikes', 3]]);
+            expect(weapons).to.have.length(2)
+        })
+
         it("Should respect changes of tags in a middleware", () => {
             const middleware:interfaces.Middleware = (next => {
                 return (nextArgs => {
