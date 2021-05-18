@@ -3017,5 +3017,21 @@ describe("InversifyJS", () => {
             container.bind('Sid').toConstantValue("Two").whenTargetTagged("tag", 2);
             expect(container.getTagged<string>("Sid", "tag", 1)).to.equal("Two");
         })
+
+        it("Should provide all tags in a middleware", () => {
+            const middleware:interfaces.Middleware = (next => {
+                return (nextArgs => {
+                    if(nextArgs.tags!.length !== 2){
+                        throw new Error("Where's the tag !?")
+                    }
+                    return next(nextArgs);
+                })
+            })
+
+            const container = new Container();
+            container.applyMiddleware(middleware);
+            expect(() => container.getTagged<string>("Sid", [["tag1", 1],["tag2", 2]]))
+                .not.to.throw("Where's the tag !?");
+        })
     })
 });

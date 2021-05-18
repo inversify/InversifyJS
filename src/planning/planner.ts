@@ -26,14 +26,14 @@ function _createTarget(
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<any>,
     name: string,
-    tags?: interfaces.Tag[]
+    tags: interfaces.Tag[]
 ): interfaces.Target {
 
     const metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
     const injectMetadata = new Metadata(metadataKey, serviceIdentifier);
     const target = new Target(targetType, name, serviceIdentifier, injectMetadata);
 
-    tags?.forEach(([key, value]) => target.metadata.push(new Metadata(key, value)))
+    tags.forEach(([key, value]) => target.metadata.push(new Metadata(key, value)))
 
     return target;
 
@@ -227,7 +227,7 @@ function plan(
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-    tags?: interfaces.Tag[],
+    tags: interfaces.Tag[],
     avoidConstraints = false
 ): interfaces.Context {
 

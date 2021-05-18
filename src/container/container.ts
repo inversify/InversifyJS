@@ -15,7 +15,7 @@ import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
 
-type GetArgs<T> = Omit<interfaces.NextArgs<T>,'contextInterceptor'|'targetType'>
+type GetArgs<T> = Omit<interfaces.NextArgs<T>,'contextInterceptor'|'targetType'|'key'|'value'>
 
 class Container implements interfaces.Container {
 
@@ -551,11 +551,48 @@ class Container implements interfaces.Container {
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
     private _get<T>(getArgs: GetArgs<T>): interfaces.ContainerResolution<T> {
+        let hasTag = getArgs.tags.length > 0
+        let tempValue: unknown
         const planAndResolveArgs:interfaces.NextArgs<T> = {
             ...getArgs,
             contextInterceptor:(context) => context,
             targetType: TargetTypeEnum.Variable
         }
+        Object.defineProperties(planAndResolveArgs, {
+            key: {
+                set(this: interfaces.NextArgs<T>, key: string | number | symbol | undefined) {
+                    if (key === undefined) {
+                        if (hasTag) {
+                            hasTag = false
+                            this.tags.shift()
+                        }
+                    } else {
+                        if (hasTag) {
+                            this.tags[0][0] = key
+                        } else {
+                            this.tags.unshift([key, tempValue])
+                            tempValue = undefined
+                        }
+                    }
+                },
+                get(this: interfaces.NextArgs<T>): string | number | symbol | undefined {
+                    return hasTag ? this.tags[0]?.[0] : undefined
+                }
+            },
+            value: {
+                set(this: interfaces.NextArgs<T>, value: unknown) {
+                    if (hasTag) {
+                        this.tags[0][1] = value
+                    } else {
+                        tempValue = value
+                    }
+                },
+                get(this: interfaces.NextArgs<T>): unknown {
+                    return hasTag ? this.tags[0]?.[1] : undefined
+                }
+            }
+        })
+
         if (this._middleware) {
             const middlewareResult = this._middleware(planAndResolveArgs);
             if (middlewareResult === undefined || middlewareResult === null) {
@@ -584,6 +621,7 @@ class Container implements interfaces.Container {
             avoidConstraints: true,
             isMultiInject: true,
             serviceIdentifier,
+            tags: [],
         };
 
         return getAllArgs;
@@ -592,15 +630,13 @@ class Container implements interfaces.Container {
     private _getNotAllArgs<T>(
         serviceIdentifier: interfaces.ServiceIdentifier<T>,
         isMultiInject: boolean,
-        tags?: interfaces.Tag[]
+        tags: interfaces.Tag[] = []
     ): GetArgs<T> {
         const getNotAllArgs: GetArgs<T> = {
             avoidConstraints: false,
             isMultiInject,
             serviceIdentifier,
-            key: tags?.[0]?.[0],
-            value: tags?.[0]?.[1],
-            tags: tags?.slice(1)
+            tags
         };
 
         return getNotAllArgs;
@@ -611,10 +647,6 @@ class Container implements interfaces.Container {
     // with the Resolver and that is what this function is about
     private _planAndResolve<T>(): (args: interfaces.NextArgs<T>) => interfaces.ContainerResolution<T> {
         return (args: interfaces.NextArgs<T>) => {
-
-            if (args.key !== undefined) {
-                args.tags = [[args.key, args.value], ...(args.tags ?? [])]
-            }
 
             // create a plan
             let context = plan(
