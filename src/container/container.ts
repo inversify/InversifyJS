@@ -570,6 +570,7 @@ class Container implements interfaces.Container {
                         if (hasTag) {
                             this.tags[0][0] = key
                         } else {
+                            hasTag = true
                             this.tags.unshift([key, tempValue])
                             tempValue = undefined
                         }
