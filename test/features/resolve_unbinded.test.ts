@@ -29,8 +29,34 @@ describe("Container.prototype.resolve", () => {
 
         const ninja = container.resolve(Ninja);
         expect(ninja.fight()).to.eql("cut!");
+        expect(container.isBound(Ninja)).to.equal(false);
 
     });
+
+    it("Should be able to resolve a class that has already been bound", () => {
+        @injectable()
+        class Katana {
+            public hit() {
+                return "cut!";
+            }
+        }
+
+        @injectable()
+        class Ninja implements Ninja {
+            public katana: Katana;
+            public constructor(katana: Katana) {
+                this.katana = katana;
+            }
+            public fight() { return this.katana.hit(); }
+        }
+
+        const container = new Container();
+        container.bind(Katana).toSelf();
+        container.bind(Ninja).toSelf();
+
+        const ninja = container.resolve(Ninja);
+        expect(ninja.fight()).to.eql("cut!");
+    })
     describe("Should use middleware", () => {
         interface TestMiddlewareAppliedInCorrectOrder {
             description: string;

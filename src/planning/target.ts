@@ -1,6 +1,7 @@
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { id } from "../utils/id";
+import { getSymbolDescription } from "../utils/serialization";
 import { Metadata } from "./metadata";
 import { QueryableString } from "./queryable_string";
 
@@ -10,11 +11,13 @@ class Target implements interfaces.Target {
     public type: interfaces.TargetType;
     public serviceIdentifier: interfaces.ServiceIdentifier<any>;
     public name: interfaces.QueryableString;
+    public identifier: string | symbol;
+    public key:string | symbol
     public metadata: Metadata[];
 
     public constructor(
         type: interfaces.TargetType,
-        name: string,
+        identifier: string | symbol,
         serviceIdentifier: interfaces.ServiceIdentifier<any>,
         namedOrTagged?: (string | Metadata)
     ) {
@@ -22,7 +25,9 @@ class Target implements interfaces.Target {
         this.id = id();
         this.type = type;
         this.serviceIdentifier = serviceIdentifier;
-        this.name = new QueryableString(name || "");
+        const queryableName = typeof identifier === 'symbol' ? getSymbolDescription(identifier): identifier;
+        this.name = new QueryableString(queryableName || "");
+        this.identifier = identifier;
         this.metadata = new Array<Metadata>();
 
         let metadataItem: interfaces.Metadata | null = null;

@@ -134,10 +134,15 @@ function getFunctionName(v: any): string {
     }
 }
 
+function getSymbolDescription(symbol:Symbol) {
+    return symbol.toString().slice(7,-1);
+}
+
 export {
     getFunctionName,
     getServiceIdentifierAsString,
     listRegisteredBindingsForServiceIdentifier,
     listMetadataForTarget,
-    circularDependencyToException
+    circularDependencyToException,
+    getSymbolDescription
 };

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Target } from "../../src/planning/target";
-import { getFunctionName, listMetadataForTarget } from "../../src/utils/serialization";
+import { getFunctionName, getSymbolDescription, listMetadataForTarget } from "../../src/utils/serialization";
 
 describe("Serialization", () => {
 
@@ -30,6 +30,14 @@ describe("Serialization", () => {
         const target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier);
         const list = listMetadataForTarget(serviceIdentifier, target);
         expect(list).to.eql(` ${serviceIdentifier}`);
+    });
+
+    it("Should extract symbol description", () => {
+        const symbolWithDescription = Symbol("description");
+        expect(getSymbolDescription(symbolWithDescription)).to.equal("description");
+
+        const symbolWithoutDescription = Symbol();
+        expect(getSymbolDescription(symbolWithoutDescription)).to.equal("");
     });
 
 });
