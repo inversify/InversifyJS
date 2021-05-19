@@ -1298,6 +1298,19 @@ describe("Container", () => {
             expect(container.getTagged<string>("Sid", "tag", 1)).to.equal("Two");
         });
 
+        it("Should allow middleware to change the resolved value", () => {
+            const middleware: interfaces.Middleware = (next => {
+                return (nextArgs => {
+                    const resolved = next(nextArgs) as string;
+                    return `${resolved}+`;
+                })
+            })
+
+            const container = new Container();
+            container.applyMiddleware(middleware);
+            container.bind("Sid").toConstantValue("One");
+            expect(container.get<string>("Sid")).to.equal("One+");
+        })
     })
 
 });

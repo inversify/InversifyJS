@@ -10,14 +10,12 @@ import { BindingToSyntax } from "../syntax/binding_to_syntax";
 import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 import { id } from "../utils/id";
 import { getServiceIdentifierAsString } from "../utils/serialization";
-import { cloneTags, normalizeTags } from "../utils/tags";
+import { normalizeTags, TagsArray } from "../utils/tags";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
 
 type GetArgs<T> = Omit<interfaces.NextArgs<T>,'contextInterceptor'|'targetType'|'key'|'value'>
-
-const ExecutePlanSymbol = Symbol('PlanAndResolve')
 
 class Container implements interfaces.Container {
 
@@ -304,7 +302,7 @@ class Container implements interfaces.Container {
     }
 
     public applyMiddleware(...middlewares: interfaces.Middleware[]): void {
-        const initial: interfaces.Next = (this._middleware) ? this._middleware : (args) => [ExecutePlanSymbol, args];
+        const initial: interfaces.Next = (this._middleware) ? this._middleware : this._planAndResolve();
         this._middleware = middlewares.reduce(
             (prev, curr) => curr(prev),
             initial);
@@ -555,26 +553,22 @@ class Container implements interfaces.Container {
     private _get<T>(getArgs: GetArgs<T>): interfaces.ContainerResolution<T> {
         const planAndResolveArgs:interfaces.NextArgs<T> = {
             ...getArgs,
+            tags: new TagsArray(...getArgs.tags),
             key: getArgs.tags[0]?.[0],
             value: getArgs.tags[0]?.[1],
             contextInterceptor:(context) => context,
             targetType: TargetTypeEnum.Variable
         }
 
-        const planAndResolve = this._planAndResolve<T>(cloneTags(getArgs.tags));
-
         if (this._middleware) {
             const middlewareResult = this._middleware(planAndResolveArgs);
             if (middlewareResult === undefined || middlewareResult === null) {
                 throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
             }
-            if (middlewareResult[0] !== ExecutePlanSymbol) {
-                return middlewareResult
-            }
-            return planAndResolve(middlewareResult[1]);
+            return middlewareResult
         }
 
-        return planAndResolve(planAndResolveArgs);
+        return this._planAndResolve<T>()(planAndResolveArgs);
     }
 
     private _getButThrowIfAsync<T>(
@@ -615,36 +609,10 @@ class Container implements interfaces.Container {
         return getNotAllArgs;
     }
 
-    private _tagsChanged(originalTags: interfaces.Tag[], tags:interfaces.Tag[]): boolean {
-        return originalTags.length !== tags.length
-            ? true
-            : originalTags.some((originalTag, i) => originalTag[0] !== tags[i][0] || originalTag[1] !== tags[i][1]);
-    }
-
-    private _normalizeTags<T>(originalTags: interfaces.Tag[], args: interfaces.NextArgs<T>): interfaces.Tag[] {
-        if (this._tagsChanged(originalTags, args.tags)) {
-            return args.tags
-        }
-        if (originalTags.length > 0) {
-            const tags = [...args.tags];
-            const firstTag = tags.shift() as interfaces.Tag;
-            if (args.key === undefined) {
-                return tags;
-            }
-            if (args.key !== firstTag[0] || args.value !== firstTag[1]) {
-                return [[args.key, args.value], ...tags];
-            }
-            return args.tags
-        } else if (args.key !== undefined) {
-            return [[args.key, args.value]];
-        }
-        return []
-    }
-
     // Planner creates a plan and Resolver resolves a plan
     // one of the jobs of the Container is to links the Planner
     // with the Resolver and that is what this function is about
-    private _planAndResolve<T>(originalTags: interfaces.Tag[] = []): (args: interfaces.NextArgs<T>) => interfaces.ContainerResolution<T> {
+    private _planAndResolve<T>(): (args: interfaces.NextArgs<T>) => interfaces.ContainerResolution<T> {
         return (args: interfaces.NextArgs<T>) => {
 
             // create a plan
@@ -654,7 +622,7 @@ class Container implements interfaces.Container {
                 args.isMultiInject,
                 args.targetType,
                 args.serviceIdentifier,
-                this._normalizeTags(originalTags, args),
+                args.tags instanceof TagsArray ? args.tags.getTags(args.key, args.value) : args.tags,
                 args.avoidConstraints
             );
 
