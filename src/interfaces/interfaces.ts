@@ -94,7 +94,7 @@ namespace interfaces {
         serviceIdentifier: interfaces.ServiceIdentifier<T>;
         key?: string | number | symbol;
         value?: any;
-        tags: Tag[];
+        tags?: Tag[];
     }
 
     export type Next = (args: NextArgs) => (any | any[]);

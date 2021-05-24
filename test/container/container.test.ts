@@ -1239,8 +1239,10 @@ describe("Container", () => {
         it("Should work with new middleware that changes key", () => {
             const middleware: interfaces.Middleware = (next => {
                 return (nextArgs => {
-                    const firstTag = nextArgs.tags[0];
-                    firstTag[0] = "new_key";
+                    const firstTag = nextArgs.tags?.[0];
+                    if (firstTag) {
+                        firstTag[0] = "new_key";
+                    }
                     return next(nextArgs);
                 })
             })
@@ -1254,8 +1256,10 @@ describe("Container", () => {
         it("Should work with new middleware that changes value", () => {
             const middleware: interfaces.Middleware = (next => {
                 return (nextArgs => {
-                    const firstTag = nextArgs.tags[0];
-                    firstTag[1] = "New value";
+                    const firstTag = nextArgs.tags?.[0];
+                    if (firstTag) {
+                        firstTag[1] = "New value";
+                    }
                     return next(nextArgs);
                 })
             })
@@ -1269,7 +1273,7 @@ describe("Container", () => {
         it("Should work with new middleware that changes the size of tags array", () => {
             const middleware: interfaces.Middleware = (next => {
                 return (nextArgs => {
-                    nextArgs.tags.push(["tag2", 2]);
+                    nextArgs.tags?.push(["tag2", 2]);
                     return next(nextArgs);
                 })
             })
@@ -1312,5 +1316,4 @@ describe("Container", () => {
             expect(container.get<string>("Sid")).to.equal("One+");
         })
     })
-
 });

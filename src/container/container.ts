@@ -1,6 +1,6 @@
 import { Binding } from "../bindings/binding";
 import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
+import { BindingScopeEnum } from "../constants/literal_types";
 import * as METADATA_KEY from "../constants/metadata_keys";
 import { interfaces } from "../interfaces/interfaces";
 import { MetadataReader } from "../planning/metadata_reader";
@@ -9,8 +9,9 @@ import { resolve } from "../resolution/resolver";
 import { BindingToSyntax } from "../syntax/binding_to_syntax";
 import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
 import { id } from "../utils/id";
+import { NextArgs } from "../utils/next_args";
 import { getServiceIdentifierAsString } from "../utils/serialization";
-import { normalizeTags, TagsArray } from "../utils/tags";
+import { normalizeTags } from "../utils/tags";
 import { ContainerSnapshot } from "./container_snapshot";
 import { Lookup } from "./lookup";
 import { ModuleActivationStore } from "./module_activation_store";
@@ -551,14 +552,7 @@ class Container implements interfaces.Container {
     // delegates resolution to _middleware if available
     // otherwise it delegates resolution to _planAndResolve
     private _get<T>(getArgs: GetArgs<T>): interfaces.ContainerResolution<T> {
-        const planAndResolveArgs:interfaces.NextArgs<T> = {
-            ...getArgs,
-            tags: new TagsArray(...getArgs.tags),
-            key: getArgs.tags[0]?.[0],
-            value: getArgs.tags[0]?.[1],
-            contextInterceptor:(context) => context,
-            targetType: TargetTypeEnum.Variable
-        }
+        const planAndResolveArgs: interfaces.NextArgs<T> = new NextArgs(getArgs)
 
         if (this._middleware) {
             const middlewareResult = this._middleware(planAndResolveArgs);
@@ -622,7 +616,7 @@ class Container implements interfaces.Container {
                 args.isMultiInject,
                 args.targetType,
                 args.serviceIdentifier,
-                args.tags instanceof TagsArray ? args.tags.getTags(args.key, args.value) : args.tags,
+                NextArgs.getTags(args),
                 args.avoidConstraints
             );
 
