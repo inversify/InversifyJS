@@ -1,5 +1,6 @@
 import { assert, expect } from "chai";
 import * as sinon from "sinon";
+import { inject } from "../../src/annotation/inject";
 import { injectable } from "../../src/annotation/injectable";
 import { postConstruct } from "../../src/annotation/post_construct";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
@@ -1086,5 +1087,69 @@ describe("Container", () => {
                 skipBaseClassChecks: 'Jolene, Jolene, Jolene, Jolene' as unknown as boolean
             })
         ).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK);
+    });
+
+    it("Should be able to inject when symbol property key ", () => {
+        const weaponProperty = Symbol();
+        interface Weapon {}
+        @injectable()
+        class Shuriken implements Weapon { }
+        @injectable()
+        class Ninja{
+            @inject("Weapon")
+            [weaponProperty]: Weapon
+        }
+        const container = new Container();
+        container.bind("Weapon").to(Shuriken);
+        const myNinja = container.resolve(Ninja);
+        const weapon = myNinja[weaponProperty];
+        expect(weapon).to.be.instanceOf(Shuriken);
+    });
+
+    it("Should be possible to constrain to a symbol description", () => {
+        const throwableWeapon = Symbol("throwable");
+        interface Weapon {}
+        @injectable()
+        class Shuriken implements Weapon { }
+        @injectable()
+        class Ninja{
+            @inject("Weapon")
+            [throwableWeapon]: Weapon
+        }
+        const container = new Container();
+        container.bind("Weapon").to(Shuriken).when(request => {
+            return request.target.name.equals("throwable");
+        })
+        const myNinja = container.resolve(Ninja);
+        const weapon = myNinja[throwableWeapon];
+        expect(weapon).to.be.instanceOf(Shuriken);
+    });
+
+    it("container resolve should come from the same container", () => {
+        @injectable()
+        class CompositionRoot{}
+        class DerivedContainer extends Container{
+            public planningForCompositionRoot(): void {
+                //
+            }
+        }
+        const middleware:interfaces.Middleware = (next) =>
+            (nextArgs) => {
+                const contextInterceptor = nextArgs.contextInterceptor;
+                nextArgs.contextInterceptor = context => {
+                    if(context.plan.rootRequest.serviceIdentifier === CompositionRoot){
+                        (context.container as DerivedContainer).planningForCompositionRoot();
+                    }
+                    return contextInterceptor(context);
+                }
+                return next(nextArgs)
+            }
+
+        const myContainer = new DerivedContainer();
+        myContainer.applyMiddleware(middleware);
+        myContainer.resolve(CompositionRoot);
+        // tslint:disable-next-line: no-unused-expression
+        expect(() => myContainer.resolve(CompositionRoot)).not.to.throw;
     })
+
 });

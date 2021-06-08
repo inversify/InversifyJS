@@ -37,7 +37,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     public provider: interfaces.ProviderCreator<unknown> | null;
 
     // A constraint used to limit the contexts in which this binding is applicable
-    public constraint: (request: interfaces.Request) => boolean;
+    public constraint: interfaces.ConstraintFunction;
 
     // On activation handler (invoked just before an instance is added to cache and injected)
     public onActivation: interfaces.BindingActivation<TActivated> | null;

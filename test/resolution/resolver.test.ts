@@ -1475,6 +1475,37 @@ describe("Resolve", () => {
           .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in transient scope.");
   });
 
+  it("Should not allow request construction with preDestroy", async () => {
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return;
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inRequestScope();
+
+      expect(() => container.get("Destroyable")).to
+          .throw("@preDestroy error in class Destroyable: Class cannot be instantiated in request scope.");
+  });
+
+  it("Should not allow request construction with deactivation", async () => {
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inRequestScope()
+          .onDeactivation(() => {
+              //
+          });
+
+      expect(() => container.get("Destroyable")).to
+          .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in request scope.");
+  });
+
   it("Should force a class with an async deactivation to use the async unbindAll api", async () => {
       @injectable()
       class Destroyable {
