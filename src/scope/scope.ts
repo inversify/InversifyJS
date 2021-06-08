@@ -22,29 +22,58 @@ export const tryGetFromScope = <T>(
 export const saveToScope = <T>(
   requestScope: interfaces.RequestScope,
   binding:interfaces.Binding<T>,
-  result:T | Promise<T>
+  result: T | Promise<T>
 ): void => {
-  // store in cache if scope is singleton
   if (binding.scope === BindingScopeEnum.Singleton) {
-      binding.cache = result;
-      binding.activated = true;
-
-      if (isPromise(result)) {
-          result.catch((ex) => {
-              // allow binding to retry in future
-              binding.cache = null;
-              binding.activated = false;
-
-              throw ex;
-          });
-      }
+    _saveToSingletonScope(binding, result);
   }
 
   if (
-      binding.scope === BindingScopeEnum.Request &&
-      requestScope !== null &&
-      !requestScope.has(binding.id)
+    binding.scope === BindingScopeEnum.Request
   ) {
-      requestScope.set(binding.id, result);
+    _saveToRequestScope(requestScope, binding, result);
+  }
+}
+
+const _saveToRequestScope = <T>(
+  requestScope: interfaces.RequestScope,
+  binding:interfaces.Binding<T>,
+  result: T | Promise<T>
+): void => {
+  if (
+    requestScope !== null &&
+    !requestScope.has(binding.id)
+  ) {
+    requestScope.set(binding.id, result);
+  }
+}
+
+const _saveToSingletonScope = <T>(
+  binding:interfaces.Binding<T>,
+  result: T | Promise<T>
+): void => {
+  // store in cache if scope is singleton
+  binding.cache = result;
+  binding.activated = true;
+
+  if (isPromise(result)) {
+    void _saveAsyncResultToSingletonScope(binding, result);
+  }
+}
+
+const _saveAsyncResultToSingletonScope = async <T>(
+  binding:interfaces.Binding<T>,
+  asyncResult: Promise<T>
+): Promise<void> => {
+  try {
+    const result = await asyncResult;
+
+    binding.cache = result;
+  } catch (ex: unknown) {
+    // allow binding to retry in future
+    binding.cache = null;
+    binding.activated = false;
+
+    throw ex;
   }
 }

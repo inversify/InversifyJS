@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - @postConstruct can target an asyncronous function #1132
+- Singleton scoped services cache resolved values once the result promise is fulfilled #1320
 
 ### Fixed
 - only inject decorator can be applied to setters #1342
