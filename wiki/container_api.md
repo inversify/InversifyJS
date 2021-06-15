@@ -378,6 +378,32 @@ expect(container.isBound(katanaId)).to.eql(false);
 expect(container.isBound(katanaSymbol)).to.eql(false);
 ```
 
+
+## container.isCurrentBound(serviceIdentifier: interfaces.ServiceIdentifier\<any>): boolean
+
+You can use the `isCurrentBound` method to check if there are registered bindings for a given service identifier only in current container.
+
+```ts
+interface Warrior {}
+let warriorId = "Warrior";
+let warriorSymbol = Symbol.for("Warrior");
+
+@injectable()
+class Ninja implements Warrior {}
+
+let containerParent = new Container();
+let containerChild = new Container();
+
+containerChild.parent = containerParent;
+
+containerParent.bind<Warrior>(Ninja).to(Ninja);
+
+expect(containerParent.isBound(Ninja)).to.eql(true);
+expect(containerParent.isCurrentBound(Ninja)).to.eql(true);
+expect(containerChild.isBound(Ninja)).to.eql(true);
+expect(containerChild.isCurrentBound(Ninja)).to.eql(false);
+```
+
 ## container.isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier\<any>, named: string): boolean
 
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
