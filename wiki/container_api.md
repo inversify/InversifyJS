@@ -385,14 +385,12 @@ You can use the `isCurrentBound` method to check if there are registered binding
 
 ```ts
 interface Warrior {}
-let warriorId = "Warrior";
-let warriorSymbol = Symbol.for("Warrior");
 
 @injectable()
 class Ninja implements Warrior {}
 
-let containerParent = new Container();
-let containerChild = new Container();
+const containerParent = new Container();
+const containerChild = new Container();
 
 containerChild.parent = containerParent;
 
