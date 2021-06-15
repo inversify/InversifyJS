@@ -24,7 +24,7 @@ class Shuriken {
 }
 
 @injectable()
-class Ninja implements Warrion {
+class Ninja implements Warrior {
 
     private _katana: Katana;
     private _shuriken: Shuriken;

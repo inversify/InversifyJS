@@ -72,7 +72,7 @@ describe("InversifyJS", () => {
 
     });
 
-    it("Should be able to to do setter injection and property injection", () => {
+    it("Should be able to do setter injection and property injection", () => {
         @injectable()
         class Shuriken {
             public throw() {
@@ -110,13 +110,21 @@ describe("InversifyJS", () => {
         expect(ninja.sneak()).to.eql("hit!");
         expect(ninja.fight()).to.eql("cut!");
     });
+
     it("Should be able to resolve and inject dependencies in VanillaJS", () => {
 
         const TYPES = {
             Katana: "Katana",
             Ninja: "Ninja",
-            Shuriken: "Shuriken"
+            Shuriken: "Shuriken",
+            Blowgun: "Blowgun"
         };
+
+        class Blowgun {
+            public blow() {
+                return "poison!";
+            }
+        }
 
         class Katana {
             public hit() {
@@ -134,6 +142,7 @@ describe("InversifyJS", () => {
 
             public _katana: Katana;
             public _shuriken: Shuriken;
+            public _blowgun: Blowgun;
 
             public constructor(katana: Katana, shuriken: Shuriken) {
                 this._katana = katana;
@@ -141,23 +150,32 @@ describe("InversifyJS", () => {
             }
             public fight() { return this._katana.hit(); }
             public sneak() { return this._shuriken.throw(); }
+            public poisonDart() { return this._blowgun.blow();}
+
+            public set blowgun(blowgun:Blowgun) {
+                this._blowgun = blowgun;
+            }
         }
 
         decorate(injectable(), Katana);
         decorate(injectable(), Shuriken);
         decorate(injectable(), Ninja);
+        decorate(injectable(), Blowgun);
         decorate(inject(TYPES.Katana), Ninja, 0);
         decorate(inject(TYPES.Shuriken), Ninja, 1);
+        decorate(inject(TYPES.Blowgun), Ninja.prototype, "blowgun");
 
         const container = new Container();
         container.bind<Ninja>(TYPES.Ninja).to(Ninja);
         container.bind<Katana>(TYPES.Katana).to(Katana);
         container.bind<Shuriken>(TYPES.Shuriken).to(Shuriken);
+        container.bind<Blowgun>(TYPES.Blowgun).to(Blowgun);
 
         const ninja = container.get<Ninja>(TYPES.Ninja);
 
         expect(ninja.fight()).eql("cut!");
         expect(ninja.sneak()).eql("hit!");
+        expect(ninja.poisonDart()).eql("poison!");
 
     });
 
@@ -653,17 +671,8 @@ describe("InversifyJS", () => {
 
     it("Should support the injection of class constructors", () => {
 
-        interface Ninja {
-            fight(): string;
-            sneak(): string;
-        }
-
         interface Katana {
             hit(): string;
-        }
-
-        interface Shuriken {
-            throw(): string;
         }
 
         @injectable()
@@ -674,40 +683,26 @@ describe("InversifyJS", () => {
         }
 
         @injectable()
-        class Shuriken implements Shuriken {
-            public throw() {
-                return "hit!";
-            }
-        }
-
-        @injectable()
-        class Ninja implements Ninja {
+        class Ninja{
 
             private _katana: Katana;
-            private _shuriken: Shuriken;
 
             public constructor(
-                @inject("Newable<Katana>") katana: interfaces.Newable<Katana>,
-                @inject("Shuriken") shuriken: Shuriken
+                @inject("Newable<Katana>") katana: interfaces.Newable<Katana>
             ) {
-                this._katana = new Katana();
-                this._shuriken = shuriken;
+                this._katana = new katana();
             }
 
             public fight() { return this._katana.hit(); }
-            public sneak() { return this._shuriken.throw(); }
-
         }
 
         const container = new Container();
         container.bind<Ninja>("Ninja").to(Ninja);
         container.bind<interfaces.Newable<Katana>>("Newable<Katana>").toConstructor<Katana>(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken).inSingletonScope();
 
         const ninja = container.get<Ninja>("Ninja");
 
         expect(ninja.fight()).eql("cut!");
-        expect(ninja.sneak()).eql("hit!");
 
     });
 
