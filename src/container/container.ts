@@ -250,7 +250,7 @@ class Container implements interfaces.Container {
     }
 
     // check binding dependency only in current container
-    public isCurrentBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
+    public isCurrentBound<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): boolean {
         return this._bindingDictionary.hasKey(serviceIdentifier);
     }
 
