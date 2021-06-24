@@ -398,6 +398,7 @@ containerParent.bind<Warrior>(Ninja).to(Ninja);
 
 expect(containerParent.isBound(Ninja)).to.eql(true);
 expect(containerParent.isCurrentBound(Ninja)).to.eql(true);
+
 expect(containerChild.isBound(Ninja)).to.eql(true);
 expect(containerChild.isCurrentBound(Ninja)).to.eql(false);
 ```
