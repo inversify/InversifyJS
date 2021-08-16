@@ -134,7 +134,7 @@ const TYPES = {
     ThrowableWeapon: Symbol.for("ThrowableWeapon")
 };
 
-export { TYPES };
+export default TYPES;
 
 ```
 
@@ -151,7 +151,7 @@ When a class has a  dependency on an interface we also need to use the `@inject`
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import { Weapon, ThrowableWeapon, Warrior } from "./interfaces";
-import { TYPES } from "./types";
+import TYPES from "./types";
 
 @injectable()
 class Katana implements Weapon {
@@ -208,7 +208,7 @@ In the rest of your application your classes should be free of references to oth
 // file inversify.config.ts
 
 import { Container } from "inversify";
-import { TYPES } from "./types";
+import TYPES from "./types";
 import { Warrior, Weapon, ThrowableWeapon } from "./interfaces";
 import { Ninja, Katana, Shuriken } from "./entities";
 
@@ -217,7 +217,7 @@ myContainer.bind<Warrior>(TYPES.Warrior).to(Ninja);
 myContainer.bind<Weapon>(TYPES.Weapon).to(Katana);
 myContainer.bind<ThrowableWeapon>(TYPES.ThrowableWeapon).to(Shuriken);
 
-export { myContainer };
+export default myContainer;
 ```
 
 ### Step 4: Resolve dependencies
@@ -226,8 +226,8 @@ Remember that you should do this only in your [composition root](http://blog.plo
 to avoid the [service locator anti-pattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/).
 
 ```ts
-import { myContainer } from "./inversify.config";
-import { TYPES } from "./types";
+import myContainer from "./inversify.config";
+import TYPES from "./types";
 import { Warrior } from "./interfaces";
 
 const ninja = myContainer.get<Warrior>(TYPES.Warrior);
