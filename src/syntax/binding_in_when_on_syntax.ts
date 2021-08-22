@@ -89,8 +89,12 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
         return this._bindingWhenSyntax.whenNoAncestorMatches(constraint);
     }
 
-    public onActivation(handler: (context: interfaces.Context, injectable: T) => T): interfaces.BindingWhenSyntax<T> {
+    public onActivation(handler: (context: interfaces.Context, injectable: T) => T | Promise<T>): interfaces.BindingWhenSyntax<T> {
         return this._bindingOnSyntax.onActivation(handler);
+    }
+
+    public onDeactivation(handler: (injectable: T) => void | Promise<void>): interfaces.BindingWhenSyntax<T> {
+        return this._bindingOnSyntax.onDeactivation(handler);
     }
 
 }

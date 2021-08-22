@@ -9,6 +9,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { TargetTypeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { interfaces } from "../../src/interfaces/interfaces";
+import { named } from "../../src/inversify";
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import { plan } from "../../src/planning/planner";
 
@@ -120,41 +121,41 @@ describe("Planner", () => {
 
     it("Should throw when circular dependencies found", () => {
 
-        interface A { }
-        interface B { }
-        interface C { }
-        interface D { }
+        interface IA { }
+        interface IB { }
+        interface IC { }
+        interface ID { }
 
         @injectable()
-        class D implements D {
-            public a: A;
+        class D implements ID {
+            public a: IA;
             public constructor(
-                @inject("A") a: A
+                @inject("A") a: IA
             ) { // circular dependency
                 this.a = a;
             }
         }
 
         @injectable()
-        class C implements C {
-            public d: D;
+        class C implements IC {
+            public d: ID;
             public constructor(
-                @inject("D") d: D
+                @inject("D") d: ID
             ) {
                 this.d = d;
             }
         }
 
         @injectable()
-        class B implements B { }
+        class B implements IB { }
 
         @injectable()
-        class A implements A {
-            public b: B;
-            public c: C;
+        class A implements IA {
+            public b: IB;
+            public c: IC;
             public constructor(
-                @inject("B") b: B,
-                @inject("C") c: C
+                @inject("B") b: IB,
+                @inject("C") c: IC
             ) {
                 this.b = b;
                 this.c = c;
@@ -167,10 +168,10 @@ describe("Planner", () => {
         const dId = "D";
 
         const container = new Container();
-        container.bind<A>(aId).to(A);
-        container.bind<B>(bId).to(B);
-        container.bind<C>(cId).to(C);
-        container.bind<D>(dId).to(D);
+        container.bind<IA>(aId).to(A);
+        container.bind<IB>(bId).to(B);
+        container.bind<IC>(cId).to(C);
+        container.bind<ID>(dId).to(D);
 
         const throwErrorFunction = () => {
             container.get(aId);
@@ -465,7 +466,7 @@ describe("Planner", () => {
 
     });
 
-    it("Should be throw when a class has a missing @injectable annotation", () => {
+    it("Should throw when a class has a missing @injectable annotation", () => {
 
         interface Weapon { }
 
@@ -480,6 +481,30 @@ describe("Planner", () => {
 
         expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
 
+    });
+
+    it("Should throw when apply a metadata decorator without @inject or @multiInject", () => {
+        @injectable()
+        class Ninja {
+            @named("name")
+            // tslint:disable-next-line: no-empty
+            set weapon(weapon : Weapon){
+
+            }
+        }
+        interface Weapon { }
+
+        class Katana implements Weapon { }
+
+        const container = new Container();
+        container.bind<Weapon>("Weapon").to(Katana);
+        container.bind(Ninja).toSelf();
+
+        const throwFunction = () => {
+            plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, Ninja);
+        };
+
+        expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property weapon in class Ninja.`);
     });
 
     it("Should ignore checking base classes for @injectable when skipBaseClassChecks is set on the container", () => {

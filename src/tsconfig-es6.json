@@ -1,0 +1,10 @@
+{
+    "include": [
+        "./**/*.ts"
+    ],
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "target": "es6",
+        "outDir": "../es6"
+    },
+}

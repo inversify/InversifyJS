@@ -1,11 +1,13 @@
-import { expect } from "chai";
+import { assert, expect } from "chai";
 import * as sinon from "sinon";
+import { inject } from "../../src/annotation/inject";
 import { injectable } from "../../src/annotation/injectable";
 import { postConstruct } from "../../src/annotation/post_construct";
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { Container } from "../../src/container/container";
 import { ContainerModule } from "../../src/container/container_module";
+import { ModuleActivationStore } from "../../src/container/module_activation_store";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { getBindingDictionary } from "../../src/planning/planner";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
@@ -127,9 +129,21 @@ describe("Container", () => {
     it("Should throw when cannot unbind", () => {
       const serviceIdentifier = "Ninja";
       const container = new Container();
-      const throwFunction = () => { container.unbind("Ninja"); };
+      const throwFunction = () => { container.unbind(serviceIdentifier); };
       expect(throwFunction).to.throw(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
-  });
+    });
+
+    it("Should throw when cannot unbind (async)", async () => {
+        const serviceIdentifier = "Ninja";
+        const container = new Container();
+
+        try {
+            await container.unbindAsync(serviceIdentifier);
+            assert.fail();
+        } catch (err: unknown) {
+            expect((err as Error).message).to.eql(`${ERROR_MSGS.CANNOT_UNBIND} ${getServiceIdentifierAsString(serviceIdentifier)}`);
+        }
+    });
 
     it("Should unbind a binding when requested", () => {
 
@@ -334,6 +348,50 @@ describe("Container", () => {
         expect(timesCalled).to.be.equal(1);
     });
 
+    it("Should save and restore the container activations and deactivations when snapshot and restore", () => {
+        const sid = "sid";
+        const container = new Container();
+        container.bind<string>(sid).toConstantValue("Value");
+
+        let activated = false;
+        let deactivated = false
+
+        container.snapshot();
+
+        container.onActivation<string>(sid,(c, i) => {
+            activated = true;
+            return i;
+        });
+        container.onDeactivation(sid,i => {
+            deactivated = true;
+        });
+
+        container.restore();
+
+        container.get(sid);
+        container.unbind(sid);
+
+        expect(activated).to.equal(false);
+        expect(deactivated).to.equal(false);
+    })
+
+    it("Should save and restore the module activation store when snapshot and restore", () => {
+        const container = new Container();
+        const clonedActivationStore = new ModuleActivationStore();
+        const originalActivationStore = {
+            clone(){
+                return clonedActivationStore;
+            }
+        }
+        const anyContainer = container as any;
+        anyContainer._moduleActivationStore = originalActivationStore;
+        container.snapshot();
+        const snapshot:interfaces.ContainerSnapshot = anyContainer._snapshots[0];
+        expect(snapshot.moduleActivationStore === clonedActivationStore).to.equal(true);
+        container.restore();
+        expect(anyContainer._moduleActivationStore === clonedActivationStore).to.equal(true);
+    })
+
     it("Should be able to check is there are bindings available for a given identifier", () => {
 
         interface Warrior {}
@@ -523,6 +581,12 @@ describe("Container", () => {
 
     });
 
+    it("Should default binding scope to Transient if no default scope on options", () => {
+        const container = new Container();
+        container.options.defaultScope = undefined;
+        const expectedScope:interfaces.BindingScope = "Transient";
+        expect((container.bind("SID") as any)._binding.scope).to.equal(expectedScope);
+    });
     it("Should be able to configure automatic binding for @injectable() decorated classes", () => {
 
         @injectable()
@@ -895,5 +959,197 @@ describe("Container", () => {
         expect(values2[1]).to.eq(undefined);
 
     });
+
+    it("Should be able to override a binding using rebindAsync", async () => {
+
+        const TYPES = {
+            someType: "someType"
+        };
+
+        const container = new Container();
+        container.bind<number>(TYPES.someType).toConstantValue(1);
+        container.bind<number>(TYPES.someType).toConstantValue(2);
+        container.onDeactivation(TYPES.someType,() => Promise.resolve())
+
+        const values1 = container.getAll(TYPES.someType);
+        expect(values1[0]).to.eq(1);
+        expect(values1[1]).to.eq(2);
+
+        (await container.rebindAsync<number>(TYPES.someType)).toConstantValue(3);
+        const values2 = container.getAll(TYPES.someType);
+        expect(values2[0]).to.eq(3);
+        expect(values2[1]).to.eq(undefined);
+
+    });
+
+    it("Should be able to resolve named multi-injection (async)", async () => {
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "au revoir" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetNamed("es");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "adios" })).whenTargetNamed("es");
+
+        const fr = await container.getAllNamedAsync<Intl>("Intl", "fr");
+        expect(fr.length).to.equal(2);
+        expect(fr[0].hello).to.equal("bonjour");
+        expect(fr[1].goodbye).to.equal("au revoir");
+
+        const es = await container.getAllNamedAsync<Intl>("Intl", "es");
+        expect(es.length).to.equal(2);
+        expect(es[0].hello).to.equal("hola");
+        expect(es[1].goodbye).to.equal("adios");
+
+    });
+
+    it("Should be able to resolve named (async)", async () => {
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetNamed("fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetNamed("es");
+
+        const fr = await container.getNamedAsync<Intl>("Intl", "fr");
+        expect(fr.hello).to.equal("bonjour");
+
+        const es = await container.getNamedAsync<Intl>("Intl", "es");
+        expect(es.hello).to.equal("hola");
+    });
+
+    it("Should be able to resolve tagged multi-injection (async)", async () => {
+
+        interface Intl {
+            hello?: string;
+            goodbye?: string;
+        }
+
+        const container = new Container();
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "bonjour" })).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "au revoir" })).whenTargetTagged("lang", "fr");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ hello: "hola" })).whenTargetTagged("lang", "es");
+        container.bind<Intl>("Intl").toDynamicValue(() => Promise.resolve({ goodbye: "adios" })).whenTargetTagged("lang", "es");
+
+        const fr = await container.getAllTaggedAsync<Intl>("Intl", "lang", "fr");
+        expect(fr.length).to.equal(2);
+        expect(fr[0].hello).to.equal("bonjour");
+        expect(fr[1].goodbye).to.equal("au revoir");
+
+        const es = await container.getAllTaggedAsync<Intl>("Intl", "lang", "es");
+        expect(es.length).to.equal(2);
+        expect(es[0].hello).to.equal("hola");
+        expect(es[1].goodbye).to.equal("adios");
+
+    });
+
+    it("Should be able to get a tagged binding (async)", async () => {
+
+        const zero = "Zero";
+        const isValidDivisor = "IsValidDivisor";
+        const container = new Container();
+
+        container.bind<number>(zero).toDynamicValue(() => Promise.resolve(0)).whenTargetTagged(isValidDivisor, false);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, false)).to.equal(0);
+
+        container.bind<number>(zero).toDynamicValue(() => Promise.resolve(1)).whenTargetTagged(isValidDivisor, true);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, false)).to.equal(0);
+        expect(await container.getTaggedAsync(zero, isValidDivisor, true)).to.equal(1);
+
+    });
+
+    it("should be able to get all the services binded (async)", async () => {
+        const serviceIdentifier = "service-identifier";
+
+        const container = new Container();
+
+        const firstValueBinded = "value-one";
+        const secondValueBinded = "value-two";
+        const thirdValueBinded = "value-three";
+
+        container.bind(serviceIdentifier).toConstantValue(firstValueBinded);
+        container.bind(serviceIdentifier).toConstantValue(secondValueBinded);
+        container.bind(serviceIdentifier).toDynamicValue(_ => Promise.resolve(thirdValueBinded));
+        const services = await container.getAllAsync<string>(serviceIdentifier);
+
+        expect(services).to.deep.eq([firstValueBinded, secondValueBinded, thirdValueBinded]);
+    });
+
+    it('should throw an error if skipBaseClassChecks is not a boolean', () => {
+        expect(() =>
+            new Container({
+                skipBaseClassChecks: 'Jolene, Jolene, Jolene, Jolene' as unknown as boolean
+            })
+        ).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_SKIP_BASE_CHECK);
+    });
+
+    it("Should be able to inject when symbol property key ", () => {
+        const weaponProperty = Symbol();
+        interface Weapon {}
+        @injectable()
+        class Shuriken implements Weapon { }
+        @injectable()
+        class Ninja{
+            @inject("Weapon")
+            [weaponProperty]: Weapon
+        }
+        const container = new Container();
+        container.bind("Weapon").to(Shuriken);
+        const myNinja = container.resolve(Ninja);
+        const weapon = myNinja[weaponProperty];
+        expect(weapon).to.be.instanceOf(Shuriken);
+    });
+
+    it("Should be possible to constrain to a symbol description", () => {
+        const throwableWeapon = Symbol("throwable");
+        interface Weapon {}
+        @injectable()
+        class Shuriken implements Weapon { }
+        @injectable()
+        class Ninja{
+            @inject("Weapon")
+            [throwableWeapon]: Weapon
+        }
+        const container = new Container();
+        container.bind("Weapon").to(Shuriken).when(request => {
+            return request.target.name.equals("throwable");
+        })
+        const myNinja = container.resolve(Ninja);
+        const weapon = myNinja[throwableWeapon];
+        expect(weapon).to.be.instanceOf(Shuriken);
+    });
+
+    it("container resolve should come from the same container", () => {
+        @injectable()
+        class CompositionRoot{}
+        class DerivedContainer extends Container{
+            public planningForCompositionRoot(): void {
+                //
+            }
+        }
+        const middleware:interfaces.Middleware = (next) =>
+            (nextArgs) => {
+                const contextInterceptor = nextArgs.contextInterceptor;
+                nextArgs.contextInterceptor = context => {
+                    if(context.plan.rootRequest.serviceIdentifier === CompositionRoot){
+                        (context.container as DerivedContainer).planningForCompositionRoot();
+                    }
+                    return contextInterceptor(context);
+                }
+                return next(nextArgs)
+            }
+
+        const myContainer = new DerivedContainer();
+        myContainer.applyMiddleware(middleware);
+        myContainer.resolve(CompositionRoot);
+        // tslint:disable-next-line: no-unused-expression
+        expect(() => myContainer.resolve(CompositionRoot)).not.to.throw;
+    })
 
 });

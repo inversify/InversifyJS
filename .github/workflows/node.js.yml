@@ -31,6 +31,10 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x, 15.x]
+        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
+
+    env:
+      TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
     steps:
     - uses: actions/checkout@v2
@@ -38,6 +42,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - run: npm cache clean --force
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test

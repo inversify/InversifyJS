@@ -6,18 +6,18 @@ describe("Node", () => {
 
     it("Should throw if circular dependencies found", () => {
 
-        interface A {}
-        interface B {}
-        interface C {}
-        interface D {}
+        interface IA {}
+        interface IB {}
+        interface IC {}
+        interface ID {}
 
         @injectable()
-        class A implements A {
-            public b: B;
-            public c: C;
+        class A implements IA {
+            public b: IB;
+            public c: IC;
             public constructor(
-                @inject("B")  b: B,
-                @inject("C")  c: C
+                @inject("B")  b: IB,
+                @inject("C")  c: IC,
             ) {
                 this.b = b;
                 this.c = c;
@@ -25,20 +25,20 @@ describe("Node", () => {
         }
 
         @injectable()
-        class B implements B {}
+        class B implements IB {}
 
         @injectable()
-        class C implements C {
-            public d: D;
-            public constructor(@inject("D") d: D) {
+        class C implements IC {
+            public d: ID;
+            public constructor(@inject("D") d: ID) {
                 this.d = d;
             }
         }
 
         @injectable()
-        class D implements D {
-            public a: A;
-            public constructor(@inject("A") a: A) {
+        class D implements ID {
+            public a: IA;
+            public constructor(@inject("A") a: IA) {
                 this.a = a;
             }
         }

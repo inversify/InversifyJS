@@ -14,26 +14,31 @@ describe("Issue 543", () => {
             Root: Symbol.for("Root")
         };
 
-        @injectable()
-        class Irrelevant {}
+        interface IIrrelevant {}
+        interface ICircular{}
+        interface IChild {}
+        interface IChild2 {}
 
         @injectable()
-        class Child2 {
-            public circ: Circular;
+        class Irrelevant implements IIrrelevant {}
+
+        @injectable()
+        class Child2 implements IChild2 {
+            public circ: ICircular;
             public constructor(
-                @inject(TYPE.Circular) circ: Circular
+                @inject(TYPE.Circular) circ: ICircular
             ) {
                 this.circ = circ;
             }
         }
 
         @injectable()
-        class Child {
-            public irrelevant: Irrelevant;
-            public child2: Child2;
+        class Child implements IChild {
+            public irrelevant: IIrrelevant;
+            public child2: IChild2;
             public constructor(
-                @inject(TYPE.Irrelevant) irrelevant: Irrelevant,
-                @inject(TYPE.Child2) child2: Child2
+                @inject(TYPE.Irrelevant) irrelevant: IIrrelevant,
+                @inject(TYPE.Child2) child2: IChild2
             ) {
                 this.irrelevant = irrelevant;
                 this.child2 = child2;
@@ -41,12 +46,12 @@ describe("Issue 543", () => {
         }
 
         @injectable()
-        class Circular {
-            public irrelevant: Irrelevant;
-            public child: Child;
+        class Circular implements Circular {
+            public irrelevant: IIrrelevant;
+            public child: IChild;
             public constructor(
-                @inject(TYPE.Irrelevant) irrelevant: Irrelevant,
-                @inject(TYPE.Child) child: Child
+                @inject(TYPE.Irrelevant) irrelevant: IIrrelevant,
+                @inject(TYPE.Child) child: IChild
             ) {
                 this.irrelevant = irrelevant;
                 this.child = child;
@@ -55,11 +60,11 @@ describe("Issue 543", () => {
 
         @injectable()
         class Root {
-            public irrelevant: Irrelevant;
-            public circ: Circular;
+            public irrelevant: IIrrelevant;
+            public circ: ICircular;
             public constructor(
-                @inject(TYPE.Irrelevant) irrelevant1: Irrelevant,
-                @inject(TYPE.Circular) circ: Circular
+                @inject(TYPE.Irrelevant) irrelevant1: IIrrelevant,
+                @inject(TYPE.Circular) circ: ICircular
             ) {
                 this.irrelevant = irrelevant1;
                 this.circ = circ;
