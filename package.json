@@ -6,6 +6,8 @@
   "jsnext:main": "es/inversify.js",
   "module": "es/inversify.js",
   "types": "lib/inversify.d.ts",
+  "sideEffects": false,
+  "module": "es/inversify.js",
   "scripts": {
     "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
     "build:lib": "tsc -p src/tsconfig.json",
