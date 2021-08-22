@@ -423,6 +423,26 @@ describe("Container", () => {
 
     });
 
+  it("Should be able to check is there are bindings available for a given identifier only in current container", () => {
+
+    interface Warrior {}
+
+    @injectable()
+    class Ninja implements Warrior {}
+
+    const containerParent = new Container();
+    const containerChild = new Container();
+
+    containerChild.parent = containerParent;
+
+    containerParent.bind<Warrior>(Ninja).to(Ninja);
+
+    expect(containerParent.isBound(Ninja)).to.eql(true);
+    expect(containerParent.isCurrentBound(Ninja)).to.eql(true);
+    expect(containerChild.isBound(Ninja)).to.eql(true);
+    expect(containerChild.isCurrentBound(Ninja)).to.eql(false);
+  });
+
     it("Should be able to get services from parent container", () => {
         const weaponIdentifier = "Weapon";
 
