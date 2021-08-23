@@ -79,6 +79,11 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingTypeEnum.Factory);
         expect(binding.factory).not.to.eql(null);
 
+        bindingToSyntax.toAutoNamedFactory<Ninja>(ninjaIdentifier);
+
+        expect(binding.type).eql(BindingTypeEnum.Factory);
+        expect(binding.factory).not.to.eql(null);
+
         bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) =>
             () =>
                 new Promise<Ninja>((resolve) => {
