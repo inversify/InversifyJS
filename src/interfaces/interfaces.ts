@@ -190,6 +190,7 @@ namespace interfaces {
         unbindAll(): void;
         unbindAllAsync(): Promise<void>;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
+        isCurrentBound<T>(serviceIdentifier: ServiceIdentifier<T>): boolean;
         isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
         isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
         get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
