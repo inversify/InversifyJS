@@ -334,6 +334,7 @@ namespace interfaces {
         toFactory<T2, T3 extends unknown[] = unknown[]>(factory: FactoryCreator<T2, T3>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;
         toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
+        toAutoNamedFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
         toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
         toService(service: ServiceIdentifier<T>): void;
     }
