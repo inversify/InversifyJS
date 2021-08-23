@@ -331,7 +331,7 @@ namespace interfaces {
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
         toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-        toFactory<T2, T3 extends any[] = any[]>(factory: FactoryCreator<T2, T3>): BindingWhenOnSyntax<T>;
+        toFactory<T2, T3 extends unknown[] = unknown[]>(factory: FactoryCreator<T2, T3>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;
         toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
         toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
