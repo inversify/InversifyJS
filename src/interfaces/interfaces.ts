@@ -71,7 +71,7 @@ namespace interfaces {
         cache: null | TActivated | Promise<TActivated>;
     }
 
-    export type Factory<T, U extends any[] = any[]> = (...args: U) => (((...args: U) => T) | T);
+    export type Factory<T, U extends unknown[] = unknown[]> = (...args: U) => (((...args: U) => T) | T);
 
     export type FactoryCreator<T, U extends any[] = any[]> = (context: Context) => Factory<T, U>;
 
