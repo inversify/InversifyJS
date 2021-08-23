@@ -249,6 +249,11 @@ class Container implements interfaces.Container {
         return bound;
     }
 
+    // check binding dependency only in current container
+    public isCurrentBound<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): boolean {
+        return this._bindingDictionary.hasKey(serviceIdentifier);
+    }
+
     public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier<any>, named: string | number | symbol): boolean {
         return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
     }

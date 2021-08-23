@@ -55,7 +55,7 @@ The logger middleware will log in console the execution time:
 ```ts
 let ninja = container.get<Ninja>("Ninja");
 
-> 21
+> wooooo  21
 ```
 
 ## Multiple middleware functions
