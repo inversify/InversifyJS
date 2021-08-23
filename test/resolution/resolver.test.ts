@@ -355,67 +355,22 @@ describe("Resolve", () => {
   it("Should be able to resolve BindingType.Constructor bindings", () => {
 
       const ninjaId = "Ninja";
-      const shurikenId = "Shuriken";
-      const katanaId = "Katana";
       const newableKatanaId = "Newable<Katana>";
-      const katanaHandlerId = "KatanaHandler";
-      const katanaBladeId = "KatanaBlade";
-
-      interface KatanaBlade { }
+      @injectable()
+      class Katana { }
 
       @injectable()
-      class KatanaBlade implements KatanaBlade { }
-
-      interface KatanaHandler { }
-
-      @injectable()
-      class KatanaHandler implements KatanaHandler { }
-
-      interface Sword {
-          handler: KatanaHandler;
-          blade: KatanaBlade;
-      }
-
-      @injectable()
-      class Katana implements Sword {
-          public handler: KatanaHandler;
-          public blade: KatanaBlade;
-          public constructor(
-              @inject(katanaHandlerId) @targetName("handler") handler: KatanaHandler,
-              @inject(katanaBladeId) @targetName("blade") blade: KatanaBlade
-          ) {
-              this.handler = handler;
-              this.blade = blade;
-          }
-      }
-
-      interface Shuriken { }
-
-      @injectable()
-      class Shuriken implements Shuriken { }
-
-      interface Warrior {
-          katana: Katana;
-          shuriken: Shuriken;
-      }
-
-      @injectable()
-      class Ninja implements Warrior {
+      class Ninja{
           public katana: Katana;
-          public shuriken: Shuriken;
           public constructor(
-              @inject(newableKatanaId) @targetName("katana") katana: Katana,
-              @inject(shurikenId) @targetName("shuriken") shuriken: Shuriken
+              @inject(newableKatanaId) katana: interfaces.Newable<Katana>
           ) {
-              this.katana = new Katana(new KatanaHandler(), new KatanaBlade());  // IMPORTANT!
-              this.shuriken = shuriken;
+              this.katana = new katana();  // IMPORTANT!
           }
       }
 
       const container = new Container();
       container.bind<Ninja>(ninjaId).to(Ninja);
-      container.bind<Shuriken>(shurikenId).to(Shuriken);
-      container.bind<Katana>(katanaId).to(Katana);
       container.bind<interfaces.Newable<Katana>>(newableKatanaId).toConstructor<Katana>(Katana);  // IMPORTANT!
 
       const context = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId);
@@ -423,9 +378,6 @@ describe("Resolve", () => {
 
       expect(ninja instanceof Ninja).eql(true);
       expect(ninja.katana instanceof Katana).eql(true);
-      expect(ninja.katana.handler instanceof KatanaHandler).eql(true);
-      expect(ninja.katana.blade instanceof KatanaBlade).eql(true);
-      expect(ninja.shuriken instanceof Shuriken).eql(true);
 
   });
 
@@ -1358,6 +1310,13 @@ describe("Resolve", () => {
       expect(subject1 === subject2).eql(true);
   });
 
+  it("should not deactivate a non activated constant value", () => {
+    const container = new Container();
+    container.bind<string>("ConstantValue").toConstantValue("Constant").onDeactivation(sinon.mock().never());
+    container.unbind("ConstantValue");
+  });
+
+
   it("Should return resolved instance to onDeactivation when binding is async", async () => {
       @injectable()
       class Destroyable {
@@ -1514,6 +1473,37 @@ describe("Resolve", () => {
 
       expect(() => container.get("Destroyable")).to
           .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in transient scope.");
+  });
+
+  it("Should not allow request construction with preDestroy", async () => {
+      @injectable()
+      class Destroyable {
+          @preDestroy()
+          public myPreDestroyMethod() {
+              return;
+          }
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inRequestScope();
+
+      expect(() => container.get("Destroyable")).to
+          .throw("@preDestroy error in class Destroyable: Class cannot be instantiated in request scope.");
+  });
+
+  it("Should not allow request construction with deactivation", async () => {
+      @injectable()
+      class Destroyable {
+      }
+
+      const container = new Container();
+      container.bind<Destroyable>("Destroyable").to(Destroyable).inRequestScope()
+          .onDeactivation(() => {
+              //
+          });
+
+      expect(() => container.get("Destroyable")).to
+          .throw("onDeactivation() error in class Destroyable: Class cannot be instantiated in request scope.");
   });
 
   it("Should force a class with an async deactivation to use the async unbindAll api", async () => {
@@ -2550,5 +2540,30 @@ describe("Resolve", () => {
 
       expect(() => container.get<string>("async")).to.throw(`You are attempting to construct 'async' in a synchronous way
  but it has asynchronous dependencies.`);
+  });
+
+  it("Should cache a a resolved value on singleton when possible", async () => {
+    const container = new Container();
+
+    const asyncServiceIdentifier = "async";
+
+    const asyncServiceDynamicResolvedValue = "foobar";
+    const asyncServiceDynamicValue = Promise.resolve(asyncServiceDynamicResolvedValue);
+    const asyncServiceDynamicValueCallback = sinon.spy(() => asyncServiceDynamicValue);
+
+    container
+        .bind<string>(asyncServiceIdentifier)
+        .toDynamicValue(asyncServiceDynamicValueCallback)
+        .inSingletonScope();
+
+    const serviceFromGetAsync = await container.getAsync(asyncServiceIdentifier);
+
+    await asyncServiceDynamicValue;
+
+    const serviceFromGet = container.get(asyncServiceIdentifier);
+
+    expect(asyncServiceDynamicValueCallback.callCount).to.eq(1);
+    expect(serviceFromGetAsync).eql(asyncServiceDynamicResolvedValue);
+    expect(serviceFromGet).eql(asyncServiceDynamicResolvedValue);
   });
 });
