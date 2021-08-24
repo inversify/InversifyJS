@@ -73,7 +73,7 @@ namespace interfaces {
 
     export type Factory<T, U extends unknown[] = unknown[]> = (...args: U) => (((...args: U) => T) | T);
 
-    export type FactoryCreator<T, U extends any[] = any[]> = (context: Context) => Factory<T, U>;
+    export type FactoryCreator<T, U extends unknown[] = unknown[]> = (context: Context) => Factory<T, U>;
 
     export type FactoryTypeFunction = (context: interfaces.Context) => any;
 
