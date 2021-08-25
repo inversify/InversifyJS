@@ -2,18 +2,25 @@
   "name": "inversify",
   "version": "5.1.1",
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
-  "main": "lib/inversify.js",
-  "jsnext:main": "es/inversify.js",
-  "module": "es/inversify.js",
-  "types": "lib/inversify.d.ts",
+  "main": "dist/inversify.js",
+  "jsnext:main": "dist/inversify.esm.mjs",
+  "module": "dist/inversify.esm.mjs",
+  "types": "dist/inversify.d.ts",
+  "exports": {
+    "require": "./dist/inversify.js",
+    "import": "./dist/inversify.esm.mjs"
+  },
+  "files": [
+    "dist/*"
+  ],
   "sideEffects": false,
   "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
-    "build:lib": "tsc -p src/tsconfig.json",
-    "build:amd": "tsc -p src/tsconfig-amd.json",
-    "build:es": "tsc -p src/tsconfig-es.json",
-    "build:es6": "tsc -p src/tsconfig-es6.json",
-    "clean": "rm -r amd es lib",
+    "prebuild": "npm run remove:dist",
+    "build": "rollup -c",
+    "postbuild": "npm run types && npm run clean:dist",
+    "types": "api-extractor run --local --verbose",
+    "remove:dist": "node scripts/remove-dist.mjs",
+    "clean:dist": "node scripts/clean-dist.mjs",
     "pretest": "tslint --project .",
     "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "test:browser": "browserify test/inversify.test.ts -p [ tsify --noImplicitAny ] > ./test/bundle.test.js && karma start",
@@ -44,12 +51,14 @@
   "homepage": "http://inversify.io",
   "engines": {},
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.18.6",
     "@types/chai": "4.2.16",
     "@types/harmony-proxy": "1.0.29",
     "@types/mocha": "8.2.2",
     "@types/sinon": "10.0.0",
     "browserify": "17.0.0",
     "chai": "4.3.4",
+    "del": "^6.0.0",
     "es6-symbol": "3.1.3",
     "harmony-proxy": "1.0.1",
     "istanbul": "0.4.5",
@@ -69,11 +78,38 @@
     "performance-now": "2.1.0",
     "publish-please": "5.5.2",
     "reflect-metadata": "0.1.13",
+    "rollup": "^2.56.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.30.0",
     "sinon": "9.2.4",
     "ts-node": "9.1.1",
     "tsify": "5.0.2",
     "tslint": "6.1.3",
     "typescript": "4.2.4",
     "updates": "12.0.2"
+  },
+  "prettier": {
+    "$schema": "http://json.schemastore.org/prettierrc",
+    "endOfLine": "lf",
+    "quoteProps": "as-needed",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "none",
+    "useTabs": false,
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "printWidth": 120,
+    "overrides": [
+      {
+        "files": [
+          "*.yml"
+        ],
+        "options": {
+          "tabWidth": 2,
+          "useTabs": false
+        }
+      }
+    ]
   }
 }
