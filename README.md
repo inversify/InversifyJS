@@ -1,6 +1,6 @@
 # InversifyJS
 
-[![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://discord.gg/jXcMagAPnm](https://img.shields.io/discord/816766547879657532?label=discord%20chat&logo=discord)](https://discord.gg/jXcMagAPnm)
 ![Build Status](https://github.com/inversify/InversifyJS/actions/workflows/node.js.yml/badge.svg)
 
 [![Test Coverage](https://codeclimate.com/github/inversify/InversifyJS/badges/coverage.svg)](https://codeclimate.com/github/inversify/InversifyJS/coverage)
@@ -255,8 +255,10 @@ Let's take a look to the InversifyJS features!
 - [Injecting a class constructor](https://github.com/inversify/InversifyJS/blob/master/wiki/constructor_injection.md)
 - [Injecting a Factory](https://github.com/inversify/InversifyJS/blob/master/wiki/factory_injection.md)
 - [Auto factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_factory.md)
+- [Auto named factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_named_factory.md)
 - [Injecting a Provider (asynchronous Factory)](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md)
 - [Activation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md)
+- [Deactivation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md)
 - [Post Construct decorator](https://github.com/inversify/InversifyJS/blob/master/wiki/post_construct.md)
 - [Middleware](https://github.com/inversify/InversifyJS/blob/master/wiki/middleware.md)
 - [Multi-injection](https://github.com/inversify/InversifyJS/blob/master/wiki/multi_injection.md)

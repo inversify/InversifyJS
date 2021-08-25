@@ -230,7 +230,7 @@ function plan(
     container: interfaces.Container,
     isMultiInject: boolean,
     targetType: interfaces.TargetType,
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     key?: string | number | symbol,
     value?: any,
     avoidConstraints = false
@@ -246,9 +246,7 @@ function plan(
         if (
             isStackOverflowExeption(error)
         ) {
-            if (context.plan) {
-                circularDependencyToException(context.plan.rootRequest);
-            }
+            circularDependencyToException(context.plan.rootRequest);
         }
         throw error;
     }
