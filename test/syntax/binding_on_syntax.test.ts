@@ -9,7 +9,7 @@ describe("BindingOnSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -24,7 +24,7 @@ describe("BindingOnSyntax", () => {
 
     it("Should be able to configure the activation handler of a binding", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);

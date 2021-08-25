@@ -10,7 +10,7 @@ describe("BindingToSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -25,10 +25,10 @@ describe("BindingToSyntax", () => {
 
     it("Should be able to configure the type of a binding", () => {
 
-        interface Ninja {}
+        interface Ninja { }
 
         @injectable()
-        class Ninja implements Ninja {}
+        class Ninja implements Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -41,10 +41,10 @@ describe("BindingToSyntax", () => {
         expect(binding.type).eql(BindingTypeEnum.Instance);
         expect(binding.implementationType).not.to.eql(null);
 
-//        (bindingToSyntax as any)._binding = bindingWithClassAsId;
-//        bindingToSyntax.toSelf();
-//        expect(binding.type).eql(BindingTypeEnum.Instance);
-//        expect(binding.implementationType).not.to.eql(null);
+        //        (bindingToSyntax as any)._binding = bindingWithClassAsId;
+        //        bindingToSyntax.toSelf();
+        //        expect(binding.type).eql(BindingTypeEnum.Instance);
+        //        expect(binding.implementationType).not.to.eql(null);
 
         (bindingToSyntax as any)._binding = binding;
         bindingToSyntax.toConstantValue(new Ninja());
@@ -97,10 +97,10 @@ describe("BindingToSyntax", () => {
 
     it("Should prevent invalid function bindings", () => {
 
-        interface Ninja {}
+        interface Ninja { }
 
         @injectable()
-        class Ninja implements Ninja {}
+        class Ninja implements Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);

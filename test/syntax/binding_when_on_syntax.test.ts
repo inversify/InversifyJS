@@ -20,7 +20,7 @@ describe("BindingWhenOnSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -35,17 +35,17 @@ describe("BindingWhenOnSyntax", () => {
 
     it("Should provide access to BindingWhenSyntax methods", () => {
 
-        interface Army {}
+        interface Army { }
 
         @injectable()
-        class Army implements Army {}
+        class Army implements Army { }
 
-        interface ZombieArmy {}
+        interface ZombieArmy { }
 
         @injectable()
-        class ZombieArmy implements ZombieArmy {}
+        class ZombieArmy implements ZombieArmy { }
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -123,7 +123,7 @@ describe("BindingWhenOnSyntax", () => {
 
     it("Should provide access to BindingOnSyntax methods", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);

@@ -10,7 +10,7 @@ class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
   public constructor(val: T) {
     this.val = val;
   }
-  public clone () {
+  public clone() {
     return new ClonableValue<T>(this.val);
   }
 }
@@ -113,26 +113,26 @@ describe("Lookup", () => {
 
     const getLookup = () => {
 
-      interface Warrior {}
+      interface Warrior { }
 
-      class Ninja implements Warrior {}
+      class Ninja implements Warrior { }
       const ninjaBinding = new Binding(warriorId, BindingScopeEnum.Transient);
       ninjaBinding.implementationType = Ninja;
       ninjaBinding.moduleId = moduleId1;
 
-      class Samurai implements Warrior {}
+      class Samurai implements Warrior { }
       const samuraiBinding = new Binding(warriorId, BindingScopeEnum.Transient);
       samuraiBinding.implementationType = Samurai;
       samuraiBinding.moduleId = moduleId2;
 
-      interface Weapon {}
+      interface Weapon { }
 
-      class Shuriken implements Weapon {}
+      class Shuriken implements Weapon { }
       const shurikenBinding = new Binding(weaponId, BindingScopeEnum.Transient);
       shurikenBinding.implementationType = Shuriken;
       shurikenBinding.moduleId = moduleId1;
 
-      class Katana implements Weapon {}
+      class Katana implements Weapon { }
       const katanaBinding = new Binding(weaponId, BindingScopeEnum.Transient);
       katanaBinding.implementationType = Katana;
       katanaBinding.moduleId = moduleId2;
@@ -148,7 +148,7 @@ describe("Lookup", () => {
     };
 
     const removeByModule = (expected: any) => (item: interfaces.Binding<any>): boolean =>
-        item.moduleId === expected;
+      item.moduleId === expected;
 
     const lookup1 = getLookup();
     expect(lookup1.hasKey(warriorId)).to.eql(true);

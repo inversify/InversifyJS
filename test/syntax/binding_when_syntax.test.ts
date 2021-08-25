@@ -14,7 +14,7 @@ describe("BindingWhenSyntax", () => {
 
     it("Should set its own properties correctly", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -29,7 +29,7 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to configure custom constraint of a binding", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -47,7 +47,7 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to a named target", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
@@ -72,7 +72,7 @@ describe("BindingWhenSyntax", () => {
 
     it("Should be able to constraint a binding to a tagged target", () => {
 
-        interface Ninja {}
+        interface Ninja { }
         const ninjaIdentifier = "Ninja";
 
         const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
