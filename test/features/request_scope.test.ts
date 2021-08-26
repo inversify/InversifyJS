@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as now from "performance-now";
 import { Container, inject, injectable, named } from "../../src/inversify";
 
 describe("inRequestScope", () => {
@@ -24,7 +23,7 @@ describe("inRequestScope", () => {
     class Katana implements Weapon {
       private _madeOn: number;
       public constructor() {
-        this._madeOn = now();
+        this._madeOn = performance.now();
       }
       public use() {
         return `Used Katana made on ${this._madeOn}!`;
@@ -103,7 +102,7 @@ describe("inRequestScope", () => {
     class Katana implements Weapon {
       private _madeOn: number;
       public constructor() {
-        this._madeOn = now();
+        this._madeOn = performance.now();
       }
       public use() {
         return `Used Katana made on ${this._madeOn}!`;
@@ -114,7 +113,7 @@ describe("inRequestScope", () => {
     class Shuriken implements Weapon {
       private _madeOn: number;
       public constructor() {
-        this._madeOn = now();
+        this._madeOn = performance.now();
       }
       public use() {
         return `Used Shuriken made on ${this._madeOn}!`;

@@ -1,6 +1,5 @@
 
 import { expect } from "chai";
-import "es6-symbol/implement";
 import {
   Container, inject, injectable,
   multiInject, named, optional,

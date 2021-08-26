@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as Proxy from "harmony-proxy";
 import { Binding } from "../../src/bindings/binding";
 import { BindingScopeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";

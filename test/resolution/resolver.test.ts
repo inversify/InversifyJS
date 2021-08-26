@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import * as Proxy from "harmony-proxy";
 import * as sinon from "sinon";
+
 import { inject } from "../../src/annotation/inject";
 import { injectable } from "../../src/annotation/injectable";
 import { multiInject } from "../../src/annotation/multi_inject";

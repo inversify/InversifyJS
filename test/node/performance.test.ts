@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as now from "performance-now";
 import { Container } from "../../src/inversify";
 
 describe("Performance", () => {
@@ -14,9 +13,9 @@ describe("Performance", () => {
     let i = 0;
 
     for (i = 0; i < times; i++) {
-      const start = now();
+      const start = performance.now();
       result.container.bind<any>(`SOME_ID_${i}`).toConstantValue({ test: i });
-      const end = now();
+      const end = performance.now();
       result.register = end - start;
     }
 
@@ -36,9 +35,9 @@ describe("Performance", () => {
 
     for (i = 0; i < times; i++) {
 
-      const start = now();
+      const start = performance.now();
       container.get(`SOME_ID_${times}`);
-      const end = now();
+      const end = performance.now();
       const total = end - start;
 
       if (total < result.min) {

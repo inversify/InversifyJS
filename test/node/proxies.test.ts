@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as Proxy from "harmony-proxy";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { Container, inject, injectable } from "../../src/inversify";
 

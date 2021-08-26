@@ -4,10 +4,11 @@
     "allowUnusedLabels": false,
     "alwaysStrict": true,
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "jsx": "react",
     "lib": [
-      "es6",
+      "esnext",
       "dom"
     ],
     "module": "commonjs",

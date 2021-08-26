@@ -49,7 +49,7 @@ describe("createTaggedDecorator", () => {
 
     @injectable()
     class Root {
-      public thingyType: string;
+      public thingyType!: string;
       @multipleMetadataDecorator("Key1Value", "Key2Value")
       @inject("Thing")
       set thingy(thingy: Thing) {
