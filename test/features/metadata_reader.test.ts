@@ -25,7 +25,7 @@ describe("Custom Metadata Reader", () => {
         injections.forEach((injection, index) => {
           const metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);
           if (Array.isArray(userGeneratedMetadata[index])) {
-            (userGeneratedMetadata[index] as interfaces.Metadata[]).push(metadata);
+            userGeneratedMetadata[index]?.push(metadata);
           } else {
             userGeneratedMetadata[index] = [metadata];
           }
@@ -59,7 +59,7 @@ describe("Custom Metadata Reader", () => {
         injections.forEach((propInjection, index) => {
           const metadata = new Metadata(METADATA_KEY.INJECT_TAG, propInjection.injection);
           if (Array.isArray(userGeneratedMetadata[propInjection.propName])) {
-            (userGeneratedMetadata[propInjection.propName] as interfaces.Metadata[]).push(metadata);
+            userGeneratedMetadata[propInjection.propName]?.push(metadata);
           } else {
             userGeneratedMetadata[propInjection.propName] = [metadata];
           }

@@ -10,7 +10,7 @@ describe("Issue 1297", () => {
       (ctx: interfaces.Context, message: string) => string
     >((_ctx: interfaces.Context, message: string) => message);
 
-    container.bind<string>("message")
+    container.bind("message")
       .toConstantValue("Hello world")
       .onActivation(onActivationHandlerSpy);
 

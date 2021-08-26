@@ -10,63 +10,63 @@ import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { multiInject } from "../../src/inversify";
 
-interface Katana {}
-interface Shuriken {}
-interface Sword {}
-class Katana implements Katana {}
-class Shuriken implements Shuriken {}
-class Sword implements Sword {}
+interface Katana { }
+interface Shuriken { }
+interface Sword { }
+class Katana implements Katana { }
+class Shuriken implements Shuriken { }
+class Sword implements Sword { }
 
 const lazySwordId = new LazyServiceIdentifer(() => "Sword");
 
 class DecoratedWarrior {
 
-    private _primaryWeapon: Katana;
-    private _secondaryWeapon: Shuriken;
-    private _tertiaryWeapon: Sword;
+  private _primaryWeapon: Katana;
+  private _secondaryWeapon: Shuriken;
+  private _tertiaryWeapon: Sword;
 
-    public constructor(
-      @inject("Katana") primary: Katana,
-      @inject("Shuriken") secondary: Shuriken,
-      @inject(lazySwordId) tertiary: Shuriken
-    ) {
-        this._primaryWeapon = primary;
-        this._secondaryWeapon = secondary;
-        this._tertiaryWeapon = tertiary;
-    }
+  public constructor(
+    @inject("Katana") primary: Katana,
+    @inject("Shuriken") secondary: Shuriken,
+    @inject(lazySwordId) tertiary: Shuriken
+  ) {
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+    this._tertiaryWeapon = tertiary;
+  }
 
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon,
-        tertiaryWeapon: this._tertiaryWeapon
-      };
-    }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon,
+      tertiaryWeapon: this._tertiaryWeapon
+    };
+  }
 
 }
 
 class InvalidDecoratorUsageWarrior {
 
-    private _primaryWeapon: Katana;
-    private _secondaryWeapon: Shuriken;
+  private _primaryWeapon: Katana;
+  private _secondaryWeapon: Shuriken;
 
-    public constructor(
-      primary: Katana,
-      secondary: Shuriken
-    ) {
+  public constructor(
+    primary: Katana,
+    secondary: Shuriken
+  ) {
 
-          this._primaryWeapon = primary;
-          this._secondaryWeapon = secondary;
-    }
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+  }
 
-    public test(a: string) { /*...*/ }
+  public test(a: string) { /*...*/ }
 
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 
 }
 
@@ -106,8 +106,8 @@ describe("@inject", () => {
 
   it("Should throw when applied multiple times", () => {
 
-    const useDecoratorMoreThanOnce = function() {
-      __decorate([ __param(0, inject("Katana")), __param(0, inject("Shurien")) ], InvalidDecoratorUsageWarrior);
+    const useDecoratorMoreThanOnce = function () {
+      __decorate([__param(0, inject("Katana")), __param(0, inject("Shurien"))], InvalidDecoratorUsageWarrior);
     };
 
     const msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.INJECT_TAG}`;
@@ -117,10 +117,10 @@ describe("@inject", () => {
 
   it("Should throw when not applied to a constructor", () => {
 
-    const useDecoratorOnMethodThatIsNotAConstructor = function() {
-      __decorate([ __param(0, inject("Katana")) ],
-                 InvalidDecoratorUsageWarrior.prototype,
-                 "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
+    const useDecoratorOnMethodThatIsNotAConstructor = function () {
+      __decorate([__param(0, inject("Katana"))],
+        InvalidDecoratorUsageWarrior.prototype,
+        "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     const msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
@@ -131,8 +131,8 @@ describe("@inject", () => {
   it("Should throw when applied with undefined", () => {
 
     // this can happen when there is circular dependency between symbols
-    const useDecoratorWithUndefined = function() {
-      __decorate([ __param(0, inject(undefined as any)) ], InvalidDecoratorUsageWarrior);
+    const useDecoratorWithUndefined = function () {
+      __decorate([__param(0, inject(undefined as any))], InvalidDecoratorUsageWarrior);
     };
 
     const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("InvalidDecoratorUsageWarrior")}`;
@@ -142,13 +142,13 @@ describe("@inject", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface Shurien {}
+    interface Shurien { }
 
     const VanillaJSWarrior = (function () {
-        function Warrior(primary: Katana, secondary: Shurien) {
-            // ...
-        }
-        return Warrior;
+      function Warrior(primary: Katana, secondary: Shurien) {
+        // ...
+      }
+      return Warrior;
     })();
 
     decorate(inject("Katana"), VanillaJSWarrior, 0);
@@ -180,9 +180,9 @@ describe("@inject", () => {
   it("should throw when applied inject decorator with undefined service identifier to a property", () => {
     expect(() => {
       //@ts-ignore
-      class WithUndefinedInject{
+      class WithUndefinedInject {
         @inject(undefined as any)
-        property:string
+        property!: string
       }
     }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("WithUndefinedInject")}`)
   });
@@ -190,8 +190,8 @@ describe("@inject", () => {
   it("should throw when applied multiInject decorator with undefined service identifier to a constructor parameter", () => {
     expect(() => {
       //@ts-ignore
-      class WithUndefinedInject{
-        constructor(@multiInject(undefined as any) readonly dependency:string[]){}
+      class WithUndefinedInject {
+        constructor(@multiInject(undefined as any) readonly dependency: string[]) { }
       }
     }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("WithUndefinedInject")}`)
   });

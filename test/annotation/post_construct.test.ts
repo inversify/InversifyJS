@@ -50,7 +50,6 @@ describe("@postConstruct", () => {
       // ...
     };
 
-    // TODO: this is clearly incorrect
     decorate(postConstruct() as unknown as ClassDecorator, VanillaJSWarrior.prototype, "testMethod");
 
     const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);

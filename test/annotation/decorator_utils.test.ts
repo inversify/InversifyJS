@@ -1,8 +1,10 @@
 import { expect } from "chai";
 import * as sinon from "sinon";
+
 import { createTaggedDecorator, tagParameter, tagProperty } from "../../src/annotation/decorator_utils"
 import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { Container, inject, injectable } from "../../src/inversify";
+
 describe("createTaggedDecorator", () => {
   let sandbox: sinon.SinonSandbox
   beforeEach(function () {
@@ -47,7 +49,7 @@ describe("createTaggedDecorator", () => {
 
     @injectable()
     class Root {
-      public thingyType!: string;
+      public thingyType: string;
       @multipleMetadataDecorator("Key1Value", "Key2Value")
       @inject("Thing")
       set thingy(thingy: Thing) {

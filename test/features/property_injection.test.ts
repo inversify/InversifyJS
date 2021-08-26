@@ -1,4 +1,3 @@
-/// <reference path="../globals.d.ts" />
 
 import { expect } from "chai";
 import "es6-symbol/implement";
@@ -319,9 +318,9 @@ describe("Property Injection", () => {
     const warrior = container.get<Warrior>(TYPES.Warrior);
     expect(warrior.name).to.eql("Samurai");
     expect(warrior.weapons[0]).not.to.eql(undefined);
-    expect((warrior.weapons[0] as Weapon).name).to.eql("Katana");
+    expect(warrior.weapons[0]?.name).to.eql("Katana");
     expect(warrior.weapons[1]).not.to.eql(undefined);
-    expect((warrior.weapons[1] as Weapon).name).to.eql("Shuriken");
+    expect(warrior.weapons[1]?.name).to.eql("Shuriken");
 
   });
 

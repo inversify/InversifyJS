@@ -54,8 +54,8 @@ describe("InversifyJS", () => {
     ninja.weapon.use();
 
     expect(log.length).eql(2);
-    expect((log[0] as string).indexOf("Starting: ")).not.to.eql(-1);
-    expect((log[1] as string).indexOf("Finished: ")).not.to.eql(-1);
+    expect(log[0]?.indexOf("Starting: ")).not.to.eql(-1);
+    expect(log[1]?.indexOf("Finished: ")).not.to.eql(-1);
 
   });
 

@@ -479,26 +479,22 @@ describe("Bugs", () => {
     function wrongNamedBinding() { container.getAllNamed<Controller>(controllerId, "Wrong"); }
     expect(wrongNamedBinding).to.throw();
 
-    const appControllerNamedRight = container.getAllNamed<Controller>(controllerId, tagA) as Controller[] & [Controller];
+    const appControllerNamedRight = container.getAllNamed<Controller>(controllerId, tagA);
     expect(appControllerNamedRight.length).to.eql(1, "getAllNamed");
-    expect(appControllerNamedRight[0].name).to.eql("AppController");
+    expect(appControllerNamedRight[0]?.name).to.eql("AppController");
 
     function wrongTaggedBinding() { container.getAllTagged<Controller>(controllerId, "Wrong", "Wrong"); }
     expect(wrongTaggedBinding).to.throw();
 
-    const appControllerTaggedRight = container.getAllTagged<Controller>(
-      controllerId, METADATA_KEY.NAMED_TAG, tagB,
-    ) as Controller[] & [Controller];
-
-
+    const appControllerTaggedRight = container.getAllTagged<Controller>(controllerId, METADATA_KEY.NAMED_TAG, tagB);
     expect(appControllerTaggedRight.length).to.eql(1, "getAllTagged");
-    expect(appControllerTaggedRight[0].name).to.eql("AppController2");
+    expect(appControllerTaggedRight[0]?.name).to.eql("AppController2");
 
     const getAppController = () => {
-      const matches = container.getAll<Controller>(controllerId) as Controller[] & [Controller, Controller];
+      const matches = container.getAll<Controller>(controllerId);
       expect(matches.length).to.eql(2);
-      expect(matches[0].name).to.eql("AppController");
-      expect(matches[1].name).to.eql("AppController2");
+      expect(matches[0]?.name).to.eql("AppController");
+      expect(matches[1]?.name).to.eql("AppController2");
     };
 
     expect(getAppController).not.to.throw();
@@ -563,13 +559,9 @@ describe("Bugs", () => {
     expect(serviceIdentifiers["0"][0].value.toString()).to.be.eql("Symbol(BAR)");
 
     // is the plan correct?
-    const dependencies = getDependencies(
-      new MetadataReader(),
-      Foo,
-    ) as interfaces.Target[] & [interfaces.Target];
-
+    const dependencies = getDependencies(new MetadataReader(), Foo);
     expect(dependencies.length).to.be.eql(1);
-    expect(dependencies[0].serviceIdentifier.toString()).to.be.eql("Symbol(BAR)");
+    expect(dependencies[0]?.serviceIdentifier.toString()).to.be.eql("Symbol(BAR)");
 
     // integration test
     const container = new Container();
@@ -578,8 +570,8 @@ describe("Bugs", () => {
     container.bind<Foo>(FOO).to(Foo);
     const foo = container.get<Foo>(FOO);
     expect(foo.bar.length).to.eql(2);
-    expect((foo.bar[0] as Bar).name).to.eql("bar1");
-    expect((foo.bar[1] as Bar).name).to.eql("bar2");
+    expect(foo.bar[0]?.name).to.eql("bar1");
+    expect(foo.bar[1]?.name).to.eql("bar2");
 
   });
 
