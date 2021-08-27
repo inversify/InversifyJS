@@ -13,9 +13,9 @@ describe("Performance", () => {
     let i = 0;
 
     for (i = 0; i < times; i++) {
-      const start = performance.now();
+      const start = globalThis.performance.now();
       result.container.bind<any>(`SOME_ID_${i}`).toConstantValue({ test: i });
-      const end = performance.now();
+      const end = globalThis.performance.now();
       result.register = end - start;
     }
 
@@ -35,9 +35,9 @@ describe("Performance", () => {
 
     for (i = 0; i < times; i++) {
 
-      const start = performance.now();
+      const start = globalThis.performance.now();
       container.get(`SOME_ID_${times}`);
-      const end = performance.now();
+      const end = globalThis.performance.now();
       const total = end - start;
 
       if (total < result.min) {

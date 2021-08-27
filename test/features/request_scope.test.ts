@@ -23,7 +23,7 @@ describe("inRequestScope", () => {
     class Katana implements Weapon {
       private _madeOn: number;
       public constructor() {
-        this._madeOn = performance.now();
+        this._madeOn = globalThis.performance.now();
       }
       public use() {
         return `Used Katana made on ${this._madeOn}!`;
@@ -102,7 +102,7 @@ describe("inRequestScope", () => {
     class Katana implements Weapon {
       private _madeOn: number;
       public constructor() {
-        this._madeOn = performance.now();
+        this._madeOn = globalThis.performance.now();
       }
       public use() {
         return `Used Katana made on ${this._madeOn}!`;
@@ -113,7 +113,7 @@ describe("inRequestScope", () => {
     class Shuriken implements Weapon {
       private _madeOn: number;
       public constructor() {
-        this._madeOn = performance.now();
+        this._madeOn = globalThis.performance.now();
       }
       public use() {
         return `Used Shuriken made on ${this._madeOn}!`;
