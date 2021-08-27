@@ -51,7 +51,7 @@ describe("createTaggedDecorator", () => {
     class Root {
       public thingyType!: string;
       @multipleMetadataDecorator("Key1Value", "Key2Value")
-      @inject("Thing")
+      @inject<Thing>("Thing")
       set thingy(thingy: Thing) {
         this.thingyType = thingy.type
       }

@@ -139,7 +139,7 @@ describe("InversifyJS", () => {
 
       public _katana: Katana;
       public _shuriken: Shuriken;
-      public _blowgun: Blowgun;
+      public _blowgun!: Blowgun;
 
       public constructor(katana: Katana, shuriken: Shuriken) {
         this._katana = katana;
