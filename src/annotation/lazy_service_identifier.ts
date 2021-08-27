@@ -1,8 +1,8 @@
 import { interfaces } from "../interfaces/interfaces";
 
-export type ServiceIdentifierOrFunc = interfaces.ServiceIdentifier<any> | LazyServiceIdentifer;
+export type ServiceIdentifierOrFunc<T> = interfaces.ServiceIdentifier<T> | LazyServiceIdentifer;
 
-export class LazyServiceIdentifer<T = any> {
+export class LazyServiceIdentifer<T = unknown> {
   private _cb: () => interfaces.ServiceIdentifier<T>;
   public constructor(cb: () => interfaces.ServiceIdentifier<T>) {
     this._cb = cb;

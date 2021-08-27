@@ -3,8 +3,8 @@ import { Metadata } from "../planning/metadata";
 import { createTaggedDecorator, DecoratorTarget } from "./decorator_utils";
 import { ServiceIdentifierOrFunc } from "./lazy_service_identifier";
 
-export function injectBase(metadataKey: string) {
-  return (serviceIdentifier: ServiceIdentifierOrFunc) => {
+export function injectBase<T = unknown>(metadataKey: string) {
+  return (serviceIdentifier: ServiceIdentifierOrFunc<T>) => {
     return (
       target: DecoratorTarget,
       targetKey?: string | symbol,

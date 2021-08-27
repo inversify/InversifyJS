@@ -1,8 +1,8 @@
-import { Metadata } from "../planning/metadata";
+import { Metadata, MetadataValue } from "../planning/metadata";
 import { createTaggedDecorator } from "./decorator_utils";
 
 // Used to add custom metadata which is used to resolve metadata-based contextual bindings.
-function tagged(metadataKey: string | number | symbol, metadataValue: unknown) {
+function tagged<T>(metadataKey: string | number | symbol, metadataValue: MetadataValue<T>) {
   return createTaggedDecorator(new Metadata(metadataKey, metadataValue));
 }
 

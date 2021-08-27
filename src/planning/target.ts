@@ -5,7 +5,7 @@ import { getSymbolDescription } from "../utils/serialization";
 import { Metadata } from "./metadata";
 import { QueryableString } from "./queryable_string";
 
-class Target implements interfaces.Target {
+class Target<T = unknown> implements interfaces.Target {
 
   public id: number;
   public type: interfaces.TargetType;
@@ -13,13 +13,13 @@ class Target implements interfaces.Target {
   public name: interfaces.QueryableString;
   public identifier: string | symbol;
   public key!: string | symbol
-  public metadata: Metadata[];
+  public metadata: Metadata<T>[];
 
   public constructor(
     type: interfaces.TargetType,
     identifier: string | symbol,
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    namedOrTagged?: (string | Metadata)
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    namedOrTagged?: (string | Metadata<T>)
   ) {
 
     this.id = id();
@@ -28,7 +28,7 @@ class Target implements interfaces.Target {
     const queryableName = typeof identifier === 'symbol' ? getSymbolDescription(identifier) : identifier;
     this.name = new QueryableString(queryableName || "");
     this.identifier = identifier;
-    this.metadata = new Array<Metadata>();
+    this.metadata = new Array<Metadata<T>>();
 
     let metadataItem: interfaces.Metadata | null = null;
 

@@ -96,13 +96,15 @@ function _tagParameterOrProperty(
 
 }
 
+
+
 function createTaggedDecorator(
   metadata: interfaces.MetadataOrMetadataArray,
 ) {
-  return (
+  return <T>(
     target: DecoratorTarget,
     targetKey?: string | symbol,
-    indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<unknown>,
+    indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<T>,
   ) => {
     if (typeof indexOrPropertyDescriptor === "number") {
       tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
