@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Container } from "../../src/inversify";
+import { performance } from 'perf_hooks';
 
 describe("Performance", () => {
 
