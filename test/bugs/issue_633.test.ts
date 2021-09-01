@@ -22,7 +22,7 @@ describe("Issue 633", () => {
     container.bind<Logger>(TYPE.Logger).toDynamicValue((context) => {
       const namedMetadata = context.currentRequest.target.getNamedTag();
       const named = namedMetadata ? namedMetadata.value : "default";
-      return new Logger(named);
+      return new Logger(named as string);
     });
 
     const logger1 = container.getNamed<Logger>(TYPE.Logger, "Name1");

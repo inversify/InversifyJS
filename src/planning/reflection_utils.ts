@@ -196,7 +196,7 @@ function getBaseClassDependencyCount(metadataReader: interfaces.MetadataReader, 
 
     // get unmanaged metadata
     const metadata: any[] = targets.map((t: interfaces.Target) =>
-      t.metadata.filter((m: interfaces.Metadata) =>
+      t.metadata.filter((m) =>
         m.key === METADATA_KEY.UNMANAGED_TAG));
 
     // Compare the number of constructor arguments with the number of

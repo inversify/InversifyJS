@@ -44,7 +44,7 @@ namespace interfaces {
     prototype: T;
   }
 
-  export type ServiceIdentifier<T> = (string | symbol | Newable<T> | Abstract<T>);
+  export type ServiceIdentifier<T = unknown> = (string | symbol | Newable<T> | Abstract<T>);
 
   export interface Clonable<T> {
     clone(): T;
@@ -71,9 +71,9 @@ namespace interfaces {
     cache: null | TActivated | Promise<TActivated>;
   }
 
-  export type Factory<T, U extends unknown[] = unknown[]> = (...args: U) => (((...args: U) => T) | T);
+  export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
 
-  export type FactoryCreator<T, U extends unknown[] = unknown[]> = (context: Context) => Factory<T, U>;
+  export type FactoryCreator<T> = (context: Context) => Factory<T>;
 
   export type FactoryTypeFunction = (context: interfaces.Context) => any;
 
@@ -115,7 +115,7 @@ namespace interfaces {
 
   export interface Metadata {
     key: string | number | symbol;
-    value: any;
+    value: unknown;
   }
 
   export interface Plan {

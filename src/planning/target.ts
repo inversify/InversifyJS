@@ -1,25 +1,25 @@
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { id } from "../utils/id";
-import { getSymbolDescription } from "../utils/serialization";
-import { Metadata } from "./metadata";
-import { QueryableString } from "./queryable_string";
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { id } from '../utils/id';
+import { getSymbolDescription } from '../utils/serialization';
+import { Metadata } from './metadata';
+import { QueryableString } from './queryable_string';
 
-class Target<T = unknown> implements interfaces.Target {
+class Target implements interfaces.Target {
 
   public id: number;
   public type: interfaces.TargetType;
-  public serviceIdentifier: interfaces.ServiceIdentifier<any>;
+  public serviceIdentifier: interfaces.ServiceIdentifier;
   public name: interfaces.QueryableString;
   public identifier: string | symbol;
   public key!: string | symbol
-  public metadata: Metadata<T>[];
+  public metadata!: Metadata[];
 
   public constructor(
     type: interfaces.TargetType,
     identifier: string | symbol,
-    serviceIdentifier: interfaces.ServiceIdentifier<T>,
-    namedOrTagged?: (string | Metadata<T>)
+    serviceIdentifier: interfaces.ServiceIdentifier,
+    namedOrTagged?: (string | unknown)
   ) {
 
     this.id = id();
@@ -28,12 +28,12 @@ class Target<T = unknown> implements interfaces.Target {
     const queryableName = typeof identifier === 'symbol' ? getSymbolDescription(identifier) : identifier;
     this.name = new QueryableString(queryableName || "");
     this.identifier = identifier;
-    this.metadata = new Array<Metadata<T>>();
+    this.metadata = new Array();
 
     let metadataItem: interfaces.Metadata | null = null;
 
     // is named target
-    if (typeof namedOrTagged === "string") {
+    if (typeof namedOrTagged === 'string') {
       metadataItem = new Metadata(METADATA_KEY.NAMED_TAG, namedOrTagged);
     } else if (namedOrTagged instanceof Metadata) {
       // is target with metadata
