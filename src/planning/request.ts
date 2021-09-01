@@ -4,7 +4,7 @@ import { id } from "../utils/id";
 class Request implements interfaces.Request {
 
   public id: number;
-  public serviceIdentifier: interfaces.ServiceIdentifier<any>;
+  public serviceIdentifier: interfaces.ServiceIdentifier;
   public parentContext: interfaces.Context;
   public parentRequest: interfaces.Request | null;
   public bindings: interfaces.Binding<any>[];
