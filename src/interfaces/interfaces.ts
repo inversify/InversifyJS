@@ -1,7 +1,6 @@
 import { FactoryType } from "../utils/factory_type";
 
 namespace interfaces {
-  export type Unpacked<T> = T extends (infer U)[] ? U : T;
   export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>;
   export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[];
 
@@ -72,15 +71,15 @@ namespace interfaces {
     cache: null | TActivated | Promise<TActivated>;
   }
 
-  export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
+  export type Factory<T, U extends unknown[] = unknown[]> = (...args: U) => (((...args: U) => T) | T);
 
-  export type FactoryCreator<T> = (context: Context) => Factory<T>;
+  export type FactoryCreator<T, U extends unknown[] = unknown[]> = (context: Context) => Factory<T, U>;
 
-  export type FactoryTypeFunction<T = unknown> = (context: interfaces.Context) => any;
+  export type FactoryTypeFunction = (context: interfaces.Context) => any;
 
-  export interface FactoryDetails<T = unknown> {
+  export interface FactoryDetails {
     factoryType: FactoryType,
-    factory: FactoryTypeFunction<T> | null
+    factory: FactoryTypeFunction | null
   };
 
   export type Provider<T> = (...args: any[]) => (((...args: any[]) => Promise<T>) | Promise<T>);
