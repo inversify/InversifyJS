@@ -29,7 +29,7 @@ const taggedConstraint = (key: string | number | symbol) => (value: any) => {
 
 const namedConstraint = taggedConstraint(METADATA_KEY.NAMED_TAG);
 
-const typeConstraint = (type: (Function | string)) => (request: interfaces.Request | null) => {
+const typeConstraint = (type: (NewableFunction | string)) => (request: interfaces.Request | null) => {
 
   // Using index 0 because constraints are applied
   // to one binding at a time (see Planner class)

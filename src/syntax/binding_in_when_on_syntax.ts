@@ -45,7 +45,7 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
     return this._bindingWhenSyntax.whenTargetTagged(tag, value);
   }
 
-  public whenInjectedInto(parent: (Function | string)): interfaces.BindingOnSyntax<T> {
+  public whenInjectedInto(parent: (NewableFunction | string)): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenInjectedInto(parent);
   }
 
@@ -57,11 +57,11 @@ class BindingInWhenOnSyntax<T> implements interfaces.BindingInSyntax<T>, interfa
     return this._bindingWhenSyntax.whenParentTagged(tag, value);
   }
 
-  public whenAnyAncestorIs(ancestor: (Function | string)): interfaces.BindingOnSyntax<T> {
+  public whenAnyAncestorIs(ancestor: (NewableFunction | string)): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenAnyAncestorIs(ancestor);
   }
 
-  public whenNoAncestorIs(ancestor: (Function | string)): interfaces.BindingOnSyntax<T> {
+  public whenNoAncestorIs(ancestor: (NewableFunction | string)): interfaces.BindingOnSyntax<T> {
     return this._bindingWhenSyntax.whenNoAncestorIs(ancestor);
   }
 

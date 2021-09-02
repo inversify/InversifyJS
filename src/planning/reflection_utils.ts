@@ -7,7 +7,7 @@ import { getFunctionName } from "../utils/serialization";
 import { Target } from "./target";
 
 function getDependencies(
-  metadataReader: interfaces.MetadataReader, func: Function
+  metadataReader: interfaces.MetadataReader, func: NewableFunction
 ): interfaces.Target[] {
   const constructorName = getFunctionName(func);
   const targets: interfaces.Target[] = getTargets(metadataReader, constructorName, func, false);
@@ -15,7 +15,10 @@ function getDependencies(
 }
 
 function getTargets(
-  metadataReader: interfaces.MetadataReader, constructorName: string, func: Function, isBaseClass: boolean
+  metadataReader: interfaces.MetadataReader,
+  constructorName: string,
+  func: NewableFunction,
+  isBaseClass: boolean
 ): interfaces.Target[] {
 
   const metadata = metadataReader.getConstructorMetadata(func);
@@ -139,7 +142,11 @@ function _getServiceIdentifierForProperty(inject: any, multiInject: any, propert
   return serviceIdentifier;
 }
 
-function getClassPropsAsTargets(metadataReader: interfaces.MetadataReader, constructorFunc: Function, constructorName: string) {
+function getClassPropsAsTargets(
+  metadataReader: interfaces.MetadataReader,
+  constructorFunc: NewableFunction,
+  constructorName: string
+) {
 
   const classPropsMetadata: any = metadataReader.getPropertiesMetadata(constructorFunc);
   let targets: interfaces.Target[] = [];
@@ -196,7 +203,7 @@ function getBaseClassDependencyCount(metadataReader: interfaces.MetadataReader, 
 
     // get unmanaged metadata
     const metadata: any[] = targets.map((t: interfaces.Target) =>
-      t.metadata.filter((m) =>
+      t.metadata.filter((m: interfaces.Metadata) =>
         m.key === METADATA_KEY.UNMANAGED_TAG));
 
     // Compare the number of constructor arguments with the number of

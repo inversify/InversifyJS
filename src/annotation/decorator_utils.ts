@@ -9,12 +9,12 @@ function targetIsConstructorFunction<T = Object>(target: DecoratorTarget<T>): ta
 
 type Prototype<T> = {
   [Property in keyof T]:
-  T[Property] extends Function ?
+  T[Property] extends NewableFunction ?
   T[Property] :
   T[Property] | undefined
-} & { constructor: Function }
+} & { constructor: NewableFunction }
 
-interface ConstructorFunction<T = Object> {
+interface ConstructorFunction<T = Record<string, unknown>> {
   new(...args: unknown[]): T,
   prototype: Prototype<T>
 }
@@ -65,7 +65,7 @@ function _ensureNoMetadataKeyDuplicates(metadata: interfaces.MetadataOrMetadataA
 
 function _tagParameterOrProperty(
   metadataKey: string,
-  annotationTarget: Function,
+  annotationTarget: NewableFunction,
   key: string | symbol,
   metadata: interfaces.MetadataOrMetadataArray,
 ) {

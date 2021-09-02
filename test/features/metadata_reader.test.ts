@@ -6,7 +6,7 @@ import { Metadata } from "../../src/planning/metadata";
 
 describe("Custom Metadata Reader", () => {
 
-  interface FunctionWithMetadata extends Function {
+  interface FunctionWithMetadata extends NewableFunction {
     constructorInjections: interfaces.ServiceIdentifier<any>[];
     propertyInjections: PropertyInjectionMetadata[];
   }
@@ -216,12 +216,12 @@ describe("Custom Metadata Reader", () => {
     const propertyMetadataLog: interfaces.MetadataMap[] = [];
 
     class CustomMetadataReader extends MetadataReader {
-      public getConstructorMetadata(constructorFunc: Function): interfaces.ConstructorMetadata {
+      public getConstructorMetadata(constructorFunc: NewableFunction): interfaces.ConstructorMetadata {
         const constructorMetadata = super.getConstructorMetadata(constructorFunc);
         constructorMetadataLog.push(constructorMetadata);
         return constructorMetadata;
       }
-      public getPropertiesMetadata(constructorFunc: Function): interfaces.MetadataMap {
+      public getPropertiesMetadata(constructorFunc: NewableFunction): interfaces.MetadataMap {
         const propertyMetadata = super.getPropertiesMetadata(constructorFunc);
         propertyMetadataLog.push(propertyMetadata);
         return propertyMetadata;
