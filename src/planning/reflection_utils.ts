@@ -224,7 +224,7 @@ function getBaseClassDependencyCount(
 
     // get unmanaged metadata
     const metadata = targets.map((t: interfaces.Target) =>
-      t.metadata.filter((m: interfaces.Metadata) =>
+      t.metadata.filter(m =>
         m.key === METADATA_KEY.UNMANAGED_TAG));
 
 

@@ -814,7 +814,7 @@ describe("InversifyJS", () => {
     container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("throwable", true);
     container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("throwable", false);
 
-    container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context) =>
+    container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon,[boolean]>((context) =>
       (throwable: boolean) =>
         context.container.getTagged<Weapon>("Weapon", "throwable", throwable));
 
@@ -894,7 +894,7 @@ describe("InversifyJS", () => {
     container.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
     container.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
 
-    container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context: interfaces.Context) =>
+    container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine,[string],[number]>((context: interfaces.Context) =>
       (theNamed: string) => (displacement: number) => {
         const theEngine = context.container.getNamed<Engine>("Engine", theNamed);
         theEngine.displacement = displacement;

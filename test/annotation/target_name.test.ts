@@ -46,8 +46,8 @@ describe("@targetName", () => {
       // ...
     };
 
-    decorate(targetName("primary") as ClassDecorator, VanillaJSWarrior, 0);
-    decorate(targetName("secondary") as ClassDecorator, VanillaJSWarrior, 1);
+    decorate(targetName("primary"), VanillaJSWarrior, 0);
+    decorate(targetName("secondary"), VanillaJSWarrior, 1);
 
     const metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, VanillaJSWarrior);
     expect(metadata["0"]).to.be.instanceof(Array);

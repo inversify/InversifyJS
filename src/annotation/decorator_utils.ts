@@ -128,7 +128,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(named("foo"), FooBar, 0);
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
-  decorator: (ClassDecorator | ParameterDecorator | MethodDecorator),
+  decorator: (DecoratorTarget | ParameterDecorator | MethodDecorator),
   target: any,
   parameterIndexOrProperty?: number | string): void {
 

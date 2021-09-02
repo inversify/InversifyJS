@@ -19,7 +19,7 @@ class Target implements interfaces.Target {
     type: interfaces.TargetType,
     identifier: string | symbol,
     serviceIdentifier: interfaces.ServiceIdentifier,
-    namedOrTagged?: (string | unknown)
+    namedOrTagged?: (string | Metadata)
   ) {
 
     this.id = id();

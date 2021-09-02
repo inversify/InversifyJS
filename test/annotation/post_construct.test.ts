@@ -50,7 +50,7 @@ describe("@postConstruct", () => {
       // ...
     };
 
-    decorate(postConstruct() as unknown as ClassDecorator, VanillaJSWarrior.prototype, "testMethod");
+    decorate(postConstruct(), VanillaJSWarrior.prototype, "testMethod");
 
     const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
     expect(metadata.value).to.be.equal("testMethod");
