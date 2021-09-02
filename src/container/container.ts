@@ -409,7 +409,7 @@ class Container implements interfaces.Container {
     if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constructor)) {
       const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constructor);
 
-      return instance[data.value as number]();
+      return instance[data.value as string]();
     }
   }
   private _removeModuleHandlers(moduleId: number): void {
