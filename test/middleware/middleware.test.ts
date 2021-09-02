@@ -31,8 +31,8 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware1);
-    const _container: any = container;
-    expect(_container._middleware).not.to.eql(null);
+    const _container = container;
+    expect((_container as unknown as { _middleware: unknown })._middleware).not.to.eql(null);
 
   });
 
@@ -174,7 +174,7 @@ describe("Middleware", () => {
 
     container.applyMiddleware(middleware);
     container.bind<Ninja>("Ninja").to(Ninja);
-    container.get<any>("SOME_NOT_REGISTERED_ID");
+    container.get("SOME_NOT_REGISTERED_ID");
     expect(log.length).eql(1);
     expect(log[0]).eql(`${ERROR_MSGS.NOT_REGISTERED} SOME_NOT_REGISTERED_ID`);
 
@@ -209,7 +209,7 @@ describe("Middleware", () => {
     container.bind<Warrior>("Warrior").to(Ninja);
     container.bind<Warrior>("Warrior").to(Samurai);
 
-    container.get<any>("Warrior");
+    container.get("Warrior");
     expect(log.length).eql(1);
     expect(log[0]).to.contain(`${ERROR_MSGS.AMBIGUOUS_MATCH} Warrior`);
 
@@ -237,7 +237,7 @@ describe("Middleware", () => {
     container.applyMiddleware(middleware);
     container.bind<Warrior>("Warrior"); // Invalid binding missing BindingToSyntax
 
-    container.get<any>("Warrior");
+    container.get("Warrior");
     expect(log.length).eql(1);
     expect(log[0]).eql(`${ERROR_MSGS.INVALID_BINDING_TYPE} Warrior`);
 
@@ -258,7 +258,7 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware);
-    const throws = () => { container.get<any>("SOME_NOT_REGISTERED_ID"); };
+    const throws = () => { container.get("SOME_NOT_REGISTERED_ID"); };
     expect(throws).to.throw(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
 
   });

@@ -93,7 +93,7 @@ namespace interfaces {
     targetType: TargetType;
     serviceIdentifier: interfaces.ServiceIdentifier<T>;
     key?: string | number | symbol;
-    value?: any;
+    value?: unknown;
   }
 
   export type Next = (args: NextArgs) => (any | any[]);
@@ -135,27 +135,27 @@ namespace interfaces {
     request: interfaces.Request
   ) => any;
 
-  export type RequestScope = Map<any, any> | null;
+  export type RequestScope<T = unknown> = Map<string | number, T>;
 
   export interface Request {
     id: number;
-    serviceIdentifier: ServiceIdentifier<any>;
+    serviceIdentifier: ServiceIdentifier;
     parentContext: Context;
     parentRequest: Request | null;
     childRequests: Request[];
     target: Target;
-    bindings: Binding<any>[];
-    requestScope: RequestScope;
+    bindings: Binding<unknown>[];
+    requestScope: RequestScope | null;
     addChildRequest(
-      serviceIdentifier: ServiceIdentifier<any>,
-      bindings: (Binding<any> | Binding<any>[]),
+      serviceIdentifier: ServiceIdentifier,
+      bindings: (Binding<unknown> | Binding<unknown>[]),
       target: Target
     ): Request;
   }
 
   export interface Target {
     id: number;
-    serviceIdentifier: ServiceIdentifier<any>;
+    serviceIdentifier: ServiceIdentifier;
     type: TargetType;
     name: QueryableString;
     identifier: string | symbol;
@@ -164,12 +164,16 @@ namespace interfaces {
     getCustomTags(): interfaces.Metadata[] | null;
     hasTag(key: string | number | symbol): boolean;
     isArray(): boolean;
-    matchesArray(name: interfaces.ServiceIdentifier<any>): boolean;
+    matchesArray(name: interfaces.ServiceIdentifier): boolean;
     isNamed(): boolean;
     isTagged(): boolean;
     isOptional(): boolean;
     matchesNamedTag(name: string): boolean;
-    matchesTag(key: string | number | symbol): (value: any) => boolean;
+    matchesTag(key: string | number | symbol): (value: unknown) => boolean;
+  }
+
+  export interface TargetMetadata {
+
   }
 
   export interface ContainerOptions {
@@ -185,25 +189,25 @@ namespace interfaces {
     bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
     rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
     rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>>
-    unbind(serviceIdentifier: ServiceIdentifier<any>): void;
-    unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<any>): Promise<void>;
+    unbind(serviceIdentifier: ServiceIdentifier): void;
+    unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier): Promise<void>;
     unbindAll(): void;
     unbindAllAsync(): Promise<void>;
-    isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
+    isBound(serviceIdentifier: ServiceIdentifier): boolean;
     isCurrentBound<T>(serviceIdentifier: ServiceIdentifier<T>): boolean;
-    isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
-    isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
+    isBoundNamed(serviceIdentifier: ServiceIdentifier, named: string | number | symbol): boolean;
+    isBoundTagged(serviceIdentifier: ServiceIdentifier, key: string | number | symbol, value: unknown): boolean;
     get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
     getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
-    getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T;
+    getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T;
     getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-    getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): T[];
+    getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T[];
     getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
     getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>;
     getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>;
-    getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T>;
+    getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): Promise<T>;
     getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T[]>;
-    getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: any): Promise<T[]>;
+    getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): Promise<T[]>;
     getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]>;
     onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
     onDeactivation<T>(serviceIdentifier: ServiceIdentifier<T>, onDeactivation: BindingDeactivation<T>): void;
@@ -281,15 +285,15 @@ namespace interfaces {
   }
 
   export interface Lookup<T> extends Clonable<Lookup<T>> {
-    add(serviceIdentifier: ServiceIdentifier<any>, value: T): void;
-    getMap(): Map<interfaces.ServiceIdentifier<any>, T[]>;
-    get(serviceIdentifier: ServiceIdentifier<any>): T[];
-    remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void;
+    add(serviceIdentifier: ServiceIdentifier, value: T): void;
+    getMap(): Map<interfaces.ServiceIdentifier, T[]>;
+    get(serviceIdentifier: ServiceIdentifier): T[];
+    remove(serviceIdentifier: interfaces.ServiceIdentifier): void;
     removeByCondition(condition: (item: T) => boolean): T[];
     removeIntersection(lookup: interfaces.Lookup<T>): void
-    hasKey(serviceIdentifier: ServiceIdentifier<any>): boolean;
+    hasKey(serviceIdentifier: ServiceIdentifier): boolean;
     clone(): Lookup<T>;
-    traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void;
+    traverse(func: (key: interfaces.ServiceIdentifier, value: T[]) => void): void;
   }
 
   export interface BindingOnSyntax<T> {
@@ -301,16 +305,16 @@ namespace interfaces {
     when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
     whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
     whenTargetIsDefault(): BindingOnSyntax<T>;
-    whenTargetTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
+    whenTargetTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
     whenInjectedInto(parent: (NewableFunction | string)): BindingOnSyntax<T>;
     whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
-    whenParentTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
+    whenParentTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
     whenAnyAncestorIs(ancestor: (NewableFunction | string)): BindingOnSyntax<T>;
     whenNoAncestorIs(ancestor: (NewableFunction | string)): BindingOnSyntax<T>;
     whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-    whenAnyAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
+    whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
     whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
-    whenNoAncestorTagged(tag: string | number | symbol, value: any): BindingOnSyntax<T>;
+    whenNoAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
     whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
     whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
   }

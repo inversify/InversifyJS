@@ -102,7 +102,7 @@ class Target implements interfaces.Target {
   }
 
   public matchesTag(key: string) {
-    return (value: any) => {
+    return (value: unknown) => {
       for (const m of this.metadata) {
         if (m.key === key && m.value === value) {
           return true;

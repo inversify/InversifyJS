@@ -2,26 +2,27 @@ import { BindingScopeEnum, interfaces } from "../inversify";
 import { isPromise } from "../utils/async";
 
 export const tryGetFromScope = <T>(
-  requestScope: interfaces.RequestScope,
-  binding:interfaces.Binding<T>): T | Promise<T> | null => {
+  requestScope: interfaces.RequestScope<T>,
+  binding: interfaces.Binding<T>
+): T | Promise<T> | null | undefined => {
 
   if ((binding.scope === BindingScopeEnum.Singleton) && binding.activated) {
-      return binding.cache!;
+    return binding.cache!;
   }
 
   if (
-      binding.scope === BindingScopeEnum.Request &&
-      requestScope !== null &&
-      requestScope.has(binding.id)
+    binding.scope === BindingScopeEnum.Request &&
+    requestScope !== null &&
+    requestScope.has(binding.id)
   ) {
-      return requestScope.get(binding.id);
+    return requestScope.get(binding.id);
   }
   return null;
 }
 
 export const saveToScope = <T>(
-  requestScope: interfaces.RequestScope,
-  binding:interfaces.Binding<T>,
+  requestScope: interfaces.RequestScope<T>,
+  binding: interfaces.Binding<T>,
   result: T | Promise<T>
 ): void => {
   if (binding.scope === BindingScopeEnum.Singleton) {
@@ -37,7 +38,7 @@ export const saveToScope = <T>(
 
 const _saveToRequestScope = <T>(
   requestScope: interfaces.RequestScope,
-  binding:interfaces.Binding<T>,
+  binding: interfaces.Binding<T>,
   result: T | Promise<T>
 ): void => {
   if (
@@ -49,7 +50,7 @@ const _saveToRequestScope = <T>(
 }
 
 const _saveToSingletonScope = <T>(
-  binding:interfaces.Binding<T>,
+  binding: interfaces.Binding<T>,
   result: T | Promise<T>
 ): void => {
   // store in cache if scope is singleton
@@ -62,7 +63,7 @@ const _saveToSingletonScope = <T>(
 }
 
 const _saveAsyncResultToSingletonScope = async <T>(
-  binding:interfaces.Binding<T>,
+  binding: interfaces.Binding<T>,
   asyncResult: Promise<T>
 ): Promise<void> => {
   try {

@@ -1,4 +1,9 @@
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(
+  decorators: ClassDecorator[],
+  target: any,
+  key?: string | symbol,
+  descriptor?: PropertyDescriptor | undefined
+): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from "chai";

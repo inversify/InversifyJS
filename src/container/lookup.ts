@@ -5,10 +5,10 @@ import { isClonable } from "../utils/clonable";
 class Lookup<T> implements interfaces.Lookup<T> {
 
   // dictionary used store multiple values for each key <key>
-  private _map: Map<interfaces.ServiceIdentifier<any>, T[]>;
+  private _map: Map<interfaces.ServiceIdentifier, T[]>;
 
   public constructor() {
-    this._map = new Map<interfaces.ServiceIdentifier<any>, T[]>();
+    this._map = new Map<interfaces.ServiceIdentifier, T[]>();
   }
 
   public getMap() {
@@ -16,7 +16,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
   }
 
   // adds a new entry to _map
-  public add(serviceIdentifier: interfaces.ServiceIdentifier<any>, value: T): void {
+  public add(serviceIdentifier: interfaces.ServiceIdentifier, value: T): void {
 
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
@@ -35,7 +35,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
   }
 
   // gets the value of a entry by its key (serviceIdentifier)
-  public get(serviceIdentifier: interfaces.ServiceIdentifier<any>): T[] {
+  public get(serviceIdentifier: interfaces.ServiceIdentifier): T[] {
 
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
@@ -51,7 +51,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
   }
 
   // removes a entry from _map by its key (serviceIdentifier)
-  public remove(serviceIdentifier: interfaces.ServiceIdentifier<any>): void {
+  public remove(serviceIdentifier: interfaces.ServiceIdentifier): void {
 
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
@@ -100,7 +100,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
   }
 
   // returns true if _map contains a key (serviceIdentifier)
-  public hasKey(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
+  public hasKey(serviceIdentifier: interfaces.ServiceIdentifier): boolean {
 
     if (serviceIdentifier === null || serviceIdentifier === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
@@ -122,7 +122,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
     return copy;
   }
 
-  public traverse(func: (key: interfaces.ServiceIdentifier<any>, value: T[]) => void): void {
+  public traverse(func: (key: interfaces.ServiceIdentifier, value: T[]) => void): void {
     this._map.forEach((value, key) => {
       func(key, value);
     });

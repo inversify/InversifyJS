@@ -2,9 +2,10 @@ import { getServiceIdentifierAsString, interfaces } from "../inversify";
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { BindingTypeEnum } from "../constants/literal_types";
 import { FactoryType } from "./factory_type";
+
 export const multiBindToService = (container: interfaces.Container) =>
-  (service: interfaces.ServiceIdentifier<any>) =>
-    (...types: interfaces.ServiceIdentifier<any>[]) =>
+  (service: interfaces.ServiceIdentifier) =>
+    (...types: interfaces.ServiceIdentifier[]) =>
       types.forEach((t) => container.bind(t).toService(service));
 
 export const ensureFullyBound = <T = unknown>(binding: interfaces.Binding<T>): void => {

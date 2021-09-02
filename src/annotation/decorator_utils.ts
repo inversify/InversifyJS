@@ -77,7 +77,7 @@ function _tagParameterOrProperty(
     paramsOrPropertiesMetadata = Reflect.getMetadata(metadataKey, annotationTarget);
   }
 
-  let paramOrPropertyMetadata: interfaces.Metadata[] | undefined = paramsOrPropertiesMetadata[key as any];
+  let paramOrPropertyMetadata: interfaces.Metadata[] | undefined = paramsOrPropertiesMetadata[key as string];
 
   if (paramOrPropertyMetadata === undefined) {
     paramOrPropertyMetadata = [];
@@ -91,7 +91,7 @@ function _tagParameterOrProperty(
 
   // set metadata
   paramOrPropertyMetadata.push(...metadatas);
-  paramsOrPropertiesMetadata[key as any] = paramOrPropertyMetadata;
+  paramsOrPropertiesMetadata[key as string] = paramOrPropertyMetadata;
   Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 
 }
@@ -114,12 +114,12 @@ function createTaggedDecorator(
   };
 }
 
-function _decorate(decorators: any[], target: any): void {
+function _decorate(decorators: any[], target: NewableFunction): void {
   Reflect.decorate(decorators, target);
 }
 
 function _param(paramIndex: number, decorator: ParameterDecorator) {
-  return function (target: any, key: string) { decorator(target, key, paramIndex); };
+  return function (target: string, key: string) { decorator(target, key, paramIndex); };
 }
 
 // Allows VanillaJS developers to use decorators:
@@ -129,7 +129,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
   decorator: (ClassDecorator | ParameterDecorator | MethodDecorator),
-  target: object,
+  target: any,
   parameterIndexOrProperty?: number | string): void {
 
   if (typeof parameterIndexOrProperty === "number") {
@@ -137,7 +137,7 @@ function decorate(
   } else if (typeof parameterIndexOrProperty === "string") {
     Reflect.decorate([decorator as MethodDecorator], target, parameterIndexOrProperty);
   } else {
-    _decorate([decorator as ClassDecorator], target);
+    _decorate([decorator], target);
   }
 }
 

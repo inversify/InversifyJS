@@ -17,7 +17,7 @@ const traverseAncerstors = (
 
 // This helpers use currying to help you to generate constraints
 
-const taggedConstraint = (key: string | number | symbol) => (value: any) => {
+const taggedConstraint = (key: string | number | symbol) => (value: unknown) => {
 
   const constraint: interfaces.ConstraintFunction = (request: interfaces.Request | null) =>
     request !== null && request.target !== null && request.target.matchesTag(key)(value);
@@ -33,15 +33,15 @@ const typeConstraint = (type: (NewableFunction | string)) => (request: interface
 
   // Using index 0 because constraints are applied
   // to one binding at a time (see Planner class)
-  let binding: interfaces.Binding<any> | null = null;
+  let binding: interfaces.Binding<unknown> | null = null;
 
   if (request !== null) {
-    binding = request.bindings[0] as interfaces.Binding<any>;
+    binding = request.bindings[0] as interfaces.Binding<unknown>;
     if (typeof type === "string") {
       const serviceIdentifier = binding.serviceIdentifier;
       return serviceIdentifier === type;
     } else {
-      const constructor = (request.bindings[0] as interfaces.Binding<any>).implementationType;
+      const constructor = (request.bindings[0] as interfaces.Binding<unknown>).implementationType;
       return type === constructor;
     }
   }

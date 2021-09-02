@@ -14,7 +14,7 @@ There are many available kinds of bindings:
 
 ```ts
 interface BindingToSyntax<T> {
-    to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+    to(constructor: { new (...args: unknown[]): T; }): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: (context: Context) => T): BindingWhenOnSyntax<T>;
@@ -41,7 +41,7 @@ In this group are included the following types of binding:
 
 ```ts
 interface BindingToSyntax<T> {
-    to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+    to(constructor: { new (...args: unknown[]): T; }): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;

@@ -20,8 +20,8 @@ describe("createTaggedDecorator", () => {
     const metadata = { key: "1", value: "2" };
     const decorator = createTaggedDecorator(metadata);
     const spiedTagParameter = sandbox.spy(tagParameter);
-    decorator(Target, undefined as any, 1);
-    expect(spiedTagParameter.calledWithExactly(Target, undefined as any, 1, metadata));
+    decorator(Target, undefined, 1);
+    expect(spiedTagParameter.calledWithExactly(Target, undefined, 1, metadata));
   });
 
   it("should pass to tagProperty for property decorators", () => {
@@ -73,7 +73,7 @@ describe("tagParameter", () => {
   it("should throw if multiple metadata with same key", () => {
     class Target { }
     expect(
-      () => tagParameter(Target, undefined as any, 1, [{ key: "Duplicate", value: "1" }, { key: "Duplicate", value: "2" }])
+      () => tagParameter(Target, undefined, 1, [{ key: "Duplicate", value: "1" }, { key: "Duplicate", value: "2" }])
     ).to.throw(`${ERROR_MSGS.DUPLICATED_METADATA} Duplicate`);
   });
 });

@@ -7,13 +7,13 @@ class Request implements interfaces.Request {
   public serviceIdentifier: interfaces.ServiceIdentifier;
   public parentContext: interfaces.Context;
   public parentRequest: interfaces.Request | null;
-  public bindings: interfaces.Binding<any>[];
+  public bindings: interfaces.Binding<unknown>[];
   public childRequests: interfaces.Request[];
   public target: interfaces.Target;
-  public requestScope: interfaces.RequestScope;
+  public requestScope: interfaces.RequestScope | null;
 
   public constructor(
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
+    serviceIdentifier: interfaces.ServiceIdentifier,
     parentContext: interfaces.Context,
     parentRequest: interfaces.Request | null,
     bindings: (interfaces.Binding<any> | interfaces.Binding<any>[]),
@@ -29,13 +29,13 @@ class Request implements interfaces.Request {
 
     // Set requestScope if Request is the root request
     this.requestScope = parentRequest === null
-      ? new Map<any, any>()
+      ? new Map()
       : null;
   }
 
   public addChildRequest(
-    serviceIdentifier: interfaces.ServiceIdentifier<any>,
-    bindings: (interfaces.Binding<any> | interfaces.Binding<any>[]),
+    serviceIdentifier: interfaces.ServiceIdentifier,
+    bindings: (interfaces.Binding<unknown> | interfaces.Binding<unknown>[]),
     target: interfaces.Target
   ): interfaces.Request {
 

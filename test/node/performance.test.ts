@@ -15,7 +15,7 @@ describe("Performance", () => {
 
     for (i = 0; i < times; i++) {
       const start = performance.now();
-      result.container.bind<any>(`SOME_ID_${i}`).toConstantValue({ test: i });
+      result.container.bind(`SOME_ID_${i}`).toConstantValue({ test: i });
       const end = performance.now();
       result.register = end - start;
     }

@@ -12,7 +12,7 @@ import { interfaces } from "../../src/interfaces/interfaces";
 import { getBindingDictionary } from "../../src/planning/planner";
 import { getServiceIdentifierAsString } from "../../src/utils/serialization";
 
-type Dictionary = Map<interfaces.ServiceIdentifier<any>, interfaces.Binding<any>[]>;
+type Dictionary = Map<interfaces.ServiceIdentifier, interfaces.Binding<unknown>[]>;
 
 describe("Container", () => {
 

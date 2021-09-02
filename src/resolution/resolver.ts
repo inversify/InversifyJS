@@ -8,7 +8,7 @@ import { getFactoryDetails, ensureFullyBound } from "../utils/binding_utils";
 import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
 
-const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
+const _resolveRequest = <T>(requestScope: interfaces.RequestScope<T>) =>
   (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
 
     request.parentContext.setCurrentRequest(request);
@@ -56,7 +56,7 @@ const _resolveFactoryFromBinding = <T>(
 }
 
 const _getResolvedFromBinding = <T = unknown>(
-  requestScope: interfaces.RequestScope,
+  requestScope: interfaces.RequestScope<T>,
   request: interfaces.Request,
   binding: interfaces.Binding<T>,
 ): T | Promise<T> => {
@@ -89,11 +89,11 @@ const _getResolvedFromBinding = <T = unknown>(
 }
 
 const _resolveInScope = <T>(
-  requestScope: interfaces.RequestScope,
+  requestScope: interfaces.RequestScope<T>,
   binding: interfaces.Binding<T>,
   resolveFromBinding: () => T | Promise<T>
-): T | Promise<T> => {
-  let result = tryGetFromScope(requestScope, binding);
+): T | Promise<T> | undefined => {
+  let result = tryGetFromScope<T>(requestScope, binding);
   if (result !== null) {
     return result;
   }
@@ -102,12 +102,12 @@ const _resolveInScope = <T>(
   return result;
 }
 
-const _resolveBinding = <T = unknown>(
-  requestScope: interfaces.RequestScope,
+const _resolveBinding = <T>(
+  requestScope: interfaces.RequestScope<T>,
   request: interfaces.Request,
   binding: interfaces.Binding<T>,
-): T | Promise<T> => {
-  return _resolveInScope(requestScope, binding, () => {
+): T | Promise<T> | undefined => {
+  return _resolveInScope<T>(requestScope, binding, () => {
     let result = _getResolvedFromBinding(requestScope, request, binding);
     if (isPromise(result)) {
       result = result.then((resolved) => _onActivation(request, binding, resolved));
@@ -232,7 +232,7 @@ const _getContainersIterator = (container: interfaces.Container): Iterator<inter
 }
 
 function resolve<T>(context: interfaces.Context): T | Promise<T> | (T | Promise<T>)[] {
-  const _f = _resolveRequest<T>(context.plan.rootRequest.requestScope);
+  const _f = _resolveRequest<T>(context.plan.rootRequest.requestScope as interfaces.RequestScope<T>);
   return _f(context.plan.rootRequest) as T | Promise<T> | (T | Promise<T>)[];
 }
 

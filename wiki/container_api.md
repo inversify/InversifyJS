@@ -179,7 +179,7 @@ let katana = await container.getNamedAsync<Weapon>("Weapon", "japanese");
 let shuriken = await container.getNamedAsync<Weapon>("Weapon", "chinese");
 ```
 
-## container.getTagged\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): T
+## container.getTagged\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: unknown): T
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding and the binding must be synchronously resolved, otherwise an error is thrown:
 
@@ -192,7 +192,7 @@ let katana = container.getTagged<Weapon>("Weapon", "faction", "samurai");
 let shuriken = container.getTagged<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getTaggedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): Promise\<T>
+## container.getTaggedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: unknown): Promise\<T>
 
 Resolves a dependency by its runtime identifier that matches the given tagged constraint. The runtime identifier must be associated with only one binding, otherwise an error is thrown:
 
@@ -288,7 +288,7 @@ expect(es[1].goodbye).to.eql("adios");
 ```
 
 
-## container.getAllTagged\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): T[]
+## container.getAllTagged\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: unknown): T[]
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint. All the binding must be synchronously resolved, otherwise an error is thrown:
 
@@ -317,7 +317,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.getAllTaggedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: any): Promise\<T[]>
+## container.getAllTaggedAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, key: string | number | symbol, value: unknown): Promise\<T[]>
 
 Resolves all the dependencies by its runtime identifier that matches the given tagged constraint:
 
@@ -346,7 +346,7 @@ expect(es[0].hello).to.eql("hola");
 expect(es[1].goodbye).to.eql("adios");
 ```
 
-## container.isBound(serviceIdentifier: interfaces.ServiceIdentifier\<any>): boolean
+## container.isBound(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>): boolean
 
 You can use the `isBound` method to check if there are registered bindings for a given service identifier.
 
@@ -379,7 +379,7 @@ expect(container.isBound(katanaSymbol)).to.eql(false);
 ```
 
 
-## container.isCurrentBound(serviceIdentifier: interfaces.ServiceIdentifier\<any>): boolean
+## container.isCurrentBound(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>): boolean
 
 You can use the `isCurrentBound` method to check if there are registered bindings for a given service identifier only in current container.
 
@@ -403,7 +403,7 @@ expect(containerChild.isBound(Ninja)).to.eql(true);
 expect(containerChild.isCurrentBound(Ninja)).to.eql(false);
 ```
 
-## container.isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier\<any>, named: string): boolean
+## container.isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>, named: string): boolean
 
 You can use the `isBoundNamed` method to check if there are registered bindings for a given service identifier with a given named constraint.
 
@@ -428,7 +428,7 @@ expect(container.isBoundNamed(zero, invalidDivisor)).to.eql(true);
 expect(container.isBoundNamed(zero, validDivisor)).to.eql(true);
 ```
 
-## container.isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier\<any>, key: string, value: any): boolean
+## container.isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>, key: string, value: unknown): boolean
 
 You can use the `isBoundTagged` method to check if there are registered bindings for a given service identifier with a given tagged constraint.
 
@@ -558,11 +558,11 @@ Restore container state to last snapshot.
 ## container.snapshot(): void
 
 Save the state of the container to be later restored with the restore method.
-## container.unbind(serviceIdentifier: interfaces.ServiceIdentifier\<any>): void
+## container.unbind(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>): void
 
 Remove all bindings binded in this container to the service identifer.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
 
-## container.unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier\<any>): Promise\<void>
+## container.unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>): Promise\<void>
 
 This is the asynchronous version of unbind.  If you know deactivation is asynchronous then this should be used.
 If you are not sure then use this method !

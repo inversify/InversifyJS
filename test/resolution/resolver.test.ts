@@ -1141,7 +1141,7 @@ describe("Resolve", () => {
       }
     }
 
-    expect(() => resolveInstance({} as interfaces.Binding<any>, Katana, [], () => null))
+    expect(() => resolveInstance({} as interfaces.Binding<unknown>, Katana, [], () => null))
       .to.throw("@postConstruct error in class Katana: Original Message");
   });
 

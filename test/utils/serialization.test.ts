@@ -17,7 +17,7 @@ describe("Serialization", () => {
 
   it("Should return a good function name by using the regex", () => {
 
-    const testFunction: any = { name: null };
+    const testFunction = { name: null };
     testFunction.toString = () =>
       "function testFunction";
 

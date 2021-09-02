@@ -1,15 +1,15 @@
 import * as ERROR_MSGS from "../constants/error_msgs";
 import { interfaces } from "../interfaces/interfaces";
 
-function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier<any>): string {
+function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier): string {
   if (typeof serviceIdentifier === "function") {
-    const _serviceIdentifier: any = serviceIdentifier;
+    const _serviceIdentifier = serviceIdentifier;
     return _serviceIdentifier.name;
   } else if (typeof serviceIdentifier === "symbol") {
     return serviceIdentifier.toString();
   } else { // string
-    const _serviceIdentifier: any = serviceIdentifier;
-    return _serviceIdentifier;
+    const _serviceIdentifier = serviceIdentifier;
+    return _serviceIdentifier as string;
   }
 }
 
@@ -29,14 +29,14 @@ function listRegisteredBindingsForServiceIdentifier(
 
     registeredBindingsList = "\nRegistered bindings:";
 
-    registeredBindings.forEach((binding: interfaces.Binding<any>) => {
+    registeredBindings.forEach((binding: interfaces.Binding<unknown>) => {
 
       // Use "Object as name of constant value injections"
-      let name = "Object";
+      let name: string | undefined = "Object";
 
       // Use function name if available
       if (binding.implementationType !== null) {
-        name = getFunctionName(binding.implementationType);
+        name = getFunctionName(binding.implementationType as { name: string | null });
       }
 
       registeredBindingsList = `${registeredBindingsList}\n ${name}`;
@@ -54,7 +54,7 @@ function listRegisteredBindingsForServiceIdentifier(
 
 function alreadyDependencyChain(
   request: interfaces.Request,
-  serviceIdentifier: interfaces.ServiceIdentifier<any>
+  serviceIdentifier: interfaces.ServiceIdentifier
 ): boolean {
   if (request.parentRequest === null) {
     return false;
@@ -124,11 +124,12 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
   }
 }
 
-function getFunctionName(v: any): string {
-  if (v.name) {
-    return v.name;
+
+function getFunctionName(func: { name: string | null }): string | undefined {
+  if (func.name) {
+    return func.name;
   } else {
-    const name = v.toString();
+    const name = func.toString();
     const match = name.match(/^function\s*([^\s(]+)/);
     return match ? match[1] : `Anonymous function: ${name}`;
   }

@@ -1,4 +1,9 @@
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(
+  decorators: ClassDecorator[],
+  target: any,
+  key?: string | symbol,
+  descriptor?: PropertyDescriptor | undefined
+): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from "chai";
@@ -90,7 +95,7 @@ describe("@named", () => {
     }
 
     const metadataKey = METADATA_KEY.TAGGED_PROP;
-    const metadata: any = Reflect.getMetadata(metadataKey, Warrior);
+    const metadata = Reflect.getMetadata(metadataKey, Warrior);
 
     const m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);

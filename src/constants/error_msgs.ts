@@ -26,7 +26,7 @@ export const INVALID_TO_SELF_VALUE = "The toSelf function can only be applied wh
 export const INVALID_DECORATOR_OPERATION = "The @inject @multiInject @tagged and @named decorators " +
   "must be applied to the parameters of a class constructor or a class property.";
 
-export const ARGUMENTS_LENGTH_MISMATCH = (...values: any[]) => "The number of constructor arguments in the derived class " +
+export const ARGUMENTS_LENGTH_MISMATCH = (...values: unknown[]) => "The number of constructor arguments in the derived class " +
   `${values[0]} must be >= than the number of constructor arguments of its base class.`;
 
 export const CONTAINER_OPTIONS_MUST_BE_AN_OBJECT = "Invalid Container constructor argument. Container options " +

@@ -41,11 +41,6 @@ describe("BindingToSyntax", () => {
     expect(binding.type).eql(BindingTypeEnum.Instance);
     expect(binding.implementationType).not.to.eql(null);
 
-    //        (bindingToSyntax as any)._binding = bindingWithClassAsId;
-    //        bindingToSyntax.toSelf();
-    //        expect(binding.type).eql(BindingTypeEnum.Instance);
-    //        expect(binding.implementationType).not.to.eql(null);
-
     (bindingToSyntax as any)._binding = binding;
     bindingToSyntax.toConstantValue(new Ninja());
     expect(binding.type).eql(BindingTypeEnum.ConstantValue);

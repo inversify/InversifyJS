@@ -52,7 +52,7 @@ describe("Bugs", () => {
 
     @injectable()
     class Warrior {
-      protected rank: string | null;
+      public rank: string | null;
       public constructor() { // length = 0
         this.rank = null;
       }
@@ -68,7 +68,7 @@ describe("Bugs", () => {
 
     const container = new Container();
     container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-    const master: any = container.get<SamuraiMaster>(SamuraiMaster);
+    const master = container.get<SamuraiMaster>(SamuraiMaster);
     expect(master.rank).eql("master");
 
   });
@@ -90,7 +90,7 @@ describe("Bugs", () => {
     @injectable()
     class SamuraiMaster extends Warrior {
       public constructor(
-        @inject(TYPES.Rank) @named("master") rank: string // length = 1
+        @inject(TYPES.Rank) @named("master") public rank: string // length = 1
       ) {
         super(rank);
       }
@@ -102,7 +102,7 @@ describe("Bugs", () => {
       .toConstantValue("master")
       .whenTargetNamed("master");
 
-    const master: any = container.get<SamuraiMaster>(SamuraiMaster);
+    const master = container.get<SamuraiMaster>(SamuraiMaster);
     expect(master.rank).eql("master");
 
   });
@@ -140,7 +140,7 @@ describe("Bugs", () => {
     class SamuraiMaster extends Warrior {
       public weapon: Weapon;
       public constructor(
-        @inject(TYPES.Rank) @named("master") rank: string,
+        @inject(TYPES.Rank) @named("master") public rank: string,
         @inject(TYPES.Weapon) weapon: Weapon
       ) { // length = 2
         super(rank);
@@ -155,7 +155,7 @@ describe("Bugs", () => {
       .toConstantValue("master")
       .whenTargetNamed("master");
 
-    const master: any = container.get<SamuraiMaster>(SamuraiMaster);
+    const master = container.get<SamuraiMaster>(SamuraiMaster);
     expect(master.rank).eql("master");
     expect(master.weapon.name).eql("Katana");
 

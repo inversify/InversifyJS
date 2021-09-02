@@ -17,17 +17,17 @@ import { getBaseClassDependencyCount, getDependencies, getFunctionName } from ".
 import { Request } from "./request";
 import { Target } from "./target";
 
-function getBindingDictionary(cntnr: any): interfaces.Lookup<interfaces.Binding<any>> {
-  return cntnr._bindingDictionary;
+function getBindingDictionary(cntnr: interfaces.Container): interfaces.Lookup<interfaces.Binding<any>> {
+  return (cntnr as any)._bindingDictionary;
 }
 
 function _createTarget(
   isMultiInject: boolean,
   targetType: interfaces.TargetType,
-  serviceIdentifier: interfaces.ServiceIdentifier<any>,
+  serviceIdentifier: interfaces.ServiceIdentifier,
   name: string,
   key?: string | number | symbol,
-  value?: any
+  value?: unknown
 ): interfaces.Target {
 
   const metadataKey = isMultiInject ? METADATA_KEY.MULTI_INJECT_TAG : METADATA_KEY.INJECT_TAG;
@@ -49,10 +49,10 @@ function _getActiveBindings(
   context: interfaces.Context,
   parentRequest: interfaces.Request | null,
   target: interfaces.Target
-): interfaces.Binding<any>[] {
+): interfaces.Binding<unknown>[] {
 
-  let bindings = getBindings<any>(context.container, target.serviceIdentifier);
-  let activeBindings: interfaces.Binding<any>[] = [];
+  let bindings = getBindings(context.container, target.serviceIdentifier);
+  let activeBindings: interfaces.Binding<unknown>[] = [];
 
   // automatic binding
   if (bindings.length === BindingCount.NoBindingsAvailable &&
@@ -94,11 +94,11 @@ function _getActiveBindings(
 }
 
 function _validateActiveBindingCount(
-  serviceIdentifier: interfaces.ServiceIdentifier<any>,
-  bindings: interfaces.Binding<any>[],
+  serviceIdentifier: interfaces.ServiceIdentifier,
+  bindings: interfaces.Binding<unknown>[],
   target: interfaces.Target,
   container: interfaces.Container
-): interfaces.Binding<any>[] {
+): interfaces.Binding<unknown>[] {
 
   switch (bindings.length) {
 
@@ -132,7 +132,7 @@ function _validateActiveBindingCount(
 function _createSubRequests(
   metadataReader: interfaces.MetadataReader,
   avoidConstraints: boolean,
-  serviceIdentifier: interfaces.ServiceIdentifier<any>,
+  serviceIdentifier: interfaces.ServiceIdentifier,
   context: interfaces.Context,
   parentRequest: interfaces.Request | null,
   target: interfaces.Target
@@ -206,7 +206,7 @@ function getBindings<T>(
 ): interfaces.Binding<T>[] {
 
   let bindings: interfaces.Binding<T>[] = [];
-  const bindingDictionary: interfaces.Lookup<interfaces.Binding<any>> = getBindingDictionary(container);
+  const bindingDictionary: interfaces.Lookup<interfaces.Binding<T>> = getBindingDictionary(container);
 
   if (bindingDictionary.hasKey(serviceIdentifier)) {
 
@@ -227,9 +227,9 @@ function plan(
   container: interfaces.Container,
   isMultiInject: boolean,
   targetType: interfaces.TargetType,
-  serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+  serviceIdentifier: interfaces.ServiceIdentifier,
   key?: string | number | symbol,
-  value?: any,
+  value?: unknown,
   avoidConstraints = false
 ): interfaces.Context {
 
@@ -252,9 +252,9 @@ function plan(
 
 function createMockRequest(
   container: interfaces.Container,
-  serviceIdentifier: interfaces.ServiceIdentifier<any>,
+  serviceIdentifier: interfaces.ServiceIdentifier,
   key: string | number | symbol,
-  value: any
+  value: unknown
 ): interfaces.Request {
 
   const target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));

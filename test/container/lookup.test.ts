@@ -21,24 +21,24 @@ describe("Lookup", () => {
   const invalid: any = null;
 
   it("Should throw when invoking get, remove or hasKey with a null key", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     expect(() => { lookup.get(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
     expect(() => { lookup.remove(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
     expect(() => { lookup.hasKey(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should throw when attempting to add a null key", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     expect(() => { lookup.add(invalid, new ClonableValue<number>(1)); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should throw when attempting to add a null value", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     expect(() => { lookup.add("TEST_KEY", null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
   it("Should be able to link multiple values to a string key", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     const key = "TEST_KEY";
     lookup.add(key, new ClonableValue<number>(1));
     lookup.add(key, new ClonableValue<number>(2));
@@ -47,7 +47,7 @@ describe("Lookup", () => {
   });
 
   it("Should be able to link multiple values a symbol key", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     const key = Symbol.for("TEST_KEY");
     lookup.add(key, new ClonableValue<number>(1));
     lookup.add(key, new ClonableValue<number>(2));
@@ -56,14 +56,14 @@ describe("Lookup", () => {
   });
 
   it("Should throws when key not found", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     expect(() => { lookup.get("THIS_KEY_IS_NOT_AVAILABLE"); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
     expect(() => { lookup.remove("THIS_KEY_IS_NOT_AVAILABLE"); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
   });
 
   it("Should be clonable", () => {
 
-    const lookup = new Lookup<interfaces.Clonable<any>>();
+    const lookup = new Lookup<interfaces.Clonable<unknown>>();
     const key1 = Symbol.for("TEST_KEY");
 
     class Warrior {
@@ -88,7 +88,7 @@ describe("Lookup", () => {
   });
 
   it("Should use use the original non clonable entry if it is not clonable", () => {
-    const lookup = new Lookup<any>();
+    const lookup = new Lookup<unknown>();
     const key1 = Symbol.for("TEST_KEY");
 
     class Warrior {
@@ -138,7 +138,7 @@ describe("Lookup", () => {
       katanaBinding.implementationType = Katana;
       katanaBinding.moduleId = moduleId2;
 
-      const lookup = new Lookup<Binding<any>>();
+      const lookup = new Lookup<Binding<unknown>>();
       lookup.add(warriorId, ninjaBinding);
       lookup.add(warriorId, samuraiBinding);
       lookup.add(weaponId, shurikenBinding);
@@ -148,7 +148,7 @@ describe("Lookup", () => {
 
     };
 
-    const removeByModule = (expected: any) => (item: interfaces.Binding<any>): boolean =>
+    const removeByModule = (expected: unknown) => (item: interfaces.Binding<unknown>): boolean =>
       item.moduleId === expected;
 
     const lookup1 = getLookup();
