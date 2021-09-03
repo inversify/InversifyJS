@@ -33,7 +33,7 @@ container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>(
 You can also define a Factory with args:
 
 ```ts
-container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon>((context: interfaces.Context) => {
+container.bind<interfaces.Factory<Weapon>>("Factory<Weapon>").toFactory<Weapon,[true]>((context: interfaces.Context) => {
     return (throwable: boolean) => {
         if (throwable) {
             return context.container.getTagged<Weapon>("Weapon", "throwable", true);
@@ -50,7 +50,7 @@ Sometimes you might need to pass arguments to a factory in different moments dur
 container.bind<Engine>("Engine").to(PetrolEngine).whenTargetNamed("petrol");
 container.bind<Engine>("Engine").to(DieselEngine).whenTargetNamed("diesel");
 
-container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine>((context) => {
+container.bind<interfaces.Factory<Engine>>("Factory<Engine>").toFactory<Engine,[string],[number]>((context) => {
     return (named: string) => (displacement: number) => {
         let engine = context.container.getNamed<Engine>("Engine", named);
         engine.displacement = displacement;
