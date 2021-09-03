@@ -58,7 +58,7 @@ The signature of a provider look as follows:
 
 ```ts
 interface Provider<T> extends NewableFunction {
-    (...args: any[]): (((...args: any[]) => Promise<T>) | Promise<T>);
+    (...args: unknown[]): (((...args: unknown[]) => Promise<T>) | Promise<T>);
 }
 ```
 
