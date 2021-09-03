@@ -73,14 +73,14 @@ namespace interfaces {
 
   export type SimpleFactory<T, U extends unknown[] = unknown[]> =  (...args: U) => T;
 
-  export type MultiFactory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = (...args: U) => SimpleFactory<T,V>
+  export type MultiFactory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = (...args: U) => SimpleFactory<T,V>;
 
-  export type Factory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = SimpleFactory<T,U> | MultiFactory<T, U, V>
+  export type Factory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = SimpleFactory<T,U> | MultiFactory<T, U, V>;
 
   export type FactoryCreator<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = (context: Context) => Factory<T, U, V>;
 
   export type AutoNamedFactory<T> = SimpleFactory<T,[string]>;
-  
+
   export type AutoFactory<T> = SimpleFactory<T,[]>;
 
   export type FactoryTypeFunction = (context: interfaces.Context) => any;
