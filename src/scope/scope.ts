@@ -2,9 +2,9 @@ import { BindingScopeEnum, interfaces } from "../inversify";
 import { isPromise } from "../utils/async";
 
 export const tryGetFromScope = <T>(
-  requestScope: interfaces.RequestScope<T>,
+  requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>
-): T | Promise<T> | null | undefined => {
+): T | Promise<T> | null => {
 
   if ((binding.scope === BindingScopeEnum.Singleton) && binding.activated) {
     return binding.cache!;
@@ -12,16 +12,15 @@ export const tryGetFromScope = <T>(
 
   if (
     binding.scope === BindingScopeEnum.Request &&
-    requestScope !== null &&
     requestScope.has(binding.id)
   ) {
-    return requestScope.get(binding.id);
+    return requestScope.get(binding.id) as T | Promise<T>;
   }
   return null;
 }
 
 export const saveToScope = <T>(
-  requestScope: interfaces.RequestScope<T>,
+  requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
   result: T | Promise<T>
 ): void => {
@@ -42,7 +41,6 @@ const _saveToRequestScope = <T>(
   result: T | Promise<T>
 ): void => {
   if (
-    requestScope !== null &&
     !requestScope.has(binding.id)
   ) {
     requestScope.set(binding.id, result);

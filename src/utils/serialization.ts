@@ -125,13 +125,13 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
 }
 
 
-function getFunctionName(func: { name: string | null }): string | undefined {
+function getFunctionName(func: { name: string | null }): string {
   if (func.name) {
     return func.name;
   } else {
     const name = func.toString();
     const match = name.match(/^function\s*([^\s(]+)/);
-    return match ? match[1] : `Anonymous function: ${name}`;
+    return match ? (match[1] as string) : `Anonymous function: ${name}`;
   }
 }
 

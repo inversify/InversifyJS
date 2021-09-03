@@ -642,7 +642,7 @@ class Container implements interfaces.Container {
     };
   }
 
-  private _deactivateIfSingleton(binding: Binding<any>): Promise<void> | void {
+  private _deactivateIfSingleton(binding: Binding<unknown>): Promise<void> | void {
     if (!binding.activated) {
       return;
     }

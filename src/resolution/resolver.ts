@@ -8,7 +8,7 @@ import { getFactoryDetails, ensureFullyBound } from "../utils/binding_utils";
 import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
 import { resolveInstance } from "./instantiation";
 
-const _resolveRequest = <T>(requestScope: interfaces.RequestScope<T>) =>
+const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
   (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
 
     request.parentContext.setCurrentRequest(request);
@@ -56,7 +56,7 @@ const _resolveFactoryFromBinding = <T>(
 }
 
 const _getResolvedFromBinding = <T = unknown>(
-  requestScope: interfaces.RequestScope<T>,
+  requestScope: interfaces.RequestScope,
   request: interfaces.Request,
   binding: interfaces.Binding<T>,
 ): T | Promise<T> => {
@@ -89,7 +89,7 @@ const _getResolvedFromBinding = <T = unknown>(
 }
 
 const _resolveInScope = <T>(
-  requestScope: interfaces.RequestScope<T>,
+  requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
   resolveFromBinding: () => T | Promise<T>
 ): T | Promise<T> | undefined => {
@@ -103,7 +103,7 @@ const _resolveInScope = <T>(
 }
 
 const _resolveBinding = <T>(
-  requestScope: interfaces.RequestScope<T>,
+  requestScope: interfaces.RequestScope,
   request: interfaces.Request,
   binding: interfaces.Binding<T>,
 ): T | Promise<T> | undefined => {
@@ -232,7 +232,7 @@ const _getContainersIterator = (container: interfaces.Container): Iterator<inter
 }
 
 function resolve<T>(context: interfaces.Context): T | Promise<T> | (T | Promise<T>)[] {
-  const _f = _resolveRequest<T>(context.plan.rootRequest.requestScope as interfaces.RequestScope<T>);
+  const _f = _resolveRequest<T>(context.plan.rootRequest.requestScope as interfaces.RequestScope);
   return _f(context.plan.rootRequest) as T | Promise<T> | (T | Promise<T>)[];
 }
 

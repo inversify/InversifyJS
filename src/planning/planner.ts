@@ -17,8 +17,8 @@ import { getBaseClassDependencyCount, getDependencies, getFunctionName } from ".
 import { Request } from "./request";
 import { Target } from "./target";
 
-function getBindingDictionary(cntnr: interfaces.Container): interfaces.Lookup<interfaces.Binding<any>> {
-  return (cntnr as any)._bindingDictionary;
+function getBindingDictionary(cntnr: interfaces.Container): interfaces.Lookup<interfaces.Binding<unknown>> {
+  return (cntnr as unknown as { _bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>> })._bindingDictionary;
 }
 
 function _createTarget(
@@ -206,11 +206,11 @@ function getBindings<T>(
 ): interfaces.Binding<T>[] {
 
   let bindings: interfaces.Binding<T>[] = [];
-  const bindingDictionary: interfaces.Lookup<interfaces.Binding<T>> = getBindingDictionary(container);
+  const bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>> = getBindingDictionary(container);
 
   if (bindingDictionary.hasKey(serviceIdentifier)) {
 
-    bindings = bindingDictionary.get(serviceIdentifier);
+    bindings = bindingDictionary.get(serviceIdentifier) as interfaces.Binding<T>[];
 
   } else if (container.parent !== null) {
 

@@ -135,7 +135,7 @@ namespace interfaces {
     request: interfaces.Request
   ) => any;
 
-  export type RequestScope<T = unknown> = Map<string | number, T>;
+  export type RequestScope = Map<unknown, unknown>;
 
   export interface Request {
     id: number;
@@ -170,10 +170,6 @@ namespace interfaces {
     isOptional(): boolean;
     matchesNamedTag(name: string): boolean;
     matchesTag(key: string | number | symbol): (value: unknown) => boolean;
-  }
-
-  export interface TargetMetadata {
-
   }
 
   export interface ContainerOptions {
@@ -335,8 +331,8 @@ namespace interfaces {
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;
     toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-    toFactory<T2,T3 extends unknown[] = unknown[],T4 extends unknown[] = unknown[]>(
-      factory: FactoryCreator<T2,T3,T4>): BindingWhenOnSyntax<T>;
+    toFactory<T2, T3 extends unknown[] = unknown[], T4 extends unknown[] = unknown[]>(
+      factory: FactoryCreator<T2, T3, T4>): BindingWhenOnSyntax<T>;
     toFunction(func: T): BindingWhenOnSyntax<T>;
     toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
     toAutoNamedFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
@@ -355,7 +351,7 @@ namespace interfaces {
   }
 
   export interface MetadataMap {
-    [propertyNameOrArgumentIndex: string]: Metadata[];
+    [propertyNameOrArgumentIndex: string | symbol]: Metadata[];
   }
 
   export interface ConstructorMetadata {

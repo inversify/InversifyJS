@@ -11,12 +11,8 @@ function getDependencies(
   metadataReader: interfaces.MetadataReader, func: NewableFunction
 ): interfaces.Target[] {
   const constructorName = getFunctionName(func);
-  if (constructorName) {
-    const targets: interfaces.Target[] = getTargets(metadataReader, constructorName, func, false);
-    return targets;
-  } else {
-    return [];
-  }
+  const targets: interfaces.Target[] = getTargets(metadataReader, constructorName, func, false);
+  return targets;
 }
 
 function getTargets(
@@ -171,7 +167,7 @@ function getClassPropsAsTargets(
   for (const key of keys) {
 
     // the metadata for the property being injected
-    const targetMetadata = classPropsMetadata[key as string] as interfaces.Metadata[];
+    const targetMetadata = classPropsMetadata[key] as interfaces.Metadata[];
 
     // the metadata formatted for easier access
     const metadata = formatTargetMetadata(targetMetadata);
@@ -216,21 +212,14 @@ function getBaseClassDependencyCount(
     // get targets for base class
     const baseConstructorName = getFunctionName(baseConstructor);
 
-    let targets: interfaces.Target[] = [];
-
-    if (baseConstructorName) {
-      targets = getTargets(metadataReader, baseConstructorName, baseConstructor, true);
-    }
+    const targets = getTargets(metadataReader, baseConstructorName, baseConstructor, true);
 
     // get unmanaged metadata
-    const metadata = targets.map((t: interfaces.Target) =>
-      t.metadata.filter(m =>
-        m.key === METADATA_KEY.UNMANAGED_TAG));
-
+    const metadata = targets.map((t) => t.metadata.filter(m => m.key === METADATA_KEY.UNMANAGED_TAG));
 
     // Compare the number of constructor arguments with the number of
     // unmanaged dependencies unmanaged dependencies are not required
-    const unmanagedCount = ([] as Metadata[]).concat.apply([], metadata).length;;
+    const unmanagedCount = ([] as Metadata[]).concat.apply([], metadata).length;
     const dependencyCount = targets.length - unmanagedCount;
 
     if (dependencyCount > 0) {

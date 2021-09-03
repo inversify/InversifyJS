@@ -91,7 +91,7 @@ function _tagParameterOrProperty(
 
   // set metadata
   paramOrPropertyMetadata.push(...metadatas);
-  paramsOrPropertiesMetadata[key as string] = paramOrPropertyMetadata;
+  paramsOrPropertiesMetadata[key] = paramOrPropertyMetadata;
   Reflect.defineMetadata(metadataKey, paramsOrPropertiesMetadata, annotationTarget);
 
 }
@@ -114,8 +114,11 @@ function createTaggedDecorator(
   };
 }
 
-function _decorate(decorators: any[], target: NewableFunction): void {
-  Reflect.decorate(decorators, target);
+function _decorate(
+  decorators: (DecoratorTarget | ParameterDecorator | MethodDecorator)[],
+  target: NewableFunction,
+): void {
+  Reflect.decorate(decorators as ClassDecorator[], target);
 }
 
 function _param(paramIndex: number, decorator: ParameterDecorator) {
