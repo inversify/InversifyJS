@@ -648,7 +648,7 @@ class Container implements interfaces.Container {
     }
 
     if (isPromise(binding.cache)) {
-      return binding.cache.then((resolved: unknown) => this._deactivate(binding, resolved));
+      return binding.cache.then((resolved) => this._deactivate(binding, resolved));
     }
 
     return this._deactivate(binding, binding.cache);

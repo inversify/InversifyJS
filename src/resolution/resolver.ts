@@ -92,7 +92,7 @@ const _resolveInScope = <T>(
   requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
   resolveFromBinding: () => T | Promise<T>
-): T | Promise<T> | undefined => {
+): T | Promise<T> => {
   let result = tryGetFromScope<T>(requestScope, binding);
   if (result !== null) {
     return result;
@@ -106,7 +106,7 @@ const _resolveBinding = <T>(
   requestScope: interfaces.RequestScope,
   request: interfaces.Request,
   binding: interfaces.Binding<T>,
-): T | Promise<T> | undefined => {
+): T | Promise<T> => {
   return _resolveInScope<T>(requestScope, binding, () => {
     let result = _getResolvedFromBinding(requestScope, request, binding);
     if (isPromise(result)) {

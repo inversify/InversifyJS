@@ -11,8 +11,7 @@ function getDependencies(
   metadataReader: interfaces.MetadataReader, func: NewableFunction
 ): interfaces.Target[] {
   const constructorName = getFunctionName(func);
-  const targets: interfaces.Target[] = getTargets(metadataReader, constructorName, func, false);
-  return targets;
+  return getTargets(metadataReader, constructorName, func, false);
 }
 
 function getTargets(

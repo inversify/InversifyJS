@@ -32,7 +32,7 @@ function listRegisteredBindingsForServiceIdentifier(
     registeredBindings.forEach((binding: interfaces.Binding<unknown>) => {
 
       // Use "Object as name of constant value injections"
-      let name: string | undefined = "Object";
+      let name = "Object";
 
       // Use function name if available
       if (binding.implementationType !== null) {
