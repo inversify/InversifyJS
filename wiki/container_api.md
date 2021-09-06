@@ -55,8 +55,7 @@ container.get(Ninja);              // returns a Samurai
 
 ### skipBaseClassChecks
 
-You can use thi
-to skip checking base classes for the @injectable property, which is
+You can use this to skip checking base classes for the @injectable property, which is
 especially useful if any of your @injectable classes extend classes that you don't control
 (third party classes). By default, this value is `false`.
 
