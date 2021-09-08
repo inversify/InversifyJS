@@ -48,7 +48,7 @@ const _resolveFactoryFromBinding = <T>(
 ): T | Promise<T> => {
   const factoryDetails = getFactoryDetails(binding);
   return tryAndThrowErrorIfStackOverflow(
-    () => (factoryDetails.factory as interfaces.FactoryTypeFunction).bind(binding)(context),
+    () => (factoryDetails.factory as interfaces.FactoryTypeFunction<T>).bind(binding)(context),
     () => new Error(
       ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(factoryDetails.factoryType, context.currentRequest.serviceIdentifier.toString()
       ),
@@ -198,7 +198,7 @@ const _activateContainerAsync = async<T>(
 
 const _getContainerActivationsForService = <T>(container: interfaces.Container, serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
   // smell accessing _activations, but similar pattern is done in planner.getBindingDictionary()
-  const activations = (container as any)._activations as interfaces.Lookup<interfaces.BindingActivation<any>>;
+  const activations = (container as unknown as { _activations: interfaces.Lookup<interfaces.BindingActivation<unknown>> })._activations;
 
   return activations.hasKey(serviceIdentifier) ? activations.get(serviceIdentifier).values() : [].values();
 }

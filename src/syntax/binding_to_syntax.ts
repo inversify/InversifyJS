@@ -12,7 +12,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     this._binding = binding;
   }
 
-  public to(constructor: new (...args: unknown[]) => T): interfaces.BindingInWhenOnSyntax<T> {
+  public to(constructor: new (...args: never[]) => T): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Instance;
     this._binding.implementationType = constructor;
     return new BindingInWhenOnSyntax<T>(this._binding);
@@ -45,7 +45,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
   public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Constructor;
-    this._binding.implementationType = constructor as any;
+    this._binding.implementationType = constructor as unknown as T;
     this._binding.scope = BindingScopeEnum.Singleton;
     return new BindingWhenOnSyntax<T>(this._binding);
   }

@@ -64,11 +64,11 @@ function _createInstance<T>(
 function createInstanceWithInjections<T>(
   args: CreateInstanceWithInjectionArg<T>
 ): T {
-  const instance = new args.constr(...args.constructorInjections);
+  const instance = new args.constr(...args.constructorInjections as never[]);
   args.propertyRequests.forEach((r: interfaces.Request, index: number) => {
     const property = r.target.identifier;
     const injection = args.propertyInjections[index];
-    (instance as any)[property] = injection;
+    (instance as Record<string | symbol, unknown>)[property] = injection;
   });
   return instance
 }

@@ -38,7 +38,7 @@ namespace interfaces {
     Variable: interfaces.TargetType;
   }
 
-  export type Newable<T> = new (...args: any[]) => T;
+  export type Newable<T> = new (...args: never[]) => T;
 
   export interface Abstract<T> {
     prototype: T;
@@ -71,19 +71,19 @@ namespace interfaces {
     cache: null | TActivated | Promise<TActivated>;
   }
 
-  export type SimpleFactory<T, U extends unknown[] = unknown[]> =  (...args: U) => T;
+  export type SimpleFactory<T, U extends unknown[] = unknown[]> = (...args: U) => T;
 
-  export type MultiFactory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = (...args: U) => SimpleFactory<T,V>;
+  export type MultiFactory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = (...args: U) => SimpleFactory<T, V>;
 
-  export type Factory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = SimpleFactory<T,U> | MultiFactory<T, U, V>;
+  export type Factory<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = SimpleFactory<T, U> | MultiFactory<T, U, V>;
 
   export type FactoryCreator<T, U extends unknown[] = unknown[], V extends unknown[] = unknown[]> = (context: Context) => Factory<T, U, V>;
 
-  export type AutoNamedFactory<T> = SimpleFactory<T,[string]>;
+  export type AutoNamedFactory<T> = SimpleFactory<T, [string]>;
 
-  export type AutoFactory<T> = SimpleFactory<T,[]>;
+  export type AutoFactory<T> = SimpleFactory<T, []>;
 
-  export type FactoryTypeFunction = (context: interfaces.Context) => any;
+  export type FactoryTypeFunction<T = unknown> = (context: interfaces.Context) => T | Promise<T>
 
   export interface FactoryDetails {
     factoryType: FactoryType,
@@ -121,9 +121,9 @@ namespace interfaces {
 
   export type MetadataOrMetadataArray = Metadata | Metadata[];
 
-  export interface Metadata {
+  export interface Metadata<TValue = unknown> {
     key: string | number | symbol;
-    value: unknown;
+    value: TValue;
   }
 
   export interface Plan {
@@ -141,7 +141,7 @@ namespace interfaces {
 
   export type ResolveRequestHandler = (
     request: interfaces.Request
-  ) => any;
+  ) => unknown;
 
   export type RequestScope = Map<unknown, unknown>;
 
@@ -168,7 +168,7 @@ namespace interfaces {
     name: QueryableString;
     identifier: string | symbol;
     metadata: Metadata[];
-    getNamedTag(): interfaces.Metadata | null;
+    getNamedTag(): interfaces.Metadata<string> | null;
     getCustomTags(): interfaces.Metadata[] | null;
     hasTag(key: string | number | symbol): boolean;
     isArray(): boolean;
@@ -281,9 +281,9 @@ namespace interfaces {
   export type AsyncContainerModuleCallBack = AsyncCallback<ContainerModuleCallBack>;
 
   export interface ContainerSnapshot {
-    bindings: Lookup<Binding<any>>;
-    activations: Lookup<BindingActivation<any>>;
-    deactivations: Lookup<BindingDeactivation<any>>;
+    bindings: Lookup<Binding<unknown>>;
+    activations: Lookup<BindingActivation<unknown>>;
+    deactivations: Lookup<BindingDeactivation<unknown>>;
     middleware: Next | null;
     moduleActivationStore: interfaces.ModuleActivationStore;
   }
@@ -334,7 +334,7 @@ namespace interfaces {
   export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
 
   export interface BindingToSyntax<T> {
-    to(constructor: new (...args: any[]) => T): BindingInWhenOnSyntax<T>;
+    to(constructor: new (...args: never[]) => T): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;

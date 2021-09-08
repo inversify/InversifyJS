@@ -19,7 +19,7 @@ interface ConstructorFunction<T = Record<string, unknown>> {
   prototype: Prototype<T>
 }
 
-export type DecoratorTarget<T = Object> = ConstructorFunction<T> | Prototype<T>
+export type DecoratorTarget<T = unknown> = ConstructorFunction<T> | Prototype<T>
 
 function _throwIfMethodParameter(parameterName: string | symbol | undefined): void {
   if (parameterName !== undefined) {

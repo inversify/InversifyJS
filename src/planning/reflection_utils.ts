@@ -98,13 +98,9 @@ function getConstructorArgsAsTarget(
       throw new Error(msg);
     }
 
-    if (serviceIdentifier) {
-      const target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIdentifier);
-      target.metadata = targetMetadata;
-      return target;
-    } else {
-      return null;
-    }
+    const target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIdentifier as interfaces.ServiceIdentifier);
+    target.metadata = targetMetadata;
+    return target;
   }
 
   return null;

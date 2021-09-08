@@ -78,11 +78,11 @@ class Target implements interfaces.Target {
     return this.matchesTag(METADATA_KEY.OPTIONAL_TAG)(true);
   }
 
-  public getNamedTag(): interfaces.Metadata | null {
+  public getNamedTag(): interfaces.Metadata<string> | null {
     if (this.isNamed()) {
       return this.metadata.filter(
         (m) => m.key === METADATA_KEY.NAMED_TAG,
-      )[0] as interfaces.Metadata;
+      )[0] as interfaces.Metadata<string>;
     }
     return null;
   }

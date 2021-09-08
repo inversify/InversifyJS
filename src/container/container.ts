@@ -22,9 +22,9 @@ class Container implements interfaces.Container {
   public parent: interfaces.Container | null;
   public readonly options: interfaces.ContainerOptions;
   private _middleware: interfaces.Next | null;
-  private _bindingDictionary: interfaces.Lookup<interfaces.Binding<any>>;
-  private _activations: interfaces.Lookup<interfaces.BindingActivation<any>>;
-  private _deactivations: interfaces.Lookup<interfaces.BindingDeactivation<any>>;
+  private _bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>>;
+  private _activations: interfaces.Lookup<interfaces.BindingActivation<unknown>>;
+  private _deactivations: interfaces.Lookup<interfaces.BindingDeactivation<unknown>>;
   private _snapshots: interfaces.ContainerSnapshot[];
   private _metadataReader: interfaces.MetadataReader;
   private _moduleActivationStore: interfaces.ModuleActivationStore
@@ -176,7 +176,7 @@ class Container implements interfaces.Container {
   public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
     const scope = this.options.defaultScope || BindingScopeEnum.Transient;
     const binding = new Binding<T>(serviceIdentifier, scope);
-    this._bindingDictionary.add(serviceIdentifier, binding);
+    this._bindingDictionary.add(serviceIdentifier, binding as Binding<unknown>);
     return new BindingToSyntax<T>(binding);
   }
 
@@ -233,11 +233,11 @@ class Container implements interfaces.Container {
   }
 
   public onActivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onActivation: interfaces.BindingActivation<T>) {
-    this._activations.add(serviceIdentifier, onActivation);
+    this._activations.add(serviceIdentifier, onActivation as interfaces.BindingActivation<unknown>);
   }
 
   public onDeactivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onDeactivation: interfaces.BindingDeactivation<T>) {
-    this._deactivations.add(serviceIdentifier, onDeactivation);
+    this._deactivations.add(serviceIdentifier, onDeactivation as interfaces.BindingDeactivation<unknown>);
   }
 
   // Allows to check if there are bindings available for serviceIdentifier
