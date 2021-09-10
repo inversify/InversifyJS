@@ -133,9 +133,9 @@ function _onActivation<T>(request: interfaces.Request, binding: interfaces.Bindi
     const activationsIterator = _getContainerActivationsForService(container, serviceIdentifier);
 
     if (isPromise(result)) {
-      result = _activateContainerAsync<T>(activationsIterator, context, result);
+      result = _activateContainerAsync<T>(activationsIterator as Iterator<interfaces.BindingActivation<T>>, context, result);
     } else {
-      result = _activateContainer<T>(activationsIterator, context, result);
+      result = _activateContainer<T>(activationsIterator as Iterator<interfaces.BindingActivation<T>>, context, result);
     }
 
     containersIteratorResult = containersIterator.next();
@@ -160,14 +160,14 @@ const _bindingActivation = <T>(context: interfaces.Context, binding: interfaces.
 }
 
 const _activateContainer = <T>(
-  activationsIterator: Iterator<interfaces.BindingActivation<any>>,
+  activationsIterator: Iterator<interfaces.BindingActivation<T>>,
   context: interfaces.Context,
   result: T,
 ): T | Promise<T> => {
   let activation = activationsIterator.next();
 
   while (!activation.done) {
-    result = activation.value(context, result);
+    result = activation.value(context, result) as T;
 
     if (isPromise<T>(result)) {
       return _activateContainerAsync(activationsIterator, context, result);
@@ -180,11 +180,11 @@ const _activateContainer = <T>(
 }
 
 const _activateContainerAsync = async<T>(
-  activationsIterator: Iterator<interfaces.BindingActivation<any>>,
+  activationsIterator: Iterator<interfaces.BindingActivation<T>>,
   context: interfaces.Context,
   resultPromise: Promise<T>,
 ): Promise<T> => {
-  let result = await resultPromise
+  let result = await resultPromise;
   let activation = activationsIterator.next();
 
   while (!activation.done) {
