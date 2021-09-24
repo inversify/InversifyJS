@@ -71,9 +71,9 @@ namespace interfaces {
         cache: null | TActivated | Promise<TActivated>;
     }
 
-    export type Factory<T> = (...args: any[]) => (((...args: any[]) => T) | T);
+    export type Factory<T, U extends unknown[] = unknown[]> = (...args: U) => (((...args: U) => T) | T);
 
-    export type FactoryCreator<T> = (context: Context) => Factory<T>;
+    export type FactoryCreator<T, U extends unknown[] = unknown[]> = (context: Context) => Factory<T, U>;
 
     export type FactoryTypeFunction = (context: interfaces.Context) => any;
 
@@ -190,6 +190,7 @@ namespace interfaces {
         unbindAll(): void;
         unbindAllAsync(): Promise<void>;
         isBound(serviceIdentifier: ServiceIdentifier<any>): boolean;
+        isCurrentBound<T>(serviceIdentifier: ServiceIdentifier<T>): boolean;
         isBoundNamed(serviceIdentifier: ServiceIdentifier<any>, named: string | number | symbol): boolean;
         isBoundTagged(serviceIdentifier: ServiceIdentifier<any>, key: string | number | symbol, value: any): boolean;
         get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
@@ -330,9 +331,10 @@ namespace interfaces {
         toConstantValue(value: T): BindingWhenOnSyntax<T>;
         toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;
         toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-        toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
+        toFactory<T2, T3 extends unknown[] = unknown[]>(factory: FactoryCreator<T2, T3>): BindingWhenOnSyntax<T>;
         toFunction(func: T): BindingWhenOnSyntax<T>;
         toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
+        toAutoNamedFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
         toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
         toService(service: ServiceIdentifier<T>): void;
     }
