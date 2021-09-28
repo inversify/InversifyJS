@@ -549,7 +549,6 @@ container.onDeactivation("Weapon", (katana: Katana): void | Promise<void> => {
 
 container.unbind("Weapon");
 ```
-s
 
 ## container.restore(): void;
 
