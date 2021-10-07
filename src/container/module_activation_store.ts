@@ -18,8 +18,8 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     onDeactivation: interfaces.BindingDeactivation<unknown>,
   ) {
-    this._getModuleActivationHandlers(moduleId)
-      .onDeactivations.add(serviceIdentifier, onDeactivation);
+    this.addActivationHandler(moduleId, serviceIdentifier, onDeactivation, 'deactivation');
+
   }
 
   public addActivation(
@@ -27,8 +27,18 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     onActivation: interfaces.BindingActivation<unknown>,
   ) {
-    this._getModuleActivationHandlers(moduleId)
-      .onActivations.add(serviceIdentifier, onActivation);
+    this.addActivationHandler(moduleId, serviceIdentifier, onActivation, 'activation');
+  }
+
+  private addActivationHandler(
+		moduleId: number,
+		serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+		activation: interfaces.BindingActivation<unknown>,
+		type: "activation" | "deactivation"
+	) {
+    const handlers = this._getModuleActivationHandlers(moduleId);
+    const lookup = type === "activation" ? handlers.onActivations : handlers.onDeactivations;
+    lookup.add(serviceIdentifier, activation);
   }
 
   public clone(): interfaces.ModuleActivationStore {
