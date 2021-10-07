@@ -43,7 +43,7 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     return new BindingOnSyntax<T>(this._binding);
   }
 
-  public whenInjectedInto(parent: (NewableFunction | string)): interfaces.BindingOnSyntax<T> {
+  public whenInjectedInto(parent: interfaces.Ancestor): interfaces.BindingOnSyntax<T> {
     this._binding.constraint = (request: interfaces.Request | null) =>
       request !== null && typeConstraint(parent)(request.parentRequest);
 
@@ -64,14 +64,14 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
     return new BindingOnSyntax<T>(this._binding);
   }
 
-  public whenAnyAncestorIs(ancestor: (NewableFunction | string)): interfaces.BindingOnSyntax<T> {
+  public whenAnyAncestorIs(ancestor: interfaces.Ancestor): interfaces.BindingOnSyntax<T> {
     this._binding.constraint = (request: interfaces.Request | null) =>
       request !== null && traverseAncerstors(request, typeConstraint(ancestor));
 
     return new BindingOnSyntax<T>(this._binding);
   }
 
-  public whenNoAncestorIs(ancestor: (NewableFunction | string)): interfaces.BindingOnSyntax<T> {
+  public whenNoAncestorIs(ancestor: interfaces.Ancestor): interfaces.BindingOnSyntax<T> {
     this._binding.constraint = (request: interfaces.Request | null) =>
       request !== null && !traverseAncerstors(request, typeConstraint(ancestor));
 

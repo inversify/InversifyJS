@@ -305,16 +305,17 @@ namespace interfaces {
     onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
   }
 
+  export type Ancestor = NewableFunction | string;
   export interface BindingWhenSyntax<T> {
     when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
     whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
     whenTargetIsDefault(): BindingOnSyntax<T>;
     whenTargetTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
-    whenInjectedInto(parent: (NewableFunction | string)): BindingOnSyntax<T>;
+    whenInjectedInto(parent: Ancestor): BindingOnSyntax<T>;
     whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
     whenParentTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
-    whenAnyAncestorIs(ancestor: (NewableFunction | string)): BindingOnSyntax<T>;
-    whenNoAncestorIs(ancestor: (NewableFunction | string)): BindingOnSyntax<T>;
+    whenAnyAncestorIs(ancestor: Ancestor): BindingOnSyntax<T>;
+    whenNoAncestorIs(ancestor: Ancestor): BindingOnSyntax<T>;
     whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
     whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
     whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
