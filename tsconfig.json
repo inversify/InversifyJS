@@ -1,27 +1,21 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "lib": [
-            "es6",
-            "dom"
-        ],
-        "types": [
-            "mocha",
-            "reflect-metadata"
-        ],
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "jsx": "react",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": false,
-        "noResolve": false,
-        "noUnusedParameters": false,
-        "noUnusedLocals": true,
-        "strictNullChecks": true
-    }
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["es6", "dom"],
+    "types": ["mocha", "reflect-metadata"],
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "suppressImplicitAnyIndexErrors": false,
+    "noResolve": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "strictNullChecks": true
+  }
 }
