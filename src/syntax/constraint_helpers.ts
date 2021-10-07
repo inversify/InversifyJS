@@ -49,4 +49,33 @@ const typeConstraint = (type: interfaces.Ancestor) => (request: interfaces.Reque
   return false;
 };
 
-export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint };
+/**
+ * Creates a constraint building function for either permitting and disallowing constraints.
+ * Specifying a value for `toBeConstrained` will restrict the type of function that can be used for `constraintFn`.
+ * 
+ * @param willBePermitting Whether the constraint builder function will be one which returns a permitting constraint.
+ */
+const simpleConstraintBuilderBy =
+	(willBePermitting: boolean) =>
+	<TConstrained extends string | number | symbol | interfaces.Ancestor>(
+		toBeConstrained: TConstrained,
+		constraintFn: (toBeConstrained: TConstrained) => (request: interfaces.Request | null) => boolean
+	) =>
+	(request: interfaces.Request | null) =>
+		request !== null &&
+		(() => {
+			const constraintConditionHasBeenMet = traverseAncerstors(request, constraintFn(toBeConstrained));
+			return willBePermitting ? constraintConditionHasBeenMet : !constraintConditionHasBeenMet;
+		})();
+
+/**
+ * Builds a constraint which is an allowance (AT LEAST ONE ancestors MUST follow this condition).
+ */
+const buildSimpleAllowConstraint = simpleConstraintBuilderBy(true);
+
+/**
+ * Builds a constrint which is a disallowance (EVERY ancestor MUST NOT follow this condition).
+ */
+const buildSimpleDisallowConstraint = simpleConstraintBuilderBy(false);
+
+export { traverseAncerstors, taggedConstraint, namedConstraint, typeConstraint, buildSimpleAllowConstraint, buildSimpleDisallowConstraint };

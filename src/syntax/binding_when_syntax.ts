@@ -1,6 +1,13 @@
 import { interfaces } from "../interfaces/interfaces";
 import { BindingOnSyntax } from "./binding_on_syntax";
-import { namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from "./constraint_helpers";
+import {
+	buildSimpleDisallowConstraint,
+	buildSimpleAllowConstraint,
+	namedConstraint,
+	taggedConstraint,
+	traverseAncerstors,
+	typeConstraint,
+} from "./constraint_helpers";
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 
@@ -65,32 +72,23 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
   }
 
   public whenAnyAncestorIs(ancestor: interfaces.Ancestor): interfaces.BindingOnSyntax<T> {
-    this._binding.constraint = (request: interfaces.Request | null) =>
-      request !== null && traverseAncerstors(request, typeConstraint(ancestor));
+    this._binding.constraint = buildSimpleAllowConstraint(ancestor, typeConstraint);
 
     return new BindingOnSyntax<T>(this._binding);
   }
 
   public whenNoAncestorIs(ancestor: interfaces.Ancestor): interfaces.BindingOnSyntax<T> {
-    this._binding.constraint = (request: interfaces.Request | null) =>
-      request !== null && !traverseAncerstors(request, typeConstraint(ancestor));
-
+    this._binding.constraint = buildSimpleDisallowConstraint(ancestor, typeConstraint);
     return new BindingOnSyntax<T>(this._binding);
   }
 
   public whenAnyAncestorNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
-
-    this._binding.constraint = (request: interfaces.Request | null) =>
-      request !== null && traverseAncerstors(request, namedConstraint(name));
-
+    this._binding.constraint = buildSimpleAllowConstraint(name, namedConstraint);
     return new BindingOnSyntax<T>(this._binding);
   }
 
   public whenNoAncestorNamed(name: string | number | symbol): interfaces.BindingOnSyntax<T> {
-
-    this._binding.constraint = (request: interfaces.Request | null) =>
-      request !== null && !traverseAncerstors(request, namedConstraint(name));
-
+    this._binding.constraint = buildSimpleDisallowConstraint(name, namedConstraint);
     return new BindingOnSyntax<T>(this._binding);
   }
 
