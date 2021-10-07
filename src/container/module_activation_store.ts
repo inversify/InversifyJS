@@ -31,11 +31,11 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
   }
 
   private addActivationHandler(
-		moduleId: number,
-		serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-		activation: interfaces.BindingActivation<unknown>,
-		type: "activation" | "deactivation"
-	) {
+    moduleId: number,
+    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
+    activation: interfaces.BindingActivation<unknown>,
+    type: "activation" | "deactivation"
+  ) {
     const handlers = this._getModuleActivationHandlers(moduleId);
     const lookup = type === "activation" ? handlers.onActivations : handlers.onDeactivations;
     lookup.add(serviceIdentifier, activation);
