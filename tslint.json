@@ -5,6 +5,11 @@
       true,
       "array"
     ],
+    "indent": [
+      true,
+      "spaces",
+      2
+    ],
     "ban-types": false,
     "comment-format": false,
     "completed-docs": false,

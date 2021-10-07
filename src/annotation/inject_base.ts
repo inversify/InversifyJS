@@ -4,11 +4,11 @@ import { createTaggedDecorator, DecoratorTarget } from "./decorator_utils";
 import { ServiceIdentifierOrFunc } from "./lazy_service_identifier";
 
 export function injectBase(metadataKey: string) {
-  return (serviceIdentifier: ServiceIdentifierOrFunc) => {
+  return <T = unknown>(serviceIdentifier: ServiceIdentifierOrFunc<T>) => {
     return (
-        target: DecoratorTarget,
-        targetKey?: string | symbol,
-        indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<unknown>,
+      target: DecoratorTarget,
+      targetKey?: string | symbol,
+      indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<any>,
     ) => {
       if (serviceIdentifier === undefined) {
         const className = typeof target === "function" ? target.name : target.constructor.name;

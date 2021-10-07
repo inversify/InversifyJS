@@ -76,7 +76,7 @@ In some cases you may want to intercept the resolution plan.
 The default `contextInterceptor` is passed to the middleware as an property of `args`.
 
 ```ts
-function middleware1(planAndResolve: interfaces.Next): interfaces.Next<any> {
+function middleware1(planAndResolve: interfaces.Next): interfaces.Next<unknown> {
     return (args: interfaces.NextArgs) => {
         // args.nextContextInterceptor
         // ...
@@ -87,7 +87,7 @@ function middleware1(planAndResolve: interfaces.Next): interfaces.Next<any> {
 You can extend the default `contextInterceptor` using a function:
 
 ```ts
-function middleware1(planAndResolve: interfaces.Next<any>): interfaces.Next<any> {
+function middleware1(planAndResolve: interfaces.Next<unknown>): interfaces.Next<unknown> {
     return (args: interfaces.NextArgs) => {
         let nextContextInterceptor = args.contextInterceptor;
         args.contextInterceptor = (context: interfaces.Context) => {

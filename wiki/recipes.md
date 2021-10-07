@@ -193,7 +193,7 @@ container.bind<string>(TYPE.WeaponName).toConstantValue("Katana");
 // We declare a binding for Weapon so we can use it within the factory
 container.bind<IWeapon>(TYPE.OrphanWeapon).to(Weapon);
 
-container.bind<FactoryOfWeapon>(TYPE.FactoryOfWeapon).toFactory<IWeapon>(
+container.bind<FactoryOfWeapon>(TYPE.FactoryOfWeapon).toFactory<IWeapon,[IWeaponHolder]>(
     (ctx: interfaces.Context) => {
         return (parent: IWeaponHolder) => {
             const orphanWeapon = ctx.container.get<IWeapon>(TYPE.OrphanWeapon);

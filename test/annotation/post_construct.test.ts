@@ -7,53 +7,53 @@ import { Metadata } from "../../src/planning/metadata";
 
 describe("@postConstruct", () => {
 
-    it("Should generate metadata for the decorated method", () => {
-        class Katana {
-            private useMessage: string;
+  it("Should generate metadata for the decorated method", () => {
+    class Katana {
+      private useMessage!: string;
 
-            public use() {
-                return "Used Katana!";
-            }
+      public use() {
+        return "Used Katana!";
+      }
 
-            @postConstruct()
-            public testMethod() {
-                this.useMessage = "Used Katana!";
-            }
-            public debug() {
-                return this.useMessage;
-            }
-        }
-        const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
-        expect(metadata.value).to.be.equal("testMethod");
-    });
+      @postConstruct()
+      public testMethod() {
+        this.useMessage = "Used Katana!";
+      }
+      public debug() {
+        return this.useMessage;
+      }
+    }
+    const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, Katana);
+    expect(metadata.value).to.be.equal("testMethod");
+  });
 
-    it("Should throw when applied multiple times", () => {
-        function setup() {
-            class Katana {
-                @postConstruct()
-                public testMethod1() {/* ... */ }
+  it("Should throw when applied multiple times", () => {
+    function setup() {
+      class Katana {
+        @postConstruct()
+        public testMethod1() {/* ... */ }
 
-                @postConstruct()
-                public testMethod2() {/* ... */ }
-            }
-            Katana.toString();
-        }
-        expect(setup).to.throw(ERRORS_MSGS.MULTIPLE_POST_CONSTRUCT_METHODS);
-    });
+        @postConstruct()
+        public testMethod2() {/* ... */ }
+      }
+      Katana.toString();
+    }
+    expect(setup).to.throw(ERRORS_MSGS.MULTIPLE_POST_CONSTRUCT_METHODS);
+  });
 
-    it("Should be usable in VanillaJS applications", () => {
+  it("Should be usable in VanillaJS applications", () => {
 
-        const VanillaJSWarrior = function () {
-            // ...
-        };
-        VanillaJSWarrior.prototype.testMethod = function () {
-            // ...
-        };
+    const VanillaJSWarrior = function () {
+      // ...
+    };
+    VanillaJSWarrior.prototype.testMethod = function () {
+      // ...
+    };
 
-        decorate(postConstruct(), VanillaJSWarrior.prototype, "testMethod");
+    decorate(postConstruct(), VanillaJSWarrior.prototype, "testMethod");
 
-        const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
-        expect(metadata.value).to.be.equal("testMethod");
-    });
+    const metadata: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, VanillaJSWarrior);
+    expect(metadata.value).to.be.equal("testMethod");
+  });
 
 });
