@@ -241,7 +241,7 @@ function plan(
     return context;
   } catch (error) {
     if (
-      isStackOverflowExeption(error)
+      isStackOverflowExeption(error) && context.plan
     ) {
       circularDependencyToException(context.plan.rootRequest);
     }
