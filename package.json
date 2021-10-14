@@ -46,7 +46,7 @@
   "devDependencies": {
     "@types/chai": "4.2.22",
     "@types/mocha": "9.0.0",
-    "@types/sinon": "10.0.4",
+    "@types/sinon": "9.0.11",
     "browserify": "17.0.0",
     "chai": "4.3.4",
     "istanbul": "0.4.5",
@@ -65,7 +65,7 @@
     "nyc": "15.1.0",
     "publish-please": "5.5.2",
     "reflect-metadata": "0.1.13",
-    "sinon": "11.1.2",
+    "sinon": "9.2.4",
     "ts-node": "10.3.0",
     "tsify": "5.0.4",
     "tslint": "6.1.3",
