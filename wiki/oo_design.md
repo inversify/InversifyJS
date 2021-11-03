@@ -64,7 +64,7 @@ the base and derived classes are not coupled anymore.
 
 > Depend upon Abstractions. Do not depend upon concretions.
 
-Dependency injection is no more passing the dependencies of a class via its constructor or a setter:
+Dependency injection is no more than passing the dependencies of a class via its constructor or a setter:
 
 ```ts
 @injectable()
