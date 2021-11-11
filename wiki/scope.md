@@ -14,12 +14,13 @@ There are many available kinds of bindings:
 
 ```ts
 interface BindingToSyntax<T> {
-    to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+    to(constructor: { new (...args: unknown[]): T; }): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: (context: Context) => T): BindingWhenOnSyntax<T>;
     toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-    toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
+    toFactory<T2, T3 extends unknown[] = unknown[], T4 extends unknown[] = unknown[]>(
+      factory: FactoryCreator<T2, T3, T4>): BindingWhenOnSyntax<T>;
     toFunction(func: T): BindingWhenOnSyntax<T>;
     toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
     toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
@@ -41,7 +42,7 @@ In this group are included the following types of binding:
 
 ```ts
 interface BindingToSyntax<T> {
-    to(constructor: { new (...args: any[]): T; }): BindingInWhenOnSyntax<T>;
+    to(constructor: { new (...args: unknown[]): T; }): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: (context: Context) => T): BindingInWhenOnSyntax<T>;
@@ -61,7 +62,8 @@ In this group are included the following types of binding:
 ```ts
 interface BindingToSyntax<T> {
     toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
-    toFactory<T2>(factory: FactoryCreator<T2>): BindingWhenOnSyntax<T>;
+    toFactory<T2, T3 extends unknown[] = unknown[], T4 extends unknown[] = unknown[]>(
+      factory: FactoryCreator<T2, T3, T4>): BindingWhenOnSyntax<T>;
     toFunction(func: T): BindingWhenOnSyntax<T>;
     toAutoFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
     toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;

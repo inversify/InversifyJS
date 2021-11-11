@@ -10,7 +10,7 @@ class Ninja implements Ninja {
     private _shuriken: Shuriken;
 
     public constructor(
-	    @inject("Factory<Katana>") katanaFactory: interfaces.Factory<Katana>,
+	    @inject("Factory<Katana>") katanaFactory: interfaces.AutoFactory<Katana>,
 	    @inject("Shuriken") shuriken: Shuriken
     ) {
         this._katana = katanaFactory();

@@ -8,31 +8,31 @@ import { interfaces } from "../../src/interfaces/interfaces";
 describe("ContainerModule", () => {
 
   it("Should be able to set the registry of a container module", () => {
-      const registry = (bind: interfaces.Bind) => { /* do nothing */ };
-      const warriors = new ContainerModule(registry);
-      expect(warriors.id).to.be.a("number");
-      expect(warriors.registry).eql(registry);
+    const registry = (bind: interfaces.Bind) => { /* do nothing */ };
+    const warriors = new ContainerModule(registry);
+    expect(warriors.id).to.be.a("number");
+    expect(warriors.registry).eql(registry);
   });
 
   it("Should be able to remove some bindings from within a container module", () => {
 
-      const container = new Container();
-      container.bind<string>("A").toConstantValue("1");
+    const container = new Container();
+    container.bind<string>("A").toConstantValue("1");
+    expect(container.get<string>("A")).to.eql("1");
+
+    const warriors = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind) => {
       expect(container.get<string>("A")).to.eql("1");
-
-      const warriors = new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind) => {
-        expect(container.get<string>("A")).to.eql("1");
-        unbind("A");
-        expect(() => { container.get<string>("A"); }).to.throw();
-        bind<string>("A").toConstantValue("2");
-        expect(container.get<string>("A")).to.eql("2");
-        bind<string>("B").toConstantValue("3");
-        expect(container.get<string>("B")).to.eql("3");
-      });
-
-      container.load(warriors);
+      unbind("A");
+      expect(() => { container.get<string>("A"); }).to.throw();
+      bind<string>("A").toConstantValue("2");
       expect(container.get<string>("A")).to.eql("2");
+      bind<string>("B").toConstantValue("3");
       expect(container.get<string>("B")).to.eql("3");
+    });
+
+    container.load(warriors);
+    expect(container.get<string>("A")).to.eql("2");
+    expect(container.get<string>("B")).to.eql("3");
 
   });
 
@@ -56,7 +56,7 @@ describe("ContainerModule", () => {
   it("Should be able to override a binding using rebind within a container module", () => {
 
     const TYPES = {
-        someType: "someType"
+      someType: "someType"
     };
 
     const container = new Container();
@@ -127,7 +127,7 @@ describe("ContainerModule", () => {
     expect(container.get<string>("A")).to.eql("1");
 
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation) => {
-      bind<string>("B").toConstantValue("2").onActivation(()=>"C");
+      bind<string>("B").toConstantValue("2").onActivation(() => "C");
       onActivation("A", () => "B");
     });
 
@@ -206,7 +206,7 @@ describe("ContainerModule", () => {
     });
     container.load(module);
     let values = container.getAll(sid);
-    expect(values).to.deep.equal(["Not module","Module"]);
+    expect(values).to.deep.equal(["Not module", "Module"]);
 
     container.unload(module);
     values = container.getAll(sid);
@@ -219,8 +219,8 @@ describe("ContainerModule", () => {
     let moduleBindingDeactivated: string | undefined
     let containerDeactivated: string | undefined
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
-      bind<string>(sid).toConstantValue("Module").onDeactivation(injectable => {moduleBindingDeactivated = injectable});
-      onDeactivation<string>(sid,injectable => {containerDeactivated = injectable})
+      bind<string>(sid).toConstantValue("Module").onDeactivation(injectable => { moduleBindingDeactivated = injectable });
+      onDeactivation<string>(sid, injectable => { containerDeactivated = injectable })
     });
     container.load(module);
     container.get(sid);
@@ -235,17 +235,17 @@ describe("ContainerModule", () => {
     const container = new Container();
     let activatedNotModule: string | undefined
     let deactivatedNotModule: string | undefined
-    container.onActivation<string>(sid,(_,injected) => {
+    container.onActivation<string>(sid, (_, injected) => {
       activatedNotModule = injected;
       return injected;
     });
-    container.onDeactivation<string>(sid, injected => {deactivatedNotModule = injected})
+    container.onDeactivation<string>(sid, injected => { deactivatedNotModule = injected })
     container.bind<string>(sid).toConstantValue("Value");
     let activationCount = 0;
     let deactivationCount = 0;
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
-      onDeactivation<string>(sid,_ => {deactivationCount++});
-      onActivation<string>(sid, (_,injected) => {
+      onDeactivation<string>(sid, _ => { deactivationCount++ });
+      onActivation<string>(sid, (_, injected) => {
         activationCount++;
         return injected;
       });
@@ -263,17 +263,17 @@ describe("ContainerModule", () => {
     expect(deactivatedNotModule).to.equal("Value")
   })
 
-  it("Should remove module bindings when unloadAsync",async () => {
+  it("Should remove module bindings when unloadAsync", async () => {
     const sid = "sid";
     const container = new Container();
-    container.onDeactivation(sid,injected => Promise.resolve());
+    container.onDeactivation(sid, injected => Promise.resolve());
     container.bind<string>(sid).toConstantValue("Not module");
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
       bind<string>(sid).toConstantValue("Module")
     });
     container.load(module);
     let values = container.getAll(sid);
-    expect(values).to.deep.equal(["Not module","Module"]);
+    expect(values).to.deep.equal(["Not module", "Module"]);
 
     await container.unloadAsync(module);
     values = container.getAll(sid);
@@ -286,8 +286,8 @@ describe("ContainerModule", () => {
     let moduleBindingDeactivated: string | undefined
     let containerDeactivated: string | undefined
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
-      bind<string>(sid).toConstantValue("Module").onDeactivation(injectable => {moduleBindingDeactivated = injectable});
-      onDeactivation<string>(sid,injectable => {
+      bind<string>(sid).toConstantValue("Module").onDeactivation(injectable => { moduleBindingDeactivated = injectable });
+      onDeactivation<string>(sid, injectable => {
         containerDeactivated = injectable;
         return Promise.resolve();
       })
@@ -305,7 +305,7 @@ describe("ContainerModule", () => {
     const container = new Container();
     let activatedNotModule: string | undefined
     let deactivatedNotModule: string | undefined
-    container.onActivation<string>(sid,(_,injected) => {
+    container.onActivation<string>(sid, (_, injected) => {
       activatedNotModule = injected;
       return injected;
     });
@@ -316,11 +316,11 @@ describe("ContainerModule", () => {
     let activationCount = 0;
     let deactivationCount = 0;
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
-      onDeactivation<string>(sid,_ => {
+      onDeactivation<string>(sid, _ => {
         deactivationCount++
         return Promise.resolve();
       });
-      onActivation<string>(sid, (_,injected) => {
+      onActivation<string>(sid, (_, injected) => {
         activationCount++;
         return injected;
       });
@@ -339,7 +339,7 @@ describe("ContainerModule", () => {
   });
 
   it("should be able to unbindAsync from a module", async () => {
-    let _unbindAsync:interfaces.UnbindAsync | undefined
+    let _unbindAsync: interfaces.UnbindAsync | undefined
     const container = new Container();
     const module = new ContainerModule((bind, unbind, isBound, rebind, unbindAsync, onActivation, onDeactivation) => {
       _unbindAsync = unbindAsync
@@ -347,8 +347,8 @@ describe("ContainerModule", () => {
     const sid = "sid";
     container.bind<string>(sid).toConstantValue("Value")
     container.bind<string>(sid).toConstantValue("Value2")
-    const deactivated:string[] = []
-    container.onDeactivation<string>(sid,injected => {
+    const deactivated: string[] = []
+    container.onDeactivation<string>(sid, injected => {
       deactivated.push(injected);
       return Promise.resolve();
     })
@@ -356,7 +356,7 @@ describe("ContainerModule", () => {
     container.getAll(sid);
     container.load(module);
     await _unbindAsync!(sid);
-    expect(deactivated).to.deep.equal(["Value","Value2"]);
+    expect(deactivated).to.deep.equal(["Value", "Value2"]);
     //bindings removed
     expect(() => container.getAll(sid)).to.throw(`${NOT_REGISTERED} sid`)
   });

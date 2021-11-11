@@ -1,4 +1,4 @@
-export function getFirstArrayDuplicate<T>(array:T[]):T | undefined {
+export function getFirstArrayDuplicate<T>(array: T[]): T | undefined {
   const seenValues = new Set<T>()
 
   for (const entry of array) {
@@ -8,4 +8,5 @@ export function getFirstArrayDuplicate<T>(array:T[]):T | undefined {
       seenValues.add(entry);
     }
   }
+  return undefined;
 }
