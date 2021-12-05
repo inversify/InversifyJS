@@ -12,12 +12,18 @@ on:
 jobs:
   browser:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x, 16.x]
+        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
+
     steps:
       - uses: actions/checkout@v2
       - uses: nuget/setup-nuget@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: nuget install Selenium.WebDriver.IEDriver -Version 3.150.0
       - run: npm run test:browser
@@ -30,7 +36,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [10.x, 12.x, 14.x, 15.x, 16.x]
         ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
 
     env:
