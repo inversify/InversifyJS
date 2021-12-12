@@ -5,7 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Added
+
+### Changed
+
+### Fixed
+
+## [6.0.1] - 2021-10-14
+### Added
+- add API method for check dependency only in current container
 - createTaggedDecorator #1343
 - Async bindings #1132
 - Async binding resolution (getAllAsync, getAllNamedAsync, getAllTaggedAsync, getAsync, getNamedAsync, getTaggedAsync, rebindAsync, unbindAsync, unbindAllAsync, unloadAsync) #1132
@@ -21,12 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - only inject decorator can be applied to setters #1342
 - Container.resolve should resolve in that container #1338
+
 ## [5.1.1] - 2021-04-25
 -Fix pre-publish for build artifacts
 
 ## [5.1.0] - 2021-04-25
 ### Added
 - Upgrade information for v4.x to v5.x
+
+### Changed
+- Update BindingToSyntax with `.toAutoNamedFactory()`.
 
 ### Fixed
 - Fix `Target.isTagged()` to exclude `optional` from tag injections #1190.

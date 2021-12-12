@@ -66,7 +66,7 @@ $ npm install inversify reflect-metadata --save
 
 The InversifyJS type definitions are included in the inversify npm package.
 
-> :warning: **Important!** InversifyJS requires TypeScript >= 2.0 and the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib`
+> :warning: **Important!** InversifyJS requires TypeScript >= 4.4 and the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib`
 compilation options in your `tsconfig.json` file.
 
 ```js
@@ -255,6 +255,7 @@ Let's take a look to the InversifyJS features!
 - [Injecting a class constructor](https://github.com/inversify/InversifyJS/blob/master/wiki/constructor_injection.md)
 - [Injecting a Factory](https://github.com/inversify/InversifyJS/blob/master/wiki/factory_injection.md)
 - [Auto factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_factory.md)
+- [Auto named factory](https://github.com/inversify/InversifyJS/blob/master/wiki/auto_named_factory.md)
 - [Injecting a Provider (asynchronous Factory)](https://github.com/inversify/InversifyJS/blob/master/wiki/provider_injection.md)
 - [Activation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md)
 - [Deactivation handler](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md)

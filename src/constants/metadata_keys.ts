@@ -35,14 +35,14 @@ export const POST_CONSTRUCT = "post_construct";
 export const PRE_DESTROY = "pre_destroy";
 
 function getNonCustomTagKeys(): string[] {
-    return [
-        INJECT_TAG,
-        MULTI_INJECT_TAG,
-        NAME_TAG,
-        UNMANAGED_TAG,
-        NAMED_TAG,
-        OPTIONAL_TAG,
-    ];
+  return [
+    INJECT_TAG,
+    MULTI_INJECT_TAG,
+    NAME_TAG,
+    UNMANAGED_TAG,
+    NAMED_TAG,
+    OPTIONAL_TAG,
+  ];
 }
 
 export const NON_CUSTOM_TAG_KEYS: string[] = getNonCustomTagKeys();

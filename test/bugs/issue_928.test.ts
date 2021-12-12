@@ -16,7 +16,7 @@ describe("Issue 928", () => {
     @injectable() class DepC { c = 1 }
 
     @injectable() abstract class AbstractCls {
-      constructor(@inject(DepA) a: DepA, @inject(DepB) @optional() b: DepB = {b: 0}) {
+      constructor(@inject(DepA) a: DepA, @inject(DepB) @optional() b: DepB = { b: 0 }) {
         injectedA = a;
         injectedB = b;
       }

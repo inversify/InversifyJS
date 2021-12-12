@@ -6,311 +6,326 @@ import { Metadata } from "../../src/planning/metadata";
 
 describe("Custom Metadata Reader", () => {
 
-    interface FunctionWithMetadata extends Function {
-        constructorInjections: interfaces.ServiceIdentifier<any>[];
-        propertyInjections: PropertyInjectionMetadata[];
-    }
+  interface FunctionWithMetadata extends NewableFunction {
+    constructorInjections: interfaces.ServiceIdentifier[];
+    propertyInjections: PropertyInjectionMetadata[];
+  }
 
-    interface PropertyInjectionMetadata {
-        propName: string;
-        injection: interfaces.ServiceIdentifier<any>;
-    }
+  interface PropertyInjectionMetadata {
+    propName: string;
+    injection: interfaces.ServiceIdentifier;
+  }
 
-    class StaticPropsMetadataReader implements interfaces.MetadataReader {
+  class StaticPropsMetadataReader implements interfaces.MetadataReader {
 
-        public getConstructorMetadata(constructorFunc: FunctionWithMetadata): interfaces.ConstructorMetadata {
+    public getConstructorMetadata(constructorFunc: FunctionWithMetadata): interfaces.ConstructorMetadata {
 
-            const formatMetadata = (injections: interfaces.ServiceIdentifier<any>[]) => {
-                const userGeneratedMetadata: interfaces.MetadataMap = {};
-                injections.forEach((injection, index) => {
-                    const metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);
-                    if (Array.isArray(userGeneratedMetadata[index])) {
-                        userGeneratedMetadata[index].push(metadata);
-                    } else {
-                        userGeneratedMetadata[index] = [metadata];
-                    }
-                });
-                return userGeneratedMetadata;
-            };
+      const formatMetadata = (injections: interfaces.ServiceIdentifier[]) => {
+        const userGeneratedMetadata: interfaces.MetadataMap = {};
+        injections.forEach((injection, index) => {
+          const metadata = new Metadata(METADATA_KEY.INJECT_TAG, injection);
+          if (Array.isArray(userGeneratedMetadata[index])) {
+            userGeneratedMetadata[index]?.push(metadata);
+          } else {
+            userGeneratedMetadata[index] = [metadata];
+          }
+        });
+        return userGeneratedMetadata;
+      };
 
-            const constructorInjections = constructorFunc.constructorInjections;
+      const constructorInjections = constructorFunc.constructorInjections;
 
-            if (!Array.isArray(constructorInjections)) {
-                throw new Error("Missing constructorInjections annotation!");
-            }
+      if (!Array.isArray(constructorInjections)) {
+        throw new Error("Missing constructorInjections annotation!");
+      }
 
-            const userGeneratedConsturctorMetadata = formatMetadata(constructorInjections);
+      const userGeneratedConsturctorMetadata = formatMetadata(constructorInjections);
 
-            return {
-                // compilerGeneratedMetadata lenght must match userGeneratedMetadata
-                // we expose compilerGeneratedMetadata because if your custom annotation
-                // system is powered by decorators. The TypeScript compiler could generate
-                // some metadata when the emitDecoratorMetadata flag is enabled.
-                compilerGeneratedMetadata: new Array(constructorInjections.length),
-                userGeneratedMetadata: userGeneratedConsturctorMetadata
-            };
-
-        }
-
-        public getPropertiesMetadata(constructorFunc: FunctionWithMetadata): interfaces.MetadataMap {
-
-            const formatMetadata = (injections: PropertyInjectionMetadata[]) => {
-                const userGeneratedMetadata: interfaces.MetadataMap = {};
-                injections.forEach((propInjection, index) => {
-                    const metadata = new Metadata(METADATA_KEY.INJECT_TAG, propInjection.injection);
-                    if (Array.isArray(userGeneratedMetadata[propInjection.propName])) {
-                        userGeneratedMetadata[propInjection.propName].push(metadata);
-                    } else {
-                        userGeneratedMetadata[propInjection.propName] = [metadata];
-                    }
-                });
-                return userGeneratedMetadata;
-            };
-
-            const propertyInjections = constructorFunc.propertyInjections;
-
-            if (!Array.isArray(propertyInjections)) {
-                throw new Error("Missing propertyInjections annotation!");
-            }
-
-            const userGeneratedPropertyMetadata = formatMetadata(propertyInjections);
-            return userGeneratedPropertyMetadata;
-
-        }
+      return {
+        // compilerGeneratedMetadata lenght must match userGeneratedMetadata
+        // we expose compilerGeneratedMetadata because if your custom annotation
+        // system is powered by decorators. The TypeScript compiler could generate
+        // some metadata when the emitDecoratorMetadata flag is enabled.
+        compilerGeneratedMetadata: new Array(constructorInjections.length),
+        userGeneratedMetadata: userGeneratedConsturctorMetadata
+      };
 
     }
 
-    it("Should be able to use custom constructor injection metadata", () => {
+    public getPropertiesMetadata(constructorFunc: FunctionWithMetadata): interfaces.MetadataMap {
 
-        interface Ninja {
-            fight(): string;
-            sneak(): string;
-        }
+      const formatMetadata = (injections: PropertyInjectionMetadata[]) => {
+        const userGeneratedMetadata: interfaces.MetadataMap = {};
+        injections.forEach((propInjection, index) => {
+          const metadata = new Metadata(METADATA_KEY.INJECT_TAG, propInjection.injection);
+          if (Array.isArray(userGeneratedMetadata[propInjection.propName])) {
+            userGeneratedMetadata[propInjection.propName]?.push(metadata);
+          } else {
+            userGeneratedMetadata[propInjection.propName] = [metadata];
+          }
+        });
+        return userGeneratedMetadata;
+      };
 
-        interface Katana {
-            hit(): string;
-        }
+      const propertyInjections = constructorFunc.propertyInjections;
 
-        interface Shuriken {
-            throw(): string;
-        }
+      if (!Array.isArray(propertyInjections)) {
+        throw new Error("Missing propertyInjections annotation!");
+      }
 
-        class Katana implements Katana {
-            public static readonly constructorInjections = [];
-            public static readonly propertyInjections = [];
-            public hit() {
-                return "cut!";
-            }
-        }
+      const userGeneratedPropertyMetadata = formatMetadata(propertyInjections);
+      return userGeneratedPropertyMetadata;
 
-        class Shuriken implements Shuriken {
-            public static readonly constructorInjections = [];
-            public static readonly propertyInjections = [];
-            public throw() {
-                return "hit!";
-            }
-        }
+    }
 
-        class Ninja implements Ninja {
+  }
 
-            public static readonly constructorInjections = ["Katana", "Shuriken"];
-            public static readonly propertyInjections = [];
+  it("Should be able to use custom constructor injection metadata", () => {
 
-            private _katana: Katana;
-            private _shuriken: Shuriken;
+    interface Ninja {
+      fight(): string;
+      sneak(): string;
+    }
 
-            public constructor(
-                katana: Katana,
-                shuriken: Shuriken
-            ) {
-                this._katana = katana;
-                this._shuriken = shuriken;
-            }
+    interface Katana {
+      hit(): string;
+    }
 
-            public fight() { return this._katana.hit(); }
-            public sneak() { return this._shuriken.throw(); }
+    interface Shuriken {
+      throw(): string;
+    }
 
-        }
+    class Katana implements Katana {
+      public static readonly constructorInjections = [];
+      public static readonly propertyInjections = [];
+      public hit() {
+        return "cut!";
+      }
+    }
 
-        const container = new Container();
-        container.applyCustomMetadataReader(new StaticPropsMetadataReader());
+    class Shuriken implements Shuriken {
+      public static readonly constructorInjections = [];
+      public static readonly propertyInjections = [];
+      public throw() {
+        return "hit!";
+      }
+    }
 
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
+    class Ninja implements Ninja {
 
-        const ninja = container.get<Ninja>("Ninja");
+      public static readonly constructorInjections = ["Katana", "Shuriken"];
+      public static readonly propertyInjections = [];
 
-        expect(ninja.fight()).eql("cut!");
-        expect(ninja.sneak()).eql("hit!");
+      private _katana: Katana;
+      private _shuriken: Shuriken;
 
-    });
+      public constructor(
+        katana: Katana,
+        shuriken: Shuriken
+      ) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+      }
 
-    it("Should be able to use custom prop injection metadata", () => {
+      public fight() { return this._katana.hit(); }
+      public sneak() { return this._shuriken.throw(); }
 
-        interface Ninja {
-            fight(): string;
-            sneak(): string;
-        }
+    }
 
-        interface Katana {
-            hit(): string;
-        }
+    const container = new Container();
+    container.applyCustomMetadataReader(new StaticPropsMetadataReader());
 
-        interface Shuriken {
-            throw(): string;
-        }
+    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Katana>("Katana").to(Katana);
+    container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        class Katana implements Katana {
-            public static readonly constructorInjections = [];
-            public static readonly propertyInjections = [];
-            public static readonly __brk = 1; // TEMP
-            public hit() {
-                return "cut!";
-            }
-        }
+    const ninja = container.get<Ninja>("Ninja");
 
-        class Shuriken implements Shuriken {
-            public static readonly constructorInjections = [];
-            public static readonly propertyInjections = [];
-            public static readonly __brk = 1; // TEMP
-            public throw() {
-                return "hit!";
-            }
-        }
+    expect(ninja.fight()).eql("cut!");
+    expect(ninja.sneak()).eql("hit!");
 
-        class Ninja implements Ninja {
+  });
 
-            public static readonly constructorInjections = [];
+  it("Should be able to use custom prop injection metadata", () => {
 
-            public static readonly propertyInjections = [
-                { propName: "_katana", injection: "Katana" },
-                { propName: "_shuriken", injection: "Shuriken" }
-            ];
+    interface Ninja {
+      fight(): string;
+      sneak(): string;
+    }
 
-            public static readonly __brk = 1; // TEMP
+    interface Katana {
+      hit(): string;
+    }
 
-            private _katana: Katana;
-            private _shuriken: Shuriken;
-            public fight() { return this._katana.hit(); }
-            public sneak() { return this._shuriken.throw(); }
+    interface Shuriken {
+      throw(): string;
+    }
 
-        }
+    class Katana implements Katana {
+      public static readonly constructorInjections = [];
+      public static readonly propertyInjections = [];
+      public static readonly __brk = 1; // TEMP
+      public hit() {
+        return "cut!";
+      }
+    }
 
-        const container = new Container();
-        container.applyCustomMetadataReader(new StaticPropsMetadataReader());
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
+    class Shuriken implements Shuriken {
+      public static readonly constructorInjections = [];
+      public static readonly propertyInjections = [];
+      public static readonly __brk = 1; // TEMP
+      public throw() {
+        return "hit!";
+      }
+    }
 
-        const ninja = container.get<Ninja>("Ninja");
+    class Ninja implements Ninja {
 
-        expect(ninja.fight()).eql("cut!");
-        expect(ninja.sneak()).eql("hit!");
+      public static readonly constructorInjections = [];
 
-    });
+      public static readonly propertyInjections = [
+        { propName: "_katana", injection: "Katana" },
+        { propName: "_shuriken", injection: "Shuriken" }
+      ];
 
-    it("Should be able to use extend the default metadata reader", () => {
+      public static readonly __brk = 1; // TEMP
 
-        const constructorMetadataLog: interfaces.ConstructorMetadata[] = [];
-        const propertyMetadataLog: interfaces.MetadataMap[] = [];
+      private _katana!: Katana;
+      private _shuriken!: Shuriken;
+      public fight() { return this._katana.hit(); }
+      public sneak() { return this._shuriken.throw(); }
 
-        class CustomMetadataReader extends MetadataReader {
-            public getConstructorMetadata(constructorFunc: Function): interfaces.ConstructorMetadata {
-                const constructorMetadata = super.getConstructorMetadata(constructorFunc);
-                constructorMetadataLog.push(constructorMetadata);
-                return constructorMetadata;
-            }
-            public getPropertiesMetadata(constructorFunc: Function): interfaces.MetadataMap {
-                const propertyMetadata = super.getPropertiesMetadata(constructorFunc);
-                propertyMetadataLog.push(propertyMetadata);
-                return propertyMetadata;
-            }
-        }
+    }
 
-        interface Ninja {
-            fight(): string;
-            sneak(): string;
-        }
+    const container = new Container();
+    container.applyCustomMetadataReader(new StaticPropsMetadataReader());
+    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Katana>("Katana").to(Katana);
+    container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        interface Katana {
-            hit(): string;
-        }
+    const ninja = container.get<Ninja>("Ninja");
 
-        interface Shuriken {
-            throw(): string;
-        }
+    expect(ninja.fight()).eql("cut!");
+    expect(ninja.sneak()).eql("hit!");
 
-        @injectable()
-        class Katana implements Katana {
-            public hit() {
-                return "cut!";
-            }
-        }
+  });
 
-        @injectable()
-        class Shuriken implements Shuriken {
-            public throw() {
-                return "hit!";
-            }
-        }
+  it("Should be able to use extend the default metadata reader", () => {
 
-        @injectable()
-        class Ninja implements Ninja {
+    const constructorMetadataLog: interfaces.ConstructorMetadata[] = [];
+    const propertyMetadataLog: interfaces.MetadataMap[] = [];
 
-            private _katana: Katana;
-            private _shuriken: Shuriken;
+    class CustomMetadataReader extends MetadataReader {
+      public getConstructorMetadata(constructorFunc: NewableFunction): interfaces.ConstructorMetadata {
+        const constructorMetadata = super.getConstructorMetadata(constructorFunc);
+        constructorMetadataLog.push(constructorMetadata);
+        return constructorMetadata;
+      }
+      public getPropertiesMetadata(constructorFunc: NewableFunction): interfaces.MetadataMap {
+        const propertyMetadata = super.getPropertiesMetadata(constructorFunc);
+        propertyMetadataLog.push(propertyMetadata);
+        return propertyMetadata;
+      }
+    }
 
-            public constructor(
-                @inject("Katana") katana: Katana,
-                @inject("Shuriken") shuriken: Shuriken
-            ) {
-                this._katana = katana;
-                this._shuriken = shuriken;
-            }
+    interface Ninja {
+      fight(): string;
+      sneak(): string;
+    }
 
-            public fight() {return this._katana.hit(); }
-            public sneak() { return this._shuriken.throw(); }
+    interface Katana {
+      hit(): string;
+    }
 
-        }
+    interface Shuriken {
+      throw(): string;
+    }
 
-        const container = new Container();
-        container.applyCustomMetadataReader(new CustomMetadataReader());
+    @injectable()
+    class Katana implements Katana {
+      public hit() {
+        return "cut!";
+      }
+    }
 
-        container.bind<Ninja>("Ninja").to(Ninja);
-        container.bind<Katana>("Katana").to(Katana);
-        container.bind<Shuriken>("Shuriken").to(Shuriken);
+    @injectable()
+    class Shuriken implements Shuriken {
+      public throw() {
+        return "hit!";
+      }
+    }
 
-        const ninja = container.get<Ninja>("Ninja");
+    @injectable()
+    class Ninja implements Ninja {
 
-        expect(ninja.fight()).eql("cut!");
-        expect(ninja.sneak()).eql("hit!");
+      private _katana: Katana;
+      private _shuriken: Shuriken;
 
-        expect(Array.isArray(constructorMetadataLog)).eq(true);
-        expect(constructorMetadataLog.length).eq(3);
+      public constructor(
+        @inject("Katana") katana: Katana,
+        @inject("Shuriken") shuriken: Shuriken
+      ) {
+        this._katana = katana;
+        this._shuriken = shuriken;
+      }
 
-        const compilerGeneratedMetadata0 = constructorMetadataLog[0].compilerGeneratedMetadata;
+      public fight() { return this._katana.hit(); }
+      public sneak() { return this._shuriken.throw(); }
 
-        if (compilerGeneratedMetadata0) {
-            expect(compilerGeneratedMetadata0[0]).eq(Katana);
-            expect(compilerGeneratedMetadata0[1]).eq(Shuriken);
-        }
+    }
 
-        expect(constructorMetadataLog[0].userGeneratedMetadata["0"][0].key).eq("inject");
-        expect(constructorMetadataLog[0].userGeneratedMetadata["0"][0].value).eq("Katana");
-        expect(constructorMetadataLog[0].userGeneratedMetadata["1"][0].key).eq("inject");
-        expect(constructorMetadataLog[0].userGeneratedMetadata["1"][0].value).eq("Shuriken");
+    const container = new Container();
+    container.applyCustomMetadataReader(new CustomMetadataReader());
 
-        expect(JSON.stringify(constructorMetadataLog[1].compilerGeneratedMetadata)).eq(JSON.stringify([]));
-        expect(JSON.stringify(constructorMetadataLog[2].compilerGeneratedMetadata)).eq(JSON.stringify([]));
-        expect(JSON.stringify(constructorMetadataLog[1].userGeneratedMetadata)).eq(JSON.stringify({}));
-        expect(JSON.stringify(constructorMetadataLog[2].userGeneratedMetadata)).eq(JSON.stringify({}));
+    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Katana>("Katana").to(Katana);
+    container.bind<Shuriken>("Shuriken").to(Shuriken);
 
-        expect(propertyMetadataLog.length).eq(3);
-        expect(propertyMetadataLog[0].length).eq(0);
-        expect(propertyMetadataLog[1].length).eq(0);
-        expect(propertyMetadataLog[2].length).eq(0);
+    const ninja = container.get<Ninja>("Ninja");
 
-    });
+    expect(ninja.fight()).eql("cut!");
+    expect(ninja.sneak()).eql("hit!");
+
+    expect(Array.isArray(constructorMetadataLog)).eq(true);
+    expect(constructorMetadataLog.length).eq(3);
+
+    const constructorMetadataLogFirstElement = constructorMetadataLog[0] as interfaces.ConstructorMetadata;
+    const constructorMetadataLogSecondElement = constructorMetadataLog[1] as interfaces.ConstructorMetadata;
+    const constructorMetadataLogThirdElement = constructorMetadataLog[2] as interfaces.ConstructorMetadata;
+
+    const compilerGeneratedMetadata0 = constructorMetadataLogFirstElement.compilerGeneratedMetadata;
+
+    if (compilerGeneratedMetadata0) {
+      expect(compilerGeneratedMetadata0[0]).eq(Katana);
+      expect(compilerGeneratedMetadata0[1]).eq(Shuriken);
+    }
+
+    const userGeneratedMetadataFirstElement =
+      constructorMetadataLogFirstElement.userGeneratedMetadata["0"] as interfaces.Metadata[];
+
+    const userGeneratedMetadataSecondElement =
+      constructorMetadataLogFirstElement.userGeneratedMetadata["1"] as interfaces.Metadata[];
+
+    expect((userGeneratedMetadataFirstElement[0] as interfaces.Metadata).key).eq("inject");
+    expect((userGeneratedMetadataFirstElement[0] as interfaces.Metadata).value).eq("Katana");
+    expect((userGeneratedMetadataSecondElement[0] as interfaces.Metadata).key).eq("inject");
+    expect((userGeneratedMetadataSecondElement[0] as interfaces.Metadata).value).eq("Shuriken");
+
+    expect(JSON.stringify(constructorMetadataLogSecondElement.compilerGeneratedMetadata)).eq(JSON.stringify([]));
+    expect(JSON.stringify(constructorMetadataLogThirdElement.compilerGeneratedMetadata)).eq(JSON.stringify([]));
+    expect(JSON.stringify(constructorMetadataLogSecondElement.userGeneratedMetadata)).eq(JSON.stringify({}));
+    expect(JSON.stringify(constructorMetadataLogThirdElement.userGeneratedMetadata)).eq(JSON.stringify({}));
+
+    expect(propertyMetadataLog.length).eq(3);
+
+    const getLength = (metadata: interfaces.MetadataMap) => {
+      return (metadata as unknown as { length: number }).length
+    }
+
+    expect(getLength(propertyMetadataLog[0] as interfaces.MetadataMap)).eq(0);
+    expect(getLength(propertyMetadataLog[1] as interfaces.MetadataMap)).eq(0);
+    expect(getLength(propertyMetadataLog[2] as interfaces.MetadataMap)).eq(0);
+
+  });
 
 });

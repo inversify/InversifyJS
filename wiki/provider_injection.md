@@ -49,7 +49,7 @@ ninja.katanaProvider()
 The `toProvider` binding expects a `ProviderCreator` as its only argument:
 
 ```ts
-interface ProviderCreator<T> extends Function {
+interface ProviderCreator<T> extends NewableFunction {
     (context: Context): Provider<T>;
 }
 ```
@@ -57,8 +57,8 @@ interface ProviderCreator<T> extends Function {
 The signature of a provider look as follows:
 
 ```ts
-interface Provider<T> extends Function {
-    (...args: any[]): (((...args: any[]) => Promise<T>) | Promise<T>);
+interface Provider<T> extends NewableFunction {
+    (...args: unknown[]): (((...args: unknown[]) => Promise<T>) | Promise<T>);
 }
 ```
 

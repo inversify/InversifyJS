@@ -1,4 +1,9 @@
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(
+  decorators: ClassDecorator[],
+  target: any,
+  key?: string | symbol,
+  descriptor?: PropertyDescriptor | undefined
+): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from "chai";
@@ -8,51 +13,51 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
 
-interface Weapon {}
+interface Weapon { }
 
 class NamedWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      @named("more_powerful") primary: Weapon,
-      @named("less_powerful") secondary: Weapon) {
+  public constructor(
+    @named("more_powerful") primary: Weapon,
+    @named("less_powerful") secondary: Weapon) {
 
-        this._primaryWeapon = primary;
-        this._secondaryWeapon = secondary;
-    }
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+  }
 
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 }
 
 class InvalidDecoratorUsageWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      primary: Weapon,
-      secondary: Weapon
-    ) {
+  public constructor(
+    primary: Weapon,
+    secondary: Weapon
+  ) {
 
-          this._primaryWeapon = primary;
-          this._secondaryWeapon = secondary;
-    }
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+  }
 
-    public test(a: string) { /*...*/ }
+  public test(a: string) { /*...*/ }
 
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 }
 
 describe("@named", () => {
@@ -86,11 +91,11 @@ describe("@named", () => {
 
     class Warrior {
       @named("throwable")
-      public weapon: Weapon;
+      public weapon!: Weapon;
     }
 
     const metadataKey = METADATA_KEY.TAGGED_PROP;
-    const metadata: any = Reflect.getMetadata(metadataKey, Warrior);
+    const metadata = Reflect.getMetadata(metadataKey, Warrior);
 
     const m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql(METADATA_KEY.NAMED_TAG);
@@ -101,8 +106,8 @@ describe("@named", () => {
 
   it("Should throw when applied multiple times", () => {
 
-    const useDecoratorMoreThanOnce = function() {
-      __decorate([ __param(0, named("a")), __param(0, named("b")) ], InvalidDecoratorUsageWarrior);
+    const useDecoratorMoreThanOnce = function () {
+      __decorate([__param(0, named("a")), __param(0, named("b"))], InvalidDecoratorUsageWarrior);
     };
 
     const msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.NAMED_TAG}`;
@@ -112,10 +117,10 @@ describe("@named", () => {
 
   it("Should throw when not applied to a constructor", () => {
 
-    const useDecoratorOnMethodThatIsNotAConstructor = function() {
-      __decorate([ __param(0, named("a")) ],
-                 InvalidDecoratorUsageWarrior.prototype,
-                 "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
+    const useDecoratorOnMethodThatIsNotAConstructor = function () {
+      __decorate([__param(0, named("a"))],
+        InvalidDecoratorUsageWarrior.prototype,
+        "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     const msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
@@ -125,14 +130,14 @@ describe("@named", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface Katana {}
-    interface Shurien {}
+    interface Katana { }
+    interface Shurien { }
 
     const VanillaJSWarrior = (function () {
-        function NamedVanillaJSWarrior(primary: Katana, secondary: Shurien) {
-            // ...
-        }
-        return NamedVanillaJSWarrior;
+      function NamedVanillaJSWarrior(primary: Katana, secondary: Shurien) {
+        // ...
+      }
+      return NamedVanillaJSWarrior;
     })();
 
     decorate(named("more_powerful"), VanillaJSWarrior, 0);

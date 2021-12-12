@@ -1,4 +1,9 @@
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(
+  decorators: ClassDecorator[],
+  target: any,
+  key?: string | symbol,
+  descriptor?: PropertyDescriptor | undefined
+): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from "chai";
@@ -8,69 +13,69 @@ import * as ERRORS_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
 
-interface Weapon {}
+interface Weapon { }
 
 class TaggedWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      @tagged("power", 1) primary: Weapon,
-      @tagged("power", 2) secondary: Weapon) {
+  public constructor(
+    @tagged("power", 1) primary: Weapon,
+    @tagged("power", 2) secondary: Weapon) {
 
-          this._primaryWeapon = primary;
-          this._secondaryWeapon = secondary;
-    }
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+  }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 }
 
 class DoubleTaggedWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      @tagged("power", 1) @tagged("distance", 1) primary: Weapon,
-      @tagged("power", 2) @tagged("distance", 5) secondary: Weapon) {
+  public constructor(
+    @tagged("power", 1) @tagged("distance", 1) primary: Weapon,
+    @tagged("power", 2) @tagged("distance", 5) secondary: Weapon) {
 
-          this._primaryWeapon = primary;
-          this._secondaryWeapon = secondary;
-    }
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+  }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 }
 
 class InvalidDecoratorUsageWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      primary: Weapon,
-      secondary: Weapon) {
+  public constructor(
+    primary: Weapon,
+    secondary: Weapon) {
 
-        this._primaryWeapon = primary;
-        this._secondaryWeapon = secondary;
-    }
+    this._primaryWeapon = primary;
+    this._secondaryWeapon = secondary;
+  }
 
-    public test(a: string) { /*...*/ }
+  public test(a: string) { /*...*/ }
 
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 }
 
 describe("@Tagged", () => {
@@ -107,11 +112,11 @@ describe("@Tagged", () => {
 
     class Warrior {
       @tagged("throwable", false)
-      public weapon: Weapon;
+      public weapon!: Weapon;
     }
 
     const metadataKey = METADATA_KEY.TAGGED_PROP;
-    const metadata: any = Reflect.getMetadata(metadataKey, Warrior);
+    const metadata = Reflect.getMetadata(metadataKey, Warrior);
     const m1 = metadata.weapon[0];
     expect(m1.key).to.be.eql("throwable");
     expect(m1.value).to.be.eql(false);
@@ -159,8 +164,8 @@ describe("@Tagged", () => {
 
     const metadataKey = "a";
 
-    const useDecoratorMoreThanOnce = function() {
-      __decorate([ __param(0, tagged(metadataKey, 1)), __param(0, tagged(metadataKey, 2)) ], InvalidDecoratorUsageWarrior);
+    const useDecoratorMoreThanOnce = function () {
+      __decorate([__param(0, tagged(metadataKey, 1)), __param(0, tagged(metadataKey, 2))], InvalidDecoratorUsageWarrior);
     };
 
     const msg = `${ERRORS_MSGS.DUPLICATED_METADATA} ${metadataKey}`;
@@ -170,10 +175,10 @@ describe("@Tagged", () => {
 
   it("Should throw when not applied to a constructor", () => {
 
-    const useDecoratorOnMethodThatIsNotAConstructor = function() {
-      __decorate([ __param(0, tagged("a", 1)) ],
-                 InvalidDecoratorUsageWarrior.prototype,
-                 "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
+    const useDecoratorOnMethodThatIsNotAConstructor = function () {
+      __decorate([__param(0, tagged("a", 1))],
+        InvalidDecoratorUsageWarrior.prototype,
+        "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     const msg = ERRORS_MSGS.INVALID_DECORATOR_OPERATION;
@@ -183,14 +188,14 @@ describe("@Tagged", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface Katana {}
-    interface Shuriken {}
+    interface Katana { }
+    interface Shuriken { }
 
     const VanillaJSWarrior = (function () {
-        function TaggedVanillaJSWarrior(primary: Katana, secondary: Shuriken) {
-            // ...
-        }
-        return TaggedVanillaJSWarrior;
+      function TaggedVanillaJSWarrior(primary: Katana, secondary: Shuriken) {
+        // ...
+      }
+      return TaggedVanillaJSWarrior;
     })();
 
     decorate(tagged("power", 1), VanillaJSWarrior, 0);

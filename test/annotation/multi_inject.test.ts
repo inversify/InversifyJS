@@ -1,4 +1,9 @@
-declare function __decorate(decorators: ClassDecorator[], target: any, key?: any, desc?: any): void;
+declare function __decorate(
+  decorators: ClassDecorator[],
+  target: any,
+  key?: string | symbol,
+  descriptor?: PropertyDescriptor | undefined
+): void;
 declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
 
 import { expect } from "chai";
@@ -8,47 +13,47 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import * as METADATA_KEY from "../../src/constants/metadata_keys";
 import { interfaces } from "../../src/interfaces/interfaces";
 
-interface Weapon {}
+interface Weapon { }
 
 class DecoratedWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      @multiInject("Weapon") weapons: Weapon[]
-    ) {
+  public constructor(
+    @multiInject("Weapon") weapons: Weapon[]
+  ) {
 
-        this._primaryWeapon = weapons[0];
-        this._secondaryWeapon = weapons[1];
-    }
+    this._primaryWeapon = weapons[0] as Weapon;
+    this._secondaryWeapon = weapons[1] as Weapon;
+  }
 
-    public mock() {
-      return `${JSON.stringify(this._primaryWeapon)} ${JSON.stringify(this._secondaryWeapon)}`;
-    }
+  public mock() {
+    return `${JSON.stringify(this._primaryWeapon)} ${JSON.stringify(this._secondaryWeapon)}`;
+  }
 
 }
 
 class InvalidDecoratorUsageWarrior {
 
-    private _primaryWeapon: Weapon;
-    private _secondaryWeapon: Weapon;
+  private _primaryWeapon: Weapon;
+  private _secondaryWeapon: Weapon;
 
-    public constructor(
-      weapons: Weapon[]
-    ) {
-          this._primaryWeapon = weapons[0];
-          this._secondaryWeapon = weapons[1];
-    }
+  public constructor(
+    weapons: Weapon[]
+  ) {
+    this._primaryWeapon = weapons[0] as Weapon;
+    this._secondaryWeapon = weapons[1] as Weapon;
+  }
 
-    public test(a: string) { /*...*/ }
+  public test(a: string) { /*...*/ }
 
-    public debug() {
-      return {
-        primaryWeapon: this._primaryWeapon,
-        secondaryWeapon: this._secondaryWeapon
-      };
-    }
+  public debug() {
+    return {
+      primaryWeapon: this._primaryWeapon,
+      secondaryWeapon: this._secondaryWeapon
+    };
+  }
 
 }
 
@@ -73,8 +78,8 @@ describe("@multiInject", () => {
 
   it("Should throw when applied multiple times", () => {
 
-    const useDecoratorMoreThanOnce = function() {
-      __decorate([ __param(0, multiInject("Weapon")), __param(0, multiInject("Weapon")) ], InvalidDecoratorUsageWarrior);
+    const useDecoratorMoreThanOnce = function () {
+      __decorate([__param(0, multiInject("Weapon")), __param(0, multiInject("Weapon"))], InvalidDecoratorUsageWarrior);
     };
 
     const msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.MULTI_INJECT_TAG}`;
@@ -84,10 +89,10 @@ describe("@multiInject", () => {
 
   it("Should throw when not applied to a constructor", () => {
 
-    const useDecoratorOnMethodThatIsNotAConstructor = function() {
-      __decorate([ __param(0, multiInject("Weapon")) ],
-                 InvalidDecoratorUsageWarrior.prototype,
-                 "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
+    const useDecoratorOnMethodThatIsNotAConstructor = function () {
+      __decorate([__param(0, multiInject("Weapon"))],
+        InvalidDecoratorUsageWarrior.prototype,
+        "test", Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, "test"));
     };
 
     const msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
@@ -97,14 +102,14 @@ describe("@multiInject", () => {
 
   it("Should be usable in VanillaJS applications", () => {
 
-    interface Katana {}
-    interface Shurien {}
+    interface Katana { }
+    interface Shurien { }
 
     const VanillaJSWarrior = (function () {
-        function Warrior(primary: Katana, secondary: Shurien) {
-            // ...
-        }
-        return Warrior;
+      function Warrior(primary: Katana, secondary: Shurien) {
+        // ...
+      }
+      return Warrior;
     })();
 
     decorate(multiInject("Weapon"), VanillaJSWarrior, 0);

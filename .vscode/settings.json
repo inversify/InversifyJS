@@ -1,22 +1,22 @@
 {
-    "files.exclude": {
-        "**/.git": true,
-        "**/.DS_Store": true,
-        // "src/**/*.js": true,
-        "test/**/*.js": true,
-        // "**/*.js.map": true,
-        // "**/es": true,
-        // "**/lib": true,
-        // "**/amd": true,
-        // "**/dts": true,
-        // "**/temp": true,
-        // "**/coverage": true,
-        // "**/dist": true,
-        // "**/docs": true,
-        "type_definitions/**/*.js": true
-    },
-    "tslint.alwaysShowRuleFailuresAsWarnings": true,
-    "tslint.autoFixOnSave": true,
-    "typescript.tsdk": "./node_modules/typescript/lib",
-    "vsicons.presets.angular": false
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    // "src/**/*.js": true,
+    "test/**/*.js": true,
+    // "**/*.js.map": true,
+    // "**/es": true,
+    // "**/lib": true,
+    // "**/amd": true,
+    // "**/dts": true,
+    // "**/temp": true,
+    // "**/coverage": true,
+    // "**/dist": true,
+    // "**/docs": true,
+    "type_definitions/**/*.js": true
+  },
+  "tslint.alwaysShowRuleFailuresAsWarnings": true,
+  "tslint.autoFixOnSave": true,
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "vsicons.presets.angular": false
 }

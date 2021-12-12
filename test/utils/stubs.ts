@@ -41,8 +41,8 @@ export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
   public constructor(
-      @inject("FooInterface") foo: FooInterface,
-      @inject("BarInterface") bar: BarInterface
+    @inject("FooInterface") foo: FooInterface,
+    @inject("BarInterface") bar: BarInterface
   ) {
     this.foo = foo;
     this.bar = bar;
@@ -54,60 +54,60 @@ export class FooBar implements FooBarInterface {
 
 // 2.0
 
-export interface Weapon {}
-export interface Katana extends Weapon {}
-export interface Shuriken extends Weapon {}
+export interface Weapon { }
+export interface Katana extends Weapon { }
+export interface Shuriken extends Weapon { }
 
-export class Katana implements Katana {}
-export class Shuriken implements Shuriken {}
+export class Katana implements Katana { }
+export class Shuriken implements Shuriken { }
 
-export class WarriorWithoutInjections {}
+export class WarriorWithoutInjections { }
 
 @injectable()
-export class DecoratedWarriorWithoutInjections {}
+export class DecoratedWarriorWithoutInjections { }
 
 @injectable()
 export class Warrior {
-    public constructor(
-      @inject("Katana") primary: Katana,
-      @inject("Shuriken") secondary: Shuriken
-    ) {
-        // ...
-    }
+  public constructor(
+    @inject("Katana") primary: Katana,
+    @inject("Shuriken") secondary: Shuriken
+  ) {
+    // ...
+  }
 }
 
 export class InvalidDecoratorUsageWarrior {
-    public constructor(
-      primary: Weapon,
-      secondary: Weapon) {
-        // ...
-    }
+  public constructor(
+    primary: Weapon,
+    secondary: Weapon) {
+    // ...
+  }
 }
 
 export class MissingInjectionWarrior {
-    public constructor(
-      primary: Weapon,
-      secondary: Weapon) {
-        // ...
-    }
+  public constructor(
+    primary: Weapon,
+    secondary: Weapon) {
+    // ...
+  }
 }
 
 @injectable()
 export class NamedWarrior {
-    public constructor(
-      @inject("Katana") @named("strong") primary: Weapon,
-      @inject("Shuriken") @named("weak") secondary: Weapon
-    ) {
-        // ...
-    }
+  public constructor(
+    @inject("Katana") @named("strong") primary: Weapon,
+    @inject("Shuriken") @named("weak") secondary: Weapon
+  ) {
+    // ...
+  }
 }
 
 @injectable()
 export class TaggedWarrior {
-    public constructor(
-      @inject("Katana") @tagged("power", 5) primary: Weapon,
-      @inject("Shuriken") @tagged("power", 1) secondary: Weapon
-    ) {
-        // ...
-    }
+  public constructor(
+    @inject("Katana") @tagged("power", 5) primary: Weapon,
+    @inject("Shuriken") @tagged("power", 1) secondary: Weapon
+  ) {
+    // ...
+  }
 }

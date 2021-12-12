@@ -10,7 +10,7 @@ describe("Issue 1297", () => {
       (ctx: interfaces.Context, message: string) => string
     >((_ctx: interfaces.Context, message: string) => message);
 
-    container.bind("message")
+    container.bind<string>("message")
       .toConstantValue("Hello world")
       .onActivation(onActivationHandlerSpy);
 
@@ -25,7 +25,7 @@ describe("Issue 1297", () => {
     @injectable()
     class Katana {
       public hit() {
-          return "cut!";
+        return "cut!";
       }
     }
 
@@ -39,7 +39,7 @@ describe("Issue 1297", () => {
 
     container.bind<interfaces.Factory<Katana>>("Factory<Katana>").toFactory<Katana>((context) =>
       () =>
-          context.container.get<Katana>("Katana")).onActivation(onActivationHandlerSpy);
+        context.container.get<Katana>("Katana")).onActivation(onActivationHandlerSpy);
 
     container.get("Factory<Katana>");
     container.get("Factory<Katana>");
@@ -52,7 +52,7 @@ describe("Issue 1297", () => {
     @injectable()
     class Katana {
       public hit() {
-          return "cut!";
+        return "cut!";
       }
     }
 
@@ -96,7 +96,7 @@ describe("Issue 1297", () => {
     @injectable()
     class Katana {
       public hit() {
-          return "cut!";
+        return "cut!";
       }
     }
 
@@ -121,7 +121,7 @@ describe("Issue 1297", () => {
     @injectable()
     class Katana {
       public hit() {
-          return "cut!";
+        return "cut!";
       }
     }
 
@@ -133,7 +133,7 @@ describe("Issue 1297", () => {
 
     container.bind("Provider<Katana>")
       .toProvider<Katana>((context: interfaces.Context) =>
-      () =>
+        () =>
           Promise.resolve(new Katana())).onActivation(onActivationHandlerSpy);
 
     container.get("Provider<Katana>");
