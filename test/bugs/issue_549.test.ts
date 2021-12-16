@@ -55,11 +55,11 @@ describe("Issue 549", () => {
         `This line should never be executed. Expected 'willThrow' to throw! ${JSON.stringify(result)}`
       );
     } catch (e) {
-
+      const localError = e as Error;
       const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
       const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.BDynamicValue.toString());
-      const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1;
-      const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1;
+      const matchesErrorA = localError.message.indexOf(expectedErrorA) !== -1;
+      const matchesErrorB = localError.message.indexOf(expectedErrorB) !== -1;
 
       if (!matchesErrorA && !matchesErrorB) {
         throw new Error(
@@ -68,7 +68,7 @@ describe("Issue 549", () => {
           "or\n" +
           `- ${expectedErrorB}\n` +
           "but got\n" +
-          `- ${e.message}`
+          `- ${localError.message}`
         );
       }
 

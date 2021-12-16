@@ -241,7 +241,7 @@ class Container implements interfaces.Container {
   }
 
   // Allows to check if there are bindings available for serviceIdentifier
-  public isBound(serviceIdentifier: interfaces.ServiceIdentifier<any>): boolean {
+  public isBound(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): boolean {
     let bound = this._bindingDictionary.hasKey(serviceIdentifier);
     if (!bound && this.parent) {
       bound = this.parent.isBound(serviceIdentifier);
@@ -405,11 +405,10 @@ class Container implements interfaces.Container {
     return resolved;
   }
 
-  private _preDestroy(constructor: NewableFunction, instance: any): Promise<void> | void {
+  private _preDestroy<T>(constructor: NewableFunction, instance: T): Promise<void> | void {
     if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constructor)) {
       const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constructor);
-
-      return instance[data.value as string]();
+      return (instance as interfaces.Instance<T>)[(data.value as string)]?.();
     }
   }
   private _removeModuleHandlers(moduleId: number): void {
@@ -449,15 +448,19 @@ class Container implements interfaces.Container {
         return this._handleDeactivationError(propagateDeactivationResult, constructor);
       }
     } catch (ex) {
-      throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+      if (ex instanceof Error) {
+        throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+      }
     }
   }
 
   private async _handleDeactivationError(asyncResult: Promise<void>, constructor: NewableFunction): Promise<void> {
     try {
-      await asyncResult
+      await asyncResult;
     } catch (ex) {
-      throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+      if (ex instanceof Error) {
+        throw new Error(ERROR_MSGS.ON_DEACTIVATION_ERROR(constructor.name, ex.message));
+      }
     }
   }
 
@@ -599,7 +602,7 @@ class Container implements interfaces.Container {
   private _getNotAllArgs<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
     isMultiInject: boolean,
-    key?: string | number | symbol,
+    key?: string | number | symbol | undefined,
     value?: unknown,
   ): GetArgs<T> {
     const getNotAllArgs: GetArgs<T> = {

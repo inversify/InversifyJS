@@ -57,9 +57,9 @@ describe("Error message when resolving fails", () => {
     try {
       container.getNamed("Weapon", "superior");
     } catch (error) {
-      expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
-      expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
-      expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
+      expect((error as Error).message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
+      expect((error as Error).message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
+      expect((error as Error).message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
     }
   });
 
@@ -73,9 +73,9 @@ describe("Error message when resolving fails", () => {
     try {
       container.get("Weapon");
     } catch (error) {
-      expect(error.message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
-      expect(error.message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
-      expect(error.message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
+      expect((error as Error).message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
+      expect((error as Error).message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
+      expect((error as Error).message).to.match(/.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/);
     }
 
   });

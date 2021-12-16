@@ -90,7 +90,7 @@ describe("Bugs", () => {
     @injectable()
     class SamuraiMaster extends Warrior {
       public constructor(
-        @inject(TYPES.Rank) @named("master") public rank: string // length = 1
+        @inject(TYPES.Rank) @named("master") public override rank: string // length = 1
       ) {
         super(rank);
       }
@@ -140,7 +140,7 @@ describe("Bugs", () => {
     class SamuraiMaster extends Warrior {
       public weapon: Weapon;
       public constructor(
-        @inject(TYPES.Rank) @named("master") public rank: string,
+        @inject(TYPES.Rank) @named("master") public override rank: string,
         @inject(TYPES.Weapon) weapon: Weapon
       ) { // length = 2
         super(rank);
@@ -262,7 +262,7 @@ describe("Bugs", () => {
       public makeSound(input: string): string {
         return "sssss" + input;
       }
-      public move() {
+      public override move() {
         return "Slithering... " + super.move(5);
       }
     }

@@ -108,9 +108,11 @@ function _postConstruct<T>(constr: interfaces.Newable<T>, instance: T): void | P
   if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
     const data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
     try {
-      return (instance as T & Record<string, () => void>)[(data.value as string)]?.();
+      return (instance as interfaces.Instance<T>)[(data.value as string)]?.();
     } catch (e) {
-      throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
+      if (e instanceof Error) {
+        throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
+      }
     }
   }
 }

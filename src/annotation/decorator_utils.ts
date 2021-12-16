@@ -116,9 +116,9 @@ function createTaggedDecorator(
 
 function _decorate(
   decorators: (DecoratorTarget | ParameterDecorator | MethodDecorator)[],
-  target: NewableFunction,
+  target: object | NewableFunction,
 ): void {
-  Reflect.decorate(decorators as ClassDecorator[], target);
+  Reflect.decorate(decorators as ClassDecorator[], target as NewableFunction);
 }
 
 function _param(paramIndex: number, decorator: ParameterDecorator) {
@@ -132,7 +132,7 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 // decorate(tagged("bar"), FooBar, 1);
 function decorate(
   decorator: (DecoratorTarget | ParameterDecorator | MethodDecorator),
-  target: any,
+  target: object,
   parameterIndexOrProperty?: number | string): void {
 
   if (typeof parameterIndexOrProperty === "number") {

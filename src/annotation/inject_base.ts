@@ -8,7 +8,7 @@ export function injectBase(metadataKey: string) {
     return (
       target: DecoratorTarget,
       targetKey?: string | symbol,
-      indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<any>,
+      indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<T>,
     ) => {
       if (serviceIdentifier === undefined) {
         const className = typeof target === "function" ? target.name : target.constructor.name;

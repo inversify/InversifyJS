@@ -166,7 +166,7 @@ describe("Middleware", () => {
         try {
           return planAndResolve(args);
         } catch (e) {
-          log.push(e.message);
+          log.push((e as Error).message);
           return [];
         }
       };
@@ -199,7 +199,7 @@ describe("Middleware", () => {
         try {
           return planAndResolve(args);
         } catch (e) {
-          log.push(e.message);
+          log.push((e as Error).message);
           return [];
         }
       };
@@ -228,7 +228,7 @@ describe("Middleware", () => {
         try {
           return planAndResolve(args);
         } catch (e) {
-          log.push(e.message);
+          log.push((e as Error).message);
           return [];
         }
       };

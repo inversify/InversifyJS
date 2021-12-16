@@ -40,6 +40,8 @@ namespace interfaces {
 
   export type Newable<T> = new (...args: never[]) => T;
 
+  export type Instance<T> = T & Record<string, () => void>;
+
   export interface Abstract<T> {
     prototype: T;
   }
@@ -100,7 +102,7 @@ namespace interfaces {
     isMultiInject: boolean;
     targetType: TargetType;
     serviceIdentifier: interfaces.ServiceIdentifier<T>;
-    key?: string | number | symbol;
+    key?: string | number | symbol | undefined;
     value?: unknown;
   }
 
@@ -182,7 +184,7 @@ namespace interfaces {
 
   export interface ContainerOptions {
     autoBindInjectable?: boolean;
-    defaultScope?: BindingScope;
+    defaultScope?: BindingScope | undefined;
     skipBaseClassChecks?: boolean;
   }
 
