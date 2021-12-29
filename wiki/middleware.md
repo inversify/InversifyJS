@@ -110,7 +110,7 @@ function middleware1(planAndResolve: interfaces.Next<unknown>): interfaces.Next<
 >
 > If you are developing a framework or library and you create a custom metadata reader,
 > Please remember to provide your framework with support for an alternative for all the
-> decorators in the default API: `@injectable, ``@inject`, `@multiInject`, `@tagged`,
+> decorators in the default API: `@injectable`, `@inject`, `@multiInject`, `@tagged`,
 > `@named`, `@optional`, `@targetName` & `@unmanaged`.
 
 Middleware allows you to intercept a plan and resolve it but you are not allowed to change the way the annotation phase behaves.
