@@ -38,7 +38,7 @@ namespace interfaces {
     Variable: interfaces.TargetType;
   }
 
-  export type Newable<T> = new (...args: never[]) => T;
+  export type Newable<T> = new (...args: any[]) => T;
 
   export interface Abstract<T> {
     prototype: T;
