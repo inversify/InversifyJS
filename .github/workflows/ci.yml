@@ -24,13 +24,20 @@ jobs:
   Testing:
     name: Unit Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x]
+        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
+    env:
+      TS_NODE_PROJECT: ${{ matrix.ts-project }}
+
     steps:
       - name: Checkout Project
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
-      - name: Use Node.js v16
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
         with:
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
           cache: npm
           registry-url: https://registry.npmjs.org/
       - name: Install Dependencies
@@ -54,11 +61,14 @@ jobs:
       TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Project
+      uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
       with:
         node-version: ${{ matrix.node-version }}
+        cache: npm
+        registry-url: https://registry.npmjs.org/
     - run: npm cache clean --force
     - run: npm ci
     - run: npm run build --if-present
