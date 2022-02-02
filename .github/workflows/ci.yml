@@ -72,7 +72,7 @@ jobs:
     - run: npm cache clean --force
     - run: npm ci
     - run: npm run build --if-present
-    
+
   Upload_Coverage_Report:
     name: Upload coverage report to codecov
     needs: [Testing]
@@ -90,6 +90,5 @@ jobs:
       - name: Codecov Upload
         uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # renovate: tag=v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           directory: coverage/
           fail_ci_if_error: true
