@@ -15,7 +15,7 @@
     "build:es6": "tsc -p src/tsconfig-es6.json",
     "clean": "rm -r amd es lib",
     "pretest": "tslint --project .",
-    "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "test:browser": "browserify test/inversify.test.ts -p [ tsify --noImplicitAny ] > ./test/bundle.test.js && karma start",
     "publish-please": "publish-please",
     "prepublish": "npm run build && publish-please guard",
