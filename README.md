@@ -4,14 +4,15 @@
 	<a href="https://www.npmjs.com/package/inversify" target="__blank"><img src="https://img.shields.io/npm/v/inversify?color=0476bc&label=" alt="NPM version"></a>
 	<a href="https://www.npmjs.com/package/inversify" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/inversify?color=3890aa&label="></a>
 	<a href="https://github.com/inversify/InversifyJS#the-inversifyjs-features-and-api" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=docs&color=1e8a7a" alt="Docs"></a>
+	<a href="https://codecov.io/gh/inversify/InversifyJS" target="__blank"><img alt="Codecov" src="https://codecov.io/gh/inversify/InversifyJS/branch/master/graph/badge.svg?token=KfAKzuGs01"></a>
 	<br>
 	<br>
 	<a href="https://github.com/inversify/InversifyJS" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/inversify/InversifyJS?style=social"></a>
-	<a href="https://twitter.com/inversifyjs" target="__blank"><img alt="Twitter" src="https://img.shields.io/twitter/follow/InversifyJS.svg?maxAge=86400&style=social"></a>
+	<!--<a href="https://twitter.com/inversifyjs" target="__blank"><img alt="Twitter" src="https://img.shields.io/twitter/follow/InversifyJS.svg?maxAge=86400&style=social"></a>-->
 	<a href="https://discord.gg/jXcMagAPnm" target="__blank"><img alt="Discord Server" src="https://img.shields.io/discord/816766547879657532?style=social&logo=discord"></a>
 </p>
 
-# 💉 InversifyJS
+# InversifyJS
 A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
 
 ## About
