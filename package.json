@@ -50,7 +50,7 @@
     "browserify": "17.0.0",
     "chai": "4.3.4",
     "istanbul": "0.4.5",
-    "karma": "6.3.4",
+    "karma": "6.3.14",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "3.1.0",
     "karma-commonjs": "1.0.0",
