@@ -84,11 +84,11 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
+  public toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Provider;
     this._binding.provider = provider;
     this._binding.scope = BindingScopeEnum.Singleton;
-    return new BindingWhenOnSyntax<T>(this._binding);
+    return new BindingInWhenOnSyntax<T>(this._binding);
   }
 
   public toService(service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>): void {
