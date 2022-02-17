@@ -50,7 +50,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T> {
+  public toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Factory;
     this._binding.factory = factory;
     this._binding.scope = BindingScopeEnum.Singleton;
