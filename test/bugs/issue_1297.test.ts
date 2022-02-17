@@ -20,7 +20,7 @@ describe("Issue 1297", () => {
     expect(onActivationHandlerSpy.callCount).to.eq(1);
   });
 
-  it('should call onActivation once if the service is a factory binding', () => {
+  it('should call onActivation twice if the service is a factory binding since factory is in request scope', () => {
 
     @injectable()
     class Katana {
@@ -44,7 +44,7 @@ describe("Issue 1297", () => {
     container.get("Factory<Katana>");
     container.get("Factory<Katana>");
 
-    expect(onActivationHandlerSpy.callCount).to.eq(1);
+    expect(onActivationHandlerSpy.callCount).to.eq(2);
   });
 
   it('should call onActivation once if the service is an auto factory binding', () => {
