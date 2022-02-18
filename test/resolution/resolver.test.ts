@@ -2566,4 +2566,22 @@ describe("Resolve", () => {
     expect(serviceFromGetAsync).eql(asyncServiceDynamicResolvedValue);
     expect(serviceFromGet).eql(asyncServiceDynamicResolvedValue);
   });
+
+  it("Should resolve service with async @postConstruct()", async () => {
+    @injectable()
+    class B {
+      @postConstruct()
+      async init() {
+        //
+      }
+    }
+
+    const container = new Container()
+    container.bind(B).toSelf().inSingletonScope()
+    container.bind('X').toService(B)
+
+    const x = await container.getAsync('X');
+    const b = await container.getAsync(B);
+    expect(b).eql(x)
+  })
 });

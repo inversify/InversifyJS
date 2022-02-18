@@ -93,7 +93,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
   public toService(service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>): void {
     this.toDynamicValue(
-      (context) => context.container.get<T>(service)
+      (context) => context.container.getMaybeAsync(service)
     );
   }
 

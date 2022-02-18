@@ -331,6 +331,12 @@ class Container implements interfaces.Container {
     return this._get<T>(getArgs) as Promise<T> | T;
   }
 
+  public getMaybeAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> | T {
+    const getArgs = this._getNotAllArgs(serviceIdentifier, false);
+
+    return this._get<T>(getArgs) as Promise<T> | T;
+  }
+
   public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T {
     const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
 

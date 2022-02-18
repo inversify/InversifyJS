@@ -208,6 +208,7 @@ namespace interfaces {
     getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T[];
     getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
     getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>;
+    getMaybeAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T> | T
     getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>;
     getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): Promise<T>;
     getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T[]>;
