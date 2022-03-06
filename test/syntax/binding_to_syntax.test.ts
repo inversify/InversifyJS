@@ -5,6 +5,7 @@ import * as ERROR_MSGS from "../../src/constants/error_msgs";
 import { BindingScopeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
 import { interfaces } from "../../src/interfaces/interfaces";
 import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
+import sinon from "sinon";
 
 describe("BindingToSyntax", () => {
 
@@ -78,6 +79,17 @@ describe("BindingToSyntax", () => {
 
     expect(binding.type).eql(BindingTypeEnum.Factory);
     expect(binding.factory).not.to.eql(null);
+
+    const mockContext = {
+      container: {
+        getNamed: sinon.stub()
+      }
+    };
+
+    if (binding.factory !== null) {
+      binding.factory((mockContext as unknown as interfaces.Context))(ninjaIdentifier);
+      sinon.assert.calledOnce(mockContext.container.getNamed);
+    }
 
     bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) =>
       () =>

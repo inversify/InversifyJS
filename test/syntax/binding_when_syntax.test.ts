@@ -45,6 +45,20 @@ describe("BindingWhenSyntax", () => {
 
   });
 
+  it("Should have false constraint binding null request whenTargetIsDefault", () => {
+
+    interface Weapon {
+      name: string;
+    }
+
+    const shurikenBinding = new Binding<Weapon>("Weapon", BindingScopeEnum.Transient);
+    const shurikenBindingWhenSyntax = new BindingWhenSyntax<Weapon>(shurikenBinding);
+
+    shurikenBindingWhenSyntax.whenTargetIsDefault();
+    expect(shurikenBinding.constraint(null)).eql(false);
+
+  });
+
   it("Should be able to constraint a binding to a named target", () => {
 
     interface Ninja { }
