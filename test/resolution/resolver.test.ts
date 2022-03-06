@@ -1446,6 +1446,39 @@ describe("Resolve", () => {
     expect(resolved).eql(true);
   });
 
+  it("Should call bind.cache.then on unbind w/ PromiseLike binding", async () => {
+
+    const bindStub = sinon.stub().callsFake(() => {
+      return {
+        serviceIdentifier: "PromiseLike"
+      };
+    });
+
+    const stub = sinon.stub().callsFake((bindResolve) => {
+      bindResolve(bindStub());
+    });
+
+    @injectable()
+    class PromiseLike {
+      public then() {
+        return {
+          then: stub
+        };
+      }
+    }
+
+    const container = new Container();
+
+    container.bind("PromiseLike").toConstantValue(new PromiseLike());
+
+    container.getAsync('PromiseLike');
+
+    container.unbindAll();
+
+    sinon.assert.calledOnce(stub);
+    sinon.assert.calledOnce(bindStub);
+  });
+
   it("Should not allow transient construction with async preDestroy", async () => {
     @injectable()
     class Destroyable {
@@ -2521,8 +2554,6 @@ describe("Resolve", () => {
 
     const subject1 = await container.getAsync<UseDate>("UseDate");
     const subject2 = await container.getAsync<UseDate>("UseDate");
-    // tslint:disable-next-line:no-console
-    console.log(subject1, subject2);
     expect(subject1.doSomething() === subject2.doSomething()).eql(false);
   });
 

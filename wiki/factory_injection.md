@@ -71,3 +71,15 @@ class DieselCarFactory implements CarFactory {
     }
 }
 ```
+
+## Scope Factories
+
+By default, Factory has scope `Singleton` and if you want to change the scope of your factory, you can use `toDynamicValue`.
+
+```ts
+container.bind("Factory")
+    .toDynamicValue((context: interfaces.Context) => {
+        return (name: string) => new SomeClass(context.container.get(Logger), name)
+    })
+    .inRequestScope();
+```
