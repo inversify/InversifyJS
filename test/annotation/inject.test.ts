@@ -201,4 +201,9 @@ describe("@inject", () => {
     }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION("WithUndefinedInject")}`)
   });
 
+  it('Should unwrap LazyServiceIdentifer', () => {
+    const unwrapped = lazySwordId.unwrap();
+    expect(unwrapped).to.be.equal('Sword');
+  });
+
 });
