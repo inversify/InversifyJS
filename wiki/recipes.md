@@ -280,7 +280,7 @@ container.bind<string>(TYPE.WeaponName).toConstantValue("Katana");
 // The inRequestScope is important here
 container.bind<IWeapon>(TYPE.Weapon).to(Weapon).inRequestScope();
 
-// We can use onActivation adn search for Weapon in the inRequestScope
+// We can use onActivation and search for Weapon in the inRequestScope
 container.bind<IWeaponHolder>(TYPE.WeaponHolder)
     .to(Character)
     .onActivation((ctx: interfaces.Context, weaponHolderInstance: IWeaponHolder) => {
