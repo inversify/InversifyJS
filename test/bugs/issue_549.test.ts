@@ -52,7 +52,7 @@ describe('Issue 549', () => {
     try {
       const result = willThrow();
       throw new Error(
-        `This line should never be executed. Expected "willThrow" to throw! ${JSON.stringify(result)}`
+        `This line should never be executed. Expected \`willThrow\` to throw! ${JSON.stringify(result)}`
       );
     } catch (e) {
       const localError = e as Error;
@@ -63,7 +63,7 @@ describe('Issue 549', () => {
 
       if (!matchesErrorA && !matchesErrorB) {
         throw new Error(
-          'Expected "willThrow" to throw:\n' +
+          'Expected \`willThrow\` to throw:\n' +
           `- ${expectedErrorA}\n` +
           'or\n' +
           `- ${expectedErrorB}\n` +
