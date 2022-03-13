@@ -1,6 +1,6 @@
 declare function __decorate(
   decorators: ClassDecorator[],
-  target: any,
+  target: NewableFunction,
   key?: string | symbol,
   descriptor?: PropertyDescriptor | undefined
 ): void;
@@ -91,7 +91,7 @@ describe('@multiInject', () => {
 
     const useDecoratorOnMethodThatIsNotAConstructor = function () {
       __decorate([__param(0, multiInject('Weapon'))],
-        InvalidDecoratorUsageWarrior.prototype,
+        InvalidDecoratorUsageWarrior.prototype as unknown as NewableFunction,
         'test', Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, 'test'));
     };
 

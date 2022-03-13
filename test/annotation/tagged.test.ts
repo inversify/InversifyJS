@@ -1,6 +1,6 @@
 declare function __decorate(
   decorators: ClassDecorator[],
-  target: any,
+  target: NewableFunction,
   key?: string | symbol,
   descriptor?: PropertyDescriptor | undefined
 ): void;
@@ -177,7 +177,7 @@ describe('@Tagged', () => {
 
     const useDecoratorOnMethodThatIsNotAConstructor = function () {
       __decorate([__param(0, tagged('a', 1))],
-        InvalidDecoratorUsageWarrior.prototype,
+        InvalidDecoratorUsageWarrior.prototype as unknown as NewableFunction,
         'test', Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, 'test'));
     };
 

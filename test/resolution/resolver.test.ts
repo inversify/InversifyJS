@@ -1617,13 +1617,13 @@ describe('Resolve', () => {
 
     const expectedErrorMessage = ERROR_MSGS.ON_DEACTIVATION_ERROR('Destroyable', errorMessage)
 
-    let error: any
+    let error: Error | unknown;
     try {
       await container.unbindAsync('Destroyable')
     } catch (e) {
       error = e
     }
-    expect(error.message).to.eql(expectedErrorMessage)
+    expect((error as Error).message).to.eql(expectedErrorMessage)
   })
 
   it('Should invoke destroy in order (all async): child container, parent container, binding, class', async () => {

@@ -12,8 +12,8 @@ describe('Context', () => {
 
     const container = new Container();
     const context1 = new Context(container);
-    const invalid: any = null;
-    const context2: Context = new (Context)(invalid);
+    const invalid = null;
+    const context2: Context = new (Context)(invalid as unknown as Container);
 
     expect(context1.container).not.to.eql(null);
     expect(context2.container).eql(null);

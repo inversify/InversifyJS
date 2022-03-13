@@ -1,6 +1,6 @@
 declare function __decorate(
   decorators: ClassDecorator[],
-  target: any,
+  target: NewableFunction,
   key?: string | symbol,
   descriptor?: PropertyDescriptor | undefined
 ): void;
@@ -9,7 +9,7 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 import { expect } from 'chai';
 import { decorate } from '../../src/annotation/decorator_utils';
 import { inject } from '../../src/annotation/inject';
-import { LazyServiceIdentifer } from '../../src/annotation/lazy_service_identifier';
+import { LazyServiceIdentifer, ServiceIdentifierOrFunc } from '../../src/annotation/lazy_service_identifier';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import { interfaces } from '../../src/interfaces/interfaces';
@@ -124,7 +124,7 @@ describe('@inject', () => {
 
     const useDecoratorOnMethodThatIsNotAConstructor = function () {
       __decorate([__param(0, inject('Katana'))],
-        InvalidDecoratorUsageWarrior.prototype,
+        InvalidDecoratorUsageWarrior.prototype as unknown as NewableFunction,
         'test', Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, 'test'));
     };
 
@@ -137,7 +137,7 @@ describe('@inject', () => {
 
     // this can happen when there is circular dependency between symbols
     const useDecoratorWithUndefined = function () {
-      __decorate([__param(0, inject(undefined as any))], InvalidDecoratorUsageWarrior);
+      __decorate([__param(0, inject(undefined as unknown as ServiceIdentifierOrFunc<unknown>))], InvalidDecoratorUsageWarrior);
     };
 
     const msg = `${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION('InvalidDecoratorUsageWarrior')}`;
@@ -186,7 +186,7 @@ describe('@inject', () => {
     expect(() => {
       //@ts-ignore
       class WithUndefinedInject {
-        @inject(undefined as any)
+        @inject(undefined as unknown as ServiceIdentifierOrFunc<undefined>)
         property!: string
       }
     }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION('WithUndefinedInject')}`)
@@ -196,7 +196,10 @@ describe('@inject', () => {
     expect(() => {
       //@ts-ignore
       class WithUndefinedInject {
-        constructor(@multiInject(undefined as any) readonly dependency: string[]) { }
+        constructor(
+          @multiInject(undefined as unknown as ServiceIdentifierOrFunc<undefined>)
+          readonly dependency: string[]
+        ) { }
       }
     }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION('WithUndefinedInject')}`)
   });

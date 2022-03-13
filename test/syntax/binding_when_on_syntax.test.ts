@@ -25,9 +25,7 @@ describe('BindingWhenOnSyntax', () => {
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingWhenOnSyntax = new BindingWhenOnSyntax<Ninja>(binding);
-
-    // cast to any to be able to access private props
-    const _bindingWhenOnSyntax: any = bindingWhenOnSyntax;
+    const _bindingWhenOnSyntax = bindingWhenOnSyntax as unknown as { _binding: interfaces.Binding<Ninja> }
 
     expect(_bindingWhenOnSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
 

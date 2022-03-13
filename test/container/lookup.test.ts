@@ -18,10 +18,10 @@ class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
 
 describe('Lookup', () => {
 
-  const invalid: any = null;
+  const invalid = null as unknown as interfaces.ServiceIdentifier<unknown>;
 
   it('Should throw when invoking get, remove or hasKey with a null key', () => {
-    const lookup = new Lookup<unknown>();
+    const lookup = new Lookup();
     expect(() => { lookup.get(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
     expect(() => { lookup.remove(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
     expect(() => { lookup.hasKey(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
