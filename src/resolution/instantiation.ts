@@ -1,9 +1,9 @@
-import { ON_DEACTIVATION_ERROR, POST_CONSTRUCT_ERROR, PRE_DESTROY_ERROR } from "../constants/error_msgs";
-import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { Metadata } from "../planning/metadata";
-import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
+import { ON_DEACTIVATION_ERROR, POST_CONSTRUCT_ERROR, PRE_DESTROY_ERROR } from '../constants/error_msgs';
+import { BindingScopeEnum, TargetTypeEnum } from '../constants/literal_types';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { Metadata } from '../planning/metadata';
+import { isPromise, isPromiseOrContainsPromise } from '../utils/async';
 
 interface InstanceCreationInstruction {
   constructorInjections: unknown[],
@@ -125,9 +125,9 @@ function _validateInstanceResolution<T = unknown>(binding: interfaces.Binding<T>
 
 function _throwIfHandlingDeactivation<T = unknown>(binding: interfaces.Binding<T>, constr: interfaces.Newable<T>): void {
   const scopeErrorMessage = `Class cannot be instantiated in ${binding.scope === BindingScopeEnum.Request ?
-    "request" :
-    "transient"} scope.`;
-  if (typeof binding.onDeactivation === "function") {
+    'request' :
+    'transient'} scope.`;
+  if (typeof binding.onDeactivation === 'function') {
     throw new Error(ON_DEACTIVATION_ERROR(constr.name, scopeErrorMessage));
   }
 

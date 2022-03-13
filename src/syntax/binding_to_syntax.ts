@@ -6,7 +6,7 @@ import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
-  private _binding: interfaces.Binding<T>;
+  public _binding: interfaces.Binding<T>;
 
   public constructor(binding: interfaces.Binding<T>) {
     this._binding = binding;

@@ -1,4 +1,4 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
+import * as ERROR_MSGS from '../constants/error_msgs';
 
 export function isStackOverflowExeption(error: unknown | Error): error is RangeError {
   return (

@@ -1,13 +1,13 @@
-import { expect } from "chai";
-import { interfaces } from "../../src/interfaces/interfaces";
-import { Container, inject, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import { interfaces } from '../../src/interfaces/interfaces';
+import { Container, inject, injectable } from '../../src/inversify';
 
-describe("InversifyJS", () => {
+describe('InversifyJS', () => {
 
-  it("Should support the injection of proxied objects", () => {
+  it('Should support the injection of proxied objects', () => {
 
-    const weaponId = "Weapon";
-    const warriorId = "Warrior";
+    const weaponId = 'Weapon';
+    const warriorId = 'Warrior';
 
     interface Weapon {
       use(): void;
@@ -16,7 +16,7 @@ describe("InversifyJS", () => {
     @injectable()
     class Katana implements Weapon {
       public use() {
-        return "Used Katana!";
+        return 'Used Katana!';
       }
     }
 
@@ -53,8 +53,8 @@ describe("InversifyJS", () => {
     ninja.weapon.use();
 
     expect(log.length).eql(2);
-    expect(log[0]?.indexOf("Starting: ")).not.to.eql(-1);
-    expect(log[1]?.indexOf("Finished: ")).not.to.eql(-1);
+    expect(log[0]?.indexOf('Starting: ')).not.to.eql(-1);
+    expect(log[1]?.indexOf('Finished: ')).not.to.eql(-1);
 
   });
 

@@ -1,11 +1,11 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { interfaces } from "../interfaces/interfaces";
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { interfaces } from '../interfaces/interfaces';
 
 function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier): string {
-  if (typeof serviceIdentifier === "function") {
+  if (typeof serviceIdentifier === 'function') {
     const _serviceIdentifier = serviceIdentifier;
     return _serviceIdentifier.name;
-  } else if (typeof serviceIdentifier === "symbol") {
+  } else if (typeof serviceIdentifier === 'symbol') {
     return serviceIdentifier.toString();
   } else { // string
     const _serviceIdentifier = serviceIdentifier;
@@ -22,17 +22,17 @@ function listRegisteredBindingsForServiceIdentifier(
   ) => interfaces.Binding<T>[]
 ): string {
 
-  let registeredBindingsList = "";
+  let registeredBindingsList = '';
   const registeredBindings = getBindings(container, serviceIdentifier);
 
   if (registeredBindings.length !== 0) {
 
-    registeredBindingsList = "\nRegistered bindings:";
+    registeredBindingsList = '\nRegistered bindings:';
 
     registeredBindings.forEach((binding: interfaces.Binding<unknown>) => {
 
-      // Use "Object as name of constant value injections"
-      let name = "Object";
+      // Use 'Object as name of constant value injections'
+      let name = 'Object';
 
       // Use function name if available
       if (binding.implementationType !== null) {
@@ -82,7 +82,7 @@ function dependencyChainToString(
   }
 
   const stringArr = _createStringArr(request);
-  return stringArr.reverse().join(" --> ");
+  return stringArr.reverse().join(' --> ');
 
 }
 
@@ -102,18 +102,18 @@ function circularDependencyToException(
 function listMetadataForTarget(serviceIdentifierString: string, target: interfaces.Target): string {
   if (target.isTagged() || target.isNamed()) {
 
-    let m = "";
+    let m = '';
 
     const namedTag = target.getNamedTag();
     const otherTags = target.getCustomTags();
 
     if (namedTag !== null) {
-      m += namedTag.toString() + "\n";
+      m += namedTag.toString() + '\n';
     }
 
     if (otherTags !== null) {
       otherTags.forEach((tag) => {
-        m += tag.toString() + "\n";
+        m += tag.toString() + '\n';
       });
     }
 

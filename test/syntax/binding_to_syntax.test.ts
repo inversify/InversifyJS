@@ -1,17 +1,17 @@
-import { expect } from "chai";
-import { injectable } from "../../src/annotation/injectable";
-import { Binding } from "../../src/bindings/binding";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum, BindingTypeEnum } from "../../src/constants/literal_types";
-import { interfaces } from "../../src/interfaces/interfaces";
-import { BindingToSyntax } from "../../src/syntax/binding_to_syntax";
+import { expect } from 'chai';
+import { injectable } from '../../src/annotation/injectable';
+import { Binding } from '../../src/bindings/binding';
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { BindingScopeEnum, BindingTypeEnum } from '../../src/constants/literal_types';
+import { interfaces } from '../../src/interfaces/interfaces';
+import { BindingToSyntax } from '../../src/syntax/binding_to_syntax';
 
-describe("BindingToSyntax", () => {
+describe('BindingToSyntax', () => {
 
-  it("Should set its own properties correctly", () => {
+  it('Should set its own properties correctly', () => {
 
     interface Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
@@ -23,13 +23,13 @@ describe("BindingToSyntax", () => {
 
   });
 
-  it("Should be able to configure the type of a binding", () => {
+  it('Should be able to configure the type of a binding', () => {
 
     interface Ninja { }
 
     @injectable()
     class Ninja implements Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
@@ -48,7 +48,7 @@ describe("BindingToSyntax", () => {
 
     bindingToSyntax.toDynamicValue((context: interfaces.Context) => new Ninja());
     expect(binding.type).eql(BindingTypeEnum.DynamicValue);
-    expect(typeof binding.dynamicValue).eql("function");
+    expect(typeof binding.dynamicValue).eql('function');
 
     const dynamicValueFactory: any = binding.dynamicValue;
     expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
@@ -64,7 +64,7 @@ describe("BindingToSyntax", () => {
     expect(binding.type).eql(BindingTypeEnum.Factory);
     expect(binding.factory).not.to.eql(null);
 
-    const f = () => "test";
+    const f = () => 'test';
     bindingToSyntax.toFunction(f);
     expect(binding.type).eql(BindingTypeEnum.Function);
     expect(binding.cache === f).eql(true);
@@ -90,13 +90,13 @@ describe("BindingToSyntax", () => {
 
   });
 
-  it("Should prevent invalid function bindings", () => {
+  it('Should prevent invalid function bindings', () => {
 
     interface Ninja { }
 
     @injectable()
     class Ninja implements Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingToSyntax = new BindingToSyntax<Ninja>(binding);

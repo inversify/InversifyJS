@@ -1,11 +1,11 @@
-import { expect } from "chai";
-import * as sinon from "sinon";
-import { injectable } from "../../src/annotation/injectable";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { Container } from "../../src/container/container";
-import { interfaces } from "../../src/interfaces/interfaces";
+import { expect } from 'chai';
+import * as sinon from 'sinon';
+import { injectable } from '../../src/annotation/injectable';
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { Container } from '../../src/container/container';
+import { interfaces } from '../../src/interfaces/interfaces';
 
-describe("Middleware", () => {
+describe('Middleware', () => {
 
   let sandbox: sinon.SinonSandbox;
 
@@ -17,7 +17,7 @@ describe("Middleware", () => {
     sandbox.restore();
   });
 
-  it("Should be able to use middleware as Container configuration", () => {
+  it('Should be able to use middleware as Container configuration', () => {
 
     const container = new Container();
 
@@ -36,7 +36,7 @@ describe("Middleware", () => {
 
   });
 
-  it("Should support middleware", () => {
+  it('Should support middleware', () => {
 
     interface Ninja { }
 
@@ -64,18 +64,18 @@ describe("Middleware", () => {
     // two middlewares applied at one single point in time
     container.applyMiddleware(middleware1, middleware2);
 
-    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Ninja>('Ninja').to(Ninja);
 
-    const ninja = container.get<Ninja>("Ninja");
+    const ninja = container.get<Ninja>('Ninja');
 
     expect(ninja instanceof Ninja).eql(true);
     expect(log.length).eql(2);
-    expect(log[0]).eql("Middleware2: Ninja");
-    expect(log[1]).eql("Middleware1: Ninja");
+    expect(log[0]).eql('Middleware2: Ninja');
+    expect(log[1]).eql('Middleware1: Ninja');
 
   });
 
-  it("Should allow applyMiddleware at multiple points in time", () => {
+  it('Should allow applyMiddleware at multiple points in time', () => {
 
     interface Ninja { }
 
@@ -102,18 +102,18 @@ describe("Middleware", () => {
 
     container.applyMiddleware(middleware1); // one point in time
     container.applyMiddleware(middleware2);  // another point in time
-    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Ninja>('Ninja').to(Ninja);
 
-    const ninja = container.get<Ninja>("Ninja");
+    const ninja = container.get<Ninja>('Ninja');
 
     expect(ninja instanceof Ninja).eql(true);
     expect(log.length).eql(2);
-    expect(log[0]).eql("Middleware2: Ninja");
-    expect(log[1]).eql("Middleware1: Ninja");
+    expect(log[0]).eql('Middleware2: Ninja');
+    expect(log[1]).eql('Middleware1: Ninja');
 
   });
 
-  it("Should use middleware", () => {
+  it('Should use middleware', () => {
 
     interface Ninja { }
 
@@ -139,18 +139,18 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware1, middleware2);
-    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Ninja>('Ninja').to(Ninja);
 
-    const ninja = container.get<Ninja>("Ninja");
+    const ninja = container.get<Ninja>('Ninja');
 
     expect(ninja instanceof Ninja).eql(true);
     expect(log.length).eql(2);
-    expect(log[0]).eql("Middleware2: Ninja");
-    expect(log[1]).eql("Middleware1: Ninja");
+    expect(log[0]).eql('Middleware2: Ninja');
+    expect(log[1]).eql('Middleware1: Ninja');
 
   });
 
-  it("Should be able to use middleware to catch errors during pre-planning phase", () => {
+  it('Should be able to use middleware to catch errors during pre-planning phase', () => {
 
     interface Ninja { }
 
@@ -173,14 +173,14 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware);
-    container.bind<Ninja>("Ninja").to(Ninja);
-    container.get("SOME_NOT_REGISTERED_ID");
+    container.bind<Ninja>('Ninja').to(Ninja);
+    container.get('SOME_NOT_REGISTERED_ID');
     expect(log.length).eql(1);
     expect(log[0]).eql(`${ERROR_MSGS.NOT_REGISTERED} SOME_NOT_REGISTERED_ID`);
 
   });
 
-  it("Should be able to use middleware to catch errors during planning phase", () => {
+  it('Should be able to use middleware to catch errors during planning phase', () => {
 
     interface Warrior { }
 
@@ -206,16 +206,16 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware);
-    container.bind<Warrior>("Warrior").to(Ninja);
-    container.bind<Warrior>("Warrior").to(Samurai);
+    container.bind<Warrior>('Warrior').to(Ninja);
+    container.bind<Warrior>('Warrior').to(Samurai);
 
-    container.get("Warrior");
+    container.get('Warrior');
     expect(log.length).eql(1);
     expect(log[0]).to.contain(`${ERROR_MSGS.AMBIGUOUS_MATCH} Warrior`);
 
   });
 
-  it("Should be able to use middleware to catch errors during resolution phase", () => {
+  it('Should be able to use middleware to catch errors during resolution phase', () => {
 
     interface Warrior { }
 
@@ -235,15 +235,15 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware);
-    container.bind<Warrior>("Warrior"); // Invalid binding missing BindingToSyntax
+    container.bind<Warrior>('Warrior'); // Invalid binding missing BindingToSyntax
 
-    container.get("Warrior");
+    container.get('Warrior');
     expect(log.length).eql(1);
     expect(log[0]).eql(`${ERROR_MSGS.INVALID_BINDING_TYPE} Warrior`);
 
   });
 
-  it("Should help users to identify problems with middleware", () => {
+  it('Should help users to identify problems with middleware', () => {
 
     const container = new Container();
 
@@ -258,12 +258,12 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware);
-    const throws = () => { container.get("SOME_NOT_REGISTERED_ID"); };
+    const throws = () => { container.get('SOME_NOT_REGISTERED_ID'); };
     expect(throws).to.throw(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
 
   });
 
-  it("Should allow users to intercept a resolution context", () => {
+  it('Should allow users to intercept a resolution context', () => {
 
     interface Ninja { }
 
@@ -297,14 +297,14 @@ describe("Middleware", () => {
     }
 
     container.applyMiddleware(middleware1, middleware2);
-    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Ninja>('Ninja').to(Ninja);
 
-    const ninja = container.get<Ninja>("Ninja");
+    const ninja = container.get<Ninja>('Ninja');
 
     expect(ninja instanceof Ninja).eql(true);
     expect(log.length).eql(2);
-    expect(log[0]).eql("contextInterceptor1: Ninja");
-    expect(log[1]).eql("contextInterceptor2: Ninja");
+    expect(log[0]).eql('contextInterceptor1: Ninja');
+    expect(log[1]).eql('contextInterceptor2: Ninja');
 
   });
 

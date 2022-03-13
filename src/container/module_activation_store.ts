@@ -1,5 +1,5 @@
-import { interfaces } from "../interfaces/interfaces";
-import { Lookup } from "./lookup";
+import { interfaces } from '../interfaces/interfaces';
+import { Lookup } from './lookup';
 
 export class ModuleActivationStore implements interfaces.ModuleActivationStore {
   private _map = new Map<number, interfaces.ModuleActivationHandlers>();

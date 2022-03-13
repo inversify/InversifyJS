@@ -1,7 +1,7 @@
-import { UNDEFINED_INJECT_ANNOTATION } from "../constants/error_msgs";
-import { Metadata } from "../planning/metadata";
-import { createTaggedDecorator, DecoratorTarget } from "./decorator_utils";
-import { ServiceIdentifierOrFunc } from "./lazy_service_identifier";
+import { UNDEFINED_INJECT_ANNOTATION } from '../constants/error_msgs';
+import { Metadata } from '../planning/metadata';
+import { createTaggedDecorator, DecoratorTarget } from './decorator_utils';
+import { ServiceIdentifierOrFunc } from './lazy_service_identifier';
 
 export function injectBase(metadataKey: string) {
   return <T = unknown>(serviceIdentifier: ServiceIdentifierOrFunc<T>) => {
@@ -11,7 +11,7 @@ export function injectBase(metadataKey: string) {
       indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<T>,
     ) => {
       if (serviceIdentifier === undefined) {
-        const className = typeof target === "function" ? target.name : target.constructor.name;
+        const className = typeof target === 'function' ? target.name : target.constructor.name;
 
         throw new Error(UNDEFINED_INJECT_ANNOTATION(className));
       }

@@ -26,7 +26,7 @@ class Target implements interfaces.Target {
     this.type = type;
     this.serviceIdentifier = serviceIdentifier;
     const queryableName = typeof identifier === 'symbol' ? getSymbolDescription(identifier) : identifier;
-    this.name = new QueryableString(queryableName || "");
+    this.name = new QueryableString(queryableName || '');
     this.identifier = identifier;
     this.metadata = new Array();
 

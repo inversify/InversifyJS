@@ -1,11 +1,11 @@
-import { LazyServiceIdentifer } from "../annotation/lazy_service_identifier";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { TargetTypeEnum } from "../constants/literal_types";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { getFunctionName } from "../utils/serialization";
-import { Metadata } from "./metadata";
-import { Target } from "./target";
+import { LazyServiceIdentifer } from '../annotation/lazy_service_identifier';
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { TargetTypeEnum } from '../constants/literal_types';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { getFunctionName } from '../utils/serialization';
+import { Metadata } from './metadata';
+import { Target } from './target';
 
 function getDependencies(
   metadataReader: interfaces.MetadataReader, func: NewableFunction
@@ -134,8 +134,8 @@ function getConstructorArgsAsTargets(
 }
 
 function _getServiceIdentifierForProperty(
-  inject: any,
-  multiInject: any,
+  inject: string | symbol | object,
+  multiInject: object,
   propertyName: string | symbol,
   className: string
 ) {
@@ -173,7 +173,11 @@ function getClassPropsAsTargets(
     const serviceIdentifier = _getServiceIdentifierForProperty(metadata.inject, metadata.multiInject, key, constructorName);
 
     // The property target
-    const target = new Target(TargetTypeEnum.ClassProperty, identifier, serviceIdentifier);
+    const target = new Target(
+      TargetTypeEnum.ClassProperty,
+      identifier,
+      serviceIdentifier as interfaces.ServiceIdentifier<unknown>
+    );
     target.metadata = targetMetadata;
     targets.push(target);
   }

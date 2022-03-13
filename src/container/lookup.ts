@@ -1,6 +1,6 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { interfaces } from "../interfaces/interfaces";
-import { isClonable } from "../utils/clonable";
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { interfaces } from '../interfaces/interfaces';
+import { isClonable } from '../utils/clonable';
 
 class Lookup<T> implements interfaces.Lookup<T> {
 

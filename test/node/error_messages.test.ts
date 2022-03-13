@@ -1,8 +1,8 @@
-import { expect } from "chai";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { Container, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { Container, injectable } from '../../src/inversify';
 
-describe("Error message when resolving fails", () => {
+describe('Error message when resolving fails', () => {
   interface Weapon { }
 
   @injectable()
@@ -14,48 +14,48 @@ describe("Error message when resolving fails", () => {
   @injectable()
   class Bokken implements Weapon { }
 
-  it("Should contain correct message and the serviceIdentifier in error message", () => {
+  it('Should contain correct message and the serviceIdentifier in error message', () => {
     const container = new Container();
 
-    container.bind<Weapon>("Weapon").to(Katana);
+    container.bind<Weapon>('Weapon').to(Katana);
 
-    const tryWeapon = () => { container.get("Ninja"); };
+    const tryWeapon = () => { container.get('Ninja'); };
 
     expect(tryWeapon).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Ninja`);
 
   });
 
-  it("Should contain the provided name in error message when target is named", () => {
+  it('Should contain the provided name in error message when target is named', () => {
 
     const container = new Container();
-    const tryGetNamedWeapon = (name: string | number | symbol) => { container.getNamed("Weapon", name); };
+    const tryGetNamedWeapon = (name: string | number | symbol) => { container.getNamed('Weapon', name); };
 
-    expect(() => tryGetNamedWeapon("superior")).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
-    expect(() => tryGetNamedWeapon(Symbol.for("Superior"))).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
+    expect(() => tryGetNamedWeapon('superior')).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
+    expect(() => tryGetNamedWeapon(Symbol.for('Superior'))).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
     expect(() => tryGetNamedWeapon(0)).to.throw(/.*\bWeapon\b.*\b0\b/g);
 
   });
 
-  it("Should contain the provided tag in error message when target is tagged", () => {
+  it('Should contain the provided tag in error message when target is tagged', () => {
 
     const container = new Container();
-    const tryGetTaggedWeapon = (tag: string | number | symbol) => { container.getTagged("Weapon", tag, true); };
+    const tryGetTaggedWeapon = (tag: string | number | symbol) => { container.getTagged('Weapon', tag, true); };
 
-    expect(() => tryGetTaggedWeapon("canShoot")).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
-    expect(() => tryGetTaggedWeapon(Symbol.for("Can shoot"))).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
+    expect(() => tryGetTaggedWeapon('canShoot')).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
+    expect(() => tryGetTaggedWeapon(Symbol.for('Can shoot'))).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
     expect(() => tryGetTaggedWeapon(0)).to.throw(/.*\bWeapon\b.*\b0\b.*\btrue\b/g);
 
   });
 
-  it("Should list all possible bindings in error message if no matching binding found", () => {
+  it('Should list all possible bindings in error message if no matching binding found', () => {
 
     const container = new Container();
-    container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-    container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
-    container.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
+    container.bind<Weapon>('Weapon').to(Katana).whenTargetNamed('strong');
+    container.bind<Weapon>('Weapon').to(Shuriken).whenTargetTagged('canThrow', true);
+    container.bind<Weapon>('Weapon').to(Bokken).whenTargetNamed('weak');
 
     try {
-      container.getNamed("Weapon", "superior");
+      container.getNamed('Weapon', 'superior');
     } catch (error) {
       expect((error as Error).message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
       expect((error as Error).message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);
@@ -63,15 +63,15 @@ describe("Error message when resolving fails", () => {
     }
   });
 
-  it("Should list all possible bindings in error message if ambiguous matching binding found", () => {
+  it('Should list all possible bindings in error message if ambiguous matching binding found', () => {
 
     const container = new Container();
-    container.bind<Weapon>("Weapon").to(Katana).whenTargetNamed("strong");
-    container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
-    container.bind<Weapon>("Weapon").to(Bokken).whenTargetNamed("weak");
+    container.bind<Weapon>('Weapon').to(Katana).whenTargetNamed('strong');
+    container.bind<Weapon>('Weapon').to(Shuriken).whenTargetTagged('canThrow', true);
+    container.bind<Weapon>('Weapon').to(Bokken).whenTargetNamed('weak');
 
     try {
-      container.get("Weapon");
+      container.get('Weapon');
     } catch (error) {
       expect((error as Error).message).to.match(/.*\bKatana\b.*\bnamed\b.*\bstrong\b/);
       expect((error as Error).message).to.match(/.*\bBokken\b.*\bnamed\b.*\bweak\b/);

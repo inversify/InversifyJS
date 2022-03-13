@@ -1,7 +1,7 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { getFirstArrayDuplicate } from "../utils/js";
+import * as ERROR_MSGS from '../constants/error_msgs';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { getFirstArrayDuplicate } from '../utils/js';
 
 function targetIsConstructorFunction<T = Object>(target: DecoratorTarget<T>): target is ConstructorFunction<T> {
   return (target as ConstructorFunction<T>).prototype !== undefined;
@@ -106,7 +106,7 @@ function createTaggedDecorator(
     targetKey?: string | symbol,
     indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<T>,
   ) => {
-    if (typeof indexOrPropertyDescriptor === "number") {
+    if (typeof indexOrPropertyDescriptor === 'number') {
       tagParameter(target, targetKey, indexOrPropertyDescriptor, metadata);
     } else {
       tagProperty(target, targetKey as string | symbol, metadata);
@@ -127,17 +127,17 @@ function _param(paramIndex: number, decorator: ParameterDecorator) {
 
 // Allows VanillaJS developers to use decorators:
 // decorate(injectable(), FooBar);
-// decorate(targetName("foo", "bar"), FooBar);
-// decorate(named("foo"), FooBar, 0);
-// decorate(tagged("bar"), FooBar, 1);
+// decorate(targetName('foo', 'bar'), FooBar);
+// decorate(named('foo'), FooBar, 0);
+// decorate(tagged('bar'), FooBar, 1);
 function decorate(
   decorator: (DecoratorTarget | ParameterDecorator | MethodDecorator),
   target: object,
   parameterIndexOrProperty?: number | string): void {
 
-  if (typeof parameterIndexOrProperty === "number") {
+  if (typeof parameterIndexOrProperty === 'number') {
     _decorate([_param(parameterIndexOrProperty, decorator as ParameterDecorator)], target);
-  } else if (typeof parameterIndexOrProperty === "string") {
+  } else if (typeof parameterIndexOrProperty === 'string') {
     Reflect.decorate([decorator as MethodDecorator], target, parameterIndexOrProperty);
   } else {
     _decorate([decorator], target);

@@ -1,14 +1,14 @@
-import { expect } from "chai";
-import { Binding } from "../../src/bindings/binding";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
-import { BindingInSyntax } from "../../src/syntax/binding_in_syntax";
+import { expect } from 'chai';
+import { Binding } from '../../src/bindings/binding';
+import { BindingScopeEnum } from '../../src/constants/literal_types';
+import { BindingInSyntax } from '../../src/syntax/binding_in_syntax';
 
-describe("BindingInSyntax", () => {
+describe('BindingInSyntax', () => {
 
-  it("Should set its own properties correctly", () => {
+  it('Should set its own properties correctly', () => {
 
     interface Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
@@ -20,10 +20,10 @@ describe("BindingInSyntax", () => {
 
   });
 
-  it("Should be able to configure the scope of a binding", () => {
+  it('Should be able to configure the scope of a binding', () => {
 
     interface Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
