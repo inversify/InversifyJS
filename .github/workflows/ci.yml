@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 16
       - run: npm install
-      - run: nuget install Selenium.WebDriver.IEDriver -Version 3.150.0
+      - run: nuget install Selenium.WebDriver.IEDriver -Version 4.0.0.1
       - run: npm run test:browser
         env:
           BROWSER: ie
