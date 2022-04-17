@@ -23,7 +23,7 @@ jobs:
       - uses: nuget/setup-nuget@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16
       - run: npm install
       - run: nuget install Selenium.WebDriver.IEDriver -Version 3.150.0
       - run: npm run test:browser
