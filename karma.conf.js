@@ -1,8 +1,7 @@
 var browsers = [
-  // "Firefox",
+  "Firefox",
   "Chrome",
-  "IE",
-  "PhantomJS"
+  "Edge",
 ];
 
 var plugins = [
@@ -12,8 +11,7 @@ var plugins = [
   "karma-sinon",
   "karma-firefox-launcher",
   "karma-chrome-launcher",
-  "karma-ie-launcher",
-  "karma-phantomjs-launcher",
+  "karma-edge-launcher",
   "karma-es6-shim"
 ];
 
