@@ -1,6 +1,6 @@
 # Multi-injection
 
-We can use multi-injection When two or more concretions have been bound to the an abstraction.
+We can use multi-injection when two or more concretions have been bound to an abstraction.
 Notice how an array of `Weapon` is injected into the `Ninja` class via its constructor thanks to the usage of the `@multiInject` decorator:
 
 ```ts
@@ -81,7 +81,7 @@ class Foo {
 }
 ```
 
-We discarded this idea because it is better to use decorators when there is not
+We discarded this idea because it is better to use decorators when there is no
 other way to achieve something. In this case there is a much simpler way to
 achieve the desired result. We just need to **use `@multiInject` and avoid using `...`**:
 
