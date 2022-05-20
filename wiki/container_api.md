@@ -13,6 +13,16 @@ You can even provide your own annotation solution.
 Container options can be passed to the Container constructor and defaults will be provided if you do not or if you do but omit an option.
 Options can be changed after construction and will be shared by child containers created from the Container if you do not provide options for them.
 
+### allowLazyInSync
+
+You can use this to skip the promise check when using the synchronous APIs:
+
+```ts
+let container = new Container({ allowLazyInSync: true });
+container.bind(TYPES.AsyncData).toConstantValue(Promise.resolve({ ... }));
+container.get(TYPES.AsyncData); // returns the promise without throwing
+```
+
 ### defaultScope
 
 The default scope is `transient` when binding to/toSelf/toDynamicValue/toService.
@@ -458,7 +468,7 @@ Calls the registration method of each module. See [container modules](https://gi
 
 ## container.loadAsync(...modules: interfaces.AsyncContainerModule[]): Promise\<void>
 
-As per load but for asynchronous registration. 
+As per load but for asynchronous registration.
 
 ## container.rebind\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): : interfaces.BindingToSyntax\<T>
 

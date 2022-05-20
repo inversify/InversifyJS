@@ -687,6 +687,10 @@ describe("Container", () => {
     const wrong3 = () => new Container(invalidOptions3);
     expect(wrong3).to.throw(`${ERROR_MSGS.CONTAINER_OPTIONS_INVALID_DEFAULT_SCOPE}`);
 
+    const invalidOptions4: any = { allowLazyInSync: "wrongValue" };
+    const wrong4 = () => new Container(invalidOptions4);
+    expect(wrong4).to.throw(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_ALLOW_LAZY_IN_SYNC);
+
   });
 
   it("Should be able to merge two containers", () => {
@@ -1170,6 +1174,19 @@ describe("Container", () => {
     myContainer.resolve(CompositionRoot);
     // tslint:disable-next-line: no-unused-expression
     expect(() => myContainer.resolve(CompositionRoot)).not.to.throw;
-  })
+  });
 
+  it("Should throw when synchronously resolving to a promise object", () => {
+    const identifier = Symbol('PromiseObject') as symbol & interfaces.Abstract<Promise<object>>;
+    const defaultContainer = new Container();
+    defaultContainer.bind(identifier).toConstantValue(Promise.resolve({}));
+    expect(() => defaultContainer.get(identifier)).to.throw(ERROR_MSGS.LAZY_IN_SYNC(identifier));
+  });
+
+  it("Should not throw when allowLazyInSync is set", () => {
+    const identifier = Symbol('PromiseObject') as symbol & interfaces.Abstract<Promise<object>>;
+    const testContainer = new Container({ allowLazyInSync: true });
+    testContainer.bind(identifier).toConstantValue(Promise.resolve({}));
+    expect(testContainer.get(identifier)).to.be.instanceof(Promise);
+  });
 });

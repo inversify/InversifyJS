@@ -184,6 +184,7 @@ namespace interfaces {
     autoBindInjectable?: boolean;
     defaultScope?: BindingScope;
     skipBaseClassChecks?: boolean;
+    allowLazyInSync?: boolean;
   }
 
   export interface Container {

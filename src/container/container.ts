@@ -65,6 +65,14 @@ class Container implements interfaces.Container {
       throw new Error(`${ERROR_MSGS.CONTAINER_OPTIONS_MUST_BE_AN_OBJECT}`);
     }
 
+    if (options.allowLazyInSync === undefined) {
+      options.allowLazyInSync = false;
+    } else if (
+      typeof options.allowLazyInSync !== "boolean"
+    ) {
+      throw new Error(ERROR_MSGS.CONTAINER_OPTIONS_INVALID_ALLOW_LAZY_IN_SYNC);
+    }
+
     if (options.defaultScope === undefined) {
       options.defaultScope = BindingScopeEnum.Transient;
     } else if (
@@ -92,9 +100,10 @@ class Container implements interfaces.Container {
     }
 
     this.options = {
+      allowLazyInSync: options.allowLazyInSync,
       autoBindInjectable: options.autoBindInjectable,
       defaultScope: options.defaultScope,
-      skipBaseClassChecks: options.skipBaseClassChecks
+      skipBaseClassChecks: options.skipBaseClassChecks,
     };
 
     this.id = id();
@@ -579,7 +588,7 @@ class Container implements interfaces.Container {
   ): (T | T[]) {
     const result = this._get<T>(getArgs);
 
-    if (isPromiseOrContainsPromise<T>(result)) {
+    if (!this.options.allowLazyInSync && isPromiseOrContainsPromise<T>(result)) {
       throw new Error(ERROR_MSGS.LAZY_IN_SYNC(getArgs.serviceIdentifier));
     }
 
