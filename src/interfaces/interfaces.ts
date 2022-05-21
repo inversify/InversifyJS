@@ -348,7 +348,6 @@ namespace interfaces {
     toAutoNamedFactory<T2>(serviceIdentifier: ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
     toProvider<T2>(provider: ProviderCreator<T2>): BindingWhenOnSyntax<T>;
     toService(service: ServiceIdentifier<T>): void;
-    _binding: Binding<T>
   }
 
   export interface ConstraintFunction {

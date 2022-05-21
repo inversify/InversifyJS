@@ -499,7 +499,10 @@ class Container implements interfaces.Container {
   private _getContainerModuleHelpersFactory() {
 
     const setModuleId = (bindingToSyntax: interfaces.BindingToSyntax<unknown>, moduleId: interfaces.ContainerModuleBase['id']) => {
-      bindingToSyntax._binding.moduleId = moduleId;
+      // TODO: Implement an internal type `_BindingToSyntax<T>` wherein this member
+      // can be public. Let `BindingToSyntax<T>` be the presentational type that
+      // depends on it, and does not expose this member as public.
+      (bindingToSyntax as unknown as { _binding: { moduleId: interfaces.ContainerModuleBase['id'] } } )._binding.moduleId = moduleId;
     };
 
     const getBindFunction = <T>(moduleId: interfaces.ContainerModuleBase['id']) =>

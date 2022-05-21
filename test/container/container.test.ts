@@ -605,7 +605,7 @@ describe('Container', () => {
     const container = new Container();
     container.options.defaultScope = undefined;
     const expectedScope: interfaces.BindingScope = 'Transient';
-    expect(container.bind('SID')._binding.scope).to.equal(expectedScope);
+    expect((container.bind('SID') as unknown as { _binding: { scope: interfaces.BindingScope } })._binding.scope).to.equal(expectedScope);
   });
   it('Should be able to configure automatic binding for @injectable() decorated classes', () => {
 
