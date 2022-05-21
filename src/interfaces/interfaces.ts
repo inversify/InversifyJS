@@ -38,7 +38,7 @@ namespace interfaces {
     Variable: interfaces.TargetType;
   }
 
-  export type Newable<T> = new (...args: never[]) => T;
+  export type Newable<T> = new (...args: any[]) => T;
 
   export type Instance<T> = T & Record<string, () => void>;
 
@@ -92,7 +92,7 @@ namespace interfaces {
     factory: FactoryTypeFunction | null
   };
 
-  export type Provider<T> = (...args: never[]) => (((...args: never[]) => Promise<T>) | Promise<T>);
+  export type Provider<T> = (...args: any[]) => (((...args: any[]) => Promise<T>) | Promise<T>);
 
   export type ProviderCreator<T> = (context: Context) => Provider<T>;
 
@@ -336,7 +336,7 @@ namespace interfaces {
   export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
 
   export interface BindingToSyntax<T> {
-    to(constructor: new (...args: never[]) => T): BindingInWhenOnSyntax<T>;
+    to(constructor: Newable<T>): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;

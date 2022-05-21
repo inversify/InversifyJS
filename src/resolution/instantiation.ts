@@ -64,7 +64,7 @@ function _createInstance<T>(
 function createInstanceWithInjections<T>(
   args: CreateInstanceWithInjectionArg<T>
 ): T {
-  const instance = new args.constr(...args.constructorInjections as never[]);
+  const instance = new args.constr(...args.constructorInjections);
   args.propertyRequests.forEach((r: interfaces.Request, index: number) => {
     const property = r.target.identifier;
     const injection = args.propertyInjections[index];
