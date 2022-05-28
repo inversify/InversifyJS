@@ -1,25 +1,25 @@
-import { expect } from "chai";
-import { TargetTypeEnum } from "../../src/constants/literal_types";
-import { Container } from "../../src/container/container";
-import { Context } from "../../src/planning/context";
-import { Plan } from "../../src/planning/plan";
-import { Request } from "../../src/planning/request";
-import { Target } from "../../src/planning/target";
+import { expect } from 'chai';
+import { TargetTypeEnum } from '../../src/constants/literal_types';
+import { Container } from '../../src/container/container';
+import { Context } from '../../src/planning/context';
+import { Plan } from '../../src/planning/plan';
+import { Request } from '../../src/planning/request';
+import { Target } from '../../src/planning/target';
 
-describe("Plan", () => {
+describe('Plan', () => {
 
-  it("Should set its own properties correctly", () => {
+  it('Should set its own properties correctly', () => {
 
     const container = new Container();
     const context = new Context(container);
-    const runtimeId = "Something";
+    const runtimeId = 'Something';
 
     const request: Request = new Request(
       runtimeId,
       context,
       null,
       [],
-      new Target(TargetTypeEnum.Variable, "", runtimeId)
+      new Target(TargetTypeEnum.Variable, '', runtimeId)
     );
 
     const plan = new Plan(context, request);

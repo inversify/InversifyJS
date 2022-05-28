@@ -1,4 +1,4 @@
-import { interfaces } from "../interfaces/interfaces";
+import { interfaces } from '../interfaces/interfaces';
 
 function isClonable<T>(obj: unknown): obj is interfaces.Clonable<T> {
   return (typeof obj === 'object')

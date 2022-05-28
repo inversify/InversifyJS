@@ -216,12 +216,12 @@ describe("Custom Metadata Reader", () => {
     const propertyMetadataLog: interfaces.MetadataMap[] = [];
 
     class CustomMetadataReader extends MetadataReader {
-      public getConstructorMetadata(constructorFunc: NewableFunction): interfaces.ConstructorMetadata {
+      public override getConstructorMetadata(constructorFunc: NewableFunction): interfaces.ConstructorMetadata {
         const constructorMetadata = super.getConstructorMetadata(constructorFunc);
         constructorMetadataLog.push(constructorMetadata);
         return constructorMetadata;
       }
-      public getPropertiesMetadata(constructorFunc: NewableFunction): interfaces.MetadataMap {
+      public override getPropertiesMetadata(constructorFunc: NewableFunction): interfaces.MetadataMap {
         const propertyMetadata = super.getPropertiesMetadata(constructorFunc);
         propertyMetadataLog.push(propertyMetadata);
         return propertyMetadata;

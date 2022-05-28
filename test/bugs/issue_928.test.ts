@@ -1,8 +1,8 @@
-import { expect } from "chai";
-import { Container, inject, injectable, optional } from "../../src/inversify";
+import { expect } from 'chai';
+import { Container, inject, injectable, optional } from '../../src/inversify';
 
 
-describe("Issue 928", () => {
+describe('Issue 928', () => {
 
   it('should inject the right instances', () => {
 

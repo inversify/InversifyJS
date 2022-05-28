@@ -1,5 +1,5 @@
-import { interfaces } from "../interfaces/interfaces";
-import { id } from "../utils/id";
+import { interfaces } from '../interfaces/interfaces';
+import { id } from '../utils/id';
 
 class Context implements interfaces.Context {
 

@@ -1,4 +1,4 @@
-import { interfaces } from "../interfaces/interfaces";
+import { interfaces } from '../interfaces/interfaces';
 
 class Plan implements interfaces.Plan {
 
