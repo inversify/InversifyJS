@@ -10,7 +10,7 @@ There are two cases in which you may want to use property injection.
 - When we CAN use InversifyJS to create an instance of a class.
 - When we CANNOT use InversifyJS to create an instance of a class.
 
-These cases are quite different an require different implementations of property injection.
+These cases are quite different and require different implementations of property injection.
 
 ## When we CAN use InversifyJS to create an instance of a class
 
