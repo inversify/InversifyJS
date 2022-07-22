@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { Container, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import { Container, injectable } from '../../src/inversify';
 
-describe("Provider", () => {
+describe('Provider', () => {
 
-  it("Should support complex asynchronous initialization processes", (done) => {
+  it('Should support complex asynchronous initialization processes', (done) => {
 
     @injectable()
     class Ninja {
@@ -11,7 +11,7 @@ describe("Provider", () => {
       public rank: string;
       public constructor() {
         this.level = 0;
-        this.rank = "Ninja";
+        this.rank = 'Ninja';
       }
       public train(): Promise<number> {
         return new Promise<number>((resolve) => {
@@ -27,7 +27,7 @@ describe("Provider", () => {
     class NinjaMaster {
       public rank: string;
       public constructor() {
-        this.rank = "NinjaMaster";
+        this.rank = 'NinjaMaster';
       }
     }
 
@@ -35,21 +35,21 @@ describe("Provider", () => {
 
     const container = new Container();
 
-    container.bind<Ninja>("Ninja").to(Ninja).inSingletonScope();
-    container.bind<NinjaMasterProvider>("Provider<NinjaMaster>").toProvider((context) =>
+    container.bind<Ninja>('Ninja').to(Ninja).inSingletonScope();
+    container.bind<NinjaMasterProvider>('Provider<NinjaMaster>').toProvider((context) =>
       () =>
         new Promise<NinjaMaster>((resolve, reject) => {
-          const ninja = context.container.get<Ninja>("Ninja");
+          const ninja = context.container.get<Ninja>('Ninja');
           ninja.train().then((level) => {
             if (level >= 20) {
               resolve(new NinjaMaster());
             } else {
-              reject("Not enough training");
+              reject('Not enough training');
             }
           });
         }));
 
-    const ninjaMasterProvider = container.get<NinjaMasterProvider>("Provider<NinjaMaster>");
+    const ninjaMasterProvider = container.get<NinjaMasterProvider>('Provider<NinjaMaster>');
 
     // helper
     function valueOrDefault<T>(provider: () => Promise<T>, defaultValue: T) {
@@ -62,18 +62,18 @@ describe("Provider", () => {
       });
     }
 
-    valueOrDefault(ninjaMasterProvider, { rank: "DefaultNinjaMaster" }).then((ninjaMaster) => {
-      expect(ninjaMaster.rank).to.eql("DefaultNinjaMaster");
+    valueOrDefault(ninjaMasterProvider, { rank: 'DefaultNinjaMaster' }).then((ninjaMaster) => {
+      expect(ninjaMaster.rank).to.eql('DefaultNinjaMaster');
     });
 
-    valueOrDefault(ninjaMasterProvider, { rank: "DefaultNinjaMaster" }).then((ninjaMaster) => {
-      expect(ninjaMaster.rank).to.eql("NinjaMaster");
+    valueOrDefault(ninjaMasterProvider, { rank: 'DefaultNinjaMaster' }).then((ninjaMaster) => {
+      expect(ninjaMaster.rank).to.eql('NinjaMaster');
       done();
     });
 
   });
 
-  it("Should support custom arguments", (done) => {
+  it('Should support custom arguments', (done) => {
 
     const container = new Container();
 
@@ -90,28 +90,28 @@ describe("Provider", () => {
 
     type SwordProvider = (material: string, damage: number) => Promise<Sword>;
 
-    container.bind<Sword>("Sword").to(Katana);
+    container.bind<Sword>('Sword').to(Katana);
 
-    container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) =>
+    container.bind<SwordProvider>('SwordProvider').toProvider<Sword>((context) =>
       (material: string, damage: number) =>
         new Promise<Sword>((resolve) => {
           setTimeout(() => {
-            const katana = context.container.get<Sword>("Sword");
+            const katana = context.container.get<Sword>('Sword');
             katana.material = material;
             katana.damage = damage;
             resolve(katana);
           }, 10);
         }));
 
-    const katanaProvider = container.get<SwordProvider>("SwordProvider");
+    const katanaProvider = container.get<SwordProvider>('SwordProvider');
 
-    katanaProvider("gold", 100).then((powerfulGoldKatana) => {
+    katanaProvider('gold', 100).then((powerfulGoldKatana) => {
 
-      expect(powerfulGoldKatana.material).to.eql("gold");
+      expect(powerfulGoldKatana.material).to.eql('gold');
       expect(powerfulGoldKatana.damage).to.eql(100);
 
-      katanaProvider("gold", 10).then((notSoPowerfulGoldKatana) => {
-        expect(notSoPowerfulGoldKatana.material).to.eql("gold");
+      katanaProvider('gold', 10).then((notSoPowerfulGoldKatana) => {
+        expect(notSoPowerfulGoldKatana.material).to.eql('gold');
         expect(notSoPowerfulGoldKatana.damage).to.eql(10);
         done();
       });
@@ -120,7 +120,7 @@ describe("Provider", () => {
 
   });
 
-  it("Should support partial application of custom arguments", (done) => {
+  it('Should support partial application of custom arguments', (done) => {
 
     const container = new Container();
 
@@ -137,30 +137,30 @@ describe("Provider", () => {
 
     type SwordProvider = (material: string) => (damage: number) => Promise<Sword>;
 
-    container.bind<Sword>("Sword").to(Katana);
+    container.bind<Sword>('Sword').to(Katana);
 
-    container.bind<SwordProvider>("SwordProvider").toProvider<Sword>((context) =>
+    container.bind<SwordProvider>('SwordProvider').toProvider<Sword>((context) =>
       (material: string) =>
         (damage: number) =>
           new Promise<Sword>((resolve) => {
             setTimeout(() => {
-              const katana = context.container.get<Sword>("Sword");
+              const katana = context.container.get<Sword>('Sword');
               katana.material = material;
               katana.damage = damage;
               resolve(katana);
             }, 10);
           }));
 
-    const katanaProvider = container.get<SwordProvider>("SwordProvider");
-    const goldKatanaProvider = katanaProvider("gold");
+    const katanaProvider = container.get<SwordProvider>('SwordProvider');
+    const goldKatanaProvider = katanaProvider('gold');
 
     goldKatanaProvider(100).then((powerfulGoldKatana) => {
 
-      expect(powerfulGoldKatana.material).to.eql("gold");
+      expect(powerfulGoldKatana.material).to.eql('gold');
       expect(powerfulGoldKatana.damage).to.eql(100);
 
       goldKatanaProvider(10).then((notSoPowerfulGoldKatana) => {
-        expect(notSoPowerfulGoldKatana.material).to.eql("gold");
+        expect(notSoPowerfulGoldKatana.material).to.eql('gold');
         expect(notSoPowerfulGoldKatana.damage).to.eql(10);
         done();
       });
@@ -169,7 +169,7 @@ describe("Provider", () => {
 
   });
 
-  it("Should support the declaration of singletons", (done) => {
+  it('Should support the declaration of singletons', (done) => {
 
     const container = new Container();
 
@@ -187,19 +187,19 @@ describe("Provider", () => {
 
     type WarriorProvider = (level: number) => Promise<Warrior>;
 
-    container.bind<Warrior>("Warrior").to(Ninja).inSingletonScope(); // Value is singleton!
+    container.bind<Warrior>('Warrior').to(Ninja).inSingletonScope(); // Value is singleton!
 
-    container.bind<WarriorProvider>("WarriorProvider").toProvider<Warrior>((context) =>
+    container.bind<WarriorProvider>('WarriorProvider').toProvider<Warrior>((context) =>
       (increaseLevel: number) =>
         new Promise<Warrior>((resolve) => {
           setTimeout(() => {
-            const warrior = context.container.get<Warrior>("Warrior"); // Get singleton!
+            const warrior = context.container.get<Warrior>('Warrior'); // Get singleton!
             warrior.level += increaseLevel;
             resolve(warrior);
           }, 100);
         }));
 
-    const warriorProvider = container.get<WarriorProvider>("WarriorProvider");
+    const warriorProvider = container.get<WarriorProvider>('WarriorProvider');
 
     warriorProvider(10).then((warrior) => {
 

@@ -1,29 +1,27 @@
-import { expect } from "chai";
-import { Binding } from "../../src/bindings/binding";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
-import { BindingInSyntax } from "../../src/syntax/binding_in_syntax";
+import { expect } from 'chai';
+import { Binding } from '../../src/bindings/binding';
+import { BindingScopeEnum } from '../../src/constants/literal_types';
+import { BindingInSyntax } from '../../src/syntax/binding_in_syntax';
 
-describe("BindingInSyntax", () => {
+describe('BindingInSyntax', () => {
 
-  it("Should set its own properties correctly", () => {
+  it('Should set its own properties correctly', () => {
 
     interface Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingInSyntax = new BindingInSyntax<Ninja>(binding);
-
-    // cast to any to be able to access private props
-    const _bindingInSyntax: any = bindingInSyntax;
+    const _bindingInSyntax = bindingInSyntax as unknown as { _binding: Binding<unknown> };
 
     expect(_bindingInSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
 
   });
 
-  it("Should be able to configure the scope of a binding", () => {
+  it('Should be able to configure the scope of a binding', () => {
 
     interface Ninja { }
-    const ninjaIdentifier = "Ninja";
+    const ninjaIdentifier = 'Ninja';
 
     const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
     const bindingInSyntax = new BindingInSyntax<Ninja>(binding);

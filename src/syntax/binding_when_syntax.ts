@@ -1,6 +1,6 @@
-import { interfaces } from "../interfaces/interfaces";
-import { BindingOnSyntax } from "./binding_on_syntax";
-import { namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from "./constraint_helpers";
+import { interfaces } from '../interfaces/interfaces';
+import { BindingOnSyntax } from './binding_on_syntax';
+import { namedConstraint, taggedConstraint, traverseAncerstors, typeConstraint } from './constraint_helpers';
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
 

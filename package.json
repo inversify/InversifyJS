@@ -1,48 +1,9 @@
 {
-  "name": "inversify",
-  "version": "6.0.1",
-  "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
-  "main": "lib/inversify.js",
-  "jsnext:main": "es/inversify.js",
-  "module": "es/inversify.js",
-  "types": "lib/inversify.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
-    "build:lib": "tsc -p src/tsconfig.json",
-    "build:amd": "tsc -p src/tsconfig-amd.json",
-    "build:es": "tsc -p src/tsconfig-es.json",
-    "build:es6": "tsc -p src/tsconfig-es6.json",
-    "clean": "rm -r amd es lib",
-    "pretest": "tslint --project .",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
-    "test:browser": "browserify test/inversify.test.ts -p [ tsify --noImplicitAny ] > ./test/bundle.test.js && karma start",
-    "publish-please": "publish-please",
-    "prepublish": "npm run build && publish-please guard",
-    "update": "updates --update --minor && npm install",
-    "postupdate": "git diff-files --quiet package-lock.json || npm test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/inversify/InversifyJS.git"
-  },
-  "keywords": [
-    "ioc",
-    "di",
-    "javascript",
-    "typescript",
-    "node",
-    "dependency injection",
-    "dependency inversion",
-    "inversion of control container"
-  ],
   "author": "Remo H. Jansen",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/inversify/InversifyJS/issues"
   },
-  "homepage": "http://inversify.io",
-  "engines": {},
+  "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "devDependencies": {
     "@types/chai": "4.2.22",
     "@types/mocha": "9.0.0",
@@ -69,7 +30,46 @@
     "ts-node": "10.3.0",
     "tsify": "5.0.4",
     "tslint": "6.1.3",
-    "typescript": "4.4.4",
+    "typescript": "4.6.2",
     "updates": "12.2.2"
-  }
+  },
+  "engines": {},
+  "homepage": "http://inversify.io",
+  "jsnext:main": "es/inversify.js",
+  "keywords": [
+    "dependency injection",
+    "dependency inversion",
+    "di",
+    "inversion of control container",
+    "ioc",
+    "javascript",
+    "node",
+    "typescript"
+  ],
+  "license": "MIT",
+  "main": "lib/inversify.js",
+  "module": "es/inversify.js",
+  "name": "inversify",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inversify/InversifyJS.git"
+  },
+  "scripts": {
+    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
+    "build:amd": "tsc -p src/tsconfig-amd.json",
+    "build:es": "tsc -p src/tsconfig-es.json",
+    "build:es6": "tsc -p src/tsconfig-es6.json",
+    "build:lib": "tsc -p src/tsconfig.json",
+    "clean": "rm -r amd es lib",
+    "postupdate": "git diff-files --quiet package-lock.json || npm test",
+    "prepublish": "npm run build && publish-please guard",
+    "pretest": "tslint --project .",
+    "publish-please": "publish-please",
+    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test:browser": "browserify ./test/inversify.test.ts -p [ tsify --noImplicitAny ] > ./test/bundle.test.js && karma start",
+    "update": "updates --update --minor && npm install"
+  },
+  "sideEffects": false,
+  "types": "lib/inversify.d.ts",
+  "version": "6.0.1"
 }

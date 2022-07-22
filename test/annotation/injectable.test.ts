@@ -1,11 +1,11 @@
-import { expect } from "chai";
-import * as ERRORS_MSGS from "../../src/constants/error_msgs";
-import * as METADATA_KEY from "../../src/constants/metadata_keys";
-import { decorate, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import * as ERRORS_MSGS from '../../src/constants/error_msgs';
+import * as METADATA_KEY from '../../src/constants/metadata_keys';
+import { decorate, injectable } from '../../src/inversify';
 
-describe("@injectable", () => {
+describe('@injectable', () => {
 
-  it("Should generate metadata if declared injections", () => {
+  it('Should generate metadata if declared injections', () => {
 
     class Katana { }
 
@@ -39,7 +39,7 @@ describe("@injectable", () => {
     expect(metadata[2]).to.eq(undefined);
   });
 
-  it("Should throw when applied multiple times", () => {
+  it('Should throw when applied multiple times', () => {
 
     @injectable()
     class Test { }
@@ -52,7 +52,7 @@ describe("@injectable", () => {
     expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
   });
 
-  it("Should be usable in VanillaJS applications", () => {
+  it('Should be usable in VanillaJS applications', () => {
 
     interface Katana { }
     interface Shuriken { }

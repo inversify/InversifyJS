@@ -1,4 +1,4 @@
-import { FactoryType } from "../utils/factory_type";
+import { FactoryType } from '../utils/factory_type';
 
 namespace interfaces {
   export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>;
@@ -8,12 +8,12 @@ namespace interfaces {
     TCallback extends (...args: infer TArgs) => infer TResult ? (...args: TArgs) => Promise<TResult>
     : never;
 
-  export type BindingScope = "Singleton" | "Transient" | "Request";
+  export type BindingScope = 'Singleton' | 'Transient' | 'Request';
 
-  export type BindingType = "ConstantValue" | "Constructor" | "DynamicValue" | "Factory" |
-    "Function" | "Instance" | "Invalid" | "Provider";
+  export type BindingType = 'ConstantValue' | 'Constructor' | 'DynamicValue' | 'Factory' |
+    'Function' | 'Instance' | 'Invalid' | 'Provider';
 
-  export type TargetType = "ConstructorArgument" | "ClassProperty" | "Variable";
+  export type TargetType = 'ConstructorArgument' | 'ClassProperty' | 'Variable';
 
   export interface BindingScopeEnum {
     Request: interfaces.BindingScope;
@@ -38,7 +38,9 @@ namespace interfaces {
     Variable: interfaces.TargetType;
   }
 
-  export type Newable<T> = new (...args: never[]) => T;
+  export type Newable<T> = new (...args: any[]) => T;
+
+  export type Instance<T> = T & Record<string, () => void>;
 
   export interface Abstract<T> {
     prototype: T;
@@ -50,13 +52,13 @@ namespace interfaces {
     clone(): T;
   }
 
-  export type BindingActivation<T> = (context: interfaces.Context, injectable: T) => T | Promise<T>;
+  export type BindingActivation<T = unknown> = (context: interfaces.Context, injectable: T) => T | Promise<T>;
 
-  export type BindingDeactivation<T> = (injectable: T) => void | Promise<void>;
+  export type BindingDeactivation<T = unknown> = (injectable: T) => void | Promise<void>;
 
-  export interface Binding<TActivated> extends Clonable<Binding<TActivated>> {
+  export interface Binding<TActivated = unknown> extends Clonable<Binding<TActivated>> {
     id: number;
-    moduleId: ContainerModuleBase["id"];
+    moduleId: ContainerModuleBase['id'];
     activated: boolean;
     serviceIdentifier: ServiceIdentifier<TActivated>;
     constraint: ConstraintFunction;
@@ -100,11 +102,11 @@ namespace interfaces {
     isMultiInject: boolean;
     targetType: TargetType;
     serviceIdentifier: interfaces.ServiceIdentifier<T>;
-    key?: string | number | symbol;
+    key?: string | number | symbol | undefined;
     value?: unknown;
   }
 
-  export type Next = (args: NextArgs) => (any | any[]);
+  export type Next = (args: NextArgs) => (unknown | unknown[]);
 
   export type Middleware = (next: Next) => Next;
 
@@ -182,7 +184,7 @@ namespace interfaces {
 
   export interface ContainerOptions {
     autoBindInjectable?: boolean;
-    defaultScope?: BindingScope;
+    defaultScope?: BindingScope | undefined;
     skipBaseClassChecks?: boolean;
   }
 
@@ -227,15 +229,15 @@ namespace interfaces {
     createChild(): Container;
   }
 
-  export type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+  export type Bind = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
 
-  export type Rebind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+  export type Rebind = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
 
-  export type Unbind = <T>(serviceIdentifier: ServiceIdentifier<T>) => void;
+  export type Unbind = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => void;
 
-  export type UnbindAsync = <T>(serviceIdentifier: ServiceIdentifier<T>) => Promise<void>;
+  export type UnbindAsync = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => Promise<void>;
 
-  export type IsBound = <T>(serviceIdentifier: ServiceIdentifier<T>) => boolean;
+  export type IsBound = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => boolean;
 
   export interface ContainerModuleBase {
     id: number;
@@ -256,16 +258,16 @@ namespace interfaces {
 
   export interface ModuleActivationStore extends Clonable<ModuleActivationStore> {
     addDeactivation(
-      moduleId: ContainerModuleBase["id"],
+      moduleId: ContainerModuleBase['id'],
       serviceIdentifier: ServiceIdentifier<unknown>,
       onDeactivation: interfaces.BindingDeactivation<unknown>
     ): void
     addActivation(
-      moduleId: ContainerModuleBase["id"],
+      moduleId: ContainerModuleBase['id'],
       serviceIdentifier: ServiceIdentifier<unknown>,
       onActivation: interfaces.BindingActivation<unknown>
     ): void
-    remove(moduleId: ContainerModuleBase["id"]): ModuleActivationHandlers
+    remove(moduleId: ContainerModuleBase['id']): ModuleActivationHandlers
   }
 
   export type ContainerModuleCallBack = (
@@ -274,8 +276,8 @@ namespace interfaces {
     isBound: interfaces.IsBound,
     rebind: interfaces.Rebind,
     unbindAsync: interfaces.UnbindAsync,
-    onActivation: interfaces.Container["onActivation"],
-    onDeactivation: interfaces.Container["onDeactivation"]
+    onActivation: interfaces.Container['onActivation'],
+    onDeactivation: interfaces.Container['onDeactivation']
   ) => void;
 
   export type AsyncContainerModuleCallBack = AsyncCallback<ContainerModuleCallBack>;
@@ -334,7 +336,7 @@ namespace interfaces {
   export interface BindingInWhenOnSyntax<T> extends BindingInSyntax<T>, BindingWhenOnSyntax<T> { }
 
   export interface BindingToSyntax<T> {
-    to(constructor: new (...args: never[]) => T): BindingInWhenOnSyntax<T>;
+    to(constructor: Newable<T>): BindingInWhenOnSyntax<T>;
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;

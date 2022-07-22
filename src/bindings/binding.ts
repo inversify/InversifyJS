@@ -1,11 +1,11 @@
-import { BindingScopeEnum, BindingTypeEnum } from "../constants/literal_types";
-import { interfaces } from "../interfaces/interfaces";
-import { id } from "../utils/id";
+import { BindingScopeEnum, BindingTypeEnum } from '../constants/literal_types';
+import { interfaces } from '../interfaces/interfaces';
+import { id } from '../utils/id';
 
 class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
   public id: number;
-  public moduleId!: interfaces.ContainerModuleBase["id"];
+  public moduleId!: interfaces.ContainerModuleBase['id'];
 
   // Determines weather the bindings has been already activated
   // The activation action takes place when an instance is resolved

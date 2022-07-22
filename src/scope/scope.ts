@@ -1,5 +1,5 @@
-import { BindingScopeEnum, interfaces } from "../inversify";
-import { isPromise } from "../utils/async";
+import { BindingScopeEnum, interfaces } from '../inversify';
+import { isPromise } from '../utils/async';
 
 export const tryGetFromScope = <T>(
   requestScope: interfaces.RequestScope,

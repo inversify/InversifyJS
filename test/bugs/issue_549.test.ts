@@ -1,13 +1,13 @@
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { Container, inject, injectable } from "../../src/inversify";
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { Container, inject, injectable } from '../../src/inversify';
 
-describe("Issue 549", () => {
+describe('Issue 549', () => {
 
-  it("Should throw if circular dependencies found with dynamics", () => {
+  it('Should throw if circular dependencies found with dynamics', () => {
 
     const TYPE = {
-      ADynamicValue: Symbol.for("ADynamicValue"),
-      BDynamicValue: Symbol.for("BDynamicValue")
+      ADynamicValue: Symbol.for('ADynamicValue'),
+      BDynamicValue: Symbol.for('BDynamicValue')
     };
 
     interface IA { }
@@ -33,7 +33,7 @@ describe("Issue 549", () => {
       }
     }
 
-    const container = new Container({ defaultScope: "Singleton" });
+    const container = new Container({ defaultScope: 'Singleton' });
     container.bind(A).toSelf();
     container.bind(B).toSelf();
 
@@ -52,23 +52,23 @@ describe("Issue 549", () => {
     try {
       const result = willThrow();
       throw new Error(
-        `This line should never be executed. Expected 'willThrow' to throw! ${JSON.stringify(result)}`
+        `This line should never be executed. Expected \`willThrow\` to throw! ${JSON.stringify(result)}`
       );
     } catch (e) {
-
-      const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.ADynamicValue.toString());
-      const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY("toDynamicValue", TYPE.BDynamicValue.toString());
-      const matchesErrorA = e.message.indexOf(expectedErrorA) !== -1;
-      const matchesErrorB = e.message.indexOf(expectedErrorB) !== -1;
+      const localError = e as Error;
+      const expectedErrorA = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY('toDynamicValue', TYPE.ADynamicValue.toString());
+      const expectedErrorB = ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY('toDynamicValue', TYPE.BDynamicValue.toString());
+      const matchesErrorA = localError.message.indexOf(expectedErrorA) !== -1;
+      const matchesErrorB = localError.message.indexOf(expectedErrorB) !== -1;
 
       if (!matchesErrorA && !matchesErrorB) {
         throw new Error(
-          "Expected 'willThrow' to throw:\n" +
+          'Expected \`willThrow\` to throw:\n' +
           `- ${expectedErrorA}\n` +
-          "or\n" +
+          'or\n' +
           `- ${expectedErrorB}\n` +
-          "but got\n" +
-          `- ${e.message}`
+          'but got\n' +
+          `- ${localError.message}`
         );
       }
 
