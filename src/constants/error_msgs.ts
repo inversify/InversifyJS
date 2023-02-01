@@ -49,7 +49,7 @@ export const PRE_DESTROY_ERROR = (clazz: string, errorMessage: string) => `@preD
 export const ON_DEACTIVATION_ERROR = (clazz: string, errorMessage: string) => `onDeactivation() error in class ${clazz}: ${errorMessage}`;
 
 export const CIRCULAR_DEPENDENCY_IN_FACTORY = (factoryType: string, serviceIdentifier: string) =>
-  `It looks like there is a circular dependency in one of the '${factoryType}' bindings. Please investigate bindings with` +
+  `It looks like there is a circular dependency in one of the '${factoryType}' bindings. Please investigate bindings with ` +
   `service identifier '${serviceIdentifier}'.`;
 
 export const STACK_OVERFLOW = 'Maximum call stack size exceeded';
