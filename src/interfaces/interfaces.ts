@@ -340,6 +340,13 @@ namespace interfaces {
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;
+    toDynamicValueWithDeps<Deps extends readonly unknown[]>(
+      dependencies: Deps,
+      func: (
+        dependencies: ResolvedDeps<Deps>,
+        context: interfaces.Context
+      ) => T
+    ): interfaces.BindingInWhenOnSyntax<T>;
     toConstructor<T2>(constructor: Newable<T2>): BindingWhenOnSyntax<T>;
     toFactory<T2, T3 extends unknown[] = unknown[], T4 extends unknown[] = unknown[]>(
       factory: FactoryCreator<T2, T3, T4>): BindingWhenOnSyntax<T>;
@@ -369,6 +376,17 @@ namespace interfaces {
     userGeneratedMetadata: MetadataMap;
   }
 
+  export type ResolvedDeps<Deps extends readonly unknown[]> = {
+    [P in keyof Deps]: Deps[P] extends string
+      ? unknown
+      : Deps[P] extends symbol
+      ? unknown
+      : Deps[P] extends interfaces.Newable<infer R1>
+      ? R1
+      : Deps[P] extends interfaces.Abstract<infer R2>
+      ? R2
+      : unknown;
+  };
 }
 
 export { interfaces };

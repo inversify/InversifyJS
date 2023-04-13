@@ -46,6 +46,18 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingInWhenOnSyntax<T>(this._binding);
   }
 
+  public toDynamicValueWithDeps<Deps extends readonly unknown[]>(
+    deps: Deps,
+    func: (dependencies: interfaces.ResolvedDeps<Deps>, context: interfaces.Context) => T
+  ): interfaces.BindingInWhenOnSyntax<T> {
+    return this.toDynamicValue((context) => {
+      const resolvedDeps = deps.map((identifier) =>
+        context.container.get(identifier as interfaces.ServiceIdentifier)
+      ) as unknown as interfaces.ResolvedDeps<typeof deps>;
+      return func(resolvedDeps, context)
+    })
+  }
+
   public toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Constructor;
     this._binding.implementationType = constructor as unknown as T;

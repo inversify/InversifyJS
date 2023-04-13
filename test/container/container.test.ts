@@ -1172,4 +1172,34 @@ describe('Container', () => {
     expect(() => myContainer.resolve(CompositionRoot)).not.to.throw;
   })
 
+  it('should be able to resolve all dependencies using toDynamicValueWithDeps', () => {
+    abstract class AbstractShuriken {}
+
+    abstract class AbstractKatana {}
+
+    @injectable()
+    class Shuriken implements AbstractShuriken {}
+
+    @injectable()
+    class Katana implements AbstractKatana {}
+
+    @injectable()
+    class Ninja {
+      public constructor(public shuriken: AbstractShuriken, public katana: AbstractKatana) {}
+    }
+
+
+    const container = new Container()
+    container.bind(AbstractShuriken).to(Shuriken)
+    container.bind(AbstractKatana).to(Katana)
+    container.bind(Ninja).toDynamicValueWithDeps(
+      [AbstractShuriken, AbstractKatana] as const,
+      ([shuriken, katana]) => new Ninja(shuriken, katana)
+    )
+
+    const ninja = container.get(Ninja)
+    expect(ninja.shuriken).to.be.instanceOf(Shuriken)
+    expect(ninja.katana).to.be.instanceOf(Katana)
+  })
+
 });
