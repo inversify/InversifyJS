@@ -340,7 +340,7 @@ namespace interfaces {
     toSelf(): BindingInWhenOnSyntax<T>;
     toConstantValue(value: T): BindingWhenOnSyntax<T>;
     toDynamicValue(func: DynamicValue<T>): BindingInWhenOnSyntax<T>;
-    toDynamicValueWithDeps<Deps extends readonly unknown[]>(
+    toDynamicValueWithDeps<Deps extends readonly ServiceIdentifier[]>(
       dependencies: Deps,
       func: (
         dependencies: ResolvedDeps<Deps>,
@@ -376,7 +376,7 @@ namespace interfaces {
     userGeneratedMetadata: MetadataMap;
   }
 
-  export type ResolvedDeps<Deps extends readonly unknown[]> = {
+  export type ResolvedDeps<Deps extends readonly ServiceIdentifier[]> = {
     [P in keyof Deps]: Deps[P] extends string
       ? unknown
       : Deps[P] extends symbol

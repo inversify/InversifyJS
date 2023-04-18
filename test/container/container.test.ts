@@ -1183,11 +1183,9 @@ describe('Container', () => {
     @injectable()
     class Katana implements AbstractKatana {}
 
-    @injectable()
     class Ninja {
       public constructor(public shuriken: AbstractShuriken, public katana: AbstractKatana) {}
     }
-
 
     const container = new Container()
     container.bind(AbstractShuriken).to(Shuriken)
