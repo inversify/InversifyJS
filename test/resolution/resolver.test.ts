@@ -1837,8 +1837,7 @@ describe('Resolve', () => {
     container.bind<Constructable>('Constructable').to(Constructable).inSingletonScope()
       .onActivation(() => Promise.resolve());
 
-    expect(() => container.get('Constructable')).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
- but it has asynchronous dependencies.`);
+    expect(() => container.get('Constructable')).to.throw(`You are attempting to construct 'Constructable' in a synchronous way but it has asynchronous dependencies.`);
   });
 
   it('Should force a class with an async post construct to use the async api', async () => {
@@ -1853,8 +1852,7 @@ describe('Resolve', () => {
     const container = new Container();
     container.bind<Constructable>('Constructable').to(Constructable);
 
-    expect(() => container.get('Constructable')).to.throw(`You are attempting to construct 'Constructable' in a synchronous way
- but it has asynchronous dependencies.`);
+    expect(() => container.get('Constructable')).to.throw(`You are attempting to construct 'Constructable' in a synchronous way but it has asynchronous dependencies.`);
   });
 
   it('Should retry promise if first time failed', async () => {
@@ -1906,8 +1904,7 @@ describe('Resolve', () => {
 
     container.onActivation('foo', () => Promise.resolve('baz'));
 
-    expect(() => container.get('foo')).to.throw(`You are attempting to construct 'foo' in a synchronous way
- but it has asynchronous dependencies.`);
+    expect(() => container.get('foo')).to.throw(`You are attempting to construct 'foo' in a synchronous way but it has asynchronous dependencies.`);
   });
 
   it('Should allow onActivation (sync) of a previously binded sync object (without activation)', async () => {
@@ -2530,8 +2527,7 @@ describe('Resolve', () => {
     container.bind<UseDate>('UseDate').to(UseDate);
     container.bind<Date>('Date').toDynamicValue(() => Promise.resolve(new Date()));
 
-    expect(() => container.get<UseDate>('UseDate')).to.throw(`You are attempting to construct 'UseDate' in a synchronous way
- but it has asynchronous dependencies.`);
+    expect(() => container.get<UseDate>('UseDate')).to.throw(`You are attempting to construct 'UseDate' in a synchronous way but it has asynchronous dependencies.`);
   });
 
   it('Should be able to resolve indirect Promise bindings', async () => {
@@ -2569,8 +2565,7 @@ describe('Resolve', () => {
     const container = new Container();
     container.bind<string>('async').toDynamicValue(() => Promise.resolve('foobar'));
 
-    expect(() => container.get<string>('async')).to.throw(`You are attempting to construct 'async' in a synchronous way
- but it has asynchronous dependencies.`);
+    expect(() => container.get<string>('async')).to.throw(`You are attempting to construct 'async' in a synchronous way but it has asynchronous dependencies.`);
   });
 
   it('Should cache a a resolved value on singleton when possible', async () => {
