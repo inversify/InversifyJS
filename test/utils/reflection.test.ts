@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { injectable, inject, LazyServiceIdentifer, Container } from '../../src/inversify';
+import { injectable, inject, LazyServiceIdentifier, Container } from '../../src/inversify';
 import { getDependencies } from '../../src/planning/reflection_utils';
 import { MetadataReader } from "../../src/planning/metadata_reader";
 import sinon from "sinon";
@@ -34,7 +34,7 @@ describe('Reflection Utilities Unit Tests', () => {
         private _katana: Katana;
 
         public constructor(
-            @inject(new LazyServiceIdentifer(() => TYPES.Katana)) katana: Katana,
+            @inject(new LazyServiceIdentifier(() => TYPES.Katana)) katana: Katana,
         ) {
             this._katana = katana;
         }
@@ -47,7 +47,7 @@ describe('Reflection Utilities Unit Tests', () => {
         container.bind<Ninja>(TYPES.Ninja).to(Ninja);
         container.bind<Katana>(TYPES.Katana).to(Katana);
 
-        const unwrapSpy = sinon.spy(LazyServiceIdentifer.prototype, 'unwrap');
+        const unwrapSpy = sinon.spy(LazyServiceIdentifier.prototype, 'unwrap');
 
         const dependencies = getDependencies(new MetadataReader(), Ninja);
 
