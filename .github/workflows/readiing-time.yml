@@ -1,0 +1,38 @@
+name: Reading Time
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.md"
+
+jobs:
+  calculate-reading-time:
+    runs-on: ubuntu-latest
+    name: Calculate Reading Time
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Calculate & Prepend Reading Time
+        uses: harunrst/reading-time-action@v1.0
+        with:
+          strategy: all
+
+      - name: Commit Changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: Edited markdown files with reading times.
+          push: false
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: Update markdown files with reading time.
+          body: Auto-generated Pull Request by [reading-time-action](https://github.com/harunrst/reading-time-action).
+          branch: reading-time-action
