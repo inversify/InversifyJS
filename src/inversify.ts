@@ -8,7 +8,8 @@ export { injectable } from './annotation/injectable';
 export { tagged } from './annotation/tagged';
 export { named } from './annotation/named';
 export { inject } from './annotation/inject';
-export { LazyServiceIdentifer } from './annotation/lazy_service_identifier'
+export { LazyServiceIdentifier } from './annotation/lazy_service_identifier'
+export { LazyServiceIdentifier as LazyServiceIdentifer } from './annotation/lazy_service_identifier'
 export { optional } from './annotation/optional';
 export { unmanaged } from './annotation/unmanaged';
 export { multiInject } from './annotation/multi_inject';

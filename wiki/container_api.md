@@ -559,7 +559,7 @@ Restore container state to last snapshot.
 Save the state of the container to be later restored with the restore method.
 ## container.unbind(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>): void
 
-Remove all bindings binded in this container to the service identifer.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+Remove all bindings binded in this container to the service identifier.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
 
 ## container.unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier\<unknown>): Promise\<void>
 
