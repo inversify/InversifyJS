@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [6.0.2]
+
+### Added
+Brought tests up to 100% Code Coverage
+
+### Changed
+LazyIdentfier Tests
+
+### Fixed
+Less than 100% code coverage
+
 ## [6.0.1] - 2021-10-14
 ### Added
 - add API method for check dependency only in current container

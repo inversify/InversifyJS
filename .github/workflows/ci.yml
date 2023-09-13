@@ -1,0 +1,94 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  browser:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: nuget/setup-nuget@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - run: npm install
+      - run: nuget install Selenium.WebDriver.IEDriver -Version 4.0.0.1
+      - run: npm run test:browser
+        env:
+          BROWSER: ie
+
+  Testing:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x]
+        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
+    env:
+      TS_NODE_PROJECT: ${{ matrix.ts-project }}
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test --coverage
+      - name: Store code coverage report
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # renovate: tag=v2
+        with:
+          name: coverage
+          path: coverage/
+
+  Build:
+    name: Compile source code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x, 16.x]
+        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
+    env:
+      TS_NODE_PROJECT: ${{ matrix.ts-project }}
+
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: npm
+        registry-url: https://registry.npmjs.org/
+    - run: npm cache clean --force
+    - run: npm ci
+    - run: npm run build --if-present
+
+  Upload_Coverage_Report:
+    name: Upload coverage report to codecov
+    needs: [Testing]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+        with:
+          fetch-depth: 2
+      - name: Download Coverage report
+        uses: actions/download-artifact@f023be2c48cc18debc3bacd34cb396e0295e2869 # renovate: tag=v2
+        with:
+          name: coverage
+          path: coverage/
+      - name: Codecov Upload
+        uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # renovate: tag=v2
+        with:
+          directory: coverage/
+          fail_ci_if_error: true

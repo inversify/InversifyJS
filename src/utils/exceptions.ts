@@ -1,9 +1,9 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
+import * as ERROR_MSGS from '../constants/error_msgs';
 
-export function isStackOverflowExeption(error: Error) {
+export function isStackOverflowExeption(error: unknown): error is RangeError {
   return (
     error instanceof RangeError ||
-    error.message === ERROR_MSGS.STACK_OVERFLOW
+    (error as Error).message === ERROR_MSGS.STACK_OVERFLOW
   );
 }
 

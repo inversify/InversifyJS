@@ -1,9 +1,9 @@
-import { ON_DEACTIVATION_ERROR, POST_CONSTRUCT_ERROR, PRE_DESTROY_ERROR } from "../constants/error_msgs";
-import { BindingScopeEnum, TargetTypeEnum } from "../constants/literal_types";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { Metadata } from "../planning/metadata";
-import { isPromise, isPromiseOrContainsPromise } from "../utils/async";
+import { ON_DEACTIVATION_ERROR, POST_CONSTRUCT_ERROR, PRE_DESTROY_ERROR } from '../constants/error_msgs';
+import { BindingScopeEnum, TargetTypeEnum } from '../constants/literal_types';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { Metadata } from '../planning/metadata';
+import { isPromise, isPromiseOrContainsPromise } from '../utils/async';
 
 interface InstanceCreationInstruction {
   constructorInjections: unknown[],
@@ -64,7 +64,7 @@ function _createInstance<T>(
 function createInstanceWithInjections<T>(
   args: CreateInstanceWithInjectionArg<T>
 ): T {
-  const instance = new args.constr(...args.constructorInjections as never[]);
+  const instance = new args.constr(...args.constructorInjections);
   args.propertyRequests.forEach((r: interfaces.Request, index: number) => {
     const property = r.target.identifier;
     const injection = args.propertyInjections[index];
@@ -108,9 +108,11 @@ function _postConstruct<T>(constr: interfaces.Newable<T>, instance: T): void | P
   if (Reflect.hasMetadata(METADATA_KEY.POST_CONSTRUCT, constr)) {
     const data: Metadata = Reflect.getMetadata(METADATA_KEY.POST_CONSTRUCT, constr);
     try {
-      return (instance as T & Record<string, () => void>)[(data.value as string)]?.();
+      return (instance as interfaces.Instance<T>)[(data.value as string)]?.();
     } catch (e) {
-      throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
+      if (e instanceof Error) {
+        throw new Error(POST_CONSTRUCT_ERROR(constr.name, e.message));
+      }
     }
   }
 }
@@ -123,9 +125,9 @@ function _validateInstanceResolution<T = unknown>(binding: interfaces.Binding<T>
 
 function _throwIfHandlingDeactivation<T = unknown>(binding: interfaces.Binding<T>, constr: interfaces.Newable<T>): void {
   const scopeErrorMessage = `Class cannot be instantiated in ${binding.scope === BindingScopeEnum.Request ?
-    "request" :
-    "transient"} scope.`;
-  if (typeof binding.onDeactivation === "function") {
+    'request' :
+    'transient'} scope.`;
+  if (typeof binding.onDeactivation === 'function') {
     throw new Error(ON_DEACTIVATION_ERROR(constr.name, scopeErrorMessage));
   }
 

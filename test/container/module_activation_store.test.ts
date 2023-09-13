@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { ModuleActivationStore } from "../../src/container/module_activation_store"
-import { interfaces } from "../../src/inversify"
+import { expect } from 'chai';
+import { ModuleActivationStore } from '../../src/container/module_activation_store'
+import { interfaces } from '../../src/inversify'
 
-describe("ModuleActivationStore", () => {
-  it("should remove handlers added by the module", () => {
+describe('ModuleActivationStore', () => {
+  it('should remove handlers added by the module', () => {
     const moduleActivationStore = new ModuleActivationStore();
 
     const moduleId1: number = 1;
@@ -49,7 +49,7 @@ describe("ModuleActivationStore", () => {
     expect(module2Handlers.onDeactivations.getMap()).to.deep.equal(new Map([[serviceIdentifier1, [onDeactivationMod2]]]));
   });
 
-  it("should be able to clone", () => {
+  it('should be able to clone', () => {
     const moduleActivationStore = new ModuleActivationStore();
 
     const moduleId1: number = 1;

@@ -6,13 +6,16 @@ import { BindingWhenOnSyntax } from "./binding_when_on_syntax";
 
 class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
+  // TODO: Implement an internal type `_BindingToSyntax<T>` wherein this member
+  // can be public. Let `BindingToSyntax<T>` be the presentational type that
+  // depends on it, and does not expose this member as public.
   private _binding: interfaces.Binding<T>;
 
   public constructor(binding: interfaces.Binding<T>) {
     this._binding = binding;
   }
 
-  public to(constructor: new (...args: never[]) => T): interfaces.BindingInWhenOnSyntax<T> {
+  public to(constructor: interfaces.Newable<T>): interfaces.BindingInWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Instance;
     this._binding.implementationType = constructor;
     return new BindingInWhenOnSyntax<T>(this._binding);

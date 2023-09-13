@@ -71,7 +71,7 @@ class Derived extends Base {
 container.bind<Base>(BaseId).to(Derived);
 let derived = container.get<Base>(BaseId);
 
-derived instanceof Derived2; // true
+derived instanceof Derived; // true
 derived.prop; // "unmanaged-injected-value"
 ```
 
