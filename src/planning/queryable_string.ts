@@ -1,4 +1,4 @@
-import { interfaces } from "../interfaces/interfaces";
+import { interfaces } from '../interfaces/interfaces';
 
 class QueryableString implements interfaces.QueryableString {
 
@@ -13,10 +13,10 @@ class QueryableString implements interfaces.QueryableString {
   }
 
   public endsWith(searchString: string): boolean {
-    let reverseString = "";
-    const reverseSearchString = searchString.split("").reverse().join("");
-    reverseString = this.str.split("").reverse().join("");
-    return this.startsWith.call({ str : reverseString }, reverseSearchString);
+    let reverseString = '';
+    const reverseSearchString = searchString.split('').reverse().join('');
+    reverseString = this.str.split('').reverse().join('');
+    return this.startsWith.call({ str: reverseString }, reverseSearchString);
   }
 
   public contains(searchString: string): boolean {

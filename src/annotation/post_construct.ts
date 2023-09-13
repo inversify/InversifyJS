@@ -1,6 +1,6 @@
-import * as ERRORS_MSGS from "../constants/error_msgs";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { propertyEventDecorator } from "./property_event_decorator";
+import * as ERRORS_MSGS from '../constants/error_msgs';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { propertyEventDecorator } from './property_event_decorator';
 
 const postConstruct = propertyEventDecorator(
   METADATA_KEY.POST_CONSTRUCT,

@@ -1,4 +1,5 @@
 src
+**/*.js.map
 test
 typings
 bundled
@@ -10,13 +11,16 @@ wiki
 gulpfile.js
 bower.json
 karma.conf.js
+mocha.opts
 tsconfig.json
 typings.json
 CONTRIBUTING.md
 ISSUE_TEMPLATE.md
 PULL_REQUEST_TEMPLATE.md
+CODE_OF_CONDUCT.md
 tslint.json
 wallaby.js
+.auditignore
 .travis.yml
 .github
 .gitignore

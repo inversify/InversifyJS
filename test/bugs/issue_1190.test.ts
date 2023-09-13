@@ -1,15 +1,15 @@
-import { expect } from "chai";
-import { injectable, inject, optional, Container, named } from "../../src/inversify";
+import { expect } from 'chai';
+import { injectable, inject, optional, Container, named } from '../../src/inversify';
 
-describe("Issue 1190", () => {
+describe('Issue 1190', () => {
 
   it('should inject a katana as default weapon to ninja', () => {
     const TYPES = {
-      Weapon: "Weapon"
+      Weapon: 'Weapon'
     };
 
     const TAG = {
-      throwable: "throwable"
+      throwable: 'throwable'
     };
 
     interface Weapon {
@@ -20,7 +20,7 @@ describe("Issue 1190", () => {
     class Katana implements Weapon {
       public name: string;
       public constructor() {
-        this.name = "Katana";
+        this.name = 'Katana';
       }
     }
 
@@ -28,7 +28,7 @@ describe("Issue 1190", () => {
     class Shuriken implements Weapon {
       public name: string;
       public constructor() {
-        this.name = "Shuriken";
+        this.name = 'Shuriken';
       }
     }
 
@@ -41,7 +41,7 @@ describe("Issue 1190", () => {
         @inject(TYPES.Weapon) @optional() katana: Weapon,
         @inject(TYPES.Weapon) @named(TAG.throwable) shuriken: Weapon
       ) {
-        this.name = "Ninja";
+        this.name = 'Ninja';
         this.katana = katana;
         this.shuriken = shuriken;
       }
@@ -52,9 +52,9 @@ describe("Issue 1190", () => {
     container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
     container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
 
-    container.bind<Ninja>("Ninja").to(Ninja);
+    container.bind<Ninja>('Ninja').to(Ninja);
 
-    const ninja = container.get<Ninja>("Ninja");
+    const ninja = container.get<Ninja>('Ninja');
 
     expect(ninja.katana).to.deep.eq(new Katana());
   });

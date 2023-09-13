@@ -1,10 +1,10 @@
 
-import { expect } from "chai";
-import { Binding } from "../../src/bindings/binding";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { BindingScopeEnum } from "../../src/constants/literal_types";
-import { Lookup } from "../../src/container/lookup";
-import { interfaces } from "../../src/interfaces/interfaces";
+import { expect } from 'chai';
+import { Binding } from '../../src/bindings/binding';
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { BindingScopeEnum } from '../../src/constants/literal_types';
+import { Lookup } from '../../src/container/lookup';
+import { interfaces } from '../../src/interfaces/interfaces';
 
 class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
   public readonly val: T;
@@ -16,55 +16,55 @@ class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
   }
 }
 
-describe("Lookup", () => {
+describe('Lookup', () => {
 
-  const invalid: any = null;
+  const invalid = null as unknown as interfaces.ServiceIdentifier<unknown>;
 
-  it("Should throw when invoking get, remove or hasKey with a null key", () => {
-    const lookup = new Lookup<unknown>();
+  it('Should throw when invoking get, remove or hasKey with a null key', () => {
+    const lookup = new Lookup();
     expect(() => { lookup.get(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
     expect(() => { lookup.remove(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
     expect(() => { lookup.hasKey(invalid); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
-  it("Should throw when attempting to add a null key", () => {
+  it('Should throw when attempting to add a null key', () => {
     const lookup = new Lookup<unknown>();
     expect(() => { lookup.add(invalid, new ClonableValue<number>(1)); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
-  it("Should throw when attempting to add a null value", () => {
+  it('Should throw when attempting to add a null value', () => {
     const lookup = new Lookup<unknown>();
-    expect(() => { lookup.add("TEST_KEY", null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
+    expect(() => { lookup.add('TEST_KEY', null); }).to.throw(ERROR_MSGS.NULL_ARGUMENT);
   });
 
-  it("Should be able to link multiple values to a string key", () => {
+  it('Should be able to link multiple values to a string key', () => {
     const lookup = new Lookup<unknown>();
-    const key = "TEST_KEY";
+    const key = 'TEST_KEY';
     lookup.add(key, new ClonableValue<number>(1));
     lookup.add(key, new ClonableValue<number>(2));
     const result = lookup.get(key);
     expect(result.length).to.eql(2);
   });
 
-  it("Should be able to link multiple values a symbol key", () => {
+  it('Should be able to link multiple values a symbol key', () => {
     const lookup = new Lookup<unknown>();
-    const key = Symbol.for("TEST_KEY");
+    const key = Symbol.for('TEST_KEY');
     lookup.add(key, new ClonableValue<number>(1));
     lookup.add(key, new ClonableValue<number>(2));
     const result = lookup.get(key);
     expect(result.length).to.eql(2);
   });
 
-  it("Should throws when key not found", () => {
+  it('Should throws when key not found', () => {
     const lookup = new Lookup<unknown>();
-    expect(() => { lookup.get("THIS_KEY_IS_NOT_AVAILABLE"); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
-    expect(() => { lookup.remove("THIS_KEY_IS_NOT_AVAILABLE"); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
+    expect(() => { lookup.get('THIS_KEY_IS_NOT_AVAILABLE'); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
+    expect(() => { lookup.remove('THIS_KEY_IS_NOT_AVAILABLE'); }).to.throw(ERROR_MSGS.KEY_NOT_FOUND);
   });
 
-  it("Should be clonable", () => {
+  it('Should be clonable', () => {
 
     const lookup = new Lookup<interfaces.Clonable<unknown>>();
-    const key1 = Symbol.for("TEST_KEY");
+    const key1 = Symbol.for('TEST_KEY');
 
     class Warrior {
       public kind: string;
@@ -76,8 +76,8 @@ describe("Lookup", () => {
       }
     }
 
-    lookup.add(key1, new Warrior("ninja"));
-    lookup.add(key1, new Warrior("samurai"));
+    lookup.add(key1, new Warrior('ninja'));
+    lookup.add(key1, new Warrior('samurai'));
 
     const copy = lookup.clone();
     expect(copy.hasKey(key1)).to.eql(true);
@@ -87,9 +87,9 @@ describe("Lookup", () => {
 
   });
 
-  it("Should use use the original non clonable entry if it is not clonable", () => {
+  it('Should use use the original non clonable entry if it is not clonable', () => {
     const lookup = new Lookup<unknown>();
-    const key1 = Symbol.for("TEST_KEY");
+    const key1 = Symbol.for('TEST_KEY');
 
     class Warrior {
       public kind: string;
@@ -97,7 +97,7 @@ describe("Lookup", () => {
         this.kind = kind;
       }
     }
-    const warrior = new Warrior("ninja")
+    const warrior = new Warrior('ninja')
     lookup.add(key1, warrior);
 
     const copy = lookup.clone();
@@ -105,12 +105,12 @@ describe("Lookup", () => {
 
   })
 
-  it("Should be able to remove a binding by a condition", () => {
+  it('Should be able to remove a binding by a condition', () => {
 
     const moduleId1 = 1;
     const moduleId2 = 2;
-    const warriorId = "Warrior";
-    const weaponId = "Weapon";
+    const warriorId = 'Warrior';
+    const weaponId = 'Weapon';
 
     const getLookup = () => {
 
