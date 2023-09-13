@@ -22,7 +22,7 @@
     "karma-mocha-reporter": "2.2.5",
     "karma-phantomjs-launcher": "1.0.4",
     "karma-sinon": "1.0.5",
-    "mocha": "9.1.2",
+    "mocha": "9.2.2",
     "nyc": "15.1.0",
     "publish-please": "5.5.2",
     "reflect-metadata": "0.1.13",
