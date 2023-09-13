@@ -1,4 +1,4 @@
-import { LazyServiceIdentifer } from '../annotation/lazy_service_identifier';
+import { LazyServiceIdentifier } from '../annotation/lazy_service_identifier';
 import * as ERROR_MSGS from '../constants/error_msgs';
 import { TargetTypeEnum } from '../constants/literal_types';
 import * as METADATA_KEY from '../constants/metadata_keys';
@@ -79,8 +79,8 @@ function getConstructorArgsAsTarget(
   const injectIdentifier = metadata.inject || metadata.multiInject;
   serviceIdentifier = (injectIdentifier ? injectIdentifier : serviceIdentifier) as interfaces.ServiceIdentifier<unknown> | undefined;
 
-  // we unwrap LazyServiceIdentifer wrappers to allow circular dependencies on symbols
-  if (serviceIdentifier instanceof LazyServiceIdentifer) {
+  // we unwrap LazyServiceIdentifier wrappers to allow circular dependencies on symbols
+  if (serviceIdentifier instanceof LazyServiceIdentifier) {
     serviceIdentifier = serviceIdentifier.unwrap();
   }
 
