@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { Container, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import { Container, injectable } from '../../src/inversify';
 
-describe("Issue 633", () => {
+describe('Issue 633', () => {
 
-  it("Should expose metadata through context", () => {
+  it('Should expose metadata through context', () => {
 
     @injectable()
     class Logger {
@@ -16,20 +16,20 @@ describe("Issue 633", () => {
     const container = new Container();
 
     const TYPE = {
-      Logger: Symbol.for("Logger")
+      Logger: Symbol.for('Logger')
     };
 
     container.bind<Logger>(TYPE.Logger).toDynamicValue((context) => {
       const namedMetadata = context.currentRequest.target.getNamedTag();
-      const named = namedMetadata ? namedMetadata.value : "default";
+      const named = namedMetadata ? namedMetadata.value : 'default';
       return new Logger(named as string);
     });
 
-    const logger1 = container.getNamed<Logger>(TYPE.Logger, "Name1");
-    const logger2 = container.getNamed<Logger>(TYPE.Logger, "Name2");
+    const logger1 = container.getNamed<Logger>(TYPE.Logger, 'Name1');
+    const logger2 = container.getNamed<Logger>(TYPE.Logger, 'Name2');
 
-    expect(logger1.named).to.eq("Name1");
-    expect(logger2.named).to.eq("Name2");
+    expect(logger1.named).to.eq('Name1');
+    expect(logger2.named).to.eq('Name2');
 
   });
 

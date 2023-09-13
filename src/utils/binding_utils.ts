@@ -1,7 +1,7 @@
-import { getServiceIdentifierAsString, interfaces } from "../inversify";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingTypeEnum } from "../constants/literal_types";
-import { FactoryType } from "./factory_type";
+import { getServiceIdentifierAsString, interfaces } from '../inversify';
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { BindingTypeEnum } from '../constants/literal_types';
+import { FactoryType } from './factory_type';
 
 export const multiBindToService = (container: interfaces.Container) =>
   (service: interfaces.ServiceIdentifier) =>
@@ -32,7 +32,7 @@ export const ensureFullyBound = <T = unknown>(binding: interfaces.Binding<T>): v
   }
   if (boundValue === null) {
     // The user probably created a binding but didn't finish it
-    // e.g. container.bind<T>("Something"); missing BindingToSyntax
+    // e.g. container.bind<T>('Something'); missing BindingToSyntax
     const serviceIdentifierAsString = getServiceIdentifierAsString(binding.serviceIdentifier);
     throw new Error(`${ERROR_MSGS.INVALID_BINDING_TYPE} ${serviceIdentifierAsString}`);
   }

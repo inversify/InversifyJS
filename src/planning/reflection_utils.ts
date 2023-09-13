@@ -1,11 +1,11 @@
-import { LazyServiceIdentifer } from "../annotation/lazy_service_identifier";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { TargetTypeEnum } from "../constants/literal_types";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { getFunctionName } from "../utils/serialization";
-import { Metadata } from "./metadata";
-import { Target } from "./target";
+import { LazyServiceIdentifier } from '../annotation/lazy_service_identifier';
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { TargetTypeEnum } from '../constants/literal_types';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { getFunctionName } from '../utils/serialization';
+import { Metadata } from './metadata';
+import { Target } from './target';
 
 function getDependencies(
   metadataReader: interfaces.MetadataReader, func: NewableFunction
@@ -76,11 +76,11 @@ function getConstructorArgsAsTarget(
   // Take types to be injected from user-generated metadata
   // if not available use compiler-generated metadata
   let serviceIdentifier = serviceIdentifiers[index];
-  const injectIdentifier = (metadata.inject || metadata.multiInject);
-  serviceIdentifier = (injectIdentifier) ? (injectIdentifier) : serviceIdentifier;
+  const injectIdentifier = metadata.inject || metadata.multiInject;
+  serviceIdentifier = (injectIdentifier ? injectIdentifier : serviceIdentifier) as interfaces.ServiceIdentifier<unknown> | undefined;
 
-  // we unwrap LazyServiceIdentifer wrappers to allow circular dependencies on symbols
-  if (serviceIdentifier instanceof LazyServiceIdentifer) {
+  // we unwrap LazyServiceIdentifier wrappers to allow circular dependencies on symbols
+  if (serviceIdentifier instanceof LazyServiceIdentifier) {
     serviceIdentifier = serviceIdentifier.unwrap();
   }
 
@@ -91,14 +91,18 @@ function getConstructorArgsAsTarget(
     const isObject = serviceIdentifier === Object;
     const isFunction = serviceIdentifier === Function;
     const isUndefined = serviceIdentifier === undefined;
-    const isUnknownType = (isObject || isFunction || isUndefined);
+    const isUnknownType = isObject || isFunction || isUndefined;
 
     if (!isBaseClass && isUnknownType) {
       const msg = `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument ${index} in class ${constructorName}.`;
       throw new Error(msg);
     }
 
-    const target = new Target(TargetTypeEnum.ConstructorArgument, metadata.targetName, serviceIdentifier as interfaces.ServiceIdentifier);
+    const target = new Target(
+      TargetTypeEnum.ConstructorArgument,
+      metadata.targetName as string | symbol,
+      serviceIdentifier as interfaces.ServiceIdentifier
+    );
     target.metadata = targetMetadata;
     return target;
   }
@@ -134,8 +138,8 @@ function getConstructorArgsAsTargets(
 }
 
 function _getServiceIdentifierForProperty(
-  inject: any,
-  multiInject: any,
+  inject: string | symbol | unknown,
+  multiInject: object | unknown,
   propertyName: string | symbol,
   className: string
 ) {
@@ -173,7 +177,11 @@ function getClassPropsAsTargets(
     const serviceIdentifier = _getServiceIdentifierForProperty(metadata.inject, metadata.multiInject, key, constructorName);
 
     // The property target
-    const target = new Target(TargetTypeEnum.ClassProperty, identifier, serviceIdentifier);
+    const target = new Target(
+      TargetTypeEnum.ClassProperty,
+      identifier as string | symbol,
+      serviceIdentifier as interfaces.ServiceIdentifier<unknown>
+    );
     target.metadata = targetMetadata;
     targets.push(target);
   }
@@ -232,7 +240,7 @@ function getBaseClassDependencyCount(
 function formatTargetMetadata(targetMetadata: interfaces.Metadata[]) {
 
   // Create map from array of metadata for faster access to metadata
-  const targetMetadataMap: any = {};
+  const targetMetadataMap: Record<string, unknown> = {};
   targetMetadata.forEach((m: interfaces.Metadata) => {
     targetMetadataMap[m.key.toString()] = m.value;
   });

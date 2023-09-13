@@ -1,21 +1,16 @@
-import { BindingCount } from "../bindings/binding_count";
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingTypeEnum, TargetTypeEnum } from "../constants/literal_types";
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { isStackOverflowExeption } from "../utils/exceptions";
-import {
-  circularDependencyToException,
-  getServiceIdentifierAsString,
-  listMetadataForTarget,
-  listRegisteredBindingsForServiceIdentifier
-} from "../utils/serialization";
-import { Context } from "./context";
-import { Metadata } from "./metadata";
-import { Plan } from "./plan";
-import { getBaseClassDependencyCount, getDependencies, getFunctionName } from "./reflection_utils";
-import { Request } from "./request";
-import { Target } from "./target";
+import { BindingCount } from '../bindings/binding_count';
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { BindingTypeEnum, TargetTypeEnum } from '../constants/literal_types';
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { isStackOverflowExeption } from '../utils/exceptions';
+import { circularDependencyToException, getServiceIdentifierAsString, listMetadataForTarget, listRegisteredBindingsForServiceIdentifier } from '../utils/serialization';
+import { Context } from './context';
+import { Metadata } from './metadata';
+import { Plan } from './plan';
+import { getBaseClassDependencyCount, getDependencies, getFunctionName } from './reflection_utils';
+import { Request } from './request';
+import { Target } from './target';
 
 function getBindingDictionary(cntnr: interfaces.Container): interfaces.Lookup<interfaces.Binding<unknown>> {
   return (cntnr as unknown as { _bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>> })._bindingDictionary;
@@ -57,7 +52,7 @@ function _getActiveBindings(
   // automatic binding
   if (bindings.length === BindingCount.NoBindingsAvailable &&
     context.container.options.autoBindInjectable &&
-    typeof target.serviceIdentifier === "function" &&
+    typeof target.serviceIdentifier === 'function' &&
     metadataReader.getConstructorMetadata(target.serviceIdentifier).compilerGeneratedMetadata
   ) {
     context.container.bind(target.serviceIdentifier).toSelf();
@@ -138,7 +133,7 @@ function _createSubRequests(
   target: interfaces.Target
 ) {
 
-  let activeBindings: interfaces.Binding<any>[];
+  let activeBindings: interfaces.Binding<unknown>[];
   let childRequest: interfaces.Request;
 
   if (parentRequest === null) {
@@ -176,16 +171,16 @@ function _createSubRequests(
 
     if (binding.type === BindingTypeEnum.Instance && binding.implementationType !== null) {
 
-      const dependencies = getDependencies(metadataReader, binding.implementationType);
+      const dependencies = getDependencies(metadataReader, binding.implementationType as NewableFunction);
 
       if (!context.container.options.skipBaseClassChecks) {
         // Throw if a derived class does not implement its constructor explicitly
         // We do this to prevent errors when a base class (parent) has dependencies
         // and one of the derived classes (children) has no dependencies
-        const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, binding.implementationType);
+        const baseClassDependencyCount = getBaseClassDependencyCount(metadataReader, binding.implementationType as NewableFunction);
 
         if (dependencies.length < baseClassDependencyCount) {
-          const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(binding.implementationType));
+          const error = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH(getFunctionName(binding.implementationType as NewableFunction));
           throw new Error(error);
         }
       }
@@ -234,7 +229,7 @@ function plan(
 ): interfaces.Context {
 
   const context = new Context(container);
-  const target = _createTarget(isMultiInject, targetType, serviceIdentifier, "", key, value);
+  const target = _createTarget(isMultiInject, targetType, serviceIdentifier, '', key, value);
 
   try {
     _createSubRequests(metadataReader, avoidConstraints, serviceIdentifier, context, null, target);
@@ -257,7 +252,7 @@ function createMockRequest(
   value: unknown
 ): interfaces.Request {
 
-  const target = new Target(TargetTypeEnum.Variable, "", serviceIdentifier, new Metadata(key, value));
+  const target = new Target(TargetTypeEnum.Variable, '', serviceIdentifier, new Metadata(key, value));
   const context = new Context(container);
   const request = new Request(serviceIdentifier, context, null, [], target);
   return request;

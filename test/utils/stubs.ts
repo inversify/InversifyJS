@@ -1,4 +1,4 @@
-import { inject, injectable, named, tagged } from "../../src/inversify";
+import { inject, injectable, named, tagged } from '../../src/inversify';
 
 export interface FooInterface {
   name: string;
@@ -19,7 +19,7 @@ export interface FooBarInterface {
 export class Foo implements FooInterface {
   public name: string;
   public constructor() {
-    this.name = "foo";
+    this.name = 'foo';
   }
   public greet(): string {
     return this.name;
@@ -29,7 +29,7 @@ export class Foo implements FooInterface {
 export class Bar implements BarInterface {
   public name: string;
   public constructor() {
-    this.name = "bar";
+    this.name = 'bar';
   }
   public greet(): string {
     return this.name;
@@ -41,8 +41,8 @@ export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
   public constructor(
-    @inject("FooInterface") foo: FooInterface,
-    @inject("BarInterface") bar: BarInterface
+    @inject('FooInterface') foo: FooInterface,
+    @inject('BarInterface') bar: BarInterface
   ) {
     this.foo = foo;
     this.bar = bar;
@@ -69,8 +69,8 @@ export class DecoratedWarriorWithoutInjections { }
 @injectable()
 export class Warrior {
   public constructor(
-    @inject("Katana") primary: Katana,
-    @inject("Shuriken") secondary: Shuriken
+    @inject('Katana') primary: Katana,
+    @inject('Shuriken') secondary: Shuriken
   ) {
     // ...
   }
@@ -95,8 +95,8 @@ export class MissingInjectionWarrior {
 @injectable()
 export class NamedWarrior {
   public constructor(
-    @inject("Katana") @named("strong") primary: Weapon,
-    @inject("Shuriken") @named("weak") secondary: Weapon
+    @inject('Katana') @named('strong') primary: Weapon,
+    @inject('Shuriken') @named('weak') secondary: Weapon
   ) {
     // ...
   }
@@ -105,8 +105,8 @@ export class NamedWarrior {
 @injectable()
 export class TaggedWarrior {
   public constructor(
-    @inject("Katana") @tagged("power", 5) primary: Weapon,
-    @inject("Shuriken") @tagged("power", 1) secondary: Weapon
+    @inject('Katana') @tagged('power', 5) primary: Weapon,
+    @inject('Shuriken') @tagged('power', 1) secondary: Weapon
   ) {
     // ...
   }

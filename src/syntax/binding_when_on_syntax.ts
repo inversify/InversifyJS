@@ -1,6 +1,6 @@
-import { interfaces } from "../interfaces/interfaces";
-import { BindingOnSyntax } from "./binding_on_syntax";
-import { BindingWhenSyntax } from "./binding_when_syntax";
+import { interfaces } from '../interfaces/interfaces';
+import { BindingOnSyntax } from './binding_on_syntax';
+import { BindingWhenSyntax } from './binding_when_syntax';
 
 class BindingWhenOnSyntax<T> implements interfaces.BindingWhenSyntax<T>, interfaces.BindingOnSyntax<T> {
 

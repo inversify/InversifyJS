@@ -1,6 +1,6 @@
-import * as METADATA_KEY from "../constants/metadata_keys";
-import { interfaces } from "../interfaces/interfaces";
-import { Metadata } from "../planning/metadata";
+import * as METADATA_KEY from '../constants/metadata_keys';
+import { interfaces } from '../interfaces/interfaces';
+import { Metadata } from '../planning/metadata';
 
 const traverseAncerstors = (
   request: interfaces.Request,
@@ -37,7 +37,7 @@ const typeConstraint = (type: (NewableFunction | string)) => (request: interface
 
   if (request !== null) {
     binding = request.bindings[0] as interfaces.Binding<unknown>;
-    if (typeof type === "string") {
+    if (typeof type === 'string') {
       const serviceIdentifier = binding.serviceIdentifier;
       return serviceIdentifier === type;
     } else {
