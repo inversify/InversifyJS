@@ -14,7 +14,7 @@ jobs:
       - uses: nuget/setup-nuget@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 18
       - run: npm install
       - run: nuget install Selenium.WebDriver.IEDriver -Version 4.0.0.1
       - run: npm run test:browser
@@ -61,17 +61,17 @@ jobs:
       TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
     steps:
-    - name: Checkout Project
-      uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: npm
-        registry-url: https://registry.npmjs.org/
-    - run: npm cache clean --force
-    - run: npm ci
-    - run: npm run build --if-present
+      - name: Checkout Project
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+      - run: npm cache clean --force
+      - run: npm ci
+      - run: npm run build --if-present
 
   Upload_Coverage_Report:
     name: Upload coverage report to codecov
