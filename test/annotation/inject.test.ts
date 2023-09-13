@@ -9,7 +9,7 @@ declare function __param(paramIndex: number, decorator: ParameterDecorator): Cla
 import { expect } from 'chai';
 import { decorate } from '../../src/annotation/decorator_utils';
 import { inject } from '../../src/annotation/inject';
-import { LazyServiceIdentifer, ServiceIdentifierOrFunc } from '../../src/annotation/lazy_service_identifier';
+import { LazyServiceIdentifier, ServiceIdentifierOrFunc } from '../../src/annotation/lazy_service_identifier';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import { interfaces } from '../../src/interfaces/interfaces';
@@ -22,7 +22,7 @@ class Katana implements Katana { }
 class Shuriken implements Shuriken { }
 class Sword implements Sword { }
 
-const lazySwordId = new LazyServiceIdentifer(() => 'Sword');
+const lazySwordId = new LazyServiceIdentifier(() => 'Sword');
 
 class DecoratedWarrior {
 
@@ -204,7 +204,7 @@ describe('@inject', () => {
     }).to.throw(`${ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION('WithUndefinedInject')}`)
   });
 
-  it('Should unwrap LazyServiceIdentifer', () => {
+  it('Should unwrap LazyServiceIdentifier', () => {
     const unwrapped = lazySwordId.unwrap();
     expect(unwrapped).to.be.equal('Sword');
   });
