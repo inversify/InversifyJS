@@ -1,5 +1,3 @@
-src
-**/*.js.map
 test
 typings
 bundled
