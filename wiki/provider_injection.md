@@ -18,7 +18,7 @@ class Ninja implements Ninja {
 	    @inject("Shuriken") shuriken: Shuriken
     ) {
         this.katanaProvider = katanaProvider;
-        this.katana= null;
+        this.katana = null;
         this.shuriken = shuriken;
     }
 

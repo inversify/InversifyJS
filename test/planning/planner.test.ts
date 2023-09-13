@@ -1,19 +1,19 @@
-import { expect } from "chai";
-import * as sinon from "sinon";
-import { inject } from "../../src/annotation/inject";
-import { injectable } from "../../src/annotation/injectable";
-import { multiInject } from "../../src/annotation/multi_inject";
-import { tagged } from "../../src/annotation/tagged";
-import { targetName } from "../../src/annotation/target_name";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { TargetTypeEnum } from "../../src/constants/literal_types";
-import { Container } from "../../src/container/container";
-import { interfaces } from "../../src/interfaces/interfaces";
-import { named } from "../../src/inversify";
-import { MetadataReader } from "../../src/planning/metadata_reader";
-import { plan } from "../../src/planning/planner";
+import { expect } from 'chai';
+import * as sinon from 'sinon';
+import { inject } from '../../src/annotation/inject';
+import { injectable } from '../../src/annotation/injectable';
+import { multiInject } from '../../src/annotation/multi_inject';
+import { tagged } from '../../src/annotation/tagged';
+import { targetName } from '../../src/annotation/target_name';
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { TargetTypeEnum } from '../../src/constants/literal_types';
+import { Container } from '../../src/container/container';
+import { interfaces } from '../../src/interfaces/interfaces';
+import { named } from '../../src/inversify';
+import { MetadataReader } from '../../src/planning/metadata_reader';
+import { plan } from '../../src/planning/planner';
 
-describe("Planner", () => {
+describe('Planner', () => {
 
   let sandbox: sinon.SinonSandbox;
 
@@ -25,7 +25,7 @@ describe("Planner", () => {
     sandbox.restore();
   });
 
-  it("Should be able to create a basic plan", () => {
+  it('Should be able to create a basic plan', () => {
 
     interface KatanaBlade { }
 
@@ -44,8 +44,8 @@ describe("Planner", () => {
       public handler: KatanaHandler;
       public blade: KatanaBlade;
       public constructor(
-        @inject("KatanaHandler") @targetName("handler") handler: KatanaHandler,
-        @inject("KatanaBlade") @targetName("blade") blade: KatanaBlade
+        @inject('KatanaHandler') @targetName('handler') handler: KatanaHandler,
+        @inject('KatanaBlade') @targetName('blade') blade: KatanaBlade
       ) {
         this.handler = handler;
         this.blade = blade;
@@ -64,19 +64,19 @@ describe("Planner", () => {
       public katana: Katana;
       public shuriken: Shuriken;
       public constructor(
-        @inject("Katana") @targetName("katana") katana: Katana,
-        @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+        @inject('Katana') @targetName('katana') katana: Katana,
+        @inject('Shuriken') @targetName('shuriken') shuriken: Shuriken
       ) {
         this.katana = katana;
         this.shuriken = shuriken;
       }
     }
 
-    const ninjaId = "Ninja";
-    const shurikenId = "Shuriken";
-    const katanaId = "Katana";
-    const katanaHandlerId = "KatanaHandler";
-    const katanaBladeId = "KatanaBlade";
+    const ninjaId = 'Ninja';
+    const shurikenId = 'Shuriken';
+    const katanaId = 'Katana';
+    const katanaHandlerId = 'KatanaHandler';
+    const katanaBladeId = 'KatanaBlade';
 
     const container = new Container();
     container.bind<Ninja>(ninjaId).to(Ninja);
@@ -119,7 +119,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should throw when circular dependencies found", () => {
+  it('Should throw when circular dependencies found', () => {
 
     interface IA { }
     interface IB { }
@@ -130,7 +130,7 @@ describe("Planner", () => {
     class D implements ID {
       public a: IA;
       public constructor(
-        @inject("A") a: IA
+        @inject('A') a: IA
       ) { // circular dependency
         this.a = a;
       }
@@ -140,7 +140,7 @@ describe("Planner", () => {
     class C implements IC {
       public d: ID;
       public constructor(
-        @inject("D") d: ID
+        @inject('D') d: ID
       ) {
         this.d = d;
       }
@@ -154,18 +154,18 @@ describe("Planner", () => {
       public b: IB;
       public c: IC;
       public constructor(
-        @inject("B") b: IB,
-        @inject("C") c: IC
+        @inject('B') b: IB,
+        @inject('C') c: IC
       ) {
         this.b = b;
         this.c = c;
       }
     }
 
-    const aId = "A";
-    const bId = "B";
-    const cId = "C";
-    const dId = "D";
+    const aId = 'A';
+    const bId = 'B';
+    const cId = 'C';
+    const dId = 'D';
 
     const container = new Container();
     container.bind<IA>(aId).to(A);
@@ -183,7 +183,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should only plan sub-dependencies when binding type is BindingType.Instance", () => {
+  it('Should only plan sub-dependencies when binding type is BindingType.Instance', () => {
 
     interface KatanaBlade { }
 
@@ -202,8 +202,8 @@ describe("Planner", () => {
       public handler: KatanaHandler;
       public blade: KatanaBlade;
       public constructor(
-        @inject("KatanaHandler") @targetName("handler") handler: KatanaHandler,
-        @inject("KatanaBlade") @targetName("blade") blade: KatanaBlade
+        @inject('KatanaHandler') @targetName('handler') handler: KatanaHandler,
+        @inject('KatanaBlade') @targetName('blade') blade: KatanaBlade
       ) {
         this.handler = handler;
         this.blade = blade;
@@ -222,20 +222,20 @@ describe("Planner", () => {
       public katanaFactory: interfaces.Factory<Katana>;
       public shuriken: Shuriken;
       public constructor(
-        @inject("Factory<Katana>") @targetName("katanaFactory") katanaFactory: interfaces.Factory<Katana>,
-        @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+        @inject('Factory<Katana>') @targetName('katanaFactory') katanaFactory: interfaces.Factory<Katana>,
+        @inject('Shuriken') @targetName('shuriken') shuriken: Shuriken
       ) {
         this.katanaFactory = katanaFactory;
         this.shuriken = shuriken;
       }
     }
 
-    const ninjaId = "Ninja";
-    const shurikenId = "Shuriken";
-    const katanaId = "Katana";
-    const katanaHandlerId = "KatanaHandler";
-    const katanaBladeId = "KatanaBlade";
-    const katanaFactoryId = "Factory<Katana>";
+    const ninjaId = 'Ninja';
+    const shurikenId = 'Shuriken';
+    const katanaId = 'Katana';
+    const katanaHandlerId = 'KatanaHandler';
+    const katanaBladeId = 'KatanaBlade';
+    const katanaFactoryId = 'Factory<Katana>';
 
     const container = new Container();
     container.bind<Ninja>(ninjaId).to(Ninja);
@@ -258,7 +258,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should generate plans with multi-injections", () => {
+  it('Should generate plans with multi-injections', () => {
 
     interface Weapon { }
 
@@ -275,15 +275,15 @@ describe("Planner", () => {
       public katana: Weapon;
       public shuriken: Weapon;
       public constructor(
-        @multiInject("Weapon") @targetName("weapons") weapons: Weapon[]
+        @multiInject('Weapon') @targetName('weapons') weapons: Weapon[]
       ) {
         this.katana = weapons[0] as Weapon;
         this.shuriken = weapons[1] as Weapon;
       }
     }
 
-    const ninjaId = "Ninja";
-    const weaponId = "Weapon";
+    const ninjaId = 'Ninja';
+    const weaponId = 'Weapon';
 
     const container = new Container();
     container.bind<Ninja>(ninjaId).to(Ninja);
@@ -298,36 +298,38 @@ describe("Planner", () => {
     expect(actualPlan.rootRequest.target.isArray()).eql(false);
 
     // root request should only have one child request with target weapons/Weapon[]
-    expect(actualPlan.rootRequest.childRequests[0]?.serviceIdentifier).eql("Weapon");
+    expect(actualPlan.rootRequest.childRequests[0]?.serviceIdentifier).eql('Weapon');
     expect(actualPlan.rootRequest.childRequests[1]).eql(undefined);
-    expect(actualPlan.rootRequest.childRequests[0]?.target.name.value()).eql("weapons");
-    expect(actualPlan.rootRequest.childRequests[0]?.target.serviceIdentifier).eql("Weapon");
+    expect(actualPlan.rootRequest.childRequests[0]?.target.name.value()).eql('weapons');
+    expect(actualPlan.rootRequest.childRequests[0]?.target.serviceIdentifier).eql('Weapon');
     expect(actualPlan.rootRequest.childRequests[0]?.target.isArray()).eql(true);
 
     // child request should have two child requests with targets weapons/Weapon[] but bindings Katana and Shuriken
     expect(actualPlan.rootRequest.childRequests[0]?.childRequests.length).eql(2);
 
     expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.serviceIdentifier).eql(weaponId);
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.target.name.value()).eql("weapons");
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.target.serviceIdentifier).eql("Weapon");
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.target.name.value()).eql('weapons');
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.target.serviceIdentifier).eql('Weapon');
     expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.target.isArray()).eql(true);
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.serviceIdentifier).eql("Weapon");
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.bindings[0]?.serviceIdentifier).eql("Weapon");
-    const shurikenImplementationType: any = actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.bindings[0]?.implementationType;
-    expect(shurikenImplementationType.name).eql("Shuriken");
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.serviceIdentifier).eql('Weapon');
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.bindings[0]?.serviceIdentifier).eql('Weapon');
+    const shurikenImplementationType = actualPlan.rootRequest.childRequests[0]?.childRequests[0]?.bindings[0]?.implementationType as
+      { name: string };
+    expect(shurikenImplementationType.name).eql('Shuriken');
 
     expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.serviceIdentifier).eql(weaponId);
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.target.name.value()).eql("weapons");
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.target.serviceIdentifier).eql("Weapon");
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.target.name.value()).eql('weapons');
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.target.serviceIdentifier).eql('Weapon');
     expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.target.isArray()).eql(true);
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.serviceIdentifier).eql("Weapon");
-    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.bindings[0]?.serviceIdentifier).eql("Weapon");
-    const katanaImplementationType: any = actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.bindings[0]?.implementationType;
-    expect(katanaImplementationType.name).eql("Katana");
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.serviceIdentifier).eql('Weapon');
+    expect(actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.bindings[0]?.serviceIdentifier).eql('Weapon');
+    const katanaImplementationType = actualPlan.rootRequest.childRequests[0]?.childRequests[1]?.bindings[0]?.implementationType as
+      { name: string };
+    expect(katanaImplementationType.name).eql('Katana');
 
   });
 
-  it("Should throw when no matching bindings are found", () => {
+  it('Should throw when no matching bindings are found', () => {
 
     interface Katana { }
     @injectable()
@@ -344,16 +346,16 @@ describe("Planner", () => {
       public katana: Katana;
       public shuriken: Shuriken;
       public constructor(
-        @inject("Katana") @targetName("katana") katana: Katana,
-        @inject("Shuriken") @targetName("shuriken") shuriken: Shuriken
+        @inject('Katana') @targetName('katana') katana: Katana,
+        @inject('Shuriken') @targetName('shuriken') shuriken: Shuriken
       ) {
         this.katana = katana;
         this.shuriken = shuriken;
       }
     }
 
-    const ninjaId = "Ninja";
-    const shurikenId = "Shuriken";
+    const ninjaId = 'Ninja';
+    const shurikenId = 'Shuriken';
 
     const container = new Container();
     container.bind<Ninja>(ninjaId).to(Ninja);
@@ -367,7 +369,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should throw when an ambiguous match is found", () => {
+  it('Should throw when an ambiguous match is found', () => {
 
     interface Katana { }
 
@@ -387,17 +389,17 @@ describe("Planner", () => {
       public katana: Katana;
       public shuriken: Shuriken;
       public constructor(
-        @inject("Katana") katana: Katana,
-        @inject("Shuriken") shuriken: Shuriken
+        @inject('Katana') katana: Katana,
+        @inject('Shuriken') shuriken: Shuriken
       ) {
         this.katana = katana;
         this.shuriken = shuriken;
       }
     }
 
-    const ninjaId = "Ninja";
-    const katanaId = "Katana";
-    const shurikenId = "Shuriken";
+    const ninjaId = 'Ninja';
+    const katanaId = 'Katana';
+    const shurikenId = 'Shuriken';
 
     const container = new Container();
     container.bind<Ninja>(ninjaId).to(Ninja);
@@ -413,7 +415,7 @@ describe("Planner", () => {
 
   });
 
-  it("Should apply constrains when an ambiguous match is found", () => {
+  it('Should apply constrains when an ambiguous match is found', () => {
 
     interface Weapon { }
 
@@ -425,16 +427,16 @@ describe("Planner", () => {
 
     interface Ninja { }
 
-    const ninjaId = "Ninja";
-    const weaponId = "Weapon";
+    const ninjaId = 'Ninja';
+    const weaponId = 'Weapon';
 
     @injectable()
     class Ninja implements Ninja {
       public katana: Weapon;
       public shuriken: Weapon;
       public constructor(
-        @inject(weaponId) @targetName("katana") @tagged("canThrow", false) katana: Weapon,
-        @inject(weaponId) @targetName("shuriken") @tagged("canThrow", true) shuriken: Weapon
+        @inject(weaponId) @targetName('katana') @tagged('canThrow', false) katana: Weapon,
+        @inject(weaponId) @targetName('shuriken') @tagged('canThrow', true) shuriken: Weapon
       ) {
         this.katana = katana;
         this.shuriken = shuriken;
@@ -443,8 +445,8 @@ describe("Planner", () => {
 
     const container = new Container();
     container.bind<Ninja>(ninjaId).to(Ninja);
-    container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
-    container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+    container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged('canThrow', false);
+    container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged('canThrow', true);
 
     const actualPlan = plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, ninjaId).plan;
 
@@ -455,38 +457,38 @@ describe("Planner", () => {
 
     // root request should have 2 child requests
     expect(actualPlan.rootRequest.childRequests[0]?.serviceIdentifier).eql(weaponId);
-    expect(actualPlan.rootRequest.childRequests[0]?.target.name.value()).eql("katana");
+    expect(actualPlan.rootRequest.childRequests[0]?.target.name.value()).eql('katana');
     expect(actualPlan.rootRequest.childRequests[0]?.target.serviceIdentifier).eql(weaponId);
 
     expect(actualPlan.rootRequest.childRequests[1]?.serviceIdentifier).eql(weaponId);
-    expect(actualPlan.rootRequest.childRequests[1]?.target.name.value()).eql("shuriken");
+    expect(actualPlan.rootRequest.childRequests[1]?.target.name.value()).eql('shuriken');
     expect(actualPlan.rootRequest.childRequests[1]?.target.serviceIdentifier).eql(weaponId);
 
     expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
 
   });
 
-  it("Should throw when a class has a missing @injectable annotation", () => {
+  it('Should throw when a class has a missing @injectable annotation', () => {
 
     interface Weapon { }
 
     class Katana implements Weapon { }
 
     const container = new Container();
-    container.bind<Weapon>("Weapon").to(Katana);
+    container.bind<Weapon>('Weapon').to(Katana);
 
     const throwFunction = () => {
-      plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, "Weapon");
+      plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, 'Weapon');
     };
 
     expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`);
 
   });
 
-  it("Should throw when apply a metadata decorator without @inject or @multiInject", () => {
+  it('Should throw when apply a metadata decorator without @inject or @multiInject', () => {
     @injectable()
     class Ninja {
-      @named("name")
+      @named('name')
       // tslint:disable-next-line: no-empty
       set weapon(weapon: Weapon) {
 
@@ -497,7 +499,7 @@ describe("Planner", () => {
     class Katana implements Weapon { }
 
     const container = new Container();
-    container.bind<Weapon>("Weapon").to(Katana);
+    container.bind<Weapon>('Weapon').to(Katana);
     container.bind(Ninja).toSelf();
 
     const throwFunction = () => {
@@ -507,7 +509,7 @@ describe("Planner", () => {
     expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property weapon in class Ninja.`);
   });
 
-  it("Should ignore checking base classes for @injectable when skipBaseClassChecks is set on the container", () => {
+  it('Should ignore checking base classes for @injectable when skipBaseClassChecks is set on the container', () => {
     class Test { }
 
     @injectable()
@@ -518,7 +520,7 @@ describe("Planner", () => {
     container.get(Test2);
   });
 
-  it("Should ignore checking base classes for @injectable on resolve when skipBaseClassChecks is set", () => {
+  it('Should ignore checking base classes for @injectable on resolve when skipBaseClassChecks is set', () => {
     class Test { }
 
     @injectable()
@@ -528,7 +530,7 @@ describe("Planner", () => {
     container.resolve(Test2);
   });
 
-  it("Should throw when an class has a missing @inject annotation", () => {
+  it('Should throw when an class has a missing @inject annotation', () => {
 
     interface Sword { }
 
@@ -550,18 +552,18 @@ describe("Planner", () => {
     }
 
     const container = new Container();
-    container.bind<Warrior>("Warrior").to(Ninja);
-    container.bind<Sword>("Sword").to(Katana);
+    container.bind<Warrior>('Warrior').to(Ninja);
+    container.bind<Sword>('Sword').to(Katana);
 
     const throwFunction = () => {
-      plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, "Warrior");
+      plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, 'Warrior');
     };
 
     expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);
 
   });
 
-  it("Should throw when a function has a missing @injectable annotation", () => {
+  it('Should throw when a function has a missing @injectable annotation', () => {
 
     interface Katana { }
 
@@ -583,12 +585,12 @@ describe("Planner", () => {
     }
 
     const container = new Container();
-    container.bind<Ninja>("Ninja").to(Ninja);
-    container.bind<Katana>("Katana").to(Katana);
-    container.bind<Katana>("Factory<Katana>").to(Katana);
+    container.bind<Ninja>('Ninja').to(Ninja);
+    container.bind<Katana>('Katana').to(Katana);
+    container.bind<Katana>('Factory<Katana>').to(Katana);
 
     const throwFunction = () => {
-      plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, "Ninja");
+      plan(new MetadataReader(), container, false, TargetTypeEnum.Variable, 'Ninja');
     };
 
     expect(throwFunction).to.throw(`${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`);

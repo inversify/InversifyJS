@@ -1,21 +1,18 @@
-# InversifyJS
-
-[![Join the chat at https://discord.gg/jXcMagAPnm](https://img.shields.io/discord/816766547879657532?label=discord%20chat&logo=discord)](https://discord.gg/jXcMagAPnm)
-![Build Status](https://github.com/inversify/InversifyJS/actions/workflows/node.js.yml/badge.svg)
-
-[![Test Coverage](https://codeclimate.com/github/inversify/InversifyJS/badges/coverage.svg)](https://codeclimate.com/github/inversify/InversifyJS/coverage)
-[![npm version](https://badge.fury.io/js/inversify.svg)](http://badge.fury.io/js/inversify)
-[![Dependencies](https://david-dm.org/inversify/InversifyJS.svg)](https://david-dm.org/inversify/InversifyJS#info=dependencies)
-[![img](https://david-dm.org/inversify/InversifyJS/dev-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=devDependencies)
-[![img](https://david-dm.org/inversify/InversifyJS/peer-status.svg)](https://david-dm.org/inversify/InversifyJS/#info=peerDependenciess)
-[![Known Vulnerabilities](https://snyk.io/test/github/inversify/InversifyJS/badge.svg)](https://snyk.io/test/github/inversify/InversifyJS)
-[![Twitter Follow](https://img.shields.io/twitter/follow/InversifyJS.svg?style=flat&maxAge=86400)](https://twitter.com/inversifyjs)
-
-[![NPM](https://nodei.co/npm/inversify.png?downloads=true&downloadRank=true)](https://nodei.co/npm/inversify/)
-[![NPM](https://nodei.co/npm-dl/inversify.png?months=9&height=3)](https://nodei.co/npm/inversify/)
-
 ![](https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/cover.jpg)
 
+<p align="center">
+	<a href="https://www.npmjs.com/package/inversify" target="__blank"><img src="https://img.shields.io/npm/v/inversify?color=0476bc&label=" alt="NPM version"></a>
+	<a href="https://www.npmjs.com/package/inversify" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/inversify?color=3890aa&label="></a>
+	<a href="https://github.com/inversify/InversifyJS#-the-inversifyjs-features-and-api" target="__blank"><img src="https://img.shields.io/static/v1?label=&message=docs&color=1e8a7a" alt="Docs"></a>
+	<a href="https://codecov.io/gh/inversify/InversifyJS" target="__blank"><img alt="Codecov" src="https://codecov.io/gh/inversify/InversifyJS/branch/master/graph/badge.svg?token=KfAKzuGs01"></a>
+	<br>
+	<br>
+	<a href="https://github.com/inversify/InversifyJS" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/inversify/InversifyJS?style=social"></a>
+	<!--<a href="https://twitter.com/inversifyjs" target="__blank"><img alt="Twitter" src="https://img.shields.io/twitter/follow/InversifyJS.svg?maxAge=86400&style=social"></a>-->
+	<a href="https://discord.gg/jXcMagAPnm" target="__blank"><img alt="Discord Server" src="https://img.shields.io/discord/816766547879657532?style=social&logo=discord"></a>
+</p>
+
+# InversifyJS
 A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
 
 ## About
@@ -56,20 +53,24 @@ InversifyJS has been developed with 4 main goals:
 
 [<img src="https://avatars0.githubusercontent.com/u/6154722?s=200&v=4" width="100" />](https://opensource.microsoft.com/)[<img src="https://avatars2.githubusercontent.com/u/69631?s=200&v=4" width="100" />](https://code.facebook.com/projects/1021334114569758/nuclide/)[<img src="https://avatars0.githubusercontent.com/u/2232217?s=200&v=4" width="100" />](https://aws.github.io/aws-amplify/)[<img src="https://avatars0.githubusercontent.com/u/1520648?s=200&v=4" width="100" />](https://www.plainconcepts.com/)[<img src="https://avatars3.githubusercontent.com/u/6962987?s=200&v=4" width="100" />](https://api.slack.com/)[<img src="https://pbs.twimg.com/profile_images/827249559046909954/SyaBPcH8_400x400.jpg" width="100" />](http://acia.aon.com/index.php/home/) [<img src="https://avatars3.githubusercontent.com/u/114767?s=200&v=4" width="100" />](https://www.lonelyplanet.com/) [<img src="https://avatars0.githubusercontent.com/u/25283328?s=200&v=4" width="100" />](https://jincor.com/) [<img src="https://avatars1.githubusercontent.com/u/1957282?s=200&v=4" width="100" />](https://www.web-computing.de/) [<img src="https://avatars1.githubusercontent.com/u/17648048?s=200&v=4" width="100" />](https://dcos.io/) [<img src="https://avatars0.githubusercontent.com/u/16970371?s=200&v=4" width="100" />](https://typefox.io/) [<img src="https://avatars0.githubusercontent.com/u/18010308?s=200&v=4" width="100" />](https://code4.ro/) [<img src="https://user-images.githubusercontent.com/10656223/33888109-fae0852e-df43-11e7-97f6-9db543da0bde.png" width="100">](http://www.baidu.com/) [<img src="https://avatars2.githubusercontent.com/u/8085382?s=200&v=4" width="100" />](https://www.imdada.cn/) [<img src="https://avatars2.githubusercontent.com/u/17041151?s=200&v=4" width="100" />](https://www.ato.gov.au/) [<img src="https://avatars1.githubusercontent.com/u/14963540?s=200&v=4" width="100" />](https://www.kaneoh.com/) [<img src="https://avatars0.githubusercontent.com/u/26021686?s=200&v=4" width="100" />](https://particl.io/) [<img src="https://avatars2.githubusercontent.com/u/24523195?s=200&v=4" width="100" />](https://slackmap.com/) [<img src="https://avatars3.githubusercontent.com/u/16556899?s=200&v=4" width="100" />](https://www.go1.com/) [<img src="https://avatars3.githubusercontent.com/u/23475730?s=200&v=4" width="100" />](http://www.stellwagengroup.com/stellwagen-technology/) [<img src="https://avatars1.githubusercontent.com/u/15262567?s=200&v=4" width="100" />](https://www.edrlab.org/) [<img src="https://avatars1.githubusercontent.com/u/10072104?s=200&v=4" width="100" />](https://www.goodgamestudios.com/) [<img src="https://avatars2.githubusercontent.com/u/13613760?s=200&v=4" width="100" />](https://freshfox.at/) [<img src="https://avatars1.githubusercontent.com/u/864482?s=200&v=4" width="100" />](https://schubergphilis.com/)
 
-## Installation
+## 📦 Installation
 
-You can get the latest release and the type definitions using npm:
+You can get the latest release and the type definitions using your preferred package manager:
 
+```sh
+> npm install inversify reflect-metadata --save
+> yarn add inversify reflect-metadata
+> pnpm add inversify reflect-metadata
 ```
-$ npm install inversify reflect-metadata --save
-```
+
+> ❕**Hint!** If you want to use a more type-safe version of reflect-metadata, try [`@abraham/reflection`](https://www.npmjs.com/package/@abraham/reflection)
 
 The InversifyJS type definitions are included in the inversify npm package.
 
 > :warning: **Important!** InversifyJS requires TypeScript >= 4.4 and the `experimentalDecorators`, `emitDecoratorMetadata`, `types` and `lib`
 compilation options in your `tsconfig.json` file.
 
-```js
+```json
 {
     "compilerOptions": {
         "target": "es5",
@@ -241,7 +242,7 @@ As we can see the `Katana` and `Shuriken` were successfully resolved and injecte
 InversifyJS supports ES5 and ES6 and can work without TypeScript.
 Head to the [**JavaScript example**](https://github.com/inversify/InversifyJS/blob/master/wiki/basic_js_example.md) to learn more!
 
-## The InversifyJS Features and API
+## 🚀 The InversifyJS Features and API
 Let's take a look to the InversifyJS features!
 
 - [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md)
@@ -274,7 +275,7 @@ Let's take a look to the InversifyJS features!
 
 Please refer to the [wiki](https://github.com/inversify/InversifyJS/blob/master/wiki/readme.md) for additional details.
 
-## Ecosystem
+## 🧩 Ecosystem
 In order to provide a state of the art development experience we are also working on:
 
 - [Middleware extensions](https://github.com/inversify/InversifyJS/blob/master/wiki/ecosystem.md#extensions).

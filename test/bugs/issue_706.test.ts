@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import { BindingScopeEnum, Container, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import { BindingScopeEnum, Container, injectable } from '../../src/inversify';
 
-describe("Issue 706", () => {
+describe('Issue 706', () => {
 
-  it("Should expose BindingScopeEnum as part of the public API", () => {
+  it('Should expose BindingScopeEnum as part of the public API', () => {
 
     @injectable()
     class SomeClass {
@@ -18,7 +18,7 @@ describe("Issue 706", () => {
     });
 
     const TYPE = {
-      SomeClass: Symbol.for("SomeClass")
+      SomeClass: Symbol.for('SomeClass')
     };
 
     container.bind<SomeClass>(TYPE.SomeClass).to(SomeClass);

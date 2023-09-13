@@ -1,17 +1,17 @@
-import { expect } from "chai";
-import * as ERROR_MSGS from "../../src/constants/error_msgs";
-import { Container, inject, injectable } from "../../src/inversify";
+import { expect } from 'chai';
+import * as ERROR_MSGS from '../../src/constants/error_msgs';
+import { Container, inject, injectable } from '../../src/inversify';
 
-describe("Issue 543", () => {
+describe('Issue 543', () => {
 
-  it("Should throw correct circular dependency path", () => {
+  it('Should throw correct circular dependency path', () => {
 
     const TYPE = {
-      Child: Symbol.for("Child"),
-      Child2: Symbol.for("Child2"),
-      Circular: Symbol.for("Circular"),
-      Irrelevant: Symbol.for("Irrelevant1"),
-      Root: Symbol.for("Root")
+      Child: Symbol.for('Child'),
+      Child2: Symbol.for('Child2'),
+      Circular: Symbol.for('Circular'),
+      Irrelevant: Symbol.for('Irrelevant1'),
+      Root: Symbol.for('Root')
     };
 
     interface IIrrelevant { }

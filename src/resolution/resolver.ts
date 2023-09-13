@@ -1,12 +1,12 @@
-import * as ERROR_MSGS from "../constants/error_msgs";
-import { BindingTypeEnum } from "../constants/literal_types";
-import { interfaces } from "../interfaces/interfaces";
-import { getBindingDictionary } from "../planning/planner";
-import { saveToScope, tryGetFromScope } from "../scope/scope";
-import { isPromise } from "../utils/async";
-import { getFactoryDetails, ensureFullyBound } from "../utils/binding_utils";
-import { tryAndThrowErrorIfStackOverflow } from "../utils/exceptions";
-import { resolveInstance } from "./instantiation";
+import * as ERROR_MSGS from '../constants/error_msgs';
+import { BindingTypeEnum } from '../constants/literal_types';
+import { interfaces } from '../interfaces/interfaces';
+import { getBindingDictionary } from '../planning/planner';
+import { saveToScope, tryGetFromScope } from '../scope/scope';
+import { isPromise } from '../utils/async';
+import { getFactoryDetails, ensureFullyBound } from '../utils/binding_utils';
+import { tryAndThrowErrorIfStackOverflow } from '../utils/exceptions';
+import { resolveInstance } from './instantiation';
 
 const _resolveRequest = <T>(requestScope: interfaces.RequestScope) =>
   (request: interfaces.Request): undefined | T | Promise<T> | (T | Promise<T>)[] => {
@@ -150,7 +150,7 @@ const _bindingActivation = <T>(context: interfaces.Context, binding: interfaces.
   let result: T | Promise<T>;
 
   // use activation handler if available
-  if (typeof binding.onActivation === "function") {
+  if (typeof binding.onActivation === 'function') {
     result = binding.onActivation(context, previousResult);
   } else {
     result = previousResult;
