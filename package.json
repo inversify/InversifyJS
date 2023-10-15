@@ -24,14 +24,14 @@
   "homepage": "http://inversify.io",
   "jsnext:main": "es/inversify.js",
   "keywords": [
-    "ioc",
-    "di",
-    "javascript",
-    "typescript",
-    "node",
     "dependency injection",
     "dependency inversion",
-    "inversion of control container"
+    "di",
+    "inversion of control container",
+    "ioc",
+    "javascript",
+    "node",
+    "typescript"
   ],
   "license": "MIT",
   "main": "lib/inversify.js",
@@ -51,9 +51,8 @@
     "postupdate": "git diff-files --quiet package-lock.json || npm test",
     "prepublish": "npm run build && publish-please guard",
     "pretest": "tslint --project .",
-    "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
-    "test:browser": "browserify test/inversify.test.ts -p [ tsify --noImplicitAny ] > ./test/bundle.test.js && karma start",
     "publish-please": "publish-please",
+    "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "update": "updates --update --minor && npm install"
   },
   "sideEffects": false,
