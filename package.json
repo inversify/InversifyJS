@@ -52,7 +52,7 @@
     "prepublish": "npm run build && publish-please guard",
     "pretest": "tslint --project .",
     "publish-please": "publish-please",
-    "test": "nyc --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "update": "updates --update --minor && npm install"
   },
   "sideEffects": false,
