@@ -10,7 +10,6 @@ docs
 wiki
 gulpfile.js
 bower.json
-karma.conf.js
 mocha.opts
 tsconfig.json
 typings.json
