@@ -20,6 +20,7 @@ Brought tests up to 100% Code Coverage
 
 ### Changed
 LazyIdentfier Tests
+Removed browser test pipeline
 
 ### Fixed
 Less than 100% code coverage
