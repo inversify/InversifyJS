@@ -84,3 +84,13 @@ class Ninja {
     }
 }
 ```
+
+Or using properties injection: 
+```ts
+@injectable()
+class Ninja {
+    public name = "Ninja";
+    @inject("Katana") public katana: Katana;
+    @inject("Shuriken") @optional() public shuriken: Shuriken = { name: "DefaultShuriken" } // Default value!
+}
+```

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+property injection tagged as @optional no longer overrides default values with `undefined`. 
 
 ## [6.0.2]
 

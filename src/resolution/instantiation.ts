@@ -68,7 +68,9 @@ function createInstanceWithInjections<T>(
   args.propertyRequests.forEach((r: interfaces.Request, index: number) => {
     const property = r.target.identifier;
     const injection = args.propertyInjections[index];
-    (instance as Record<string | symbol, unknown>)[property] = injection;
+    if (!r.target.isOptional() || injection !== undefined) {
+      (instance as Record<string | symbol, unknown>)[property] = injection;
+    }
   });
   return instance
 }
