@@ -1,4 +1,5 @@
-import { BindingScopeEnum, interfaces } from '../inversify';
+import { BindingScopeEnum } from '../constants/literal_types';
+import type { interfaces } from '../interfaces/interfaces'
 import { isPromise } from '../utils/async';
 
 export const tryGetFromScope = <T>(

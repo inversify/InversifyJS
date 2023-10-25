@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as ERROR_MSGS from '../src/constants/error_msgs';
 import { interfaces } from '../src/interfaces/interfaces';
-import { Container, ContainerModule, decorate, inject, injectable, LazyServiceIdentifer, multiInject, named, tagged, targetName, typeConstraint, unmanaged } from '../src/inversify';
+import { Container, ContainerModule, decorate, inject, injectable, LazyServiceIdentifier, multiInject, named, tagged, targetName, typeConstraint, unmanaged } from '../src/inversify';
 
 describe('InversifyJS', () => {
 
@@ -282,7 +282,7 @@ describe('InversifyJS', () => {
 
   });
 
-  it('Should be able to wrap Symbols with LazyServiceIdentifer', () => {
+  it('Should be able to wrap Symbols with LazyServiceIdentifier', () => {
 
     interface Ninja {
       fight(): string;
@@ -324,8 +324,8 @@ describe('InversifyJS', () => {
       private _shuriken: Shuriken;
 
       public constructor(
-        @inject(new LazyServiceIdentifer(() => TYPES.Katana)) katana: Katana,
-        @inject(new LazyServiceIdentifer(() => TYPES.Shuriken)) shuriken: Shuriken
+        @inject(new LazyServiceIdentifier(() => TYPES.Katana)) katana: Katana,
+        @inject(new LazyServiceIdentifier(() => TYPES.Shuriken)) shuriken: Shuriken
       ) {
         this._katana = katana;
         this._shuriken = shuriken;

@@ -1,4 +1,5 @@
-import { getServiceIdentifierAsString, interfaces } from '../inversify';
+import { getServiceIdentifierAsString } from '../utils/serialization';
+import type { interfaces } from '../interfaces/interfaces'
 import * as ERROR_MSGS from '../constants/error_msgs';
 import { BindingTypeEnum } from '../constants/literal_types';
 import { FactoryType } from './factory_type';

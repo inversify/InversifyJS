@@ -107,4 +107,49 @@ describe('@optional', () => {
 
   });
 
+  it("Should allow to set a default value for class property dependencies flagged as optional", () => {
+    @injectable()
+    class Katana {
+      public name: string;
+      public constructor() {
+        this.name = 'Katana';
+      }
+    }
+
+    @injectable()
+    class Shuriken {
+      public name: string;
+      public constructor() {
+        this.name = 'Shuriken';
+      }
+    }
+
+    @injectable()
+    class Ninja {
+      public name: string = "Ninja";
+      @inject("Katana") public katana?: Katana;
+      @inject("Shuriken") @optional() public shuriken: Shuriken = {
+        name: "DefaultShuriken",
+      };
+    }
+
+    const container = new Container();
+
+    container.bind<Katana>('Katana').to(Katana);
+    container.bind<Ninja>('Ninja').to(Ninja);
+
+    let ninja = container.get<Ninja>('Ninja');
+    expect(ninja.name).to.eql('Ninja');
+    expect(ninja.katana?.name).to.eql('Katana');
+    expect(ninja.shuriken.name).to.eql('DefaultShuriken');
+
+    container.bind<Shuriken>('Shuriken').to(Shuriken);
+
+    ninja = container.get<Ninja>('Ninja');
+    expect(ninja.name).to.eql('Ninja');
+    expect(ninja.katana?.name).to.eql('Katana');
+    expect(ninja.shuriken.name).to.eql('Shuriken');
+    }
+  );
+
 });

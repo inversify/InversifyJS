@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+property injection tagged as @optional no longer overrides default values with `undefined`. 
 
 ## [6.0.2]
 
@@ -19,9 +20,16 @@ Brought tests up to 100% Code Coverage
 
 ### Changed
 LazyIdentfier Tests
+Removed browser test pipeline, browserify, karma (#1542)
+Update all dependencies except typescript (#1531)
 
 ### Fixed
 Less than 100% code coverage
+Use default class property for @optional injected properties (#1467)
+Remove circular import (#1516)
+Fix strict type checking on @unmanaged decorator (#1499)
+Fix typo (LazyServiceIdentifer -> LazyServiceIdentifier) (#1483)
+Fix typo (circular dependency error message) (#1485)
 
 ## [6.0.1] - 2021-10-14
 ### Added
