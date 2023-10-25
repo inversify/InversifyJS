@@ -9,7 +9,7 @@ export const MISSING_INJECTABLE_ANNOTATION = 'Missing required @injectable annot
 export const MISSING_INJECT_ANNOTATION = 'Missing required @inject or @multiInject annotation in:';
 export const UNDEFINED_INJECT_ANNOTATION = (name: string) =>
   `@inject called with undefined this could mean that the class ${name} has ` +
-  'a circular dependency problem. You can use a LazyServiceIdentifier to  ' +
+  'a circular dependency problem. You can use a LazyServiceIdentifer to ' +
   'overcome this limitation.';
 export const CIRCULAR_DEPENDENCY = 'Circular dependency found:';
 export const NOT_IMPLEMENTED = 'Sorry, this feature is not fully implemented yet.';
@@ -17,8 +17,8 @@ export const INVALID_BINDING_TYPE = 'Invalid binding type:';
 export const NO_MORE_SNAPSHOTS_AVAILABLE = 'No snapshot available to restore.';
 export const INVALID_MIDDLEWARE_RETURN = 'Invalid return type in middleware. Middleware must return!';
 export const INVALID_FUNCTION_BINDING = 'Value provided to function binding must be a function!';
-export const LAZY_IN_SYNC = (key: unknown) => `You are attempting to construct '${key}' in a synchronous way
- but it has asynchronous dependencies.`;
+export const LAZY_IN_SYNC = (key: unknown) => `You are attempting to construct ${keyToString(key)} in a synchronous way ` +
+  'but it has asynchronous dependencies.';
 
 export const INVALID_TO_SELF_VALUE = 'The toSelf function can only be applied when a constructor is ' +
   'used as service identifier';
@@ -53,3 +53,13 @@ export const CIRCULAR_DEPENDENCY_IN_FACTORY = (factoryType: string, serviceIdent
   `service identifier '${serviceIdentifier}'.`;
 
 export const STACK_OVERFLOW = 'Maximum call stack size exceeded';
+
+function keyToString(key: unknown): string {
+  if (typeof key === 'function') {
+    return `[function/class ${key.name || '<anonymous>'}]`;
+  }
+  if (typeof key === 'symbol') {
+    return key.toString();
+  }
+  return `'${key}'`;
+}
