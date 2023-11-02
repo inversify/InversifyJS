@@ -125,7 +125,9 @@ export interface ThrowableWeapon {
 ```
 
 InversifyJS needs to use the type as identifiers at runtime. We use symbols as identifiers but you can also use classes and or string literals.
-PLEASE MAKE SURE TO PLACE THIS TYPES DECLARATION IN A SEPARATE FILE. 
+
+PLEASE MAKE SURE TO PLACE THIS TYPES DECLARATION IN A SEPARATE FILE. (see bug #1455)
+
 ```ts
 // file types.ts
 
