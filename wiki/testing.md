@@ -149,6 +149,14 @@ For Sinon:
 $ npm i -D @automock/jest @automock/adapters.inversify
 ```
 
+Lastly, add `@automock/adapters.inversify` to your `tsconfig.json` file under `types`, for example:
+
+```json
+  "compilerOptions": {
+    "types": ["@automock/adapters.inversify"]
+  },
+```
+
 ### A Practical Example
 
 Here, we can provide a practical example of using Automock in a unit test, illustrating how it streamlines the testing
@@ -194,4 +202,4 @@ In this example, we use `TestBed.create(UserService)` to automatically mock the 
 test verifies that `UserService` integrates data from both the mocked `UserDAL` and `UserApiService`.
 
 For full examples and the InversifyJS manual, visit the Automock documentation
-at [https://automock.dev](https://automock.dev)
+at [https://automock.dev](https://automock.dev) or visit the Github repository at [https://github.com/automock/automock](https://github.com/automock/automock)
