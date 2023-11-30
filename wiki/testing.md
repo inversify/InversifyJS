@@ -11,23 +11,21 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class UserDAL {
-  async getUsers(): Promise<User[]> { ... }
+  getUsers(): User[] | [] { return [] }
 }
 
 @injectable()
 export class UserApiService {
-  constructor(private httpClient: HttpClient) {}
-
-  async fetchUsers(): Promise<User[]> { ... }
+  fetchUsers(): User[] | [] { return [] }
 }
 
 @injectable()
 export class UserService {
   constructor(private userDal: UserDAL, private userApi: UserApiService) {}
 
-  async getAllUsers(): Promise<User[]> {
-    const fromDb = await this.userDal.getUsers();
-    const fromApi = await this.userApi.fetchUsers();
+  getAllUsers(): User[] {
+    const fromDb = this.userDal.getUsers();
+    const fromApi = this.userApi.fetchUsers();
 
     return [...fromDb, ...fromApi];
   }
@@ -49,11 +47,13 @@ client in some scenarios, while in others, you might prefer the real implementat
 In the following example, we decide to mock the API but let the database run:
 ```typescript
 import { Container } from 'inversify';
-import { UserService, UserDAL, UserApiService } from './services';
+import { UserService } from './user.service';
+import { UserDAL } from './user.dal';
+import { UserApiService } from './user.api.service';
 
 describe('Fetching Users Integration Test', () => {
   let userService: UserService;
-  let mockUserApiService: UserApiService;
+  let mockUserApiService: jest.Mocked<UserApiService>;
 
   beforeAll(() => {
     const container = new Container();
@@ -61,14 +61,14 @@ describe('Fetching Users Integration Test', () => {
     container.bind(UserService).toSelf();
     container.bind(UserDAL).toSelf();
 
-    mockUserApiService = { fetchUsers: jest.fn().mockResolvedValue([{ id: 3, name: 'Mock User from API' }]) };
+    mockUserApiService = { fetchUsers: jest.fn().mockReturnValue([{ id: 1, name: 'Mock User from API' }]) };
     container.bind(UserApiService).toConstantValue(mockUserApiService);
 
     userService = container.get(UserService);
   });
 
   test('should fetch users from both DAL and API', async () => {
-    const users = await userService.getAllUsers();
+    const users = userService.getAllUsers();
     expect(users).toHaveLength(3); // Assuming 2 users from DAL and 1 mock user from API
     expect(mockUserApiService.fetchUsers).toHaveBeenCalled();
   });
@@ -96,15 +96,15 @@ describe('User Service Unit Spec', () => {
   let mockUserDal: jest.Mocked<UserDal>;
   let mockUserApiService: jest.Mocked<UserApiService>;
 
-  beforeEach(() => {
+  beforeAll(() => {
     const container = new Container();
 
-    // Create mock implementations
-    mockUserDal = { getUsers: jest.fn().mockResolvedValue([{ id: 1, name: 'Mock User from DAL' }]) };
-    mockUserApiService = { fetchUsers: jest.fn().mockResolvedValue([{ id: 2, name: 'Mock User from API' }]) };
+    container.bind(UserService).toSelf();
+
+    mockUserDal = { getUsers: jest.fn().mockReturnValue([{ id: 1, name: 'Mock User from DB' }]) };
+    mockUserApiService = { fetchUsers: jest.fn().mockReturnValue([{ id: 2, name: 'Mock User from API' }]) };
 
     // Bind the mocks to the container
-    container.bind<UserService>(UserService).toSelf();
     container.bind<UserDAL>(UserDAL).toConstantValue(mockUserDal as UserDAL);
     container.bind<UserApiService>(UserApiService).toConstantValue(mockUserApiService as UserApiService);
 
@@ -113,13 +113,8 @@ describe('User Service Unit Spec', () => {
   });
 
   test('getting all users should return combined users from DAL and API', async () => {
-    const users = await userService.getAllUsers();
-
-    expect(users.length).toBe(2);
-    expect(users[0].name).toBe('Mock User from DAL');
-    expect(users[1].name).toBe('Mock User from API');
-
-    expect(mockUserDal.getUsers).toHaveBeenCalled();
+    const users = userService.getAllUsers();
+    expect(users).toHaveLength(2);
     expect(mockUserApiService.fetchUsers).toHaveBeenCalled();
   });
 });
