@@ -32,7 +32,7 @@ export class UserService {
 }
 ```
 
-## Integration Testing
+## Integration Tests
 
 Integration tests ensure that different parts of your application work together harmoniously. These tests are 
 crucial for verifying the interactions between your classes and their dependencies, much like how components 
@@ -78,7 +78,7 @@ describe('Fetching Users Integration Test', () => {
 In this example, we use a real `UserDAL` instance and a mock `UserApiService`. The test verifies that `UserService`
 correctly integrates the data from both the database and the API.
 
-## Unit Testing
+## Unit Tests
 
 Unit testing is about isolating a single unit of work and validating its correctness. This isolation is crucial for
 pinpointing issues and ensuring that each component functions and behaves as expected, independently.
@@ -120,17 +120,16 @@ describe('User Service Unit Spec', () => {
 });
 ```
 
-## Automock: Simplifying Unit Testing
+## Unit Tests using Automock
 
-### Streamlining Mock Creation
-
-Automock stands out as a tool that simplifies the process of creating mocks in unit tests. It's about efficiency and
-focus, allowing you to concentrate on the unit under test without the overhead of manually setting up mocks and stubs.
+Automock is a stand-alone unit testing library. It improves the unit testing process by offering a virtual,
+isolated environment and automated mock generation, allowing for the creation of efficient test suites and
+an overall enhanced testing experience.
 
 #### Setting Up Automock with InversifyJS
 
-Integrating Automock with InversifyJS involves a few straightforward steps. You'll need to install `@automock/jest`
-or `@automock/sinon`, along with the InversifyJS adapter `@automock/adapters.inversify`.
+Integrating Automock with InversifyJS involves a few straightforward steps. You'll need to install
+`@automock/jest` or `@automock/sinon`, along with the InversifyJS adapter `@automock/adapters.inversify`.
 
 For Jest:
 
@@ -141,21 +140,12 @@ $ npm i -D @automock/jest @automock/adapters.inversify
 For Sinon:
 
 ```bash
-$ npm i -D @automock/jest @automock/adapters.inversify
-```
-
-Lastly, add `@automock/adapters.inversify` to your `tsconfig.json` file under `types`, for example:
-
-```json
-  "compilerOptions": {
-    "types": ["@automock/adapters.inversify"]
-  },
+$ npm i -D @automock/sinon @automock/adapters.inversify
 ```
 
 ### A Practical Example
 
-Here, we can provide a practical example of using Automock in a unit test, illustrating how it streamlines the testing
-process.
+Here's an example of using Automock in a unit test, using the same `UserService` as before:
 
 ```typescript
 import { TestBed } from '@automock/jest';
@@ -196,5 +186,6 @@ describe('User Service Unit Spec', () => {
 In this example, we use `TestBed.create(UserService)` to automatically mock the dependencies of `UserService`. The 
 test verifies that `UserService` integrates data from both the mocked `UserDAL` and `UserApiService`.
 
-For full examples and the InversifyJS manual, visit the Automock documentation
-at [https://automock.dev](https://automock.dev) or visit the Github repository at [https://github.com/automock/automock](https://github.com/automock/automock)
+For full examples and the InversifyJS guide, visit Automock documentation:
+* [https://github.com/automock/automock](https://github.com/automock/automock)
+* [https://automock.dev](https://automock.dev) 
