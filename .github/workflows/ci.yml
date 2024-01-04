@@ -1,78 +1,57 @@
-name: Continuous Integration
+name: CI
 
 on:
   push:
-    branches:
-      - master
+    branches: ["master"]
   pull_request:
+    types: [opened, synchronize]
 
 jobs:
-  Testing:
-    name: Unit Tests
+  build:
+    name: Build and Test
+    timeout-minutes: 15
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
-    env:
-      TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
     steps:
-      - name: Checkout Project
+      - name: Check out code
         uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-          registry-url: https://registry.npmjs.org/
-      - name: Install Dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test --coverage
-      - name: Store code coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage
-          path: coverage/
+          node-version: 18
+          cache: "npm"
 
-  Build:
-    name: Compile source code
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-        ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
-    env:
-      TS_NODE_PROJECT: ${{ matrix.ts-project }}
+      - name: Install dependencies
+        run: npm install
 
-    steps:
-    - name: Checkout Project
-      uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: npm
-        registry-url: https://registry.npmjs.org/
-    - run: npm cache clean --force
-    - run: npm ci
-    - run: npm run build --if-present
+      - name: Lint
+        run: npm run lint
 
-  Upload_Coverage_Report:
-    name: Upload coverage report to codecov
-    needs: [Testing]
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run coverage
+
+  upload-coverage:
+    name: Upload Coverage
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
+
       - name: Download Coverage report
         uses: actions/download-artifact@v3
         with:
           name: coverage
           path: coverage/
+
       - name: Codecov Upload
         uses: codecov/codecov-action@v3
         with:

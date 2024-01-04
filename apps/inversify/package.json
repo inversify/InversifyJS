@@ -12,17 +12,16 @@
     "istanbul": "0.4.5",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
-    "publish-please": "5.5.2",
     "reflect-metadata": "0.1.13",
     "sinon": "16.0.0",
     "ts-node": "10.9.1",
     "tslint": "6.1.3",
+    "tsup": "^8.0.1",
     "typescript": "4.4.4",
     "updates": "15.0.2"
   },
-  "engines": {},
+  "files": ["dist", "amd"],
   "homepage": "http://inversify.io",
-  "jsnext:main": "es/inversify.js",
   "keywords": [
     "dependency injection",
     "dependency inversion",
@@ -34,28 +33,24 @@
     "typescript"
   ],
   "license": "MIT",
-  "main": "lib/inversify.js",
-  "module": "es/inversify.js",
+  "main": "dist/inversify.js",
+  "module": "dist/inversify.mjs",
   "name": "inversify",
   "repository": {
     "type": "git",
     "url": "https://github.com/inversify/InversifyJS.git"
   },
   "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
-    "build:amd": "tsc -p src/tsconfig-amd.json",
-    "build:es": "tsc -p src/tsconfig-es.json",
-    "build:es6": "tsc -p src/tsconfig-es6.json",
-    "build:lib": "tsc -p src/tsconfig.json",
-    "clean": "rm -r amd es lib",
-    "postupdate": "git diff-files --quiet package-lock.json || npm test",
-    "prepublish": "npm run build && publish-please guard",
-    "pretest": "tslint --project .",
-    "publish-please": "publish-please",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
-    "update": "updates --update --minor && npm install"
+    "build": "tsup src/inversify.ts --format cjs,esm --dts && npm run build:amd",
+    "build:amd": "tsc -p tsconfig-amd.json",
+    "lint": "tslint --project .",
+    "test": "mocha",
+    "dev": "mocha --watch",
+    "coverage": "nyc --reporter=text npm run test",
+    "clean": "rm -r amd dist",
+    "update": "updates --update --minor && npm install",
+    "postupdate": "git diff-files --quiet package-lock.json || npm test"
   },
-  "sideEffects": false,
-  "types": "lib/inversify.d.ts",
+  "types": "dist/inversify.d.ts",
   "version": "6.0.2"
 }

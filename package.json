@@ -1,0 +1,17 @@
+{
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.2",
+    "turbo": "^1.11.2"
+  },
+  "name": "InversifyJS",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "coverage": "nyc --reporter=lcov --require ts-node/register turbo run test --force true",
+    "coverage:text": "nyc --reporter=text --require ts-node/register turbo run test --force true"
+  },
+  "workspaces": ["packages/*", "apps/*"]
+}

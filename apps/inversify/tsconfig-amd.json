@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "outDir": "amd",
+    "module": "amd"
+  },
+  "extends": "./tsconfig.json"
+}

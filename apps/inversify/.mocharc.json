@@ -1,0 +1,7 @@
+{
+  "extension": "ts",
+  "exit": true,
+  "require": ["ts-node/register", "reflect-metadata/Reflect.js"],
+  "retries": 3,
+  "spec": "test/**/*.test.ts"
+}
