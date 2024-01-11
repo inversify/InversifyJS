@@ -34,26 +34,11 @@ jobs:
         run: npm run build
 
       - name: Test
-        run: npm run coverage
+        run: npm run test
 
-  upload-coverage:
-    name: Upload Coverage
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-
-      - name: Download Coverage report
-        uses: actions/download-artifact@v3
+      - name: Upload Coverage Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
-
-      - name: Codecov Upload
-        uses: codecov/codecov-action@v3
-        with:
-          directory: coverage/
-          fail_ci_if_error: true
+          if-no-files-found: error
