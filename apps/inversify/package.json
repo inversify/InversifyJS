@@ -8,7 +8,14 @@
     "@types/chai": "4.3.6",
     "@types/mocha": "10.0.1",
     "@types/sinon": "10.0.16",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
     "chai": "4.3.8",
+    "eslint": "^8.56.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsdoc": "^48.0.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
     "istanbul": "0.4.5",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
@@ -20,7 +27,10 @@
     "typescript": "4.4.4",
     "updates": "15.0.2"
   },
-  "files": ["dist", "amd"],
+  "files": [
+    "dist",
+    "amd"
+  ],
   "homepage": "http://inversify.io",
   "keywords": [
     "dependency injection",
@@ -43,7 +53,7 @@
   "scripts": {
     "build": "tsup src/inversify.ts --format cjs,esm --dts && npm run build:amd",
     "build:amd": "tsc -p tsconfig-amd.json",
-    "lint": "tslint --project .",
+    "lint": "eslint src",
     "test": "mocha",
     "dev": "mocha --watch",
     "coverage": "nyc --reporter=text npm run test",
