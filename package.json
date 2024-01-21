@@ -1,61 +1,20 @@
 {
-  "author": "Remo H. Jansen",
-  "bugs": {
-    "url": "https://github.com/inversify/InversifyJS/issues"
-  },
-  "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "devDependencies": {
-    "@types/chai": "4.3.6",
-    "@types/mocha": "10.0.1",
-    "@types/sinon": "10.0.16",
-    "chai": "4.3.8",
-    "istanbul": "0.4.5",
-    "mocha": "10.2.0",
-    "nyc": "15.1.0",
-    "publish-please": "5.5.2",
-    "reflect-metadata": "0.1.13",
-    "sinon": "16.0.0",
-    "ts-node": "10.9.1",
-    "tslint": "6.1.3",
-    "typescript": "4.4.4",
-    "updates": "15.0.2"
+    "istanbul": "^0.4.5",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.2",
+    "turbo": "^1.11.3"
   },
-  "engines": {},
-  "homepage": "http://inversify.io",
-  "jsnext:main": "es/inversify.js",
-  "keywords": [
-    "dependency injection",
-    "dependency inversion",
-    "di",
-    "inversion of control container",
-    "ioc",
-    "javascript",
-    "node",
-    "typescript"
-  ],
-  "license": "MIT",
-  "main": "lib/inversify.js",
-  "module": "es/inversify.js",
-  "name": "inversify",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/inversify/InversifyJS.git"
-  },
+  "name": "InversifyJS",
   "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
-    "build:amd": "tsc -p src/tsconfig-amd.json",
-    "build:es": "tsc -p src/tsconfig-es.json",
-    "build:es6": "tsc -p src/tsconfig-es6.json",
-    "build:lib": "tsc -p src/tsconfig.json",
-    "clean": "rm -r amd es lib",
-    "postupdate": "git diff-files --quiet package-lock.json || npm test",
-    "prepublish": "npm run build && publish-please guard",
-    "pretest": "tslint --project .",
-    "publish-please": "publish-please",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
-    "update": "updates --update --minor && npm install"
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "coverage": "nyc --reporter=lcov --require ts-node/register turbo run test --force true",
+    "coverage:text": "nyc --reporter=text --require ts-node/register turbo run test --force true"
   },
-  "sideEffects": false,
-  "types": "lib/inversify.d.ts",
-  "version": "6.0.2"
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
 }

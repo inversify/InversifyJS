@@ -5,6 +5,7 @@
     "allowUnusedLabels": false,
     "alwaysStrict": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
@@ -12,12 +13,6 @@
     "forceConsistentCasingInFileNames": true,
     "importsNotUsedAsValues": "remove",
     "isolatedModules": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "module": "commonjs",
-    "moduleResolution": "node",
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -34,15 +29,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": false,
-    "strict": true,
-    "target": "es5",
-    "types": [
-      "mocha",
-      "reflect-metadata",
-      "node"
-    ]
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "strict": true
+  }
 }

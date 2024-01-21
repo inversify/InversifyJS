@@ -70,3 +70,4 @@ type_definitions/**/*.js
 .idea
 
 .nyc_output
+/.turbo/

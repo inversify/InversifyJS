@@ -1,3 +1,0 @@
---require reflect-metadata/Reflect
---watch-extensions ts
-dist/test/**/*.test.js

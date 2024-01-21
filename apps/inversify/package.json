@@ -1,0 +1,66 @@
+{
+  "author": "Remo H. Jansen",
+  "bugs": {
+    "url": "https://github.com/inversify/InversifyJS/issues"
+  },
+  "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
+  "devDependencies": {
+    "@types/chai": "4.3.6",
+    "@types/mocha": "10.0.1",
+    "@types/sinon": "10.0.16",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "chai": "4.3.8",
+    "eslint": "^8.56.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsdoc": "^48.0.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "istanbul": "0.4.5",
+    "mocha": "10.2.0",
+    "nyc": "15.1.0",
+    "reflect-metadata": "0.1.13",
+    "sinon": "16.0.0",
+    "ts-node": "10.9.1",
+    "tslint": "6.1.3",
+    "tsup": "^8.0.1",
+    "typescript": "4.4.4",
+    "updates": "15.0.2"
+  },
+  "files": [
+    "dist",
+    "amd"
+  ],
+  "homepage": "http://inversify.io",
+  "keywords": [
+    "dependency injection",
+    "dependency inversion",
+    "di",
+    "inversion of control container",
+    "ioc",
+    "javascript",
+    "node",
+    "typescript"
+  ],
+  "license": "MIT",
+  "main": "dist/inversify.js",
+  "module": "dist/inversify.mjs",
+  "name": "inversify",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inversify/InversifyJS.git"
+  },
+  "scripts": {
+    "build": "tsup src/inversify.ts --format cjs,esm --dts && npm run build:amd",
+    "build:amd": "tsc -p tsconfig-amd.json",
+    "lint": "eslint src",
+    "test": "mocha",
+    "dev": "mocha --watch",
+    "coverage": "nyc --reporter=text npm run test",
+    "clean": "rm -r amd dist",
+    "update": "updates --update --minor && npm install",
+    "postupdate": "git diff-files --quiet package-lock.json || npm test"
+  },
+  "types": "dist/inversify.d.ts",
+  "version": "6.0.2"
+}

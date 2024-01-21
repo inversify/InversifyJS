@@ -1,0 +1,9 @@
+{
+  "references": [
+    {
+      "path": "../src"
+    }
+  ],
+  "rootDir": ".",
+  "extends": "../tsconfig.json"
+}

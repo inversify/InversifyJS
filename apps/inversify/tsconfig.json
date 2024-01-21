@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "target": "es6",
+    "types": ["mocha", "reflect-metadata", "node"]
+  },
+  "extends": "../../tsconfig.json",
+  "include": ["src/**/*.ts"]
+}
