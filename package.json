@@ -3,7 +3,7 @@
     "istanbul": "^0.4.5",
     "nyc": "^15.1.0",
     "ts-node": "^10.9.2",
-    "turbo": "^1.11.2"
+    "turbo": "^1.11.3"
   },
   "name": "InversifyJS",
   "scripts": {
@@ -13,5 +13,8 @@
     "coverage": "nyc --reporter=lcov --require ts-node/register turbo run test --force true",
     "coverage:text": "nyc --reporter=text --require ts-node/register turbo run test --force true"
   },
-  "workspaces": ["packages/*", "apps/*"]
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
 }
