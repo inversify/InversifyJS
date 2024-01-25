@@ -37,6 +37,6 @@ constraint is added to avoid `AMBIGUOUS_MATCH` errors:
 
 ```ts
 container.bind<Ninja>(ninjaId).to(Ninja);
-container.bind<Weapon>(weaponId).to(Katana).whenTargetTagged("canThrow", false);
-container.bind<Weapon>(weaponId).to(Shuriken).whenTargetTagged("canThrow", true);
+container.bind<Weapon>("Weapon").to(Katana).whenTargetTagged("canThrow", false);
+container.bind<Weapon>("Weapon").to(Shuriken).whenTargetTagged("canThrow", true);
 ```
