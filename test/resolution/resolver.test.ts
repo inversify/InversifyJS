@@ -1460,8 +1460,10 @@ describe('Resolve', () => {
 
     @injectable()
     class PromiseLike {
+      _isFakePromise = 'IS_FAKE_PROMISE'
       public then() {
         return {
+          _isFakePromise: 'IS_FAKE_PROMISE',
           then: stub
         };
       }

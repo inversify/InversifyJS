@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
-property injection tagged as @optional no longer overrides default values with `undefined`. 
+- property injection tagged as @optional no longer overrides default values with `undefined`. 
+- Injecting an object with a `.then` property which is not a promise no longer resolves to `undefined`.
 
 ## [6.0.2]
 

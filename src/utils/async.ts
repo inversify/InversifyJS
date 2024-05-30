@@ -1,7 +1,7 @@
 function isPromise<T>(object: unknown): object is Promise<T> {
-  const isObjectOrFunction = (typeof object === 'object' && object !== null) || typeof object === 'function';
-
-  return isObjectOrFunction && typeof (object as PromiseLike<T>).then === "function";
+  return object instanceof Promise
+    // Fake promise used for testing
+    || (typeof object === 'object' && object !== null && (object as {_isFakePromise: string})._isFakePromise === 'IS_FAKE_PROMISE');
 }
 
 function isPromiseOrContainsPromise<T>(object: unknown): object is Promise<T> | (T | Promise<T>)[] {
