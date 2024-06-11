@@ -13,18 +13,18 @@ The method can be synchronous or asynchronous.
 
 
 ```ts
-interface Katana {
-    use: () => void;
+interface Weapon {
+  use: () => void;
 }
 
 @injectable()
-class Katana implements Katana {
+class Katana implements Weapon {
     constructor() {
         console.log("Katana is born");
     }
     
     public use() {
-        return "Used Katana!";
+        console.log("Used Katana!");
     }
     
     @postConstruct()
@@ -32,7 +32,6 @@ class Katana implements Katana {
         console.log("Used Katana!")
     }
 }
-
 ```
 
 ```ts
@@ -40,8 +39,10 @@ container.bind<Katana>("Katana").to(Katana);
 ```
 
 ```ts
-let catana = container.get<Katana>();
+let katana = container.get<Katana>();
+katana.use();
 > Katana is born
+> Tested Katana!
 > Used Katana!
 ```
 
