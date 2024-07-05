@@ -16,10 +16,10 @@ import { ModuleActivationStore } from './module_activation_store';
 
 type GetArgs<T> = Omit<interfaces.NextArgs<T>, 'contextInterceptor' | 'targetType'>
 
-class Container implements interfaces.Container {
+class Container<T extends interfaces.BindingMap = any, P extends interfaces.BindingMap = any> implements interfaces.Container<T, P> {
 
   public id: number;
-  public parent: interfaces.Container | null;
+  public parent: interfaces.Container<P> | null;
   public readonly options: interfaces.ContainerOptions;
   private _middleware: interfaces.Next | null;
   private _bindingDictionary: interfaces.Lookup<interfaces.Binding<unknown>>;
@@ -118,10 +118,10 @@ class Container implements interfaces.Container {
 
       currentModule.registry(
         containerModuleHelpers.bindFunction as interfaces.Bind,
-        containerModuleHelpers.unbindFunction,
-        containerModuleHelpers.isboundFunction,
+        containerModuleHelpers.unbindFunction as interfaces.Unbind,
+        containerModuleHelpers.isboundFunction as interfaces.IsBound,
         containerModuleHelpers.rebindFunction as interfaces.Rebind,
-        containerModuleHelpers.unbindAsyncFunction,
+        containerModuleHelpers.unbindAsyncFunction as interfaces.UnbindAsync,
         containerModuleHelpers.onActivationFunction as interfaces.Container['onActivation'],
         containerModuleHelpers.onDeactivationFunction as interfaces.Container['onDeactivation']
       );
@@ -140,10 +140,10 @@ class Container implements interfaces.Container {
 
       await currentModule.registry(
         containerModuleHelpers.bindFunction as interfaces.Bind,
-        containerModuleHelpers.unbindFunction,
-        containerModuleHelpers.isboundFunction,
+        containerModuleHelpers.unbindFunction as interfaces.Unbind,
+        containerModuleHelpers.isboundFunction as interfaces.IsBound,
         containerModuleHelpers.rebindFunction as interfaces.Rebind,
-        containerModuleHelpers.unbindAsyncFunction,
+        containerModuleHelpers.unbindAsyncFunction as interfaces.UnbindAsync,
         containerModuleHelpers.onActivationFunction as interfaces.Container['onActivation'],
         containerModuleHelpers.onDeactivationFunction as interfaces.Container['onDeactivation']
       );
@@ -173,25 +173,31 @@ class Container implements interfaces.Container {
   }
 
   // Registers a type binding
-  public bind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
+  public bind<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): interfaces.BindingToSyntax<B> {
     const scope = this.options.defaultScope || BindingScopeEnum.Transient;
-    const binding = new Binding<T>(serviceIdentifier, scope);
+    const binding = new Binding<B>(serviceIdentifier as interfaces.ServiceIdentifier<B>, scope);
     this._bindingDictionary.add(serviceIdentifier, binding as Binding<unknown>);
-    return new BindingToSyntax<T>(binding);
+    return new BindingToSyntax<B>(binding);
   }
 
-  public rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T> {
+  public rebind<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): interfaces.BindingToSyntax<B> {
     this.unbind(serviceIdentifier);
     return this.bind(serviceIdentifier);
   }
 
-  public async rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>> {
+  public async rebindAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): Promise<interfaces.BindingToSyntax<B>> {
     await this.unbindAsync(serviceIdentifier);
     return this.bind(serviceIdentifier);
   }
 
   // Removes a type binding from the registry by its key
-  public unbind(serviceIdentifier: interfaces.ServiceIdentifier): void {
+  public unbind<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): void {
     if (this._bindingDictionary.hasKey(serviceIdentifier)) {
       const bindings = this._bindingDictionary.get(serviceIdentifier);
 
@@ -201,7 +207,7 @@ class Container implements interfaces.Container {
     this._removeServiceFromDictionary(serviceIdentifier);
   }
 
-  public async unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier): Promise<void> {
+  public async unbindAsync<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): Promise<void> {
     if (this._bindingDictionary.hasKey(serviceIdentifier)) {
       const bindings = this._bindingDictionary.get(serviceIdentifier);
 
@@ -232,34 +238,47 @@ class Container implements interfaces.Container {
     this._bindingDictionary = new Lookup<Binding<unknown>>();
   }
 
-  public onActivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onActivation: interfaces.BindingActivation<T>) {
+  public onActivation<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    onActivation: interfaces.BindingActivation<B>,
+  ): void {
     this._activations.add(serviceIdentifier, onActivation as interfaces.BindingActivation<unknown>);
   }
 
-  public onDeactivation<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, onDeactivation: interfaces.BindingDeactivation<T>) {
+  public onDeactivation<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    onDeactivation: interfaces.BindingDeactivation<B>,
+  ): void {
     this._deactivations.add(serviceIdentifier, onDeactivation as interfaces.BindingDeactivation<unknown>);
   }
 
   // Allows to check if there are bindings available for serviceIdentifier
-  public isBound(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): boolean {
+  public isBound<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): boolean {
     let bound = this._bindingDictionary.hasKey(serviceIdentifier);
     if (!bound && this.parent) {
-      bound = this.parent.isBound(serviceIdentifier);
+      bound = this.parent.isBound(serviceIdentifier as any);
     }
     return bound;
   }
 
   // check binding dependency only in current container
-  public isCurrentBound<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): boolean {
+  public isCurrentBound<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): boolean {
     return this._bindingDictionary.hasKey(serviceIdentifier);
   }
 
-  public isBoundNamed(serviceIdentifier: interfaces.ServiceIdentifier, named: string | number | symbol): boolean {
+  public isBoundNamed<K extends interfaces.ContainerIdentifier<T>>(
+    serviceIdentifier: K,
+    named: string | number | symbol,
+): boolean {
     return this.isBoundTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
   // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
-  public isBoundTagged(serviceIdentifier: interfaces.ServiceIdentifier, key: string | number | symbol, value: unknown): boolean {
+  public isBoundTagged<K extends interfaces.ContainerIdentifier<T>>(
+    serviceIdentifier: K,
+    key: string | number | symbol,
+    value: unknown,
+  ): boolean {
     let bound = false;
 
     // verify if there are bindings available for serviceIdentifier on current binding dictionary
@@ -271,7 +290,7 @@ class Container implements interfaces.Container {
 
     // verify if there is a parent container that could solve the request
     if (!bound && this.parent) {
-      bound = this.parent.isBoundTagged(serviceIdentifier, key, value);
+      bound = this.parent.isBoundTagged(serviceIdentifier as any, key, value);
     }
 
     return bound;
@@ -299,8 +318,8 @@ class Container implements interfaces.Container {
     this._moduleActivationStore = snapshot.moduleActivationStore
   }
 
-  public createChild(containerOptions?: interfaces.ContainerOptions): Container {
-    const child = new Container(containerOptions || this.options);
+  public createChild<C extends interfaces.BindingMap = any>(containerOptions?: interfaces.ContainerOptions): Container<C, T> {
+    const child = new Container<C, T>(containerOptions || this.options);
     child.parent = this;
     return child;
   }
@@ -319,96 +338,122 @@ class Container implements interfaces.Container {
   // Resolves a dependency by its runtime identifier
   // The runtime identifier must be associated with only one binding
   // use getAll when the runtime identifier is associated with multiple bindings
-  public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
+  public get<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(serviceIdentifier: K): B {
     const getArgs = this._getNotAllArgs(serviceIdentifier, false);
 
-    return this._getButThrowIfAsync<T>(getArgs) as T;
+    return this._getButThrowIfAsync(getArgs) as B;
   }
 
-  public async getAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T> {
+  public async getAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): Promise<B> {
     const getArgs = this._getNotAllArgs(serviceIdentifier, false);
 
-    return this._get<T>(getArgs) as Promise<T> | T;
+    return this._get(getArgs) as Promise<B> | B;
   }
 
-  public getTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T {
-    const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
-
-    return this._getButThrowIfAsync<T>(getArgs) as T;
-  }
-
-  public async getTaggedAsync<T>(
-    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  public getTagged<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
     key: string | number | symbol,
-    value: unknown
-  ): Promise<T> {
+    value: unknown,
+  ): B {
     const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
 
-    return this._get<T>(getArgs) as Promise<T> | T;
+    return this._getButThrowIfAsync(getArgs) as B;
   }
 
-  public getNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T {
-    return this.getTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  public async getTaggedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    key: string | number | symbol,
+    value: unknown,
+  ): Promise<B> {
+    const getArgs = this._getNotAllArgs(serviceIdentifier, false, key, value);
+
+    return this._get(getArgs) as Promise<B> | B;
   }
 
-  public getNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T> {
-    return this.getTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  public getNamed<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    named: string | number | symbol,
+  ): B {
+    return this.getTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  }
+
+  public getNamedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    named: string | number | symbol,
+  ): Promise<B> {
+    return this.getTaggedAsync(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
   // Resolves a dependency by its runtime identifier
   // The runtime identifier can be associated with one or multiple bindings
-  public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
+  public getAll<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): B[] {
     const getArgs = this._getAllArgs(serviceIdentifier);
 
-    return this._getButThrowIfAsync<T>(getArgs) as T[];
+    return this._getButThrowIfAsync(getArgs) as B[];
   }
 
-  public getAllAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<T[]> {
+  public getAllAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): Promise<B[]> {
     const getArgs = this._getAllArgs(serviceIdentifier);
 
-    return this._getAll(getArgs);
+    return this._getAll(getArgs) as Promise<B[]>;
   }
 
-  public getAllTagged<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T[] {
-    const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
-
-    return this._getButThrowIfAsync<T>(getArgs) as T[];
-  }
-
-  public getAllTaggedAsync<T>(
-    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  public getAllTagged<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
     key: string | number | symbol,
-    value: unknown
-  ): Promise<T[]> {
+    value: unknown,
+  ): B[] {
     const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
 
-    return this._getAll(getArgs);
+    return this._getButThrowIfAsync(getArgs) as B[];
   }
 
-  public getAllNamed<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): T[] {
-    return this.getAllTagged<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  public getAllTaggedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    key: string | number | symbol,
+    value: unknown,
+  ): Promise<B[]> {
+    const getArgs = this._getNotAllArgs(serviceIdentifier, true, key, value);
+
+    return this._getAll(getArgs) as Promise<B[]>;
   }
 
-  public getAllNamedAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]> {
-    return this.getAllTaggedAsync<T>(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  public getAllNamed<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    named: string | number | symbol,
+  ): B[] {
+    return this.getAllTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
-  public resolve<T>(constructorFunction: interfaces.Newable<T>) {
-    const isBound = this.isBound(constructorFunction);
+  public getAllNamedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+    named: string | number | symbol,
+  ): Promise<B[]> {
+    return this.getAllTaggedAsync(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
+  }
+
+  public resolve<B>(constructorFunction: interfaces.Newable<B>): B {
+    const isBound = this.isBound(constructorFunction as any);
     if (!isBound) {
-      this.bind<T>(constructorFunction).toSelf();
+      this.bind(constructorFunction as any).toSelf();
     }
-    const resolved = this.get<T>(constructorFunction);
+    const resolved = this.get(constructorFunction as any) as B;
     if (!isBound) {
-      this.unbind(constructorFunction);
+      this.unbind(constructorFunction as any);
     }
     return resolved;
   }
 
-  private _preDestroy<T>(constructor: NewableFunction, instance: T): Promise<void> | void {
+  private _preDestroy<B>(constructor: NewableFunction, instance: B): Promise<void> | void {
     if (Reflect.hasMetadata(METADATA_KEY.PRE_DESTROY, constructor)) {
       const data: interfaces.Metadata = Reflect.getMetadata(METADATA_KEY.PRE_DESTROY, constructor);
-      return (instance as interfaces.Instance<T>)[(data.value as string)]?.();
+      return (instance as interfaces.Instance<B>)[(data.value as string)]?.();
     }
   }
   private _removeModuleHandlers(moduleId: number): void {
@@ -422,7 +467,7 @@ class Container implements interfaces.Container {
     return this._bindingDictionary.removeByCondition(binding => binding.moduleId === moduleId);
   }
 
-  private _deactivate<T>(binding: Binding<T>, instance: T): void | Promise<void> {
+  private _deactivate<B>(binding: Binding<B>, instance: B): void | Promise<void> {
     const constructor: NewableFunction = Object.getPrototypeOf(instance).constructor;
 
     try {
@@ -465,8 +510,8 @@ class Container implements interfaces.Container {
   }
 
 
-  private _deactivateContainer<T>(
-    instance: T,
+  private _deactivateContainer<B>(
+    instance: B,
     deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<unknown>>,
   ): void | Promise<void> {
     let deactivation = deactivationsIterator.next();
@@ -484,8 +529,8 @@ class Container implements interfaces.Container {
     }
   }
 
-  private async _deactivateContainerAsync<T>(
-    instance: T,
+  private async _deactivateContainerAsync<B>(
+    instance: B,
     deactivationsIterator: IterableIterator<interfaces.BindingDeactivation<unknown>>,
   ): Promise<void> {
     let deactivation = deactivationsIterator.next();
@@ -505,44 +550,52 @@ class Container implements interfaces.Container {
       (bindingToSyntax as unknown as { _binding: { moduleId: interfaces.ContainerModuleBase['id'] } } )._binding.moduleId = moduleId;
     };
 
-    const getBindFunction = <T>(moduleId: interfaces.ContainerModuleBase['id']) =>
-      (serviceIdentifier: interfaces.ServiceIdentifier) => {
+    const getBindFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      moduleId: interfaces.ContainerModuleBase['id'],
+    ) =>
+      (serviceIdentifier: K) => {
         const bindingToSyntax = this.bind(serviceIdentifier);
         setModuleId(bindingToSyntax, moduleId);
-        return bindingToSyntax as BindingToSyntax<T>;
+        return bindingToSyntax as BindingToSyntax<B>;
       };
 
-    const getUnbindFunction = () =>
-      (serviceIdentifier: interfaces.ServiceIdentifier) => {
+    const getUnbindFunction = <K extends interfaces.ContainerIdentifier<T>>() =>
+      (serviceIdentifier: K) => {
         return this.unbind(serviceIdentifier);
       };
 
-    const getUnbindAsyncFunction = () =>
-      (serviceIdentifier: interfaces.ServiceIdentifier) => {
+    const getUnbindAsyncFunction = <K extends interfaces.ContainerIdentifier<T>>() =>
+      (serviceIdentifier: K) => {
         return this.unbindAsync(serviceIdentifier);
       };
 
-    const getIsboundFunction = () =>
-      (serviceIdentifier: interfaces.ServiceIdentifier) => {
+    const getIsboundFunction = <K extends interfaces.ContainerIdentifier<T>>() =>
+      (serviceIdentifier: K) => {
         return this.isBound(serviceIdentifier)
       };
 
-    const getRebindFunction = <T = unknown>(moduleId: interfaces.ContainerModuleBase['id']) =>
-      (serviceIdentifier: interfaces.ServiceIdentifier) => {
+    const getRebindFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      moduleId: interfaces.ContainerModuleBase['id'],
+    ) =>
+      (serviceIdentifier: K) => {
         const bindingToSyntax = this.rebind(serviceIdentifier);
         setModuleId(bindingToSyntax, moduleId);
-        return bindingToSyntax as BindingToSyntax<T>;
+        return bindingToSyntax as BindingToSyntax<B>;
       };
 
-    const getOnActivationFunction = (moduleId: interfaces.ContainerModuleBase['id']) =>
-      (serviceIdentifier: interfaces.ServiceIdentifier, onActivation: interfaces.BindingActivation) => {
-        this._moduleActivationStore.addActivation(moduleId, serviceIdentifier, onActivation);
+    const getOnActivationFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      moduleId: interfaces.ContainerModuleBase['id'],
+    ) =>
+      (serviceIdentifier: K, onActivation: interfaces.BindingActivation<B>) => {
+        this._moduleActivationStore.addActivation(moduleId, serviceIdentifier, onActivation as interfaces.BindingActivation<unknown>);
         this.onActivation(serviceIdentifier, onActivation);
       }
 
-    const getOnDeactivationFunction = (moduleId: interfaces.ContainerModuleBase['id']) =>
-      (serviceIdentifier: interfaces.ServiceIdentifier, onDeactivation: interfaces.BindingDeactivation) => {
-        this._moduleActivationStore.addDeactivation(moduleId, serviceIdentifier, onDeactivation);
+    const getOnDeactivationFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      moduleId: interfaces.ContainerModuleBase['id'],
+    ) =>
+      (serviceIdentifier: K, onDeactivation: interfaces.BindingDeactivation<B>) => {
+        this._moduleActivationStore.addDeactivation(moduleId, serviceIdentifier, onDeactivation as interfaces.BindingDeactivation<unknown>);
         this.onDeactivation(serviceIdentifier, onDeactivation);
       }
 
@@ -557,14 +610,18 @@ class Container implements interfaces.Container {
     });
 
   }
-  private _getAll<T>(getArgs: GetArgs<T>): Promise<T[]> {
-    return Promise.all(this._get<T>(getArgs) as (Promise<T> | T)[]);
+  private _getAll<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    getArgs: GetArgs<B>,
+  ): Promise<B[]> {
+    return Promise.all(this._get<B>(getArgs) as (Promise<B> | B)[]);
   }
   // Prepares arguments required for resolution and
   // delegates resolution to _middleware if available
   // otherwise it delegates resolution to _planAndResolve
-  private _get<T>(getArgs: GetArgs<T>): interfaces.ContainerResolution<T> {
-    const planAndResolveArgs: interfaces.NextArgs<T> = {
+  private _get<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    getArgs: GetArgs<B>,
+  ): interfaces.ContainerResolution<B> {
+    const planAndResolveArgs: interfaces.NextArgs<B> = {
       ...getArgs,
       contextInterceptor: (context) => context,
       targetType: TargetTypeEnum.Variable
@@ -574,44 +631,46 @@ class Container implements interfaces.Container {
       if (middlewareResult === undefined || middlewareResult === null) {
         throw new Error(ERROR_MSGS.INVALID_MIDDLEWARE_RETURN);
       }
-      return middlewareResult as interfaces.ContainerResolution<T>;
+      return middlewareResult as interfaces.ContainerResolution<B>;
     }
 
-    return this._planAndResolve<T>()(planAndResolveArgs);
+    return this._planAndResolve<B>()(planAndResolveArgs);
   }
 
-  private _getButThrowIfAsync<T>(
-    getArgs: GetArgs<T>,
-  ): (T | T[]) {
-    const result = this._get<T>(getArgs);
+  private _getButThrowIfAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    getArgs: GetArgs<B>,
+  ): (B | B[]) {
+    const result = this._get<B>(getArgs);
 
-    if (isPromiseOrContainsPromise<T>(result)) {
+    if (isPromiseOrContainsPromise<B>(result)) {
       throw new Error(ERROR_MSGS.LAZY_IN_SYNC(getArgs.serviceIdentifier));
     }
 
-    return result as (T | T[]);
+    return result as (B | B[]);
   }
 
-  private _getAllArgs<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): GetArgs<T> {
-    const getAllArgs: GetArgs<T> = {
+  private _getAllArgs<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
+  ): GetArgs<B> {
+    const getAllArgs: GetArgs<B> = {
       avoidConstraints: true,
       isMultiInject: true,
-      serviceIdentifier,
+      serviceIdentifier: serviceIdentifier as interfaces.ServiceIdentifier<B>,
     };
 
     return getAllArgs;
   }
 
-  private _getNotAllArgs<T>(
-    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  private _getNotAllArgs<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    serviceIdentifier: K,
     isMultiInject: boolean,
     key?: string | number | symbol | undefined,
     value?: unknown,
-  ): GetArgs<T> {
-    const getNotAllArgs: GetArgs<T> = {
+  ): GetArgs<B> {
+    const getNotAllArgs: GetArgs<B> = {
       avoidConstraints: false,
       isMultiInject,
-      serviceIdentifier,
+      serviceIdentifier: serviceIdentifier as interfaces.ServiceIdentifier<B>,
       key,
       value,
     };
@@ -622,8 +681,8 @@ class Container implements interfaces.Container {
   // Planner creates a plan and Resolver resolves a plan
   // one of the jobs of the Container is to links the Planner
   // with the Resolver and that is what this function is about
-  private _planAndResolve<T = unknown>(): (args: interfaces.NextArgs<T>) => interfaces.ContainerResolution<T> {
-    return (args: interfaces.NextArgs<T>) => {
+  private _planAndResolve<B = unknown>(): (args: interfaces.NextArgs<B>) => interfaces.ContainerResolution<B> {
+    return (args: interfaces.NextArgs<B>) => {
 
       // create a plan
       let context = plan(
@@ -641,7 +700,7 @@ class Container implements interfaces.Container {
       context = args.contextInterceptor(context);
 
       // resolve plan
-      const result = resolve<T>(context);
+      const result = resolve<B>(context);
 
       return result;
 
@@ -674,9 +733,9 @@ class Container implements interfaces.Container {
     await Promise.all(bindings.map(b => this._deactivateIfSingleton(b)))
   }
 
-  private _propagateContainerDeactivationThenBindingAndPreDestroy<T>(
-    binding: Binding<T>,
-    instance: T,
+  private _propagateContainerDeactivationThenBindingAndPreDestroy<B>(
+    binding: Binding<B>,
+    instance: B,
     constructor: NewableFunction
   ): void | Promise<void> {
     if (this.parent) {
@@ -686,9 +745,9 @@ class Container implements interfaces.Container {
     }
   }
 
-  private async _propagateContainerDeactivationThenBindingAndPreDestroyAsync<T>(
-    binding: Binding<T>,
-    instance: T,
+  private async _propagateContainerDeactivationThenBindingAndPreDestroyAsync<B>(
+    binding: Binding<B>,
+    instance: B,
     constructor: NewableFunction
   ): Promise<void> {
     if (this.parent) {
@@ -706,9 +765,9 @@ class Container implements interfaces.Container {
     }
   }
 
-  private _bindingDeactivationAndPreDestroy<T>(
-    binding: Binding<T>,
-    instance: T,
+  private _bindingDeactivationAndPreDestroy<B>(
+    binding: Binding<B>,
+    instance: B,
     constructor: NewableFunction
   ): void | Promise<void> {
     if (typeof binding.onDeactivation === 'function') {
@@ -722,9 +781,9 @@ class Container implements interfaces.Container {
     return this._preDestroy(constructor, instance);
   }
 
-  private async _bindingDeactivationAndPreDestroyAsync<T>(
-    binding: Binding<T>,
-    instance: T,
+  private async _bindingDeactivationAndPreDestroyAsync<B>(
+    binding: Binding<B>,
+    instance: B,
     constructor: NewableFunction
   ): Promise<void> {
     if (typeof binding.onDeactivation === 'function') {

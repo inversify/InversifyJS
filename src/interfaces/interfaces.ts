@@ -46,7 +46,16 @@ namespace interfaces {
     prototype: T;
   }
 
-  export type ServiceIdentifier<T = unknown> = (string | symbol | Newable<T> | Abstract<T>);
+  export type IfAny<T, Y, N> = 0 extends (1 & T) ? Y : N;
+
+  export type PropertyServiceIdentifier = (string | symbol);
+  export type ServiceIdentifier<T = unknown> = (PropertyServiceIdentifier | Newable<T> | Abstract<T>);
+  export type BindingMap = Record<PropertyServiceIdentifier, any>;
+  export type BindingMapKey<T extends BindingMap> = keyof T & PropertyServiceIdentifier;
+  export type ContainerIdentifier<T extends BindingMap> = IfAny<T, ServiceIdentifier, BindingMapKey<T>>;
+  export type ContainerBinding<T extends BindingMap, K extends ContainerIdentifier<T> = any> = K extends keyof T ? T[K] :
+    K extends Newable<infer C> ? C :
+    K extends Abstract<infer D> ? D : never;
 
   export interface Clonable<T> {
     clone(): T;
@@ -188,36 +197,76 @@ namespace interfaces {
     skipBaseClassChecks?: boolean;
   }
 
-  export interface Container {
+  export interface Container<T extends BindingMap = any, P extends BindingMap = any> {
     id: number;
-    parent: Container | null;
+    parent: Container<P> | null;
     options: ContainerOptions;
-    bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindingToSyntax<T>;
-    rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
-    rebindAsync<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): Promise<interfaces.BindingToSyntax<T>>
-    unbind(serviceIdentifier: ServiceIdentifier): void;
-    unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier): Promise<void>;
+    bind: Bind<T>;
+    rebind: Rebind<T>;
+    rebindAsync: RebindAsync<T>;
+    unbind: Unbind<T>;
+    unbindAsync: UnbindAsync<T>;
     unbindAll(): void;
     unbindAllAsync(): Promise<void>;
-    isBound(serviceIdentifier: ServiceIdentifier): boolean;
-    isCurrentBound<T>(serviceIdentifier: ServiceIdentifier<T>): boolean;
-    isBoundNamed(serviceIdentifier: ServiceIdentifier, named: string | number | symbol): boolean;
-    isBoundTagged(serviceIdentifier: ServiceIdentifier, key: string | number | symbol, value: unknown): boolean;
-    get<T>(serviceIdentifier: ServiceIdentifier<T>): T;
-    getNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T;
-    getTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T;
-    getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
-    getAllTagged<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): T[];
-    getAllNamed<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): T[];
-    getAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T>;
-    getNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T>;
-    getTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): Promise<T>;
-    getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T[]>;
-    getAllTaggedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, key: string | number | symbol, value: unknown): Promise<T[]>;
-    getAllNamedAsync<T>(serviceIdentifier: ServiceIdentifier<T>, named: string | number | symbol): Promise<T[]>;
-    onActivation<T>(serviceIdentifier: ServiceIdentifier<T>, onActivation: BindingActivation<T>): void;
-    onDeactivation<T>(serviceIdentifier: ServiceIdentifier<T>, onDeactivation: BindingDeactivation<T>): void;
-    resolve<T>(constructorFunction: interfaces.Newable<T>): T;
+    isBound: IsBound<T>;
+    isCurrentBound: IsBound<T>;
+    isBoundNamed: <K extends ContainerIdentifier<T>>(serviceIdentifier: K, named: PropertyKey) => boolean;
+    isBoundTagged: <K extends interfaces.ContainerIdentifier<T>>(
+      serviceIdentifier: K,
+      key: PropertyKey,
+      value: unknown,
+    ) => boolean;
+    get: <B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(serviceIdentifier: K) => B;
+    getNamed: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      named: PropertyKey,
+    ) => B;
+    getTagged: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      key: PropertyKey,
+      value: unknown,
+    ) => B;
+    getAll: <B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(serviceIdentifier: K) => B[];
+    getAllTagged: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      key: PropertyKey,
+      value: unknown,
+    ) => B[];
+    getAllNamed: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      named: PropertyKey,
+    ) => B[];
+    getAsync: <B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+    ) => Promise<B>;
+    getNamedAsync: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      named: PropertyKey,
+    ) => Promise<B>;
+    getTaggedAsync: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      key: PropertyKey,
+      value: unknown,
+    ) => Promise<B>;
+    getAllAsync: <B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(serviceIdentifier: K) => Promise<B[]>;
+    getAllTaggedAsync: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      key: PropertyKey,
+      value: unknown,
+    ) => Promise<B[]>;
+    getAllNamedAsync: <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      named: PropertyKey,
+    ) => Promise<B[]>;
+    onActivation<B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      onActivation: BindingActivation<B>,
+    ): void;
+    onDeactivation<B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(
+      serviceIdentifier: K,
+      onDeactivation: BindingDeactivation<B>,
+    ): void;
+    resolve<B>(constructorFunction: Newable<B>): B;
     load(...modules: ContainerModule[]): void;
     loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
     unload(...modules: ContainerModuleBase[]): void;
@@ -226,18 +275,23 @@ namespace interfaces {
     applyMiddleware(...middleware: Middleware[]): void;
     snapshot(): void;
     restore(): void;
-    createChild(): Container;
+    createChild<C extends BindingMap = any>(containerOptions?: ContainerOptions): Container<C, T>;
   }
 
-  export type Bind = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+  export type Bind<T extends BindingMap = any> =
+    <B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(serviceIdentifier: K) => BindingToSyntax<B>;
 
-  export type Rebind = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => BindingToSyntax<T>;
+  export type Rebind<T extends BindingMap = any> = Bind<T>;
 
-  export type Unbind = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => void;
+  export type RebindAsync<T extends BindingMap = any> =
+  <B extends ContainerBinding<T, K>, K extends ContainerIdentifier<T> = any>(serviceIdentifier: K) => Promise<BindingToSyntax<B>>;
 
-  export type UnbindAsync = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => Promise<void>;
+  export type Unbind<T extends BindingMap = any> = <K extends ContainerIdentifier<T>>(serviceIdentifier: K) => void;
 
-  export type IsBound = <T = unknown>(serviceIdentifier: ServiceIdentifier<T>) => boolean;
+  export type UnbindAsync<T extends BindingMap = any> =
+    <K extends ContainerIdentifier<T>>(serviceIdentifier: K) => Promise<void>;
+
+  export type IsBound<T extends BindingMap = any> = <K extends ContainerIdentifier<T>>(serviceIdentifier: K) => boolean;
 
   export interface ContainerModuleBase {
     id: number;

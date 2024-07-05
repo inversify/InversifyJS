@@ -82,7 +82,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
   public toAutoNamedFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Factory;
     this._binding.factory = (context) => {
-      return (named: unknown) => context.container.getNamed<T2>(serviceIdentifier, named as string);
+      return (named: unknown) => context.container.getNamed(serviceIdentifier, named as string);
     };
     return new BindingWhenOnSyntax<T>(this._binding);
   }
