@@ -61,13 +61,6 @@ body:
           value: |
               ---
 
-    - type: input
-      validations:
-          required: true
-      attributes:
-          label: "Package name"
-          description: "What package is affected by this issue?"
-          placeholder: "inversify"
 
     - type: input
       validations:
