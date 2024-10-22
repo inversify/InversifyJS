@@ -1,0 +1,73 @@
+name: "\U0001F680 Community Ideas"
+description: "I have an idea or proposal \U0001F4A1!"
+labels: ["needs triage"]
+assignees:
+    - "rsaz"
+body:
+    - type: markdown
+      attributes:
+          value: |
+              ## :heart: We would love to hear your ideas and proposals
+
+              Suggest an idea for a specific feature, product, process, anything you wish to propose to the community for comment and discussion.
+
+              **NOTE:** If your idea is approved after discussion, you will be asked to provide more technical information until we get an issue to implement it.
+
+              ---
+
+    - type: checkboxes
+      attributes:
+          label: "Is there an existing proposal similar to this?"
+          description: "Please make sure that your idea is not already proposed otherwise you will be asked to comment on the existing proposal"
+          options:
+              - label: "I have searched the existing proposals"
+                required: true
+
+    - type: textarea
+      validations:
+          required: true
+      attributes:
+          label: "What are you proposing?"
+          description: "In a few sentences, describe your idea or proposal"
+          placeholder: |
+              My idea is ...
+
+    - type: textarea
+      validations:
+          required: true
+      attributes:
+          label: "Is there any specific group of users that will benefit from this?"
+          description: "Highlight any research, proposals, requests or anecdotes that signal this is the right thing to build. Include links to GitHub Issues, Forums, Stack Overflow, Twitter, Etc"
+          placeholder: |
+              I have seen ...
+
+    - type: textarea
+      validations:
+          required: true
+      attributes:
+          label: "What problems are you trying to solve?"
+          description: "Describe the problems that this idea or proposal will solve"
+          placeholder: |
+              I am trying to solve ...
+
+    - type: textarea
+      validations:
+          required: true
+      attributes:
+          label: "Do you have any references or examples that can illustrate your idea?"
+          description: "If you have any references or examples that can illustrate your idea, who is using it, and how it is being used, please share them here"
+          placeholder: |
+              I have seen ...
+
+    - type: dropdown
+      id: idea-type
+      validations:
+          required: true
+      attributes:
+          label: "What type of idea is this?"
+          description: "Select the type of idea that this is"
+          multiple: false
+          options:
+              - "Innovation: No similar idea exists"
+              - "Improvement of existing idea: Similar idea exists but this is an improvement"
+              - "Copy of existing idea: Similar idea exists and this is a copy"
