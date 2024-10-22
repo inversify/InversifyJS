@@ -14,14 +14,17 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
         ts-project: [src/tsconfig.json, src/tsconfig-es6.json]
+        exclude:
+        - node-version: 20.x
+          ts-project: src/tsconfig.json
     env:
       TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -29,13 +32,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Run tests
-        run: npm test --coverage
-      - name: Store code coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          overwrite: true
-          path: coverage/
+        run: npm test
 
   Build:
     name: Compile source code
@@ -49,9 +46,9 @@ jobs:
 
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: npm
@@ -63,18 +60,25 @@ jobs:
   Upload_Coverage_Report:
     name: Upload coverage report to codecov
     environment: CI
+    env:
+      TS_NODE_PROJECT: src/tsconfig.json
     needs: [Testing]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 2
-      - name: Download Coverage report
-        uses: actions/download-artifact@v4.1.7
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          name: coverage
-          path: coverage/
+          node-version: 20.x
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test --coverage
       - name: Codecov Upload
         uses: codecov/codecov-action@v4
         with:
