@@ -61,6 +61,7 @@ jobs:
 
   Upload_Coverage_Report:
     name: Upload coverage report to codecov
+    environment: CI
     needs: [Testing]
     runs-on: ubuntu-latest
     steps:
@@ -74,7 +75,8 @@ jobs:
           name: coverage
           path: coverage/
       - name: Codecov Upload
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           directory: coverage/
           fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
