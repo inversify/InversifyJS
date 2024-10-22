@@ -3,7 +3,7 @@ import * as ERROR_MSGS from '../constants/error_msgs';
 import { BindingTypeEnum, TargetTypeEnum } from '../constants/literal_types';
 import * as METADATA_KEY from '../constants/metadata_keys';
 import { interfaces } from '../interfaces/interfaces';
-import { isStackOverflowExeption } from '../utils/exceptions';
+import { isStackOverflowException } from '../utils/exceptions';
 import { circularDependencyToException, getServiceIdentifierAsString, listMetadataForTarget, listRegisteredBindingsForServiceIdentifier } from '../utils/serialization';
 import { Context } from './context';
 import { Metadata } from './metadata';
@@ -236,7 +236,7 @@ function plan(
     return context;
   } catch (error) {
     if (
-      isStackOverflowExeption(error)
+      isStackOverflowException(error)
     ) {
       circularDependencyToException(context.plan.rootRequest);
     }
