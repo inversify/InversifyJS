@@ -1117,7 +1117,7 @@ describe('Container', () => {
     @injectable()
     class Ninja {
       @inject('Weapon')
-      [weaponProperty]: Weapon
+      [weaponProperty]!: Weapon
     }
     const container = new Container();
     container.bind('Weapon').to(Shuriken);
@@ -1134,7 +1134,7 @@ describe('Container', () => {
     @injectable()
     class Ninja {
       @inject('Weapon')
-      [throwableWeapon]: Weapon
+      [throwableWeapon]!: Weapon
     }
     const container = new Container();
     container.bind('Weapon').to(Shuriken).when(request => {

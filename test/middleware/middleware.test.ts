@@ -252,7 +252,7 @@ describe('Middleware', () => {
         try {
           return planAndResolve(args);
         } catch (e) {
-          // missing return!
+          return undefined as unknown as  (_: interfaces.NextArgs) => undefined
         }
       };
     }
