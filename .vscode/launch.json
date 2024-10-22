@@ -44,18 +44,6 @@
         "--nolazy"
       ],
       "console": "internalConsole",
-    },
-    {
-      "name": "Debug Current TS file",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "--nolazy", "-r", "ts-node/register/transpile-only"
-      ],
-      "program": "${file}",
-      "cwd": "${workspaceFolder}",
-      "internalConsoleOptions": "openOnSessionStart",
     }
   ]
 }
