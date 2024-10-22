@@ -31,7 +31,7 @@ jobs:
       - name: Run tests
         run: npm test --coverage
       - name: Store code coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
