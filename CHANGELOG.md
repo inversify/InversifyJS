@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
+## [6.0.3]
+
+### Fixed
 property injection tagged as @optional no longer overrides default values with `undefined`.
 Updated `targetName` to be a valid `typescript@5` decorator.
 
