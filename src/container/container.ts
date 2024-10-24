@@ -173,7 +173,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   }
 
   // Registers a type binding
-  public bind<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public bind<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): interfaces.BindingToSyntax<B> {
     const scope = this.options.defaultScope || BindingScopeEnum.Transient;
@@ -182,14 +182,14 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return new BindingToSyntax<B>(binding);
   }
 
-  public rebind<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public rebind<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): interfaces.BindingToSyntax<B> {
     this.unbind(serviceIdentifier);
     return this.bind(serviceIdentifier);
   }
 
-  public async rebindAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public async rebindAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): Promise<interfaces.BindingToSyntax<B>> {
     await this.unbindAsync(serviceIdentifier);
@@ -197,7 +197,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   }
 
   // Removes a type binding from the registry by its key
-  public unbind<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): void {
+  public unbind<K extends interfaces.MappedServiceIdentifier<T>>(serviceIdentifier: K): void {
     if (this._bindingDictionary.hasKey(serviceIdentifier)) {
       const bindings = this._bindingDictionary.get(serviceIdentifier);
 
@@ -207,7 +207,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     this._removeServiceFromDictionary(serviceIdentifier);
   }
 
-  public async unbindAsync<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): Promise<void> {
+  public async unbindAsync<K extends interfaces.MappedServiceIdentifier<T>>(serviceIdentifier: K): Promise<void> {
     if (this._bindingDictionary.hasKey(serviceIdentifier)) {
       const bindings = this._bindingDictionary.get(serviceIdentifier);
 
@@ -238,14 +238,14 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     this._bindingDictionary = new Lookup<Binding<unknown>>();
   }
 
-  public onActivation<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public onActivation<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     onActivation: interfaces.BindingActivation<B>,
   ): void {
     this._activations.add(serviceIdentifier, onActivation as interfaces.BindingActivation<unknown>);
   }
 
-  public onDeactivation<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public onDeactivation<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     onDeactivation: interfaces.BindingDeactivation<B>,
   ): void {
@@ -253,7 +253,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   }
 
   // Allows to check if there are bindings available for serviceIdentifier
-  public isBound<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): boolean {
+  public isBound<K extends interfaces.MappedServiceIdentifier<T>>(serviceIdentifier: K): boolean {
     let bound = this._bindingDictionary.hasKey(serviceIdentifier);
     if (!bound && this.parent) {
       bound = this.parent.isBound(serviceIdentifier as any);
@@ -262,11 +262,11 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   }
 
   // check binding dependency only in current container
-  public isCurrentBound<K extends interfaces.ContainerIdentifier<T>>(serviceIdentifier: K): boolean {
+  public isCurrentBound<K extends interfaces.MappedServiceIdentifier<T>>(serviceIdentifier: K): boolean {
     return this._bindingDictionary.hasKey(serviceIdentifier);
   }
 
-  public isBoundNamed<K extends interfaces.ContainerIdentifier<T>>(
+  public isBoundNamed<K extends interfaces.MappedServiceIdentifier<T>>(
     serviceIdentifier: K,
     named: string | number | symbol,
 ): boolean {
@@ -274,7 +274,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   }
 
   // Check if a binding with a complex constraint is available without throwing a error. Ancestors are also verified.
-  public isBoundTagged<K extends interfaces.ContainerIdentifier<T>>(
+  public isBoundTagged<K extends interfaces.MappedServiceIdentifier<T>>(
     serviceIdentifier: K,
     key: string | number | symbol,
     value: unknown,
@@ -338,13 +338,13 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   // Resolves a dependency by its runtime identifier
   // The runtime identifier must be associated with only one binding
   // use getAll when the runtime identifier is associated with multiple bindings
-  public get<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(serviceIdentifier: K): B {
+  public get<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(serviceIdentifier: K): B {
     const getArgs = this._getNotAllArgs(serviceIdentifier, false);
 
     return this._getButThrowIfAsync(getArgs) as B;
   }
 
-  public async getAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public async getAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): Promise<B> {
     const getArgs = this._getNotAllArgs(serviceIdentifier, false);
@@ -352,7 +352,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._get(getArgs) as Promise<B> | B;
   }
 
-  public getTagged<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getTagged<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     key: string | number | symbol,
     value: unknown,
@@ -362,7 +362,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._getButThrowIfAsync(getArgs) as B;
   }
 
-  public async getTaggedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public async getTaggedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     key: string | number | symbol,
     value: unknown,
@@ -372,14 +372,14 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._get(getArgs) as Promise<B> | B;
   }
 
-  public getNamed<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getNamed<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     named: string | number | symbol,
   ): B {
     return this.getTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
-  public getNamedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getNamedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     named: string | number | symbol,
   ): Promise<B> {
@@ -388,7 +388,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
 
   // Resolves a dependency by its runtime identifier
   // The runtime identifier can be associated with one or multiple bindings
-  public getAll<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getAll<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): B[] {
     const getArgs = this._getAllArgs(serviceIdentifier);
@@ -396,7 +396,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._getButThrowIfAsync(getArgs) as B[];
   }
 
-  public getAllAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getAllAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): Promise<B[]> {
     const getArgs = this._getAllArgs(serviceIdentifier);
@@ -404,7 +404,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._getAll(getArgs) as Promise<B[]>;
   }
 
-  public getAllTagged<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getAllTagged<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     key: string | number | symbol,
     value: unknown,
@@ -414,7 +414,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._getButThrowIfAsync(getArgs) as B[];
   }
 
-  public getAllTaggedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getAllTaggedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     key: string | number | symbol,
     value: unknown,
@@ -424,14 +424,14 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._getAll(getArgs) as Promise<B[]>;
   }
 
-  public getAllNamed<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getAllNamed<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     named: string | number | symbol,
   ): B[] {
     return this.getAllTagged(serviceIdentifier, METADATA_KEY.NAMED_TAG, named);
   }
 
-  public getAllNamedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  public getAllNamedAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     named: string | number | symbol,
   ): Promise<B[]> {
@@ -550,7 +550,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
       (bindingToSyntax as unknown as { _binding: { moduleId: interfaces.ContainerModuleBase['id'] } } )._binding.moduleId = moduleId;
     };
 
-    const getBindFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    const getBindFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
       moduleId: interfaces.ContainerModuleBase['id'],
     ) =>
       (serviceIdentifier: K) => {
@@ -559,22 +559,22 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
         return bindingToSyntax as BindingToSyntax<B>;
       };
 
-    const getUnbindFunction = <K extends interfaces.ContainerIdentifier<T>>() =>
+    const getUnbindFunction = <K extends interfaces.MappedServiceIdentifier<T>>() =>
       (serviceIdentifier: K) => {
         return this.unbind(serviceIdentifier);
       };
 
-    const getUnbindAsyncFunction = <K extends interfaces.ContainerIdentifier<T>>() =>
+    const getUnbindAsyncFunction = <K extends interfaces.MappedServiceIdentifier<T>>() =>
       (serviceIdentifier: K) => {
         return this.unbindAsync(serviceIdentifier);
       };
 
-    const getIsboundFunction = <K extends interfaces.ContainerIdentifier<T>>() =>
+    const getIsboundFunction = <K extends interfaces.MappedServiceIdentifier<T>>() =>
       (serviceIdentifier: K) => {
         return this.isBound(serviceIdentifier)
       };
 
-    const getRebindFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    const getRebindFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
       moduleId: interfaces.ContainerModuleBase['id'],
     ) =>
       (serviceIdentifier: K) => {
@@ -583,7 +583,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
         return bindingToSyntax as BindingToSyntax<B>;
       };
 
-    const getOnActivationFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    const getOnActivationFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
       moduleId: interfaces.ContainerModuleBase['id'],
     ) =>
       (serviceIdentifier: K, onActivation: interfaces.BindingActivation<B>) => {
@@ -591,7 +591,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
         this.onActivation(serviceIdentifier, onActivation);
       }
 
-    const getOnDeactivationFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+    const getOnDeactivationFunction = <B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
       moduleId: interfaces.ContainerModuleBase['id'],
     ) =>
       (serviceIdentifier: K, onDeactivation: interfaces.BindingDeactivation<B>) => {
@@ -610,7 +610,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     });
 
   }
-  private _getAll<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  private _getAll<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     getArgs: GetArgs<B>,
   ): Promise<B[]> {
     return Promise.all(this._get<B>(getArgs) as (Promise<B> | B)[]);
@@ -618,7 +618,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
   // Prepares arguments required for resolution and
   // delegates resolution to _middleware if available
   // otherwise it delegates resolution to _planAndResolve
-  private _get<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  private _get<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     getArgs: GetArgs<B>,
   ): interfaces.ContainerResolution<B> {
     const planAndResolveArgs: interfaces.NextArgs<B> = {
@@ -637,7 +637,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return this._planAndResolve<B>()(planAndResolveArgs);
   }
 
-  private _getButThrowIfAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  private _getButThrowIfAsync<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     getArgs: GetArgs<B>,
   ): (B | B[]) {
     const result = this._get<B>(getArgs);
@@ -649,7 +649,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return result as (B | B[]);
   }
 
-  private _getAllArgs<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  private _getAllArgs<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
   ): GetArgs<B> {
     const getAllArgs: GetArgs<B> = {
@@ -661,7 +661,7 @@ class Container<T extends interfaces.BindingMap = any, P extends interfaces.Bind
     return getAllArgs;
   }
 
-  private _getNotAllArgs<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.ContainerIdentifier<T> = any>(
+  private _getNotAllArgs<B extends interfaces.ContainerBinding<T, K>, K extends interfaces.MappedServiceIdentifier<T> = any>(
     serviceIdentifier: K,
     isMultiInject: boolean,
     key?: string | number | symbol | undefined,
