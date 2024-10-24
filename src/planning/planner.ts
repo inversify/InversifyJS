@@ -217,9 +217,9 @@ function getBindings<T>(
   return bindings;
 }
 
-function plan(
+function plan<T extends interfaces.BindingMap>(
   metadataReader: interfaces.MetadataReader,
-  container: interfaces.Container,
+  container: interfaces.Container<T>,
   isMultiInject: boolean,
   targetType: interfaces.TargetType,
   serviceIdentifier: interfaces.ServiceIdentifier,
@@ -245,8 +245,8 @@ function plan(
 
 }
 
-function createMockRequest(
-  container: interfaces.Container,
+function createMockRequest<T extends interfaces.BindingMap>(
+  container: interfaces.Container<T>,
   serviceIdentifier: interfaces.ServiceIdentifier,
   key: string | number | symbol,
   value: unknown

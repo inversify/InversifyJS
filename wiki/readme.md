@@ -17,6 +17,7 @@ Welcome to the InversifyJS wiki!
 - [Container API](./container_api.md)
 - [Declaring container modules](./container_modules.md)
 - [Container snapshots](./container_snapshots.md)
+- [Strong Container typing](./container_typing.md)
 - [Controlling the scope of the dependencies](./scope.md)
 - [Declaring optional dependencies](./optional_dependencies.md)
 - [Injecting a constant or dynamic value](./value_injection.md)
