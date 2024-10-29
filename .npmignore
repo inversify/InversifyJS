@@ -20,9 +20,10 @@ CODE_OF_CONDUCT.md
 tslint.json
 wallaby.js
 .auditignore
-.travis.yml
+.nyc_output
 .github
 .gitignore
-.vscode
 .publishrc
+.travis.yml
+.vscode
 type_definitions
