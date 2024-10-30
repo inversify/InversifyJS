@@ -6,26 +6,27 @@ import { Metadata } from './metadata';
 import { QueryableString } from './queryable_string';
 
 class Target implements interfaces.Target {
-
   public id: number;
   public type: interfaces.TargetType;
   public serviceIdentifier: interfaces.ServiceIdentifier;
   public name: interfaces.QueryableString;
   public identifier: string | symbol;
-  public key!: string | symbol
+  public key!: string | symbol;
   public metadata!: Metadata[];
 
   public constructor(
     type: interfaces.TargetType,
     identifier: string | symbol,
     serviceIdentifier: interfaces.ServiceIdentifier,
-    namedOrTagged?: (string | Metadata)
+    namedOrTagged?: string | Metadata,
   ) {
-
     this.id = id();
     this.type = type;
     this.serviceIdentifier = serviceIdentifier;
-    const queryableName = typeof identifier === 'symbol' ? getSymbolDescription(identifier) : identifier;
+    const queryableName =
+      typeof identifier === 'symbol'
+        ? getSymbolDescription(identifier)
+        : identifier;
     this.name = new QueryableString(queryableName || '');
     this.identifier = identifier;
     this.metadata = new Array();
@@ -44,7 +45,6 @@ class Target implements interfaces.Target {
     if (metadataItem !== null) {
       this.metadata.push(metadataItem);
     }
-
   }
 
   public hasTag(key: string): boolean {
@@ -69,8 +69,8 @@ class Target implements interfaces.Target {
   }
 
   public isTagged(): boolean {
-    return this.metadata.some(
-      (metadata) => METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
+    return this.metadata.some((metadata) =>
+      METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
     );
   }
 
@@ -89,8 +89,8 @@ class Target implements interfaces.Target {
 
   public getCustomTags(): interfaces.Metadata[] | null {
     if (this.isTagged()) {
-      return this.metadata.filter(
-        (metadata) => METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
+      return this.metadata.filter((metadata) =>
+        METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
       );
     } else {
       return null;
@@ -111,7 +111,6 @@ class Target implements interfaces.Target {
       return false;
     };
   }
-
 }
 
 export { Target };

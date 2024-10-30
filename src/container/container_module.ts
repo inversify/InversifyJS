@@ -2,7 +2,6 @@ import { interfaces } from '../interfaces/interfaces';
 import { id } from '../utils/id';
 
 export class ContainerModule implements interfaces.ContainerModule {
-
   public id: number;
   public registry: interfaces.ContainerModuleCallBack;
 
@@ -10,11 +9,9 @@ export class ContainerModule implements interfaces.ContainerModule {
     this.id = id();
     this.registry = registry;
   }
-
 }
 
 export class AsyncContainerModule implements interfaces.AsyncContainerModule {
-
   public id: number;
   public registry: interfaces.AsyncContainerModuleCallBack;
 
@@ -22,5 +19,4 @@ export class AsyncContainerModule implements interfaces.AsyncContainerModule {
     this.id = id();
     this.registry = registry;
   }
-
 }

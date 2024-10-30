@@ -18,8 +18,10 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     onDeactivation: interfaces.BindingDeactivation<unknown>,
   ) {
-    this._getModuleActivationHandlers(moduleId)
-      .onDeactivations.add(serviceIdentifier, onDeactivation);
+    this._getModuleActivationHandlers(moduleId).onDeactivations.add(
+      serviceIdentifier,
+      onDeactivation,
+    );
   }
 
   public addActivation(
@@ -27,8 +29,10 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
     onActivation: interfaces.BindingActivation<unknown>,
   ) {
-    this._getModuleActivationHandlers(moduleId)
-      .onActivations.add(serviceIdentifier, onActivation);
+    this._getModuleActivationHandlers(moduleId).onActivations.add(
+      serviceIdentifier,
+      onActivation,
+    );
   }
 
   public clone(): interfaces.ModuleActivationStore {
@@ -44,8 +48,12 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     return clone;
   }
 
-  private _getModuleActivationHandlers(moduleId: number): interfaces.ModuleActivationHandlers {
-    let moduleActivationHandlers: interfaces.ModuleActivationHandlers | undefined = this._map.get(moduleId);
+  private _getModuleActivationHandlers(
+    moduleId: number,
+  ): interfaces.ModuleActivationHandlers {
+    let moduleActivationHandlers:
+      | interfaces.ModuleActivationHandlers
+      | undefined = this._map.get(moduleId);
 
     if (moduleActivationHandlers === undefined) {
       moduleActivationHandlers = this._getEmptyHandlersStore();
@@ -58,7 +66,7 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
   private _getEmptyHandlersStore(): interfaces.ModuleActivationHandlers {
     const handlersStore: interfaces.ModuleActivationHandlers = {
       onActivations: new Lookup(),
-      onDeactivations: new Lookup()
+      onDeactivations: new Lookup(),
     };
     return handlersStore;
   }

@@ -1,13 +1,16 @@
 import * as ERROR_MSGS from '../constants/error_msgs';
 import { interfaces } from '../interfaces/interfaces';
 
-function getServiceIdentifierAsString(serviceIdentifier: interfaces.ServiceIdentifier): string {
+function getServiceIdentifierAsString(
+  serviceIdentifier: interfaces.ServiceIdentifier,
+): string {
   if (typeof serviceIdentifier === 'function') {
     const _serviceIdentifier = serviceIdentifier;
     return _serviceIdentifier.name;
   } else if (typeof serviceIdentifier === 'symbol') {
     return serviceIdentifier.toString();
-  } else { // string
+  } else {
+    // string
     const _serviceIdentifier = serviceIdentifier;
     return _serviceIdentifier as string;
   }
@@ -18,25 +21,24 @@ function listRegisteredBindingsForServiceIdentifier(
   serviceIdentifier: string,
   getBindings: <T>(
     container: interfaces.Container,
-    serviceIdentifier: interfaces.ServiceIdentifier<T>
-  ) => interfaces.Binding<T>[]
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  ) => interfaces.Binding<T>[],
 ): string {
-
   let registeredBindingsList = '';
   const registeredBindings = getBindings(container, serviceIdentifier);
 
   if (registeredBindings.length !== 0) {
-
     registeredBindingsList = '\nRegistered bindings:';
 
     registeredBindings.forEach((binding: interfaces.Binding<unknown>) => {
-
       // Use 'Object as name of constant value injections'
       let name = 'Object';
 
       // Use function name if available
       if (binding.implementationType !== null) {
-        name = getFunctionName(binding.implementationType as { name: string | null });
+        name = getFunctionName(
+          binding.implementationType as { name: string | null },
+        );
       }
 
       registeredBindingsList = `${registeredBindingsList}\n ${name}`;
@@ -44,9 +46,7 @@ function listRegisteredBindingsForServiceIdentifier(
       if (binding.constraint.metaData) {
         registeredBindingsList = `${registeredBindingsList} - ${binding.constraint.metaData}`;
       }
-
     });
-
   }
 
   return registeredBindingsList;
@@ -54,7 +54,7 @@ function listRegisteredBindingsForServiceIdentifier(
 
 function alreadyDependencyChain(
   request: interfaces.Request,
-  serviceIdentifier: interfaces.ServiceIdentifier
+  serviceIdentifier: interfaces.ServiceIdentifier,
 ): boolean {
   if (request.parentRequest === null) {
     return false;
@@ -65,15 +65,14 @@ function alreadyDependencyChain(
   }
 }
 
-function dependencyChainToString(
-  request: interfaces.Request
-) {
-
+function dependencyChainToString(request: interfaces.Request) {
   function _createStringArr(
     req: interfaces.Request,
-    result: string[] = []
+    result: string[] = [],
   ): string[] {
-    const serviceIdentifier = getServiceIdentifierAsString(req.serviceIdentifier);
+    const serviceIdentifier = getServiceIdentifierAsString(
+      req.serviceIdentifier,
+    );
     result.push(serviceIdentifier);
     if (req.parentRequest !== null) {
       return _createStringArr(req.parentRequest, result);
@@ -83,12 +82,9 @@ function dependencyChainToString(
 
   const stringArr = _createStringArr(request);
   return stringArr.reverse().join(' --> ');
-
 }
 
-function circularDependencyToException(
-  request: interfaces.Request
-) {
+function circularDependencyToException(request: interfaces.Request) {
   request.childRequests.forEach((childRequest) => {
     if (alreadyDependencyChain(childRequest, childRequest.serviceIdentifier)) {
       const services = dependencyChainToString(childRequest);
@@ -99,9 +95,11 @@ function circularDependencyToException(
   });
 }
 
-function listMetadataForTarget(serviceIdentifierString: string, target: interfaces.Target): string {
+function listMetadataForTarget(
+  serviceIdentifierString: string,
+  target: interfaces.Target,
+): string {
   if (target.isTagged() || target.isNamed()) {
-
     let m = '';
 
     const namedTag = target.getNamedTag();
@@ -118,12 +116,10 @@ function listMetadataForTarget(serviceIdentifierString: string, target: interfac
     }
 
     return ` ${serviceIdentifierString}\n ${serviceIdentifierString} - ${m}`;
-
   } else {
     return ` ${serviceIdentifierString}`;
   }
 }
-
 
 function getFunctionName(func: { name: string | null }): string {
   if (func.name) {
@@ -145,5 +141,5 @@ export {
   listRegisteredBindingsForServiceIdentifier,
   listMetadataForTarget,
   circularDependencyToException,
-  getSymbolDescription
+  getSymbolDescription,
 };

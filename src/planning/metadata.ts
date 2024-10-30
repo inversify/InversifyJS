@@ -1,16 +1,11 @@
 import * as METADATA_KEY from '../constants/metadata_keys';
 import { interfaces } from '../interfaces/interfaces';
 
-
 class Metadata implements interfaces.Metadata {
-
   public key: string | number | symbol;
   public value: unknown;
 
-  public constructor(
-    key: string | number | symbol,
-    value: unknown
-  ) {
+  public constructor(key: string | number | symbol, value: unknown) {
     this.key = key;
     this.value = value;
   }

@@ -1,7 +1,6 @@
 import { interfaces } from '../interfaces/interfaces';
 
 class QueryableString implements interfaces.QueryableString {
-
   private str: string;
 
   public constructor(str: string) {
@@ -20,7 +19,7 @@ class QueryableString implements interfaces.QueryableString {
   }
 
   public contains(searchString: string): boolean {
-    return (this.str.indexOf(searchString) !== -1);
+    return this.str.indexOf(searchString) !== -1;
   }
 
   public equals(compareString: string): boolean {
@@ -30,7 +29,6 @@ class QueryableString implements interfaces.QueryableString {
   public value(): string {
     return this.str;
   }
-
 }
 
 export { QueryableString };

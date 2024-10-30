@@ -7,7 +7,10 @@ export function isStackOverflowException(error: unknown): error is RangeError {
   );
 }
 
-export const tryAndThrowErrorIfStackOverflow = <T>(fn: () => T, errorCallback: () => Error) => {
+export const tryAndThrowErrorIfStackOverflow = <T>(
+  fn: () => T,
+  errorCallback: () => Error,
+) => {
   try {
     return fn();
   } catch (error) {
@@ -16,4 +19,4 @@ export const tryAndThrowErrorIfStackOverflow = <T>(fn: () => T, errorCallback: (
     }
     throw error;
   }
-}
+};

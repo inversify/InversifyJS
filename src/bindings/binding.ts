@@ -3,7 +3,6 @@ import { interfaces } from '../interfaces/interfaces';
 import { id } from '../utils/id';
 
 class Binding<TActivated> implements interfaces.Binding<TActivated> {
-
   public id: number;
   public moduleId!: interfaces.ContainerModuleBase['id'];
 
@@ -45,7 +44,10 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
   // On deactivation handler (invoked just before an instance is unbinded and removed from container)
   public onDeactivation: interfaces.BindingDeactivation<TActivated> | null;
 
-  public constructor(serviceIdentifier: interfaces.ServiceIdentifier<TActivated>, scope: interfaces.BindingScope) {
+  public constructor(
+    serviceIdentifier: interfaces.ServiceIdentifier<TActivated>,
+    scope: interfaces.BindingScope,
+  ) {
     this.id = id();
     this.activated = false;
     this.serviceIdentifier = serviceIdentifier;
@@ -63,7 +65,8 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
 
   public clone(): interfaces.Binding<TActivated> {
     const clone = new Binding(this.serviceIdentifier, this.scope);
-    clone.activated = (clone.scope === BindingScopeEnum.Singleton) ? this.activated : false;
+    clone.activated =
+      clone.scope === BindingScopeEnum.Singleton ? this.activated : false;
     clone.implementationType = this.implementationType;
     clone.dynamicValue = this.dynamicValue;
     clone.scope = this.scope;
@@ -76,7 +79,6 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     clone.cache = this.cache;
     return clone;
   }
-
 }
 
 export { Binding };
