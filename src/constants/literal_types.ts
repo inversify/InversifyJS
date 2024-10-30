@@ -3,7 +3,7 @@ import { interfaces } from '../interfaces/interfaces';
 const BindingScopeEnum: interfaces.BindingScopeEnum = {
   Request: 'Request',
   Singleton: 'Singleton',
-  Transient: 'Transient'
+  Transient: 'Transient',
 };
 
 const BindingTypeEnum: interfaces.BindingTypeEnum = {
@@ -14,13 +14,13 @@ const BindingTypeEnum: interfaces.BindingTypeEnum = {
   Function: 'Function',
   Instance: 'Instance',
   Invalid: 'Invalid',
-  Provider: 'Provider'
+  Provider: 'Provider',
 };
 
 const TargetTypeEnum: interfaces.TargetTypeEnum = {
   ClassProperty: 'ClassProperty',
   ConstructorArgument: 'ConstructorArgument',
-  Variable: 'Variable'
+  Variable: 'Variable',
 };
 
 export { BindingScopeEnum, BindingTypeEnum, TargetTypeEnum };

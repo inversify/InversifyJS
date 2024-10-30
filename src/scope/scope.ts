@@ -1,13 +1,12 @@
 import { BindingScopeEnum } from '../constants/literal_types';
-import type { interfaces } from '../interfaces/interfaces'
+import type { interfaces } from '../interfaces/interfaces';
 import { isPromise } from '../utils/async';
 
 export const tryGetFromScope = <T>(
   requestScope: interfaces.RequestScope,
-  binding: interfaces.Binding<T>
+  binding: interfaces.Binding<T>,
 ): T | Promise<T> | null => {
-
-  if ((binding.scope === BindingScopeEnum.Singleton) && binding.activated) {
+  if (binding.scope === BindingScopeEnum.Singleton && binding.activated) {
     return binding.cache!;
   }
 
@@ -18,39 +17,35 @@ export const tryGetFromScope = <T>(
     return requestScope.get(binding.id) as T | Promise<T>;
   }
   return null;
-}
+};
 
 export const saveToScope = <T>(
   requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
-  result: T | Promise<T>
+  result: T | Promise<T>,
 ): void => {
   if (binding.scope === BindingScopeEnum.Singleton) {
     _saveToSingletonScope(binding, result);
   }
 
-  if (
-    binding.scope === BindingScopeEnum.Request
-  ) {
+  if (binding.scope === BindingScopeEnum.Request) {
     _saveToRequestScope(requestScope, binding, result);
   }
-}
+};
 
 const _saveToRequestScope = <T>(
   requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
-  result: T | Promise<T>
+  result: T | Promise<T>,
 ): void => {
-  if (
-    !requestScope.has(binding.id)
-  ) {
+  if (!requestScope.has(binding.id)) {
     requestScope.set(binding.id, result);
   }
-}
+};
 
 const _saveToSingletonScope = <T>(
   binding: interfaces.Binding<T>,
-  result: T | Promise<T>
+  result: T | Promise<T>,
 ): void => {
   // store in cache if scope is singleton
   binding.cache = result;
@@ -59,11 +54,11 @@ const _saveToSingletonScope = <T>(
   if (isPromise(result)) {
     void _saveAsyncResultToSingletonScope(binding, result);
   }
-}
+};
 
 const _saveAsyncResultToSingletonScope = async <T>(
   binding: interfaces.Binding<T>,
-  asyncResult: Promise<T>
+  asyncResult: Promise<T>,
 ): Promise<void> => {
   try {
     const result = await asyncResult;
@@ -76,4 +71,4 @@ const _saveAsyncResultToSingletonScope = async <T>(
 
     throw ex;
   }
-}
+};

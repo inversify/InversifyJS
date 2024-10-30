@@ -3,7 +3,11 @@ import { Metadata } from '../planning/metadata';
 import { tagParameter, DecoratorTarget } from './decorator_utils';
 
 function unmanaged() {
-  return function (target: DecoratorTarget, targetKey: string | undefined, index: number) {
+  return function (
+    target: DecoratorTarget,
+    targetKey: string | undefined,
+    index: number,
+  ) {
     const metadata = new Metadata(METADATA_KEY.UNMANAGED_TAG, true);
     tagParameter(target, targetKey, index, metadata);
   };
