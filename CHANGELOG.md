@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Added `.toDynamicValueWithDeps` to create a dynamic value with declaratively listed dependencies
 
 ### Changed
 
