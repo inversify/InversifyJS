@@ -19,8 +19,8 @@ describe('Issue 543', () => {
 
     @injectable()
     class Child2 {
-      public circ: Circular;
-      constructor(@inject(TYPE.Circular) circ: Circular) {
+      public circ: unknown;
+      constructor(@inject(TYPE.Circular) circ: unknown) {
         this.circ = circ;
       }
     }
@@ -39,7 +39,7 @@ describe('Issue 543', () => {
     }
 
     @injectable()
-    class Circular implements Circular {
+    class Circular {
       public irrelevant: Irrelevant;
       public child: Child;
       constructor(

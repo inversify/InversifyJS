@@ -7,9 +7,9 @@ describe('Node', () => {
   it('Should throw if circular dependencies found', () => {
     @injectable()
     class A {
-      public b: B;
-      public c: C;
-      constructor(@inject('B') b: B, @inject('C') c: C) {
+      public b: unknown;
+      public c: unknown;
+      constructor(@inject('B') b: unknown, @inject('C') c: unknown) {
         this.b = b;
         this.c = c;
       }
@@ -20,16 +20,16 @@ describe('Node', () => {
 
     @injectable()
     class C {
-      public d: D;
-      constructor(@inject('D') d: D) {
+      public d: unknown;
+      constructor(@inject('D') d: unknown) {
         this.d = d;
       }
     }
 
     @injectable()
     class D {
-      public a: A;
-      constructor(@inject('A') a: A) {
+      public a: unknown;
+      constructor(@inject('A') a: unknown) {
         this.a = a;
       }
     }
