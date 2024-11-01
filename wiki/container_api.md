@@ -503,13 +503,13 @@ class Katana {
 @injectable()
 class Ninja implements Ninja {
     public katana: Katana;
-    public constructor(katana: Katana) {
+    constructor(katana: Katana) {
         this.katana = katana;
     }
     public fight() { return this.katana.hit(); }
 }
 
-const container = new Container();
+const container: Container = new Container();
 container.bind(Katana).toSelf();
 
 const tryGet = () => container.get(Ninja);

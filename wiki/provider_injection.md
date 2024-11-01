@@ -13,9 +13,9 @@ class Ninja implements Ninja {
     public shuriken: Shuriken;
     public katanaProvider: KatanaProvider;
 
-    public constructor(
-	    @inject("KatanaProvider") katanaProvider: KatanaProvider, 
-	    @inject("Shuriken") shuriken: Shuriken
+    constructor(
+        @inject("KatanaProvider") katanaProvider: KatanaProvider, 
+        @inject("Shuriken") shuriken: Shuriken
     ) {
         this.katanaProvider = katanaProvider;
         this.katana = null;
@@ -173,7 +173,7 @@ interface Warrior {
 @injectable()
 class Ninja implements Warrior {
     public level: number;
-    public constructor() {
+    constructor() {
         this.level = 0;
     }
 }
@@ -227,7 +227,7 @@ The following example showcases how to apply the `valueOrDefault` helper:
 class Ninja {
     public level: number;
     public rank: string;
-    public constructor() {
+    constructor() {
         this.level = 0;
         this.rank = "Ninja";
     }
@@ -244,7 +244,7 @@ class Ninja {
 @injectable()
 class NinjaMaster {
     public rank: string;
-    public constructor() {
+    constructor() {
         this.rank = "NinjaMaster";
     }
 }

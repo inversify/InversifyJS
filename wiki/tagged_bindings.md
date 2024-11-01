@@ -22,7 +22,7 @@ interface Ninja {
 class Ninja implements Ninja {
     public katana: Weapon;
     public shuriken: Weapon;
-    public constructor(
+    constructor(
         @inject("Weapon") @tagged("canThrow", false) katana: Weapon,
         @inject("Weapon") @tagged("canThrow", true) shuriken: Weapon
     ) {

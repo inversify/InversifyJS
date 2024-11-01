@@ -126,7 +126,7 @@ class Ninja implements Ninja {
     private _katana: Katana;
     private _shuriken: Shuriken;
 
-    public constructor(
+    constructor(
         @inject("Katana") katana: Katana,
         @inject("Shuriken") shuriken: Shuriken
     ) {
@@ -154,7 +154,7 @@ class Ninja implements Ninja {
     private _katana: Katana;
     private _shuriken: Shuriken;
 
-    public constructor(
+    constructor(
         katana: Katana,
         shuriken: Shuriken
     ) {

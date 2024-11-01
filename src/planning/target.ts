@@ -12,9 +12,9 @@ class Target implements interfaces.Target {
   public name: interfaces.QueryableString;
   public identifier: string | symbol;
   public key!: string | symbol;
-  public metadata!: Metadata[];
+  public metadata: Metadata[];
 
-  public constructor(
+  constructor(
     type: interfaces.TargetType,
     identifier: string | symbol,
     serviceIdentifier: interfaces.ServiceIdentifier,
@@ -23,13 +23,13 @@ class Target implements interfaces.Target {
     this.id = id();
     this.type = type;
     this.serviceIdentifier = serviceIdentifier;
-    const queryableName =
+    const queryableName: string =
       typeof identifier === 'symbol'
         ? getSymbolDescription(identifier)
         : identifier;
     this.name = new QueryableString(queryableName || '');
     this.identifier = identifier;
-    this.metadata = new Array();
+    this.metadata = new Array<Metadata>();
 
     let metadataItem: interfaces.Metadata | null = null;
 
@@ -69,8 +69,10 @@ class Target implements interfaces.Target {
   }
 
   public isTagged(): boolean {
-    return this.metadata.some((metadata) =>
-      METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
+    return this.metadata.some((metadata: interfaces.Metadata) =>
+      METADATA_KEY.NON_CUSTOM_TAG_KEYS.every(
+        (key: string) => metadata.key !== key,
+      ),
     );
   }
 
@@ -81,7 +83,7 @@ class Target implements interfaces.Target {
   public getNamedTag(): interfaces.Metadata<string> | null {
     if (this.isNamed()) {
       return this.metadata.filter(
-        (m) => m.key === METADATA_KEY.NAMED_TAG,
+        (m: interfaces.Metadata) => m.key === METADATA_KEY.NAMED_TAG,
       )[0] as interfaces.Metadata<string>;
     }
     return null;
@@ -89,8 +91,10 @@ class Target implements interfaces.Target {
 
   public getCustomTags(): interfaces.Metadata[] | null {
     if (this.isTagged()) {
-      return this.metadata.filter((metadata) =>
-        METADATA_KEY.NON_CUSTOM_TAG_KEYS.every((key) => metadata.key !== key),
+      return this.metadata.filter((metadata: interfaces.Metadata) =>
+        METADATA_KEY.NON_CUSTOM_TAG_KEYS.every(
+          (key: string) => metadata.key !== key,
+        ),
       );
     } else {
       return null;

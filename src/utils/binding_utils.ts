@@ -1,20 +1,28 @@
-import { getServiceIdentifierAsString } from '../utils/serialization';
-import type { interfaces } from '../interfaces/interfaces';
 import * as ERROR_MSGS from '../constants/error_msgs';
 import { BindingTypeEnum } from '../constants/literal_types';
+import type { interfaces } from '../interfaces/interfaces';
+import { getServiceIdentifierAsString } from '../utils/serialization';
 import { FactoryType } from './factory_type';
 
-export const multiBindToService =
+export const multiBindToService: (
+  container: interfaces.Container,
+) => (
+  service: interfaces.ServiceIdentifier,
+) => (...types: interfaces.ServiceIdentifier[]) => void =
   (container: interfaces.Container) =>
   (service: interfaces.ServiceIdentifier) =>
-  (...types: interfaces.ServiceIdentifier[]) =>
-    types.forEach((t) => container.bind(t).toService(service));
+  (...types: interfaces.ServiceIdentifier[]) => {
+    types.forEach((t: interfaces.ServiceIdentifier) => {
+      container.bind(t).toService(service);
+    });
+  };
 
-export const ensureFullyBound = <T = unknown>(
+export const ensureFullyBound: <T = unknown>(
   binding: interfaces.Binding<T>,
-): void => {
+) => void = <T = unknown>(binding: interfaces.Binding<T>): void => {
   let boundValue: unknown = null;
 
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (binding.type) {
     case BindingTypeEnum.ConstantValue:
     case BindingTypeEnum.Function:
@@ -37,7 +45,7 @@ export const ensureFullyBound = <T = unknown>(
   if (boundValue === null) {
     // The user probably created a binding but didn't finish it
     // e.g. container.bind<T>('Something'); missing BindingToSyntax
-    const serviceIdentifierAsString = getServiceIdentifierAsString(
+    const serviceIdentifierAsString: string = getServiceIdentifierAsString(
       binding.serviceIdentifier,
     );
     throw new Error(
@@ -46,7 +54,9 @@ export const ensureFullyBound = <T = unknown>(
   }
 };
 
-export const getFactoryDetails = <T = unknown>(
+export const getFactoryDetails: <T = unknown>(
+  binding: interfaces.Binding<T>,
+) => interfaces.FactoryDetails = <T = unknown>(
   binding: interfaces.Binding<T>,
 ): interfaces.FactoryDetails => {
   switch (binding.type) {

@@ -4,9 +4,9 @@ import { isClonable } from '../utils/clonable';
 
 class Lookup<T> implements interfaces.Lookup<T> {
   // dictionary used store multiple values for each key <key>
-  private _map: Map<interfaces.ServiceIdentifier, T[]>;
+  private readonly _map: Map<interfaces.ServiceIdentifier, T[]>;
 
-  public constructor() {
+  constructor() {
     this._map = new Map<interfaces.ServiceIdentifier, T[]>();
   }
 
@@ -16,15 +16,13 @@ class Lookup<T> implements interfaces.Lookup<T> {
 
   // adds a new entry to _map
   public add(serviceIdentifier: interfaces.ServiceIdentifier, value: T): void {
-    if (serviceIdentifier === null || serviceIdentifier === undefined) {
-      throw new Error(ERROR_MSGS.NULL_ARGUMENT);
-    }
+    this._checkNonNulish(serviceIdentifier);
 
     if (value === null || value === undefined) {
       throw new Error(ERROR_MSGS.NULL_ARGUMENT);
     }
 
-    const entry = this._map.get(serviceIdentifier);
+    const entry: T[] | undefined = this._map.get(serviceIdentifier);
     if (entry !== undefined) {
       entry.push(value);
     } else {
@@ -34,11 +32,9 @@ class Lookup<T> implements interfaces.Lookup<T> {
 
   // gets the value of a entry by its key (serviceIdentifier)
   public get(serviceIdentifier: interfaces.ServiceIdentifier): T[] {
-    if (serviceIdentifier === null || serviceIdentifier === undefined) {
-      throw new Error(ERROR_MSGS.NULL_ARGUMENT);
-    }
+    this._checkNonNulish(serviceIdentifier);
 
-    const entry = this._map.get(serviceIdentifier);
+    const entry: T[] | undefined = this._map.get(serviceIdentifier);
 
     if (entry !== undefined) {
       return entry;
@@ -49,9 +45,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
 
   // removes a entry from _map by its key (serviceIdentifier)
   public remove(serviceIdentifier: interfaces.ServiceIdentifier): void {
-    if (serviceIdentifier === null || serviceIdentifier === undefined) {
-      throw new Error(ERROR_MSGS.NULL_ARGUMENT);
-    }
+    this._checkNonNulish(serviceIdentifier);
 
     if (!this._map.delete(serviceIdentifier)) {
       throw new Error(ERROR_MSGS.KEY_NOT_FOUND);
@@ -64,14 +58,16 @@ class Lookup<T> implements interfaces.Lookup<T> {
         serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
         value: T[],
       ) => {
-        const lookupActivations = lookup.hasKey(serviceIdentifier)
+        const lookupActivations: T[] | undefined = lookup.hasKey(
+          serviceIdentifier,
+        )
           ? lookup.get(serviceIdentifier)
           : undefined;
         if (lookupActivations !== undefined) {
-          const filteredValues = value.filter(
-            (lookupValue) =>
+          const filteredValues: T[] = value.filter(
+            (lookupValue: T) =>
               !lookupActivations.some(
-                (moduleActivation) => lookupValue === moduleActivation,
+                (moduleActivation: T) => lookupValue === moduleActivation,
               ),
           );
 
@@ -83,11 +79,11 @@ class Lookup<T> implements interfaces.Lookup<T> {
 
   public removeByCondition(condition: (item: T) => boolean): T[] {
     const removals: T[] = [];
-    this._map.forEach((entries, key) => {
+    this._map.forEach((entries: T[], key: interfaces.ServiceIdentifier) => {
       const updatedEntries: T[] = [];
 
       for (const entry of entries) {
-        const remove = condition(entry);
+        const remove: boolean = condition(entry);
         if (remove) {
           removals.push(entry);
         } else {
@@ -103,9 +99,7 @@ class Lookup<T> implements interfaces.Lookup<T> {
 
   // returns true if _map contains a key (serviceIdentifier)
   public hasKey(serviceIdentifier: interfaces.ServiceIdentifier): boolean {
-    if (serviceIdentifier === null || serviceIdentifier === undefined) {
-      throw new Error(ERROR_MSGS.NULL_ARGUMENT);
-    }
+    this._checkNonNulish(serviceIdentifier);
 
     return this._map.has(serviceIdentifier);
   }
@@ -113,10 +107,12 @@ class Lookup<T> implements interfaces.Lookup<T> {
   // returns a new Lookup instance; note: this is not a deep clone, only Lookup related data structure (dictionary) is
   // cloned, content remains the same
   public clone(): interfaces.Lookup<T> {
-    const copy = new Lookup<T>();
+    const copy: Lookup<T> = new Lookup<T>();
 
-    this._map.forEach((value, key) => {
-      value.forEach((b) => copy.add(key, isClonable<T>(b) ? b.clone() : b));
+    this._map.forEach((value: T[], key: interfaces.ServiceIdentifier) => {
+      value.forEach((b: T) => {
+        copy.add(key, isClonable<T>(b) ? b.clone() : b);
+      });
     });
 
     return copy;
@@ -125,9 +121,15 @@ class Lookup<T> implements interfaces.Lookup<T> {
   public traverse(
     func: (key: interfaces.ServiceIdentifier, value: T[]) => void,
   ): void {
-    this._map.forEach((value, key) => {
+    this._map.forEach((value: T[], key: interfaces.ServiceIdentifier) => {
       func(key, value);
     });
+  }
+
+  private _checkNonNulish(value: unknown): void {
+    if (value == null) {
+      throw new Error(ERROR_MSGS.NULL_ARGUMENT);
+    }
   }
 
   private _setValue(

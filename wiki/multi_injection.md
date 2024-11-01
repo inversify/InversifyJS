@@ -27,8 +27,8 @@ interface Ninja {
 class Ninja implements Ninja {
     public katana: Weapon;
     public shuriken: Weapon;
-    public constructor(
-	    @multiInject("Weapon") weapons: Weapon[]
+    constructor(
+        @multiInject("Weapon") weapons: Weapon[]
     ) {
         this.katana = weapons[0];
         this.shuriken = weapons[1];

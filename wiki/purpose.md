@@ -25,7 +25,7 @@ class Ninja implements Ninja {
     private _katana: Katana;
     private _shuriken: Shuriken;
 
-    public constructor(
+    constructor(
         @inject(TYPES.Katana) katana: Katana,
         @inject(TYPES.Shuriken) shuriken: Shuriken
     ) {

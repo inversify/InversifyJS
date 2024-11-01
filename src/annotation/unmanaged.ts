@@ -1,6 +1,6 @@
 import * as METADATA_KEY from '../constants/metadata_keys';
 import { Metadata } from '../planning/metadata';
-import { tagParameter, DecoratorTarget } from './decorator_utils';
+import { DecoratorTarget, tagParameter } from './decorator_utils';
 
 function unmanaged() {
   return function (
@@ -8,7 +8,7 @@ function unmanaged() {
     targetKey: string | undefined,
     index: number,
   ) {
-    const metadata = new Metadata(METADATA_KEY.UNMANAGED_TAG, true);
+    const metadata: Metadata = new Metadata(METADATA_KEY.UNMANAGED_TAG, true);
     tagParameter(target, targetKey, index, metadata);
   };
 }

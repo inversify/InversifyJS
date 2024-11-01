@@ -54,7 +54,7 @@ interface Weapon {
 @injectable()
 class Katana implements Weapon {
     public name: string;
-    public constructor() {
+    constructor() {
         this.name = "Katana";
     }
 }
@@ -62,7 +62,7 @@ class Katana implements Weapon {
 @injectable()
 class Shuriken implements Weapon {
     public name: string;
-    public constructor() {
+    constructor() {
         this.name = "Shuriken";
     }
 }

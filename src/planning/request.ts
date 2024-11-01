@@ -11,10 +11,11 @@ class Request implements interfaces.Request {
   public target: interfaces.Target;
   public requestScope: interfaces.RequestScope | null;
 
-  public constructor(
+  constructor(
     serviceIdentifier: interfaces.ServiceIdentifier,
     parentContext: interfaces.Context,
     parentRequest: interfaces.Request | null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     bindings: interfaces.Binding<any> | interfaces.Binding<any>[],
     target: interfaces.Target,
   ) {
@@ -35,7 +36,7 @@ class Request implements interfaces.Request {
     bindings: interfaces.Binding<unknown> | interfaces.Binding<unknown>[],
     target: interfaces.Target,
   ): interfaces.Request {
-    const child = new Request(
+    const child: Request = new Request(
       serviceIdentifier,
       this.parentContext,
       this,

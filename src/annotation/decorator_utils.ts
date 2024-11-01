@@ -3,10 +3,10 @@ import * as METADATA_KEY from '../constants/metadata_keys';
 import { interfaces } from '../interfaces/interfaces';
 import { getFirstArrayDuplicate } from '../utils/js';
 
-function targetIsConstructorFunction<T = Object>(
+function targetIsConstructorFunction<T = object>(
   target: DecoratorTarget<T>,
 ): target is ConstructorFunction<T> {
-  return (target as ConstructorFunction<T>).prototype !== undefined;
+  return (target as Partial<ConstructorFunction<T>>).prototype !== undefined;
 }
 
 type Prototype<T> = {
@@ -16,8 +16,8 @@ type Prototype<T> = {
 } & { constructor: NewableFunction };
 
 interface ConstructorFunction<T = Record<string, unknown>> {
-  new (...args: unknown[]): T;
   prototype: Prototype<T>;
+  new (...args: unknown[]): T;
 }
 
 export type DecoratorTarget<T = unknown> =
@@ -69,7 +69,10 @@ function _ensureNoMetadataKeyDuplicates(
   let metadatas: interfaces.Metadata[] = [];
   if (Array.isArray(metadata)) {
     metadatas = metadata;
-    const duplicate = getFirstArrayDuplicate(metadatas.map((md) => md.key));
+    const duplicate: string | number | symbol | undefined =
+      getFirstArrayDuplicate(
+        metadatas.map((md: interfaces.Metadata) => md.key),
+      );
     if (duplicate !== undefined) {
       throw new Error(
         `${ERROR_MSGS.DUPLICATED_METADATA} ${duplicate.toString()}`,
@@ -99,17 +102,17 @@ function _tagParameterOrProperty(
     paramsOrPropertiesMetadata = Reflect.getMetadata(
       metadataKey,
       annotationTarget,
-    );
+    ) as interfaces.MetadataMap;
   }
 
   let paramOrPropertyMetadata: interfaces.Metadata[] | undefined =
-    paramsOrPropertiesMetadata[key as string];
+    paramsOrPropertiesMetadata[key];
 
   if (paramOrPropertyMetadata === undefined) {
     paramOrPropertyMetadata = [];
   } else {
     for (const m of paramOrPropertyMetadata) {
-      if (metadatas.some((md) => md.key === m.key)) {
+      if (metadatas.some((md: interfaces.Metadata) => md.key === m.key)) {
         throw new Error(
           `${ERROR_MSGS.DUPLICATED_METADATA} ${m.key.toString()}`,
         );

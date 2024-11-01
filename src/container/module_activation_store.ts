@@ -2,15 +2,20 @@ import { interfaces } from '../interfaces/interfaces';
 import { Lookup } from './lookup';
 
 export class ModuleActivationStore implements interfaces.ModuleActivationStore {
-  private _map = new Map<number, interfaces.ModuleActivationHandlers>();
+  private readonly _map: Map<number, interfaces.ModuleActivationHandlers> =
+    new Map();
 
   public remove(moduleId: number): interfaces.ModuleActivationHandlers {
-    if (this._map.has(moduleId)) {
-      const handlers = this._map.get(moduleId);
-      this._map.delete(moduleId);
-      return handlers!;
+    const handlers: interfaces.ModuleActivationHandlers | undefined =
+      this._map.get(moduleId);
+
+    if (handlers === undefined) {
+      return this._getEmptyHandlersStore();
     }
-    return this._getEmptyHandlersStore();
+
+    this._map.delete(moduleId);
+
+    return handlers;
   }
 
   public addDeactivation(
@@ -36,14 +41,19 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
   }
 
   public clone(): interfaces.ModuleActivationStore {
-    const clone = new ModuleActivationStore();
+    const clone: ModuleActivationStore = new ModuleActivationStore();
 
-    this._map.forEach((handlersStore, moduleId) => {
-      clone._map.set(moduleId, {
-        onActivations: handlersStore.onActivations.clone(),
-        onDeactivations: handlersStore.onDeactivations.clone(),
-      });
-    });
+    this._map.forEach(
+      (
+        handlersStore: interfaces.ModuleActivationHandlers,
+        moduleId: number,
+      ) => {
+        clone._map.set(moduleId, {
+          onActivations: handlersStore.onActivations.clone(),
+          onDeactivations: handlersStore.onDeactivations.clone(),
+        });
+      },
+    );
 
     return clone;
   }

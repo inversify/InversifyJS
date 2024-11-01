@@ -1,38 +1,52 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
+import Sinon from 'sinon';
+
 import { injectable } from '../../src/annotation/injectable';
 import { Binding } from '../../src/bindings/binding';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
-import { BindingScopeEnum, BindingTypeEnum } from '../../src/constants/literal_types';
+import {
+  BindingScopeEnum,
+  BindingTypeEnum,
+} from '../../src/constants/literal_types';
 import { interfaces } from '../../src/interfaces/interfaces';
 import { BindingToSyntax } from '../../src/syntax/binding_to_syntax';
-import sinon from 'sinon';
 
 describe('BindingToSyntax', () => {
-
   it('Should set its own properties correctly', () => {
+    const ninjaIdentifier: string = 'Ninja';
 
-    interface Ninja { }
-    const ninjaIdentifier = 'Ninja';
+    const binding: Binding<unknown> = new Binding(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
 
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
-    const _bindingToSyntax = bindingToSyntax as unknown as { _binding: interfaces.Binding<Ninja> }
+    const bindingToSyntax: BindingToSyntax<unknown> = new BindingToSyntax(
+      binding,
+    );
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const _bindingToSyntax: {
+      _binding: interfaces.Binding<unknown>;
+    } = bindingToSyntax as unknown as {
+      _binding: interfaces.Binding<unknown>;
+    };
 
     expect(_bindingToSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
-
   });
 
   it('Should be able to configure the type of a binding', () => {
-
-    interface Ninja { }
-
     @injectable()
-    class Ninja implements Ninja { }
-    const ninjaIdentifier = 'Ninja';
+    class Ninja {}
+    const ninjaIdentifier: string = 'Ninja';
 
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    // let bindingWithClassAsId = new Binding<Ninja>(Ninja, BindingScopeEnum.Transient);
-    const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
+    const binding: Binding<unknown> = new Binding(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
+
+    const bindingToSyntax: BindingToSyntax<unknown> = new BindingToSyntax(
+      binding,
+    );
 
     expect(binding.type).eql(BindingTypeEnum.Invalid);
 
@@ -40,30 +54,38 @@ describe('BindingToSyntax', () => {
     expect(binding.type).eql(BindingTypeEnum.Instance);
     expect(binding.implementationType).not.to.eql(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
     (bindingToSyntax as any)._binding = binding;
     bindingToSyntax.toConstantValue(new Ninja());
     expect(binding.type).eql(BindingTypeEnum.ConstantValue);
     expect(binding.cache instanceof Ninja).eql(true);
 
-    bindingToSyntax.toDynamicValue((context: interfaces.Context) => new Ninja());
+    bindingToSyntax.toDynamicValue(
+      (_context: interfaces.Context) => new Ninja(),
+    );
     expect(binding.type).eql(BindingTypeEnum.DynamicValue);
     expect(typeof binding.dynamicValue).eql('function');
 
-    const dynamicValueFactory: any = binding.dynamicValue;
-    expect(dynamicValueFactory(null) instanceof Ninja).eql(true);
+    const dynamicValueFactory: interfaces.DynamicValue<unknown> =
+      binding.dynamicValue as interfaces.DynamicValue<unknown>;
+
+    expect(
+      dynamicValueFactory(null as unknown as interfaces.Context) instanceof
+        Ninja,
+    ).eql(true);
 
     bindingToSyntax.toConstructor<Ninja>(Ninja);
     expect(binding.type).eql(BindingTypeEnum.Constructor);
     expect(binding.implementationType).not.to.eql(null);
 
-    bindingToSyntax.toFactory<Ninja>((context: interfaces.Context) =>
-      () =>
-        new Ninja());
+    bindingToSyntax.toFactory<Ninja>(
+      (_context: interfaces.Context) => () => new Ninja(),
+    );
 
     expect(binding.type).eql(BindingTypeEnum.Factory);
     expect(binding.factory).not.to.eql(null);
 
-    const f = () => 'test';
+    const f: () => string = () => 'test';
     bindingToSyntax.toFunction(f);
     expect(binding.type).eql(BindingTypeEnum.Function);
     expect(binding.cache === f).eql(true);
@@ -78,45 +100,43 @@ describe('BindingToSyntax', () => {
     expect(binding.type).eql(BindingTypeEnum.Factory);
     expect(binding.factory).not.to.eql(null);
 
-    const mockContext = {
+    const mockContext: interfaces.Context = {
       container: {
-        getNamed: sinon.stub()
-      }
-    };
+        getNamed: sinon.stub(),
+      } as Partial<interfaces.Container> as interfaces.Container,
+    } as Partial<interfaces.Context> as interfaces.Context;
 
     if (binding.factory !== null) {
-      binding.factory((mockContext as unknown as interfaces.Context))(ninjaIdentifier);
-      sinon.assert.calledOnce(mockContext.container.getNamed);
+      binding.factory(mockContext)(ninjaIdentifier);
+      sinon.assert.calledOnce(mockContext.container.getNamed as Sinon.SinonSpy);
     }
 
-    bindingToSyntax.toProvider<Ninja>((context: interfaces.Context) =>
-      () =>
-        new Promise<Ninja>((resolve) => {
+    bindingToSyntax.toProvider<Ninja>(
+      (_context: interfaces.Context) => async () =>
+        new Promise<Ninja>((resolve: (value: Ninja) => void) => {
           resolve(new Ninja());
-        }));
+        }),
+    );
 
     expect(binding.type).eql(BindingTypeEnum.Provider);
     expect(binding.provider).not.to.eql(null);
-
   });
 
   it('Should prevent invalid function bindings', () => {
+    const ninjaIdentifier: string = 'Ninja';
 
-    interface Ninja { }
+    const binding: Binding<unknown> = new Binding(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
+    const bindingToSyntax: BindingToSyntax<unknown> = new BindingToSyntax(
+      binding,
+    );
 
-    @injectable()
-    class Ninja implements Ninja { }
-    const ninjaIdentifier = 'Ninja';
-
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    const bindingToSyntax = new BindingToSyntax<Ninja>(binding);
-
-    const f = function () {
+    const f: () => void = function () {
       bindingToSyntax.toFunction(5);
     };
 
     expect(f).to.throw(ERROR_MSGS.INVALID_FUNCTION_BINDING);
-
   });
-
 });

@@ -5,7 +5,7 @@ export default {
   semi: true,
   singleQuote: true,
   bracketSpacing: true,
-  arrowParens: "always",
-  endOfLine: "lf",
-  trailingComma: "all",
+  arrowParens: 'always',
+  endOfLine: 'lf',
+  trailingComma: 'all',
 };

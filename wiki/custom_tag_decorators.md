@@ -10,7 +10,7 @@ let notThrowable = tagged("canThrow", false);
 class Ninja implements Ninja {
     public katana: Weapon;
     public shuriken: Weapon;
-    public constructor(
+    constructor(
         @inject("Weapon") @notThrowable katana: Weapon,
         @inject("Weapon") @throwable shuriken: Weapon
     ) {
@@ -31,7 +31,7 @@ const dontLikeMondays = moodReason("miserable","I don't like Mondays");
 
 @injectable()
 class MoodyNinja {
-    public constructor(
+    constructor(
         @inject("Response") @happyAndIKnowIt clapHands: Response,
         @inject("Response") @dontLikeMondays shootWholeDayDown: Response
     ) {

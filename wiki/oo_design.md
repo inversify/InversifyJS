@@ -22,7 +22,7 @@ between modules. Let's see an example:
 import BaseModel from "someframework";
 
 class DerivedModel extends BaseModel {
-    public constructor() {
+    constructor() {
         super();
     }
     public saveOrUpdate() {
@@ -45,7 +45,7 @@ The following example do something similar but it favors 'object composition' ov
 @injectable()
 class DerivedModel {
     public baseModel: BaseModel;
-    public constructor(@inject("BaseModel") baseModel: BaseModel) {
+    constructor(@inject("BaseModel") baseModel: BaseModel) {
         this.baseModel = baseModel;
     }
     public saveOrUpdate() {
@@ -72,7 +72,7 @@ class Ninja {
 
     private _katana: Katana;
 
-    public constructor(
+    constructor(
         katana: Katana
     ) {
         this._katana = katana;
@@ -99,7 +99,7 @@ class Ninja {
 
     private _katana: Katana;
 
-    public constructor(
+    constructor(
         @inject("Katana") katana: Katana
     ) {
         this._katana = katana;

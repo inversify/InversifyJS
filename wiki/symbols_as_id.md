@@ -7,9 +7,9 @@ In very large applications using strings as the identifiers of the types to be i
 import { Container, injectable, inject } from "inversify";
 
 let Symbols = {
-	Ninja : Symbol.for("Ninja"),
-	Katana : Symbol.for("Katana"),
-	Shuriken : Symbol.for("Shuriken")
+    Ninja : Symbol.for("Ninja"),
+    Katana : Symbol.for("Katana"),
+    Shuriken : Symbol.for("Shuriken")
 };
 
 @injectable()
@@ -32,9 +32,9 @@ class Ninja implements Ninja {
     private _katana: Katana;
     private _shuriken: Shuriken;
 
-    public constructor(
-	    @inject(Symbols.Katana) katana: Katana,
-	    @inject(Symbols.Shuriken) shuriken: Shuriken
+    constructor(
+        @inject(Symbols.Katana) katana: Katana,
+        @inject(Symbols.Shuriken) shuriken: Shuriken
     ) {
         this._katana = katana;
         this._shuriken = shuriken;

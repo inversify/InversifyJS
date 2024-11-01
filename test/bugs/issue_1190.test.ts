@@ -1,15 +1,23 @@
 import { expect } from 'chai';
-import { injectable, inject, optional, Container, named } from '../../src/inversify';
+
+import {
+  Container,
+  inject,
+  injectable,
+  named,
+  optional,
+} from '../../src/inversify';
 
 describe('Issue 1190', () => {
-
   it('should inject a katana as default weapon to ninja', () => {
+    // eslint-disable-next-line @typescript-eslint/typedef
     const TYPES = {
-      Weapon: 'Weapon'
+      Weapon: 'Weapon',
     };
 
+    // eslint-disable-next-line @typescript-eslint/typedef
     const TAG = {
-      throwable: 'throwable'
+      throwable: 'throwable',
     };
 
     interface Weapon {
@@ -19,7 +27,7 @@ describe('Issue 1190', () => {
     @injectable()
     class Katana implements Weapon {
       public name: string;
-      public constructor() {
+      constructor() {
         this.name = 'Katana';
       }
     }
@@ -27,7 +35,7 @@ describe('Issue 1190', () => {
     @injectable()
     class Shuriken implements Weapon {
       public name: string;
-      public constructor() {
+      constructor() {
         this.name = 'Shuriken';
       }
     }
@@ -37,9 +45,9 @@ describe('Issue 1190', () => {
       public name: string;
       public katana: Katana;
       public shuriken: Shuriken;
-      public constructor(
+      constructor(
         @inject(TYPES.Weapon) @optional() katana: Weapon,
-        @inject(TYPES.Weapon) @named(TAG.throwable) shuriken: Weapon
+        @inject(TYPES.Weapon) @named(TAG.throwable) shuriken: Weapon,
       ) {
         this.name = 'Ninja';
         this.katana = katana;
@@ -47,14 +55,17 @@ describe('Issue 1190', () => {
       }
     }
 
-    const container = new Container();
+    const container: Container = new Container();
 
     container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
-    container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenTargetNamed(TAG.throwable);
+    container
+      .bind<Weapon>(TYPES.Weapon)
+      .to(Shuriken)
+      .whenTargetNamed(TAG.throwable);
 
     container.bind<Ninja>('Ninja').to(Ninja);
 
-    const ninja = container.get<Ninja>('Ninja');
+    const ninja: Ninja = container.get<Ninja>('Ninja');
 
     expect(ninja.katana).to.deep.eq(new Katana());
   });

@@ -45,7 +45,7 @@ class Book {
   @inject("PrintService")
   private _printService: PrintService;
 
-  public constructor(
+  constructor(
       @inject("Author") author: Author,
       @inject("Summary") summary: Summary
 ) {
@@ -104,7 +104,7 @@ class Book {
   @lazyInject("PrintService")
   private _printService: PrintService;
 
-  public constructor(author: string, summary: string) {
+  constructor(author: string, summary: string) {
     this._author = author;
     this._summary = summary;
   }

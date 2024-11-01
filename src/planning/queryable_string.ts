@@ -1,9 +1,9 @@
 import { interfaces } from '../interfaces/interfaces';
 
 class QueryableString implements interfaces.QueryableString {
-  private str: string;
+  private readonly str: string;
 
-  public constructor(str: string) {
+  constructor(str: string) {
     this.str = str;
   }
 
@@ -12,13 +12,17 @@ class QueryableString implements interfaces.QueryableString {
   }
 
   public endsWith(searchString: string): boolean {
-    let reverseString = '';
-    const reverseSearchString = searchString.split('').reverse().join('');
+    let reverseString: string = '';
+    const reverseSearchString: string = searchString
+      .split('')
+      .reverse()
+      .join('');
     reverseString = this.str.split('').reverse().join('');
     return this.startsWith.call({ str: reverseString }, reverseSearchString);
   }
 
   public contains(searchString: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     return this.str.indexOf(searchString) !== -1;
   }
 

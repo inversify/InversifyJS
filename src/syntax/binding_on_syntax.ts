@@ -2,9 +2,9 @@ import { interfaces } from '../interfaces/interfaces';
 import { BindingWhenSyntax } from './binding_when_syntax';
 
 class BindingOnSyntax<T> implements interfaces.BindingOnSyntax<T> {
-  private _binding: interfaces.Binding<T>;
+  private readonly _binding: interfaces.Binding<T>;
 
-  public constructor(binding: interfaces.Binding<T>) {
+  constructor(binding: interfaces.Binding<T>) {
     this._binding = binding;
   }
 

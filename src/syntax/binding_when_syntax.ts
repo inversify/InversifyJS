@@ -8,9 +8,9 @@ import {
 } from './constraint_helpers';
 
 class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
-  private _binding: interfaces.Binding<T>;
+  private readonly _binding: interfaces.Binding<T>;
 
-  public constructor(binding: interfaces.Binding<T>) {
+  constructor(binding: interfaces.Binding<T>) {
     this._binding = binding;
   }
 
@@ -34,7 +34,8 @@ class BindingWhenSyntax<T> implements interfaces.BindingWhenSyntax<T> {
         return false;
       }
 
-      const targetIsDefault =
+      const targetIsDefault: boolean =
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         request.target !== null &&
         !request.target.isNamed() &&
         !request.target.isTagged();

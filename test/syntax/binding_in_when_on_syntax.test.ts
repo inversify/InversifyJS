@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
+
 import { injectable } from '../../src/annotation/injectable';
 import { Binding } from '../../src/bindings/binding';
 import { BindingScopeEnum } from '../../src/constants/literal_types';
@@ -7,7 +8,6 @@ import { interfaces } from '../../src/interfaces/interfaces';
 import { BindingInWhenOnSyntax } from '../../src/syntax/binding_in_when_on_syntax';
 
 describe('BindingInWhenOnSyntax', () => {
-
   let sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
@@ -19,30 +19,50 @@ describe('BindingInWhenOnSyntax', () => {
   });
 
   it('Should set its own properties correctly', () => {
+    const ninjaIdentifier: string = 'Ninja';
 
-    interface Ninja { }
-    const ninjaIdentifier = 'Ninja';
+    const binding: Binding<unknown> = new Binding<unknown>(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
+    const bindingInWhenOnSyntax: BindingInWhenOnSyntax<unknown> =
+      new BindingInWhenOnSyntax<unknown>(binding);
 
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
-    const _bindingInWhenOnSyntax = bindingInWhenOnSyntax as unknown as { _binding: Binding<unknown> };
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const _bindingInWhenOnSyntax: {
+      _binding: Binding<unknown>;
+    } = bindingInWhenOnSyntax as unknown as {
+      _binding: Binding<unknown>;
+    };
 
-    expect(_bindingInWhenOnSyntax._binding.serviceIdentifier).eql(ninjaIdentifier);
-
+    expect(_bindingInWhenOnSyntax._binding.serviceIdentifier).eql(
+      ninjaIdentifier,
+    );
   });
 
   it('Should provide access to BindingInSyntax methods', () => {
+    const ninjaIdentifier: string = 'Ninja';
 
-    interface Ninja { }
-    const ninjaIdentifier = 'Ninja';
+    const binding: Binding<unknown> = new Binding<unknown>(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
 
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
+    const bindingInWhenOnSyntax: BindingInWhenOnSyntax<unknown> =
+      new BindingInWhenOnSyntax<unknown>(binding);
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any
     const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
 
     // stubs for BindingWhenSyntax methods
-    const inSingletonScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, 'inSingletonScope').returns(null);
-    const inTransientScopeStub = sinon.stub(_bindingInWhenOnSyntax._bindingInSyntax, 'inTransientScope').returns(null);
+    const inSingletonScopeStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingInSyntax, 'inSingletonScope')
+      .returns(null);
+    const inTransientScopeStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingInSyntax, 'inTransientScope')
+      .returns(null);
 
     // invoke BindingWhenOnSyntax methods
     bindingInWhenOnSyntax.inSingletonScope();
@@ -51,64 +71,95 @@ describe('BindingInWhenOnSyntax', () => {
     // assert invoked BindingWhenSyntax methods
     expect(inSingletonScopeStub.callCount).eql(1);
     expect(inTransientScopeStub.callCount).eql(1);
-
   });
 
   it('Should provide access to BindingWhenSyntax methods', () => {
-
-    interface Army { }
+    @injectable()
+    class Army {}
 
     @injectable()
-    class Army implements Army { }
+    class ZombieArmy {}
 
-    interface ZombieArmy { }
+    const ninjaIdentifier: string = 'Ninja';
 
-    @injectable()
-    class ZombieArmy implements ZombieArmy { }
+    const binding: Binding<unknown> = new Binding(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
+    const bindingInWhenOnSyntax: BindingInWhenOnSyntax<unknown> =
+      new BindingInWhenOnSyntax(binding);
 
-    interface Ninja { }
-    const ninjaIdentifier = 'Ninja';
-
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
-
-    // cast to any to be able to access private props
+    // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any
     const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
 
     // stubs for BindingWhenSyntax methods
-    const whenStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'when').returns(null);
-    const whenTargetNamedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenTargetNamed').returns(null);
-    const whenTargetTaggedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenTargetTagged').returns(null);
-    const whenInjectedIntoStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenInjectedInto').returns(null);
-    const whenParentNamedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenParentNamed').returns(null);
-    const whenParentTaggedStub = sinon.stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenParentTagged').returns(null);
+    const whenStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'when')
+      .returns(null);
+    const whenTargetNamedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenTargetNamed')
+      .returns(null);
+    const whenTargetTaggedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenTargetTagged')
+      .returns(null);
+    const whenInjectedIntoStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenInjectedInto')
+      .returns(null);
+    const whenParentNamedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenParentNamed')
+      .returns(null);
+    const whenParentTaggedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenParentTagged')
+      .returns(null);
 
-    const whenAnyAncestorIsStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorIs').returns(null);
+    const whenAnyAncestorIsStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorIs')
+      .returns(null);
 
-    const whenNoAncestorIsStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorIs').returns(null);
+    const whenNoAncestorIsStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorIs')
+      .returns(null);
 
-    const whenNoAncestorNamedStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorNamed').returns(null);
+    const whenNoAncestorNamedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorNamed')
+      .returns(null);
 
-    const whenAnyAncestorNamedStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorNamed').returns(null);
+    const whenAnyAncestorNamedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorNamed')
+      .returns(null);
 
-    const whenNoAncestorTaggedStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorTagged').returns(null);
+    const whenNoAncestorTaggedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorTagged')
+      .returns(null);
 
-    const whenAnyAncestorTaggedStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorTagged').returns(null);
+    const whenAnyAncestorTaggedStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorTagged')
+      .returns(null);
 
-    const whenAnyAncestorMatchesStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorMatches').returns(null);
+    const whenAnyAncestorMatchesStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenAnyAncestorMatches')
+      .returns(null);
 
-    const whenNoAncestorMatchesStub = sinon.stub(
-      _bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorMatches').returns(null);
+    const whenNoAncestorMatchesStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingWhenSyntax, 'whenNoAncestorMatches')
+      .returns(null);
 
     // invoke BindingWhenOnSyntax methods
-    bindingInWhenOnSyntax.when((request: interfaces.Request) => true);
+    bindingInWhenOnSyntax.when((_request: interfaces.Request) => true);
     bindingInWhenOnSyntax.whenTargetNamed('test');
     bindingInWhenOnSyntax.whenTargetTagged('test', true);
     bindingInWhenOnSyntax.whenInjectedInto('army');
@@ -121,8 +172,12 @@ describe('BindingInWhenOnSyntax', () => {
     bindingInWhenOnSyntax.whenAnyAncestorTagged('test', true);
     bindingInWhenOnSyntax.whenNoAncestorNamed('test');
     bindingInWhenOnSyntax.whenNoAncestorTagged('test', true);
-    bindingInWhenOnSyntax.whenAnyAncestorMatches((request: interfaces.Request) => true);
-    bindingInWhenOnSyntax.whenNoAncestorMatches((request: interfaces.Request) => true);
+    bindingInWhenOnSyntax.whenAnyAncestorMatches(
+      (_request: interfaces.Request) => true,
+    );
+    bindingInWhenOnSyntax.whenNoAncestorMatches(
+      (_request: interfaces.Request) => true,
+    );
 
     // assert invoked BindingWhenSyntax methods
     expect(whenStub.callCount).eql(1);
@@ -139,31 +194,33 @@ describe('BindingInWhenOnSyntax', () => {
     expect(whenNoAncestorTaggedStub.callCount).eql(1);
     expect(whenAnyAncestorMatchesStub.callCount).eql(1);
     expect(whenNoAncestorMatchesStub.callCount).eql(1);
-
   });
 
   it('Should provide access to BindingOnSyntax methods', () => {
+    const ninjaIdentifier: string = 'Ninja';
 
-    interface Ninja { }
-    const ninjaIdentifier = 'Ninja';
+    const binding: Binding<unknown> = new Binding(
+      ninjaIdentifier,
+      BindingScopeEnum.Transient,
+    );
+    const bindingInWhenOnSyntax: BindingInWhenOnSyntax<unknown> =
+      new BindingInWhenOnSyntax(binding);
 
-    const binding = new Binding<Ninja>(ninjaIdentifier, BindingScopeEnum.Transient);
-    const bindingInWhenOnSyntax = new BindingInWhenOnSyntax<Ninja>(binding);
-
-    // cast to any to be able to access private props
+    // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any
     const _bindingInWhenOnSyntax: any = bindingInWhenOnSyntax;
 
     // stubs for BindingWhenSyntax methods
-    const onActivationStub = sinon.stub(_bindingInWhenOnSyntax._bindingOnSyntax, 'onActivation').returns(null);
+    const onActivationStub: sinon.SinonStub = sinon
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      .stub(_bindingInWhenOnSyntax._bindingOnSyntax, 'onActivation')
+      .returns(null);
 
     // invoke BindingWhenOnSyntax methods
-    bindingInWhenOnSyntax.onActivation((context: interfaces.Context, ninja: Ninja) =>
-      // DO NOTHING
-      ninja);
+    bindingInWhenOnSyntax.onActivation(
+      (_context: interfaces.Context, ninja: unknown) => ninja,
+    );
 
     // assert invoked BindingWhenSyntax methods
     expect(onActivationStub.callCount).eql(1);
-
   });
-
 });

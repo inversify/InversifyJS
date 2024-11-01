@@ -2,11 +2,15 @@ import { BindingScopeEnum } from '../constants/literal_types';
 import type { interfaces } from '../interfaces/interfaces';
 import { isPromise } from '../utils/async';
 
-export const tryGetFromScope = <T>(
+export const tryGetFromScope: <T>(
+  requestScope: interfaces.RequestScope,
+  binding: interfaces.Binding<T>,
+) => T | Promise<T> | null = <T>(
   requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
 ): T | Promise<T> | null => {
   if (binding.scope === BindingScopeEnum.Singleton && binding.activated) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return binding.cache!;
   }
 
@@ -19,7 +23,11 @@ export const tryGetFromScope = <T>(
   return null;
 };
 
-export const saveToScope = <T>(
+export const saveToScope: <T>(
+  requestScope: interfaces.RequestScope,
+  binding: interfaces.Binding<T>,
+  result: T | Promise<T>,
+) => void = <T>(
   requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
   result: T | Promise<T>,
@@ -33,7 +41,12 @@ export const saveToScope = <T>(
   }
 };
 
-const _saveToRequestScope = <T>(
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const _saveToRequestScope: <T>(
+  requestScope: interfaces.RequestScope,
+  binding: interfaces.Binding<T>,
+  result: T | Promise<T>,
+) => void = <T>(
   requestScope: interfaces.RequestScope,
   binding: interfaces.Binding<T>,
   result: T | Promise<T>,
@@ -43,7 +56,11 @@ const _saveToRequestScope = <T>(
   }
 };
 
-const _saveToSingletonScope = <T>(
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const _saveToSingletonScope: <T>(
+  binding: interfaces.Binding<T>,
+  result: T | Promise<T>,
+) => void = <T>(
   binding: interfaces.Binding<T>,
   result: T | Promise<T>,
 ): void => {
@@ -56,12 +73,16 @@ const _saveToSingletonScope = <T>(
   }
 };
 
-const _saveAsyncResultToSingletonScope = async <T>(
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const _saveAsyncResultToSingletonScope: <T>(
+  binding: interfaces.Binding<T>,
+  asyncResult: Promise<T>,
+) => Promise<void> = async <T>(
   binding: interfaces.Binding<T>,
   asyncResult: Promise<T>,
 ): Promise<void> => {
   try {
-    const result = await asyncResult;
+    const result: Awaited<T> = await asyncResult;
 
     binding.cache = result;
   } catch (ex: unknown) {

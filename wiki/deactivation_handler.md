@@ -7,7 +7,7 @@ It is possible to add a deactivation handler for a type binded in singleton scop
 class Destroyable {
 }
 
-const container = new Container();
+const container: Container = new Container();
 container.bind<Destroyable>("Destroyable").toDynamicValue(() => Promise.resolve(new Destroyable())).inSingletonScope()
     .onDeactivation((destroyable: Destroyable) => {
         console.log("Destroyable service is about to be unbinded");
@@ -47,7 +47,7 @@ class Destroyable {
     }
 }
 
-const container = new Container();
+const container: Container = new Container();
 container.onDeactivation("Destroyable", () => {
     return new Promise((presolve) => {
         parent = roll;
