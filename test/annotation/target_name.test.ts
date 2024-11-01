@@ -1,64 +1,92 @@
 import { expect } from 'chai';
+
 import { decorate } from '../../src/annotation/decorator_utils';
 import { injectable } from '../../src/annotation/injectable';
 import { targetName } from '../../src/annotation/target_name';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
+import { interfaces } from '../../src/inversify';
+import { Metadata } from '../../src/planning/metadata';
 import * as Stubs from '../utils/stubs';
 
 describe('@targetName', () => {
-
   it('Should generate metadata if declared parameter names', () => {
-
     @injectable()
     class Warrior {
-
       public katana: Stubs.Katana;
       public shuriken: Stubs.Shuriken;
 
-      public constructor(
+      constructor(
         @targetName('katana') katana: Stubs.Katana,
-        @targetName('shuriken') shuriken: Stubs.Shuriken
+        @targetName('shuriken') shuriken: Stubs.Shuriken,
       ) {
-
         this.katana = katana;
         this.shuriken = shuriken;
       }
     }
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, Warrior);
+    const metadata: interfaces.MetadataMap = Reflect.getMetadata(
+      METADATA_KEY.TAGGED,
+      Warrior,
+    ) as interfaces.MetadataMap;
+
     expect(metadata['0']).to.be.instanceof(Array);
     expect(metadata['1']).to.be.instanceof(Array);
     expect(metadata['2']).to.eql(undefined);
 
-    expect(metadata['0'][0].key).to.be.eql(METADATA_KEY.NAME_TAG);
-    expect(metadata['0'][0].value).to.be.eql('katana');
-    expect(metadata['1'][0].key).to.be.eql(METADATA_KEY.NAME_TAG);
-    expect(metadata['1'][0].value).to.be.eql('shuriken');
+    const zeroIndexedMetadata: interfaces.Metadata[] = metadata[
+      '0'
+    ] as interfaces.Metadata[];
+    const oneIndexedMetadata: interfaces.Metadata[] = metadata[
+      '1'
+    ] as interfaces.Metadata[];
 
+    const expectedFirstMetadata: Metadata[] = [
+      new Metadata(METADATA_KEY.NAME_TAG, 'katana'),
+    ];
+
+    const expectedSecondMetadata: Metadata[] = [
+      new Metadata(METADATA_KEY.NAME_TAG, 'shuriken'),
+    ];
+
+    expect(zeroIndexedMetadata).to.deep.equal(expectedFirstMetadata);
+    expect(oneIndexedMetadata).to.deep.equal(expectedSecondMetadata);
   });
 
   it('Should be usable in VanillaJS applications', () => {
+    type Katana = unknown;
+    type Shuriken = unknown;
 
-    interface Katana { }
-    interface Shuriken { }
+    const vanillaJsWarrior: (primary: unknown, secondary: unknown) => void =
+      function (_primary: Katana, _secondary: Shuriken) {};
 
-    const VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
-      // ...
-    };
+    decorate(targetName('primary'), vanillaJsWarrior, 0);
+    decorate(targetName('secondary'), vanillaJsWarrior, 1);
 
-    decorate(targetName('primary'), VanillaJSWarrior, 0);
-    decorate(targetName('secondary'), VanillaJSWarrior, 1);
+    const metadata: interfaces.MetadataMap = Reflect.getMetadata(
+      METADATA_KEY.TAGGED,
+      vanillaJsWarrior,
+    ) as interfaces.MetadataMap;
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.TAGGED, VanillaJSWarrior);
     expect(metadata['0']).to.be.instanceof(Array);
     expect(metadata['1']).to.be.instanceof(Array);
     expect(metadata['2']).to.eql(undefined);
 
-    expect(metadata['0'][0].key).to.be.eql(METADATA_KEY.NAME_TAG);
-    expect(metadata['0'][0].value).to.be.eql('primary');
-    expect(metadata['1'][0].key).to.be.eql(METADATA_KEY.NAME_TAG);
-    expect(metadata['1'][0].value).to.be.eql('secondary');
+    const zeroIndexedMetadata: interfaces.Metadata[] = metadata[
+      '0'
+    ] as interfaces.Metadata[];
+    const oneIndexedMetadata: interfaces.Metadata[] = metadata[
+      '1'
+    ] as interfaces.Metadata[];
 
+    const expectedFirstMetadata: Metadata[] = [
+      new Metadata(METADATA_KEY.NAME_TAG, 'primary'),
+    ];
+
+    const expectedSecondMetadata: Metadata[] = [
+      new Metadata(METADATA_KEY.NAME_TAG, 'secondary'),
+    ];
+
+    expect(zeroIndexedMetadata).to.deep.equal(expectedFirstMetadata);
+    expect(oneIndexedMetadata).to.deep.equal(expectedSecondMetadata);
   });
-
 });

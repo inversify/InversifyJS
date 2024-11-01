@@ -63,7 +63,7 @@ const applicationDependencies = new ContainerModule((bind) => {
     // ..
 });
 
-const container = new Container();
+const container: Container = new Container();
 
 container.load(thirdPartyDependencies, applicationDependencies);
 
@@ -84,7 +84,7 @@ class SomeClass implements SomeClassInterface {
     private _lodash: Lodash;
     private _sequelize: Sequelize;
 
-    public constructor(
+    constructor(
         @inject(TYPES.Lodash) lodash,
         @inject(TYPES.Sequelize) sequelize,
     ) {

@@ -3,7 +3,7 @@ import { Metadata } from '../planning/metadata';
 function propertyEventDecorator(eventKey: string, errorMessage: string) {
   return () => {
     return (target: { constructor: NewableFunction }, propertyKey: string) => {
-      const metadata = new Metadata(eventKey, propertyKey);
+      const metadata: Metadata = new Metadata(eventKey, propertyKey);
 
       if (Reflect.hasOwnMetadata(eventKey, target.constructor)) {
         throw new Error(errorMessage);

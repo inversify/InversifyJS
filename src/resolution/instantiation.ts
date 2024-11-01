@@ -29,9 +29,9 @@ function _resolveRequests(
   resolveRequest: interfaces.ResolveRequestHandler,
 ): ResolvedRequests {
   return childRequests.reduce<ResolvedRequests>(
-    (resolvedRequests, childRequest) => {
-      const injection = resolveRequest(childRequest);
-      const targetType = childRequest.target.type;
+    (resolvedRequests: ResolvedRequests, childRequest: interfaces.Request) => {
+      const injection: unknown = resolveRequest(childRequest);
+      const targetType: interfaces.TargetType = childRequest.target.type;
       if (targetType === TargetTypeEnum.ConstructorArgument) {
         resolvedRequests.constructorInjections.push(injection);
       } else {
@@ -45,9 +45,9 @@ function _resolveRequests(
     },
     {
       constructorInjections: [],
+      isAsync: false,
       propertyInjections: [],
       propertyRequests: [],
-      isAsync: false,
     },
   );
 }
@@ -60,7 +60,10 @@ function _createInstance<T>(
   let result: T | Promise<T>;
 
   if (childRequests.length > 0) {
-    const resolved = _resolveRequests(childRequests, resolveRequest);
+    const resolved: ResolvedRequests = _resolveRequests(
+      childRequests,
+      resolveRequest,
+    );
     const createInstanceWithInjectionsArg: CreateInstanceWithInjectionArg<T> = {
       ...resolved,
       constr,
@@ -82,10 +85,10 @@ function _createInstance<T>(
 function createInstanceWithInjections<T>(
   args: CreateInstanceWithInjectionArg<T>,
 ): T {
-  const instance = new args.constr(...args.constructorInjections);
+  const instance: T = new args.constr(...args.constructorInjections);
   args.propertyRequests.forEach((r: interfaces.Request, index: number) => {
-    const property = r.target.identifier;
-    const injection = args.propertyInjections[index];
+    const property: string | symbol = r.target.identifier;
+    const injection: unknown = args.propertyInjections[index];
     if (!r.target.isOptional() || injection !== undefined) {
       (instance as Record<string | symbol, unknown>)[property] = injection;
     }
@@ -96,10 +99,10 @@ function createInstanceWithInjections<T>(
 async function createInstanceWithInjectionsAsync<T>(
   args: CreateInstanceWithInjectionArg<T>,
 ): Promise<T> {
-  const constructorInjections = await possiblyWaitInjections(
+  const constructorInjections: unknown[] = await possiblyWaitInjections(
     args.constructorInjections,
   );
-  const propertyInjections = await possiblyWaitInjections(
+  const propertyInjections: unknown[] = await possiblyWaitInjections(
     args.propertyInjections,
   );
   return createInstanceWithInjections<T>({
@@ -125,7 +128,10 @@ function _getInstanceAfterPostConstruct<T>(
   constr: interfaces.Newable<T>,
   result: T,
 ): T | Promise<T> {
-  const postConstructResult = _postConstruct(constr, result);
+  const postConstructResult: void | Promise<void> = _postConstruct(
+    constr,
+    result,
+  );
 
   if (isPromise(postConstructResult)) {
     return postConstructResult.then(() => result);
@@ -142,7 +148,7 @@ function _postConstruct<T>(
     const data: Metadata = Reflect.getMetadata(
       METADATA_KEY.POST_CONSTRUCT,
       constr,
-    );
+    ) as Metadata;
     try {
       return (instance as interfaces.Instance<T>)[data.value as string]?.();
     } catch (e) {
@@ -166,7 +172,7 @@ function _throwIfHandlingDeactivation<T = unknown>(
   binding: interfaces.Binding<T>,
   constr: interfaces.Newable<T>,
 ): void {
-  const scopeErrorMessage = `Class cannot be instantiated in ${
+  const scopeErrorMessage: string = `Class cannot be instantiated in ${
     binding.scope === BindingScopeEnum.Request ? 'request' : 'transient'
   } scope.`;
   if (typeof binding.onDeactivation === 'function') {
@@ -186,10 +192,14 @@ function resolveInstance<T>(
 ): T | Promise<T> {
   _validateInstanceResolution(binding, constr);
 
-  const result = _createInstance(constr, childRequests, resolveRequest);
+  const result: T | Promise<T> = _createInstance(
+    constr,
+    childRequests,
+    resolveRequest,
+  );
 
   if (isPromise(result)) {
-    return result.then((resolvedResult) =>
+    return result.then((resolvedResult: T): T | Promise<T> =>
       _getInstanceAfterPostConstruct(constr, resolvedResult),
     );
   } else {

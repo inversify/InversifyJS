@@ -11,7 +11,7 @@ class Destroyable {
     }
 }
 
-const container = new Container();
+const container: Container = new Container();
 container.bind<Destroyable>("Destroyable").to(Destroyable).inSingletonScope();
 
 container.get("Destroyable");

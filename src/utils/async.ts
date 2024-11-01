@@ -1,5 +1,5 @@
 function isPromise<T>(object: unknown): object is Promise<T> {
-  const isObjectOrFunction =
+  const isObjectOrFunction: boolean =
     (typeof object === 'object' && object !== null) ||
     typeof object === 'function';
 

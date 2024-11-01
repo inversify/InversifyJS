@@ -1,5 +1,5 @@
-export const BindingCount = {
-  MultipleBindingsAvailable: 2,
-  NoBindingsAvailable: 0,
-  OnlyOneBindingAvailable: 1,
-};
+export enum BindingCount {
+  MultipleBindingsAvailable = 2,
+  NoBindingsAvailable = 0,
+  OnlyOneBindingAvailable = 1,
+}

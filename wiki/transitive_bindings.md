@@ -9,7 +9,7 @@ A transitive binding can be declared using the `toService` method:
 class MySqlDatabaseTransactionLog {
     public time: number;
     public name: string;
-    public constructor() {
+    constructor() {
         this.time = new Date().getTime();
         this.name = "MySqlDatabaseTransactionLog";
     }
@@ -27,7 +27,7 @@ class TransactionLog {
     public name: string;
 }
 
-const container = new Container();
+const container: Container = new Container();
 container.bind(MySqlDatabaseTransactionLog).toSelf().inSingletonScope();
 container.bind(DatabaseTransactionLog).toService(MySqlDatabaseTransactionLog);
 container.bind(TransactionLog).toService(DatabaseTransactionLog);

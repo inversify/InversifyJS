@@ -13,10 +13,10 @@ class Ninja implements Ninja {
     private _katana: Katana;
     private _shuriken: Shuriken;
 
-    public constructor(
-	    @inject("Newable<Katana>") Katana: interfaces.Newable<Katana>, 
-	    @inject("Shuriken") shuriken: Shuriken
-	) {
+    constructor(
+        @inject("Newable<Katana>") Katana: interfaces.Newable<Katana>, 
+        @inject("Shuriken") shuriken: Shuriken
+    ) {
         this._katana = new Katana();
         this._shuriken = shuriken;
     }
@@ -41,7 +41,7 @@ and the container will have no trouble injecting the dependencies :
 @injectable()
 class Ninja implements Ninja {
 
-    public constructor(private _dagger:Dagger) {
+    constructor(private _dagger:Dagger) {
 
     }
 

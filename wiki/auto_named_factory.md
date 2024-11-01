@@ -7,7 +7,7 @@ Binds an abstraction to an auto-generated Factory that return elements by given 
 class Ninja implements Ninja {
     private _katana: Weapon;
     private _shuriken: Weapon;
-    public constructor(
+    constructor(
         @inject("Factory<Weapon>") weaponFactory: (named: string) => Weapon
     ) {
         this._katana = weaponFactory("katana");

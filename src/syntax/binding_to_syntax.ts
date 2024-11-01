@@ -8,9 +8,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
   // TODO: Implement an internal type `_BindingToSyntax<T>` wherein this member
   // can be public. Let `BindingToSyntax<T>` be the presentational type that
   // depends on it, and does not expose this member as public.
-  private _binding: interfaces.Binding<T>;
+  private readonly _binding: interfaces.Binding<T>;
 
-  public constructor(binding: interfaces.Binding<T>) {
+  constructor(binding: interfaces.Binding<T>) {
     this._binding = binding;
   }
 
@@ -24,9 +24,10 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
 
   public toSelf(): interfaces.BindingInWhenOnSyntax<T> {
     if (typeof this._binding.serviceIdentifier !== 'function') {
-      throw new Error(`${ERROR_MSGS.INVALID_TO_SELF_VALUE}`);
+      throw new Error(ERROR_MSGS.INVALID_TO_SELF_VALUE);
     }
-    const self = this._binding.serviceIdentifier;
+
+    const self: interfaces.Newable<T> = this._binding.serviceIdentifier;
     return this.to(self);
   }
 
@@ -72,7 +73,8 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     if (typeof func !== 'function') {
       throw new Error(ERROR_MSGS.INVALID_FUNCTION_BINDING);
     }
-    const bindingWhenOnSyntax = this.toConstantValue(func);
+    const bindingWhenOnSyntax: interfaces.BindingWhenOnSyntax<T> =
+      this.toConstantValue(func);
     this._binding.type = BindingTypeEnum.Function;
     this._binding.scope = BindingScopeEnum.Singleton;
     return bindingWhenOnSyntax;
@@ -82,8 +84,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     serviceIdentifier: interfaces.ServiceIdentifier<T2>,
   ): interfaces.BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Factory;
-    this._binding.factory = (context) => {
-      const autofactory = () => context.container.get<T2>(serviceIdentifier);
+    this._binding.factory = (context: interfaces.Context) => {
+      const autofactory: () => T2 = () =>
+        context.container.get<T2>(serviceIdentifier);
       return autofactory;
     };
     this._binding.scope = BindingScopeEnum.Singleton;
@@ -94,7 +97,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     serviceIdentifier: interfaces.ServiceIdentifier<T2>,
   ): BindingWhenOnSyntax<T> {
     this._binding.type = BindingTypeEnum.Factory;
-    this._binding.factory = (context) => {
+    this._binding.factory = (context: interfaces.Context) => {
       return (named: unknown) =>
         context.container.getNamed<T2>(serviceIdentifier, named as string);
     };
@@ -113,7 +116,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
   public toService(
     service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>,
   ): void {
-    this.toDynamicValue((context) => context.container.get<T>(service));
+    this.toDynamicValue((context: interfaces.Context) =>
+      context.container.get<T>(service),
+    );
   }
 }
 

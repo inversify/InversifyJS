@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { FactoryType } from '../utils/factory_type';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 namespace interfaces {
   export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>;
   export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[];
@@ -47,6 +49,7 @@ namespace interfaces {
     Variable: interfaces.TargetType;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type Newable<T> = new (...args: any[]) => T;
 
   export type Instance<T> = T & Record<string, () => void>;
@@ -128,7 +131,9 @@ namespace interfaces {
   }
 
   export type Provider<T> = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...args: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) => ((...args: any[]) => Promise<T>) | Promise<T>;
 
   export type ProviderCreator<T> = (context: Context) => Provider<T>;
@@ -143,6 +148,7 @@ namespace interfaces {
     value?: unknown;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   export type Next = (args: NextArgs) => unknown | unknown[];
 
   export type Middleware = (next: Next) => Next;
@@ -480,8 +486,8 @@ namespace interfaces {
   }
 
   export interface ConstraintFunction {
-    metaData?: Metadata;
     (request: Request | null): boolean;
+    metaData?: Metadata;
   }
 
   export interface MetadataReader {

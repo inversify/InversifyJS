@@ -1,4 +1,5 @@
 import * as keys from './constants/metadata_keys';
+// eslint-disable-next-line @typescript-eslint/typedef
 export const METADATA_KEY = keys;
 export { Container } from './container/container';
 export {

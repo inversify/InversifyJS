@@ -44,7 +44,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
   // On deactivation handler (invoked just before an instance is unbinded and removed from container)
   public onDeactivation: interfaces.BindingDeactivation<TActivated> | null;
 
-  public constructor(
+  constructor(
     serviceIdentifier: interfaces.ServiceIdentifier<TActivated>,
     scope: interfaces.BindingScope,
   ) {
@@ -53,7 +53,7 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
     this.serviceIdentifier = serviceIdentifier;
     this.scope = scope;
     this.type = BindingTypeEnum.Invalid;
-    this.constraint = (request: interfaces.Request | null) => true;
+    this.constraint = (_request: interfaces.Request | null) => true;
     this.implementationType = null;
     this.cache = null;
     this.factory = null;
@@ -64,7 +64,10 @@ class Binding<TActivated> implements interfaces.Binding<TActivated> {
   }
 
   public clone(): interfaces.Binding<TActivated> {
-    const clone = new Binding(this.serviceIdentifier, this.scope);
+    const clone: Binding<TActivated> = new Binding(
+      this.serviceIdentifier,
+      this.scope,
+    );
     clone.activated =
       clone.scope === BindingScopeEnum.Singleton ? this.activated : false;
     clone.implementationType = this.implementationType;

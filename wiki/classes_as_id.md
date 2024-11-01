@@ -29,7 +29,7 @@ class Ninja implements Warrior {
     private _katana: Katana;
     private _shuriken: Shuriken;
 
-    public constructor(katana: Katana, shuriken: Shuriken) {
+    constructor(katana: Katana, shuriken: Shuriken) {
         this._katana = katana;
         this._shuriken = shuriken;
     }
@@ -108,7 +108,7 @@ import "reflect-metadata";
 import { Container, injectable, inject } from "inversify";
 import getDecorators from "inversify-inject-decorators";
 
-const container = new Container();
+const container: Container = new Container();
 const { lazyInject } = getDecorators(container);
 
 const TYPE = {
@@ -132,7 +132,7 @@ class DomUi {
 class Dom {
     public name: string;
     @lazyInject(TYPE.DomUi) public domUi: DomUi;
-    public constructor() {
+    constructor() {
         this.name = "Dom";
     }
 }

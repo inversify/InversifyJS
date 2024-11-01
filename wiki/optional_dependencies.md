@@ -6,7 +6,7 @@ We can declare an optional dependency using the `@optional()` decorator:
 @injectable()
 class Katana {
     public name: string;
-    public constructor() {
+    constructor() {
         this.name = "Katana";
     }
 }
@@ -14,7 +14,7 @@ class Katana {
 @injectable()
 class Shuriken {
     public name: string;
-    public constructor() {
+    constructor() {
         this.name = "Shuriken";
     }
 }
@@ -24,7 +24,7 @@ class Ninja {
     public name: string;
     public katana: Katana;
     public shuriken: Shuriken;
-    public constructor(
+    constructor(
         @inject("Katana") katana: Katana,
         @inject("Shuriken") @optional() shuriken: Shuriken // Optional!
     ) {
@@ -74,7 +74,7 @@ class Ninja {
     public name: string;
     public katana: Katana;
     public shuriken: Shuriken;
-    public constructor(
+    constructor(
         @inject("Katana") katana: Katana,
         @inject("Shuriken") @optional() shuriken: Shuriken = { name: "DefaultShuriken" } // Default value!
     ) {

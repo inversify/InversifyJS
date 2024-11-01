@@ -1,4 +1,4 @@
-let idCounter = 0;
+let idCounter: number = 0;
 
 function id(): number {
   return idCounter++;

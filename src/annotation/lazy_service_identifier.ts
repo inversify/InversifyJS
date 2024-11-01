@@ -5,8 +5,8 @@ export type ServiceIdentifierOrFunc<T> =
   | LazyServiceIdentifier<T>;
 
 export class LazyServiceIdentifier<T = unknown> {
-  private _cb: () => interfaces.ServiceIdentifier<T>;
-  public constructor(cb: () => interfaces.ServiceIdentifier<T>) {
+  private readonly _cb: () => interfaces.ServiceIdentifier<T>;
+  constructor(cb: () => interfaces.ServiceIdentifier<T>) {
     this._cb = cb;
   }
 

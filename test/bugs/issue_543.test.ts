@@ -1,44 +1,37 @@
 import { expect } from 'chai';
+
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import { Container, inject, injectable } from '../../src/inversify';
 
 describe('Issue 543', () => {
-
   it('Should throw correct circular dependency path', () => {
-
+    // eslint-disable-next-line @typescript-eslint/typedef
     const TYPE = {
       Child: Symbol.for('Child'),
       Child2: Symbol.for('Child2'),
       Circular: Symbol.for('Circular'),
       Irrelevant: Symbol.for('Irrelevant1'),
-      Root: Symbol.for('Root')
+      Root: Symbol.for('Root'),
     };
 
-    interface IIrrelevant { }
-    interface ICircular { }
-    interface IChild { }
-    interface IChild2 { }
+    @injectable()
+    class Irrelevant {}
 
     @injectable()
-    class Irrelevant implements IIrrelevant { }
-
-    @injectable()
-    class Child2 implements IChild2 {
-      public circ: ICircular;
-      public constructor(
-        @inject(TYPE.Circular) circ: ICircular
-      ) {
+    class Child2 {
+      public circ: unknown;
+      constructor(@inject(TYPE.Circular) circ: unknown) {
         this.circ = circ;
       }
     }
 
     @injectable()
-    class Child implements IChild {
-      public irrelevant: IIrrelevant;
-      public child2: IChild2;
-      public constructor(
-        @inject(TYPE.Irrelevant) irrelevant: IIrrelevant,
-        @inject(TYPE.Child2) child2: IChild2
+    class Child {
+      public irrelevant: Irrelevant;
+      public child2: Child2;
+      constructor(
+        @inject(TYPE.Irrelevant) irrelevant: Irrelevant,
+        @inject(TYPE.Child2) child2: Child2,
       ) {
         this.irrelevant = irrelevant;
         this.child2 = child2;
@@ -46,12 +39,12 @@ describe('Issue 543', () => {
     }
 
     @injectable()
-    class Circular implements Circular {
-      public irrelevant: IIrrelevant;
-      public child: IChild;
-      public constructor(
-        @inject(TYPE.Irrelevant) irrelevant: IIrrelevant,
-        @inject(TYPE.Child) child: IChild
+    class Circular {
+      public irrelevant: Irrelevant;
+      public child: Child;
+      constructor(
+        @inject(TYPE.Irrelevant) irrelevant: Irrelevant,
+        @inject(TYPE.Child) child: Child,
       ) {
         this.irrelevant = irrelevant;
         this.child = child;
@@ -60,18 +53,18 @@ describe('Issue 543', () => {
 
     @injectable()
     class Root {
-      public irrelevant: IIrrelevant;
-      public circ: ICircular;
-      public constructor(
-        @inject(TYPE.Irrelevant) irrelevant1: IIrrelevant,
-        @inject(TYPE.Circular) circ: ICircular
+      public irrelevant: Irrelevant;
+      public circ: Circular;
+      constructor(
+        @inject(TYPE.Irrelevant) irrelevant1: Irrelevant,
+        @inject(TYPE.Circular) circ: Circular,
       ) {
         this.irrelevant = irrelevant1;
         this.circ = circ;
       }
     }
 
-    const container = new Container();
+    const container: Container = new Container();
     container.bind<Root>(TYPE.Root).to(Root);
     container.bind<Irrelevant>(TYPE.Irrelevant).to(Irrelevant);
     container.bind<Circular>(TYPE.Circular).to(Circular);
@@ -83,9 +76,7 @@ describe('Issue 543', () => {
     }
 
     expect(throws).to.throw(
-      `${ERROR_MSGS.CIRCULAR_DEPENDENCY} Symbol(Root) --> Symbol(Circular) --> Symbol(Child) --> Symbol(Child2) --> Symbol(Circular)`
+      `${ERROR_MSGS.CIRCULAR_DEPENDENCY} Symbol(Root) --> Symbol(Circular) --> Symbol(Child) --> Symbol(Child2) --> Symbol(Circular)`,
     );
-
   });
-
 });

@@ -18,7 +18,7 @@ export interface FooBarInterface {
 
 export class Foo implements FooInterface {
   public name: string;
-  public constructor() {
+  constructor() {
     this.name = 'foo';
   }
   public greet(): string {
@@ -28,7 +28,7 @@ export class Foo implements FooInterface {
 
 export class Bar implements BarInterface {
   public name: string;
-  public constructor() {
+  constructor() {
     this.name = 'bar';
   }
   public greet(): string {
@@ -40,9 +40,9 @@ export class Bar implements BarInterface {
 export class FooBar implements FooBarInterface {
   public foo: FooInterface;
   public bar: BarInterface;
-  public constructor(
+  constructor(
     @inject('FooInterface') foo: FooInterface,
-    @inject('BarInterface') bar: BarInterface
+    @inject('BarInterface') bar: BarInterface,
   ) {
     this.foo = foo;
     this.bar = bar;
@@ -52,62 +52,45 @@ export class FooBar implements FooBarInterface {
   }
 }
 
-// 2.0
+export class Katana {}
+export class Shuriken {}
 
-export interface Weapon { }
-export interface Katana extends Weapon { }
-export interface Shuriken extends Weapon { }
-
-export class Katana implements Katana { }
-export class Shuriken implements Shuriken { }
-
-export class WarriorWithoutInjections { }
+export class WarriorWithoutInjections {}
 
 @injectable()
-export class DecoratedWarriorWithoutInjections { }
+export class DecoratedWarriorWithoutInjections {}
 
 @injectable()
 export class Warrior {
-  public constructor(
-    @inject('Katana') primary: Katana,
-    @inject('Shuriken') secondary: Shuriken
-  ) {
-    // ...
-  }
+  constructor(
+    @inject('Katana') _primary: Katana,
+    @inject('Shuriken') _secondary: Shuriken,
+  ) {}
 }
 
 export class InvalidDecoratorUsageWarrior {
-  public constructor(
-    primary: Weapon,
-    secondary: Weapon) {
-    // ...
-  }
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(_primary: unknown, _secondary: unknown) {}
 }
 
 export class MissingInjectionWarrior {
-  public constructor(
-    primary: Weapon,
-    secondary: Weapon) {
-    // ...
-  }
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(_primary: unknown, _secondary: unknown) {}
 }
 
 @injectable()
 export class NamedWarrior {
-  public constructor(
-    @inject('Katana') @named('strong') primary: Weapon,
-    @inject('Shuriken') @named('weak') secondary: Weapon
-  ) {
-    // ...
-  }
+  constructor(
+    @inject('Katana') @named('strong') _primary: unknown,
+    @inject('Shuriken') @named('weak') _secondary: unknown,
+  ) {}
 }
 
 @injectable()
 export class TaggedWarrior {
-  public constructor(
-    @inject('Katana') @tagged('power', 5) primary: Weapon,
-    @inject('Shuriken') @tagged('power', 1) secondary: Weapon
-  ) {
-    // ...
-  }
+  constructor(
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    @inject('Katana') @tagged('power', 5) _primary: unknown,
+    @inject('Shuriken') @tagged('power', 1) _secondary: unknown,
+  ) {}
 }

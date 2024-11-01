@@ -6,20 +6,20 @@ class MetadataReader implements interfaces.MetadataReader {
     constructorFunc: NewableFunction,
   ): interfaces.ConstructorMetadata {
     // TypeScript compiler generated annotations
-    const compilerGeneratedMetadata = Reflect.getMetadata(
-      METADATA_KEY.PARAM_TYPES,
-      constructorFunc,
-    );
+    const compilerGeneratedMetadata: NewableFunction[] | undefined =
+      Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, constructorFunc) as
+        | NewableFunction[]
+        | undefined;
 
     // User generated constructor annotations
-    const userGeneratedMetadata = Reflect.getMetadata(
-      METADATA_KEY.TAGGED,
-      constructorFunc,
-    );
+    const userGeneratedMetadata: interfaces.MetadataMap | undefined =
+      Reflect.getMetadata(METADATA_KEY.TAGGED, constructorFunc) as
+        | interfaces.MetadataMap
+        | undefined;
 
     return {
       compilerGeneratedMetadata,
-      userGeneratedMetadata: userGeneratedMetadata || {},
+      userGeneratedMetadata: userGeneratedMetadata ?? {},
     };
   }
 
@@ -27,8 +27,11 @@ class MetadataReader implements interfaces.MetadataReader {
     constructorFunc: NewableFunction,
   ): interfaces.MetadataMap {
     // User generated properties annotations
-    const userGeneratedMetadata =
-      Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, constructorFunc) || [];
+    const userGeneratedMetadata: interfaces.MetadataMap | undefined =
+      (Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, constructorFunc) as
+        | interfaces.MetadataMap
+        | undefined) ?? {};
+
     return userGeneratedMetadata;
   }
 }

@@ -22,7 +22,7 @@ interface Ninja {
 class Ninja implements Ninja {
     public katana: Weapon;
     public shuriken: Weapon;
-    public constructor(
+    constructor(
         @inject("Weapon") @targetName("katana") katana: Weapon,
         @inject("Weapon") @targetName("shuriken") shuriken: Weapon
     ) {
@@ -50,11 +50,11 @@ The target fields implement the `IQueryableString` interface to help you to crea
 
 ```ts
 interface QueryableString {
-	 startsWith(searchString: string): boolean;
-	 endsWith(searchString: string): boolean;
-	 contains(searchString: string): boolean;
-	 equals(compareString: string): boolean;
-	 value(): string;
+    startsWith(searchString: string): boolean;
+    endsWith(searchString: string): boolean;
+    contains(searchString: string): boolean;
+    equals(compareString: string): boolean;
+    value(): string;
 }
 ```
 We have included some helpers to facilitate the creation of custom constraints:

@@ -1,133 +1,155 @@
+// eslint-disable-next-line @typescript-eslint/naming-convention
 declare function __decorate(
   decorators: ClassDecorator[],
   target: NewableFunction,
   key?: string | symbol,
-  descriptor?: PropertyDescriptor | undefined
+  descriptor?: PropertyDescriptor | undefined,
 ): void;
-declare function __param(paramIndex: number, decorator: ParameterDecorator): ClassDecorator;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+declare function __param(
+  paramIndex: number,
+  decorator: ParameterDecorator,
+): ClassDecorator;
 
 import { expect } from 'chai';
+
 import { decorate } from '../../src/annotation/decorator_utils';
 import { multiInject } from '../../src/annotation/multi_inject';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import { interfaces } from '../../src/interfaces/interfaces';
 
-interface Weapon { }
+type Weapon = object;
 
 class DecoratedWarrior {
+  private readonly _primaryWeapon: Weapon;
+  private readonly _secondaryWeapon: Weapon;
 
-  private _primaryWeapon: Weapon;
-  private _secondaryWeapon: Weapon;
-
-  public constructor(
-    @multiInject('Weapon') weapons: Weapon[]
-  ) {
-
-    this._primaryWeapon = weapons[0] as Weapon;
-    this._secondaryWeapon = weapons[1] as Weapon;
+  constructor(@multiInject('Weapon') weapons: [Weapon, Weapon]) {
+    this._primaryWeapon = weapons[0];
+    this._secondaryWeapon = weapons[1];
   }
 
   public mock() {
     return `${JSON.stringify(this._primaryWeapon)} ${JSON.stringify(this._secondaryWeapon)}`;
   }
-
 }
 
 class InvalidDecoratorUsageWarrior {
+  private readonly _primaryWeapon: Weapon;
+  private readonly _secondaryWeapon: Weapon;
 
-  private _primaryWeapon: Weapon;
-  private _secondaryWeapon: Weapon;
-
-  public constructor(
-    weapons: Weapon[]
-  ) {
-    this._primaryWeapon = weapons[0] as Weapon;
-    this._secondaryWeapon = weapons[1] as Weapon;
+  constructor(weapons: [Weapon, Weapon]) {
+    this._primaryWeapon = weapons[0];
+    this._secondaryWeapon = weapons[1];
   }
 
-  public test(a: string) { /*...*/ }
+  public test(_a: string) {}
 
   public debug() {
     return {
       primaryWeapon: this._primaryWeapon,
-      secondaryWeapon: this._secondaryWeapon
+      secondaryWeapon: this._secondaryWeapon,
     };
   }
-
 }
 
 describe('@multiInject', () => {
-
   it('Should generate metadata for named parameters', () => {
-    const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, DecoratedWarrior);
+    const metadataKey: string = METADATA_KEY.TAGGED;
+    const paramsMetadata: interfaces.MetadataMap = Reflect.getMetadata(
+      metadataKey,
+      DecoratedWarrior,
+    ) as interfaces.MetadataMap;
+
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument
     expect(paramsMetadata['0']).to.be.instanceof(Array);
-    const m1: interfaces.Metadata = paramsMetadata['0'][0];
-    expect(m1.key).to.be.eql(METADATA_KEY.MULTI_INJECT_TAG);
-    expect(m1.value).to.be.eql('Weapon');
-    expect(paramsMetadata['0'][1]).to.eq(undefined);
+
+    const zeroIndexedMetadata: interfaces.Metadata[] = paramsMetadata[
+      '0'
+    ] as interfaces.Metadata[];
+
+    const zeroIndexedFirstMetadata: interfaces.Metadata =
+      zeroIndexedMetadata[0] as interfaces.Metadata;
+
+    expect(zeroIndexedFirstMetadata.key).to.be.eql(
+      METADATA_KEY.MULTI_INJECT_TAG,
+    );
+    expect(zeroIndexedFirstMetadata.value).to.be.eql('Weapon');
+    expect(zeroIndexedMetadata[1]).to.eq(undefined);
 
     // no more metadata should be available
     expect(paramsMetadata['1']).to.eq(undefined);
-
   });
 
   it('Should throw when applied multiple times', () => {
-
-    const useDecoratorMoreThanOnce = function () {
-      __decorate([__param(0, multiInject('Weapon')), __param(0, multiInject('Weapon'))], InvalidDecoratorUsageWarrior);
+    const useDecoratorMoreThanOnce: () => void = function () {
+      __decorate(
+        [__param(0, multiInject('Weapon')), __param(0, multiInject('Weapon'))],
+        InvalidDecoratorUsageWarrior,
+      );
     };
 
-    const msg = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.MULTI_INJECT_TAG}`;
+    const msg: string = `${ERROR_MSGS.DUPLICATED_METADATA} ${METADATA_KEY.MULTI_INJECT_TAG}`;
     expect(useDecoratorMoreThanOnce).to.throw(msg);
-
   });
 
   it('Should throw when not applied to a constructor', () => {
-
-    const useDecoratorOnMethodThatIsNotAConstructor = function () {
-      __decorate([__param(0, multiInject('Weapon'))],
+    const useDecoratorOnMethodThatIsNotConstructor: () => void = function () {
+      __decorate(
+        [__param(0, multiInject('Weapon'))],
         InvalidDecoratorUsageWarrior.prototype as unknown as NewableFunction,
-        'test', Object.getOwnPropertyDescriptor(InvalidDecoratorUsageWarrior.prototype, 'test'));
+        'test',
+        Object.getOwnPropertyDescriptor(
+          InvalidDecoratorUsageWarrior.prototype,
+          'test',
+        ),
+      );
     };
 
-    const msg = `${ERROR_MSGS.INVALID_DECORATOR_OPERATION}`;
-    expect(useDecoratorOnMethodThatIsNotAConstructor).to.throw(msg);
-
+    const msg: string = ERROR_MSGS.INVALID_DECORATOR_OPERATION;
+    expect(useDecoratorOnMethodThatIsNotConstructor).to.throw(msg);
   });
 
   it('Should be usable in VanillaJS applications', () => {
+    type Katana = unknown;
+    type Shurien = unknown;
 
-    interface Katana { }
-    interface Shurien { }
+    const vanillaJsWarrior: (primary: unknown, secondary: unknown) => void =
+      (function () {
+        function warrior(_primary: Katana, _secondary: Shurien) {}
+        return warrior;
+      })();
 
-    const VanillaJSWarrior = (function () {
-      function Warrior(primary: Katana, secondary: Shurien) {
-        // ...
-      }
-      return Warrior;
-    })();
+    decorate(multiInject('Weapon'), vanillaJsWarrior, 0);
 
-    decorate(multiInject('Weapon'), VanillaJSWarrior, 0);
+    const metadataKey: string = METADATA_KEY.TAGGED;
+    const paramsMetadata: interfaces.MetadataMap = Reflect.getMetadata(
+      metadataKey,
+      vanillaJsWarrior,
+    ) as interfaces.MetadataMap;
 
-    const metadataKey = METADATA_KEY.TAGGED;
-    const paramsMetadata = Reflect.getMetadata(metadataKey, VanillaJSWarrior);
     expect(paramsMetadata).to.be.an('object');
 
     // assert metadata for first argument
     expect(paramsMetadata['0']).to.be.instanceof(Array);
-    const m1: interfaces.Metadata = paramsMetadata['0'][0];
-    expect(m1.key).to.be.eql(METADATA_KEY.MULTI_INJECT_TAG);
-    expect(m1.value).to.be.eql('Weapon');
-    expect(paramsMetadata['0'][1]).to.eq(undefined);
+
+    const zeroIndexedMetadata: interfaces.Metadata[] = paramsMetadata[
+      '0'
+    ] as interfaces.Metadata[];
+
+    const zeroIndexedFirstMetadata: interfaces.Metadata =
+      zeroIndexedMetadata[0] as interfaces.Metadata;
+
+    expect(zeroIndexedFirstMetadata.key).to.be.eql(
+      METADATA_KEY.MULTI_INJECT_TAG,
+    );
+    expect(zeroIndexedFirstMetadata.value).to.be.eql('Weapon');
+    expect(zeroIndexedMetadata[1]).to.eq(undefined);
 
     // no more metadata should be available
     expect(paramsMetadata['1']).to.eq(undefined);
-
   });
-
 });

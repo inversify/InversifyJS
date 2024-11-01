@@ -4,7 +4,7 @@ class Plan implements interfaces.Plan {
   public parentContext: interfaces.Context;
   public rootRequest: interfaces.Request;
 
-  public constructor(
+  constructor(
     parentContext: interfaces.Context,
     rootRequest: interfaces.Request,
   ) {

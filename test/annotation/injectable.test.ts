@@ -1,23 +1,21 @@
 import { expect } from 'chai';
+
 import * as ERRORS_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import { decorate, injectable } from '../../src/inversify';
 
 describe('@injectable', () => {
-
   it('Should generate metadata if declared injections', () => {
+    class Katana {}
 
-    class Katana { }
-
-    interface Weapon { }
+    type Weapon = unknown;
 
     @injectable()
     class Warrior {
+      private readonly _primaryWeapon: Katana;
+      private readonly _secondaryWeapon: Weapon;
 
-      private _primaryWeapon: Katana;
-      private _secondaryWeapon: Weapon;
-
-      public constructor(primaryWeapon: Katana, secondaryWeapon: Weapon) {
+      constructor(primaryWeapon: Katana, secondaryWeapon: Weapon) {
         this._primaryWeapon = primaryWeapon;
         this._secondaryWeapon = secondaryWeapon;
       }
@@ -25,13 +23,15 @@ describe('@injectable', () => {
       public debug() {
         return {
           primaryWeapon: this._primaryWeapon,
-          secondaryWeapon: this._secondaryWeapon
+          secondaryWeapon: this._secondaryWeapon,
         };
       }
-
     }
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, Warrior);
+    const metadata: NewableFunction[] = Reflect.getMetadata(
+      METADATA_KEY.PARAM_TYPES,
+      Warrior,
+    ) as NewableFunction[];
     expect(metadata).to.be.instanceof(Array);
 
     expect(metadata[0]).to.be.eql(Katana);
@@ -40,33 +40,34 @@ describe('@injectable', () => {
   });
 
   it('Should throw when applied multiple times', () => {
-
     @injectable()
-    class Test { }
+    class Test {}
 
-    const useDecoratorMoreThanOnce = function () {
+    const useDecoratorMoreThanOnce: () => void = function () {
       decorate(injectable(), Test);
       decorate(injectable(), Test);
     };
 
-    expect(useDecoratorMoreThanOnce).to.throw(ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR);
+    expect(useDecoratorMoreThanOnce).to.throw(
+      ERRORS_MSGS.DUPLICATED_INJECTABLE_DECORATOR,
+    );
   });
 
   it('Should be usable in VanillaJS applications', () => {
+    type Katana = unknown;
+    type Shuriken = unknown;
 
-    interface Katana { }
-    interface Shuriken { }
+    const vanillaJsWarrior: (primary: unknown, secondary: unknown) => void =
+      function (_primary: Katana, _secondary: Shuriken) {};
 
-    const VanillaJSWarrior = function (primary: Katana, secondary: Shuriken) {
-      // ...
-    };
+    decorate(injectable(), vanillaJsWarrior);
 
-    decorate(injectable(), VanillaJSWarrior);
+    const metadata: NewableFunction[] = Reflect.getMetadata(
+      METADATA_KEY.PARAM_TYPES,
+      vanillaJsWarrior,
+    ) as NewableFunction[];
 
-    const metadata = Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, VanillaJSWarrior);
     expect(metadata).to.be.instanceof(Array);
     expect(metadata.length).to.eql(0);
-
   });
-
 });

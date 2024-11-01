@@ -14,14 +14,14 @@ For example, the following code snippet throws a misleading error:
 @injectable()
 class Warrior {
     public rank: string;
-    public constructor(rank: string) { // args count  = 1
+    constructor(rank: string) { // args count  = 1
         this.rank = rank;
     }
 }
 
 @injectable()
 class SamuraiMaster extends Warrior {
-    public constructor() { // args count = 0
+    constructor() { // args count = 0
         super("master");
     }
 }
@@ -56,14 +56,14 @@ const BaseId = "Base";
 @injectable()
 class Base {
     public prop: string;
-    public constructor(@unmanaged() arg: string) {
+    constructor(@unmanaged() arg: string) {
         this.prop = arg;
     }
 }
 
 @injectable()
 class Derived extends Base {
-    public constructor() {
+    constructor() {
         super("unmanaged-injected-value");
     }
 }
@@ -84,14 +84,14 @@ property setter to avoid injecting into the base class:
 @injectable()
 class Warrior {
     protected rank: string;
-    public constructor() { // args count = 0
+    constructor() { // args count = 0
         this.rank = null;
     }
 }
 
 @injectable()
 class SamuraiMaster extends Warrior {
-    public constructor() { // args count = 0
+    constructor() { // args count = 0
         super();
         this.rank = "master";
     }
@@ -106,7 +106,7 @@ We can also use property injection to avoid injecting into the base class:
 @injectable()
 class Warrior {
     protected rank: string;
-    public constructor() {} // args count = 0
+    constructor() {} // args count = 0
 }
 
 let TYPES = { Rank: "Rank" };
@@ -117,7 +117,7 @@ class SamuraiMaster extends Warrior {
     @named("master")
     protected rank: string;
 
-    public constructor() { // args count = 0
+    constructor() { // args count = 0
         super();
     }
 }
@@ -138,7 +138,7 @@ its constructor (super).
 @injectable()
 class Warrior {
     protected rank: string;
-    public constructor(rank: string) { // args count = 1
+    constructor(rank: string) { // args count = 1
         this.rank = rank;
     }
 }
@@ -147,7 +147,7 @@ let TYPES = { Rank: "Rank" };
 
 @injectable()
 class SamuraiMaster extends Warrior {
-    public constructor(
+    constructor(
         @inject(TYPES.Rank) @named("master") rank: string // args count = 1
     ) {
         super(rank);
@@ -166,7 +166,7 @@ The following should also work:
 @injectable()
 class Warrior {
     protected rank: string;
-    public constructor(rank: string) { // args count = 1
+    constructor(rank: string) { // args count = 1
         this.rank = rank;
     }
 }
@@ -178,7 +178,7 @@ interface Weapon {
 @injectable()
 class Katana implements Weapon {
     public name: string;
-    public constructor() {
+    constructor() {
         this.name = "Katana";
     }
 }
@@ -191,7 +191,7 @@ let TYPES = {
 @injectable()
 class SamuraiMaster extends Warrior {
     public weapon: Weapon;
-    public constructor(
+    constructor(
         @inject(TYPES.Rank) @named("master") rank: string, // args count = 2
         @inject(TYPES.Weapon) weapon: Weapon
     ) {
@@ -215,18 +215,18 @@ Setting the `skipBaseClassChecks` option to `true` for the container will disabl
 ```ts
 // Not injectable
 class UnmanagedBase {
-    public constructor(public unmanagedDependency: string) {}
+    constructor(public unmanagedDependency: string) {}
 }
 
 @injectable()
 class InjectableDerived extends UnmanagedBase {
-    public constructor() // Any arguments defined here will be injected like normal
+    constructor() // Any arguments defined here will be injected like normal
     {
         super("Don't forget me...");
     }
 }
 
-const container = new Container({ skipBaseClassChecks: true });
+const container: Container = new Container({ skipBaseClassChecks: true });
 container.bind(InjectableDerived).toSelf();
 ```
 

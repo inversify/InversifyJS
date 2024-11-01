@@ -9,12 +9,12 @@ class BindingInWhenOnSyntax<T>
     interfaces.BindingWhenSyntax<T>,
     interfaces.BindingOnSyntax<T>
 {
-  private _bindingInSyntax: interfaces.BindingInSyntax<T>;
-  private _bindingWhenSyntax: interfaces.BindingWhenSyntax<T>;
-  private _bindingOnSyntax: interfaces.BindingOnSyntax<T>;
-  private _binding: interfaces.Binding<T>;
+  private readonly _bindingInSyntax: interfaces.BindingInSyntax<T>;
+  private readonly _bindingWhenSyntax: interfaces.BindingWhenSyntax<T>;
+  private readonly _bindingOnSyntax: interfaces.BindingOnSyntax<T>;
+  private readonly _binding: interfaces.Binding<T>;
 
-  public constructor(binding: interfaces.Binding<T>) {
+  constructor(binding: interfaces.Binding<T>) {
     this._binding = binding;
     this._bindingWhenSyntax = new BindingWhenSyntax<T>(this._binding);
     this._bindingOnSyntax = new BindingOnSyntax<T>(this._binding);

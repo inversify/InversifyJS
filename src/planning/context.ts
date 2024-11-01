@@ -7,7 +7,7 @@ class Context implements interfaces.Context {
   public plan!: interfaces.Plan;
   public currentRequest!: interfaces.Request;
 
-  public constructor(container: interfaces.Container) {
+  constructor(container: interfaces.Container) {
     this.id = id();
     this.container = container;
   }

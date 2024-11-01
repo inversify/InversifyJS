@@ -56,6 +56,7 @@ jobs:
     - run: npm cache clean --force
     - run: npm ci
     - run: npm run build --if-present
+    - run: npm run lint
 
   Upload_Coverage_Report:
     name: Upload coverage report to codecov

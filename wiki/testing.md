@@ -56,7 +56,7 @@ describe('Fetching Users Integration Test', () => {
   let mockUserApiService: jest.Mocked<UserApiService>;
 
   beforeAll(() => {
-    const container = new Container();
+    const container: Container = new Container();
 
     container.bind(UserService).toSelf();
     container.bind(UserDAL).toSelf();
@@ -97,7 +97,7 @@ describe('User Service Unit Spec', () => {
   let mockUserApiService: jest.Mocked<UserApiService>;
 
   beforeAll(() => {
-    const container = new Container();
+    const container: Container = new Container();
 
     container.bind(UserService).toSelf();
 

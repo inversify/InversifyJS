@@ -25,7 +25,7 @@ interface Ninja {
 @injectable()
 class Ninja implements Ninja {
     public katana: Katana;
-    public constructor(@inject("Katana") katana: Katana) {
+    constructor(@inject("Katana") katana: Katana) {
         this.katana = katana;
     }
 }

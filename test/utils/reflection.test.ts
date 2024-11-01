@@ -1,59 +1,61 @@
-import { expect } from "chai";
-import { injectable, inject, LazyServiceIdentifier, Container } from '../../src/inversify';
+import { expect } from 'chai';
+import sinon from 'sinon';
+
+import {
+  Container,
+  inject,
+  injectable,
+  interfaces,
+  LazyServiceIdentifier,
+} from '../../src/inversify';
+import { MetadataReader } from '../../src/planning/metadata_reader';
 import { getDependencies } from '../../src/planning/reflection_utils';
-import { MetadataReader } from "../../src/planning/metadata_reader";
-import sinon from "sinon";
 
 describe('Reflection Utilities Unit Tests', () => {
+  it('Should unwrap LazyServiceIdentifier in getConstructorArgsAsTarget', () => {
+    @injectable()
+    class Katana {
+      public hit() {
+        return 'cut!';
+      }
+    }
 
-    it('Should unwrap LazyServiceIdentifier in getConstructorArgsAsTarget', () => {
+    // eslint-disable-next-line @typescript-eslint/typedef
+    const TYPES = {
+      Katana: Symbol.for('Katana'),
+      Ninja: Symbol.for('Ninja'),
+    };
 
-        interface Ninja {
-            fight(): string;
-        }
+    @injectable()
+    class Ninja implements Ninja {
+      private readonly _katana: Katana;
 
-        interface Katana {
-            hit(): string;
-        }
+      constructor(
+        @inject(new LazyServiceIdentifier(() => TYPES.Katana)) katana: Katana,
+      ) {
+        this._katana = katana;
+      }
 
-        @injectable()
-        class Katana implements Katana {
-            public hit() {
-                return "cut!";
-            }
-        }
+      public fight() {
+        return this._katana.hit();
+      }
+    }
 
-        const TYPES = {
-            Katana: Symbol.for("Katana"),
-            Ninja: Symbol.for("Ninja"),
-        };
+    const container: Container = new Container();
+    container.bind<Ninja>(TYPES.Ninja).to(Ninja);
+    container.bind<Katana>(TYPES.Katana).to(Katana);
 
-        @injectable()
-        class Ninja implements Ninja {
+    const unwrapSpy: sinon.SinonSpy<[], interfaces.ServiceIdentifier> =
+      sinon.spy(LazyServiceIdentifier.prototype, 'unwrap');
 
-        private _katana: Katana;
+    const dependencies: interfaces.Target[] = getDependencies(
+      new MetadataReader(),
+      Ninja,
+    );
 
-        public constructor(
-            @inject(new LazyServiceIdentifier(() => TYPES.Katana)) katana: Katana,
-        ) {
-            this._katana = katana;
-        }
+    expect(dependencies.length).to.be.eql(1);
+    sinon.assert.calledOnce(unwrapSpy);
 
-        public fight() { return this._katana.hit(); }
-
-        }
-
-        const container = new Container();
-        container.bind<Ninja>(TYPES.Ninja).to(Ninja);
-        container.bind<Katana>(TYPES.Katana).to(Katana);
-
-        const unwrapSpy = sinon.spy(LazyServiceIdentifier.prototype, 'unwrap');
-
-        const dependencies = getDependencies(new MetadataReader(), Ninja);
-
-        expect(dependencies.length).to.be.eql(1);
-        sinon.assert.calledOnce(unwrapSpy);
-
-        sinon.restore();
-    });
+    sinon.restore();
+  });
 });
