@@ -15,14 +15,11 @@ import { expect } from 'chai';
 
 import { decorate } from '../../src/annotation/decorator_utils';
 import { inject } from '../../src/annotation/inject';
-import {
-  LazyServiceIdentifier,
-  ServiceIdentifierOrFunc,
-} from '../../src/annotation/lazy_service_identifier';
+import { ServiceIdentifierOrFunc } from '../../src/annotation/lazy_service_identifier';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import { interfaces } from '../../src/interfaces/interfaces';
-import { multiInject } from '../../src/inversify';
+import { LazyServiceIdentifier, multiInject } from '../../src/inversify';
 
 class Katana {}
 class Shuriken {}

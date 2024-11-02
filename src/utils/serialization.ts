@@ -9,7 +9,7 @@ function getServiceIdentifierAsString(
   } else if (typeof serviceIdentifier === 'symbol') {
     return serviceIdentifier.toString();
   } else {
-    return serviceIdentifier as string;
+    return serviceIdentifier;
   }
 }
 

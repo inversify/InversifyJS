@@ -1,4 +1,5 @@
-import { LazyServiceIdentifier } from '../annotation/lazy_service_identifier';
+import { LazyServiceIdentifier } from '@inversifyjs/common';
+
 import * as ERROR_MSGS from '../constants/error_msgs';
 import { TargetTypeEnum } from '../constants/literal_types';
 import * as METADATA_KEY from '../constants/metadata_keys';
@@ -97,7 +98,7 @@ function getConstructorArgsAsTarget(
       | undefined;
 
   // we unwrap LazyServiceIdentifier wrappers to allow circular dependencies on symbols
-  if (serviceIdentifier instanceof LazyServiceIdentifier) {
+  if (LazyServiceIdentifier.is(serviceIdentifier)) {
     serviceIdentifier = serviceIdentifier.unwrap();
   }
 

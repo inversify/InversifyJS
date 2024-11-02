@@ -78,7 +78,6 @@ const _resolveFactoryFromBinding: <T>(
       new Error(
         ERROR_MSGS.CIRCULAR_DEPENDENCY_IN_FACTORY(
           factoryDetails.factoryType,
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
           context.currentRequest.serviceIdentifier.toString(),
         ),
       ),

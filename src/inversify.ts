@@ -1,4 +1,6 @@
 import * as keys from './constants/metadata_keys';
+
+export { LazyServiceIdentifier } from '@inversifyjs/common';
 // eslint-disable-next-line @typescript-eslint/typedef
 export const METADATA_KEY = keys;
 export { Container } from './container/container';
@@ -16,8 +18,6 @@ export { injectable } from './annotation/injectable';
 export { tagged } from './annotation/tagged';
 export { named } from './annotation/named';
 export { inject } from './annotation/inject';
-export { LazyServiceIdentifier } from './annotation/lazy_service_identifier';
-export { LazyServiceIdentifier as LazyServiceIdentifer } from './annotation/lazy_service_identifier';
 export { optional } from './annotation/optional';
 export { unmanaged } from './annotation/unmanaged';
 export { multiInject } from './annotation/multi_inject';

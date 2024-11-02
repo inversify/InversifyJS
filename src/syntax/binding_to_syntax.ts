@@ -27,7 +27,9 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
       throw new Error(ERROR_MSGS.INVALID_TO_SELF_VALUE);
     }
 
-    const self: interfaces.Newable<T> = this._binding.serviceIdentifier;
+    const self: interfaces.Newable<T> = this._binding
+      .serviceIdentifier as interfaces.Newable<T>;
+
     return this.to(self);
   }
 
@@ -113,9 +115,7 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
     return new BindingWhenOnSyntax<T>(this._binding);
   }
 
-  public toService(
-    service: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>,
-  ): void {
+  public toService(service: interfaces.ServiceIdentifier<T>): void {
     this.toDynamicValue((context: interfaces.Context) =>
       context.container.get<T>(service),
     );
