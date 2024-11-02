@@ -11,18 +11,15 @@ declare function __param(
   decorator: ParameterDecorator,
 ): ClassDecorator;
 
+import { LazyServiceIdentifier } from '@inversifyjs/common';
 import { expect } from 'chai';
 
 import { decorate } from '../../src/annotation/decorator_utils';
 import { inject } from '../../src/annotation/inject';
-import {
-  LazyServiceIdentifier,
-  ServiceIdentifierOrFunc,
-} from '../../src/annotation/lazy_service_identifier';
+import { multiInject } from '../../src/annotation/multi_inject';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
 import { interfaces } from '../../src/interfaces/interfaces';
-import { multiInject } from '../../src/inversify';
 
 class Katana {}
 class Shuriken {}
@@ -161,12 +158,7 @@ describe('@inject', () => {
     // this can happen when there is circular dependency between symbols
     const useDecoratorWithUndefined: () => void = function () {
       __decorate(
-        [
-          __param(
-            0,
-            inject(undefined as unknown as ServiceIdentifierOrFunc<unknown>),
-          ),
-        ],
+        [__param(0, inject(undefined as unknown as symbol))],
         InvalidDecoratorUsageWarrior,
       );
     };
@@ -235,7 +227,7 @@ describe('@inject', () => {
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class WithUndefinedInject {
-        @inject(undefined as unknown as ServiceIdentifierOrFunc<undefined>)
+        @inject(undefined as unknown as symbol)
         public property!: string;
       }
     }).to.throw(ERROR_MSGS.UNDEFINED_INJECT_ANNOTATION('WithUndefinedInject'));
@@ -248,9 +240,7 @@ describe('@inject', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class WithUndefinedInject {
         constructor(
-          @multiInject(
-            undefined as unknown as ServiceIdentifierOrFunc<undefined>,
-          )
+          @multiInject(undefined as unknown as symbol)
           public readonly dependency: string[],
         ) {}
       }

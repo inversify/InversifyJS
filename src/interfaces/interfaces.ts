@@ -1,4 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import {
+  Newable as CommonNewable,
+  ServiceIdentifier as CommonServiceIdentifier,
+} from '@inversifyjs/common';
+
 import { FactoryType } from '../utils/factory_type';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -49,8 +54,7 @@ namespace interfaces {
     Variable: interfaces.TargetType;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export type Newable<T> = new (...args: any[]) => T;
+  export type Newable<TInstance = unknown> = CommonNewable<TInstance>;
 
   export type Instance<T> = T & Record<string, () => void>;
 
@@ -58,11 +62,7 @@ namespace interfaces {
     prototype: T;
   }
 
-  export type ServiceIdentifier<T = unknown> =
-    | string
-    | symbol
-    | Newable<T>
-    | Abstract<T>;
+  export type ServiceIdentifier<T = unknown> = CommonServiceIdentifier<T>;
 
   export interface Clonable<T> {
     clone(): T;

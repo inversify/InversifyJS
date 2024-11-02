@@ -24,7 +24,6 @@ describe('Middleware', () => {
 
     function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -47,7 +46,6 @@ describe('Middleware', () => {
 
     function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -55,7 +53,6 @@ describe('Middleware', () => {
 
     function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware2: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -84,7 +81,6 @@ describe('Middleware', () => {
 
     function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -92,7 +88,6 @@ describe('Middleware', () => {
 
     function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware2: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -120,7 +115,6 @@ describe('Middleware', () => {
 
     function middleware1(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware1: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -128,7 +122,6 @@ describe('Middleware', () => {
 
     function middleware2(planAndResolve: interfaces.Next): interfaces.Next {
       return (args: interfaces.NextArgs) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         log.push(`Middleware2: ${args.serviceIdentifier.toString()}`);
         return planAndResolve(args);
       };
@@ -260,7 +253,6 @@ describe('Middleware', () => {
           contexts: interfaces.Context,
         ) => interfaces.Context = args.contextInterceptor;
         args.contextInterceptor = (context: interfaces.Context) => {
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
           log.push(`contextInterceptor1: ${args.serviceIdentifier.toString()}`);
 
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -278,7 +270,6 @@ describe('Middleware', () => {
           contexts: interfaces.Context,
         ) => interfaces.Context = args.contextInterceptor;
         args.contextInterceptor = (context: interfaces.Context) => {
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
           log.push(`contextInterceptor2: ${args.serviceIdentifier.toString()}`);
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           return nextContextInterceptor !== null

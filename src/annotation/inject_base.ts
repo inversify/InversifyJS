@@ -1,18 +1,24 @@
+import { LazyServiceIdentifier } from '@inversifyjs/common';
+
 import { UNDEFINED_INJECT_ANNOTATION } from '../constants/error_msgs';
+import { interfaces } from '../interfaces/interfaces';
 import { Metadata } from '../planning/metadata';
 import { createTaggedDecorator, DecoratorTarget } from './decorator_utils';
-import { ServiceIdentifierOrFunc } from './lazy_service_identifier';
 
 export function injectBase(
   metadataKey: string,
 ): <T = unknown>(
-  serviceIdentifier: ServiceIdentifierOrFunc<T>,
+  serviceIdentifier: interfaces.ServiceIdentifier<T> | LazyServiceIdentifier<T>,
 ) => (
   target: DecoratorTarget,
   targetKey?: string | symbol,
   indexOrPropertyDescriptor?: number | TypedPropertyDescriptor<T>,
 ) => void {
-  return <T = unknown>(serviceIdentifier: ServiceIdentifierOrFunc<T>) => {
+  return <T = unknown>(
+    serviceIdentifier:
+      | interfaces.ServiceIdentifier<T>
+      | LazyServiceIdentifier<T>,
+  ) => {
     return (
       target: DecoratorTarget,
       targetKey?: string | symbol,
