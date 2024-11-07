@@ -35,13 +35,16 @@ describe('Error message when resolving fails', () => {
 
     expect(() => {
       tryGetNamedWeapon('superior');
-    }).to.throw(/.*\bWeapon\b.*\bsuperior\b/g);
+    }).to.throw(`No matching bindings found for serviceIdentifier: Weapon
+ Weapon - {"key":"named","value":"superior"}`);
     expect(() => {
       tryGetNamedWeapon(Symbol.for('Superior'));
-    }).to.throw(/.*\bWeapon\b.*Symbol\(Superior\)/g);
+    }).to.throw(`No matching bindings found for serviceIdentifier: Weapon
+ Weapon - {"key":"named","value":"Symbol(Superior)"}`);
     expect(() => {
       tryGetNamedWeapon(0);
-    }).to.throw(/.*\bWeapon\b.*\b0\b/g);
+    }).to.throw(`No matching bindings found for serviceIdentifier: Weapon
+ Weapon - {"key":"named","value":"0"}`);
   });
 
   it('Should contain the provided tag in error message when target is tagged', () => {

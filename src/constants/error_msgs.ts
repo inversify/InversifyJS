@@ -11,8 +11,6 @@ export const NOT_REGISTERED: string =
   'No matching bindings found for serviceIdentifier:';
 export const MISSING_INJECTABLE_ANNOTATION: string =
   'Missing required @injectable annotation in:';
-export const MISSING_INJECT_ANNOTATION: string =
-  'Missing required @inject or @multiInject annotation in:';
 export const UNDEFINED_INJECT_ANNOTATION: (name: string) => string = (
   name: string,
 ) =>
@@ -20,8 +18,6 @@ export const UNDEFINED_INJECT_ANNOTATION: (name: string) => string = (
   'a circular dependency problem. You can use a LazyServiceIdentifer to ' +
   'overcome this limitation.';
 export const CIRCULAR_DEPENDENCY: string = 'Circular dependency found:';
-export const NOT_IMPLEMENTED: string =
-  'Sorry, this feature is not fully implemented yet.';
 export const INVALID_BINDING_TYPE: string = 'Invalid binding type:';
 export const NO_MORE_SNAPSHOTS_AVAILABLE: string =
   'No snapshot available to restore.';

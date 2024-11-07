@@ -1,3 +1,7 @@
+import {
+  ClassElementMetadataKind,
+  LegacyTargetImpl as TargetImpl,
+} from '@inversifyjs/core';
 import { expect } from 'chai';
 
 import { TargetTypeEnum } from '../../src/constants/literal_types';
@@ -5,7 +9,6 @@ import { Container } from '../../src/container/container';
 import { interfaces } from '../../src/interfaces/interfaces';
 import { Context } from '../../src/planning/context';
 import { Request } from '../../src/planning/request';
-import { Target } from '../../src/planning/target';
 
 describe('Request', () => {
   // eslint-disable-next-line @typescript-eslint/typedef
@@ -26,7 +29,18 @@ describe('Request', () => {
       context,
       null,
       [],
-      new Target(TargetTypeEnum.Variable, '', identifiers.Ninja),
+      new TargetImpl(
+        '',
+        {
+          kind: ClassElementMetadataKind.singleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          targetName: undefined,
+          value: identifiers.Ninja,
+        },
+        TargetTypeEnum.Variable,
+      ),
     );
 
     const request2: Request = new Request(
@@ -34,7 +48,18 @@ describe('Request', () => {
       context,
       null,
       [],
-      new Target(TargetTypeEnum.Variable, '', identifiers.Ninja),
+      new TargetImpl(
+        '',
+        {
+          kind: ClassElementMetadataKind.singleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          targetName: undefined,
+          value: identifiers.Ninja,
+        },
+        TargetTypeEnum.Variable,
+      ),
     );
 
     expect(request1.serviceIdentifier).eql(identifiers.Ninja);
@@ -54,16 +79,34 @@ describe('Request', () => {
       context,
       null,
       [],
-      new Target(TargetTypeEnum.Variable, 'Ninja', identifiers.Ninja),
+      new TargetImpl(
+        'Ninja',
+        {
+          kind: ClassElementMetadataKind.singleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          targetName: undefined,
+          value: identifiers.Ninja,
+        },
+        TargetTypeEnum.Variable,
+      ),
     );
 
     ninjaRequest.addChildRequest(
       identifiers.Katana,
       [],
-      new Target(
-        TargetTypeEnum.ConstructorArgument,
+      new TargetImpl(
         'Katana',
-        identifiers.Katana,
+        {
+          kind: ClassElementMetadataKind.singleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          targetName: undefined,
+          value: identifiers.Katana,
+        },
+        TargetTypeEnum.ConstructorArgument,
       ),
     );
 

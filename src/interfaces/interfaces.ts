@@ -3,6 +3,7 @@ import {
   Newable as CommonNewable,
   ServiceIdentifier as CommonServiceIdentifier,
 } from '@inversifyjs/common';
+import { LegacyTarget } from '@inversifyjs/core';
 
 import { FactoryType } from '../utils/factory_type';
 
@@ -206,24 +207,7 @@ namespace interfaces {
     ): Request;
   }
 
-  export interface Target {
-    id: number;
-    serviceIdentifier: ServiceIdentifier;
-    type: TargetType;
-    name: QueryableString;
-    identifier: string | symbol;
-    metadata: Metadata[];
-    getNamedTag(): interfaces.Metadata<string> | null;
-    getCustomTags(): interfaces.Metadata[] | null;
-    hasTag(key: string | number | symbol): boolean;
-    isArray(): boolean;
-    matchesArray(name: interfaces.ServiceIdentifier): boolean;
-    isNamed(): boolean;
-    isTagged(): boolean;
-    isOptional(): boolean;
-    matchesNamedTag(name: string): boolean;
-    matchesTag(key: string | number | symbol): (value: unknown) => boolean;
-  }
+  export type Target = LegacyTarget;
 
   export interface ContainerOptions {
     autoBindInjectable?: boolean;

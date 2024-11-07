@@ -1,6 +1,14 @@
+import {
+  ClassElementMetadataKind,
+  getClassElementMetadataFromLegacyMetadata,
+  LegacyTarget as Target,
+  LegacyTargetImpl as TargetImpl,
+} from '@inversifyjs/core';
+import { ClassElementMetadata } from '@inversifyjs/core';
+
 import { BindingCount } from '../bindings/binding_count';
 import * as ERROR_MSGS from '../constants/error_msgs';
-import { BindingTypeEnum, TargetTypeEnum } from '../constants/literal_types';
+import { BindingTypeEnum } from '../constants/literal_types';
 import * as METADATA_KEY from '../constants/metadata_keys';
 import { interfaces } from '../interfaces/interfaces';
 import { isStackOverflowException } from '../utils/exceptions';
@@ -19,7 +27,6 @@ import {
   getFunctionName,
 } from './reflection_utils';
 import { Request } from './request';
-import { Target } from './target';
 
 function getBindingDictionary(
   cntnr: interfaces.Container,
@@ -39,21 +46,21 @@ function _createTarget(
   key?: string | number | symbol,
   value?: unknown,
 ): interfaces.Target {
-  const metadataKey: string = isMultiInject
-    ? METADATA_KEY.MULTI_INJECT_TAG
-    : METADATA_KEY.INJECT_TAG;
-  const injectMetadata: Metadata = new Metadata(metadataKey, serviceIdentifier);
-  const target: Target = new Target(
-    targetType,
-    name,
+  const metadataList: Metadata[] = _getTargetMetadata(
+    isMultiInject,
     serviceIdentifier,
-    injectMetadata,
+    key,
+    value,
   );
 
-  if (key !== undefined) {
-    const tagMetadata: Metadata = new Metadata(key, value);
-    target.metadata.push(tagMetadata);
+  const classElementMetadata: ClassElementMetadata =
+    getClassElementMetadataFromLegacyMetadata(metadataList);
+
+  if (classElementMetadata.kind === ClassElementMetadataKind.unmanaged) {
+    throw new Error('Unexpected metadata when creating target');
   }
+
+  const target: Target = new TargetImpl(name, classElementMetadata, targetType);
 
   return target;
 }
@@ -111,6 +118,27 @@ function _getActiveBindings(
   );
 
   return activeBindings;
+}
+
+function _getTargetMetadata(
+  isMultiInject: boolean,
+  serviceIdentifier: interfaces.ServiceIdentifier,
+  key: string | number | symbol | undefined,
+  value: unknown,
+): Metadata[] {
+  const metadataKey: string = isMultiInject
+    ? METADATA_KEY.MULTI_INJECT_TAG
+    : METADATA_KEY.INJECT_TAG;
+
+  const metadataList: Metadata[] = [
+    new Metadata(metadataKey, serviceIdentifier),
+  ];
+
+  if (key !== undefined) {
+    metadataList.push(new Metadata(key, value));
+  }
+
+  return metadataList;
 }
 
 function _validateActiveBindingCount(
@@ -321,12 +349,22 @@ function createMockRequest(
   key: string | number | symbol,
   value: unknown,
 ): interfaces.Request {
-  const target: Target = new Target(
-    TargetTypeEnum.Variable,
-    '',
+  const metadataList: Metadata[] = _getTargetMetadata(
+    false,
     serviceIdentifier,
-    new Metadata(key, value),
+    key,
+    value,
   );
+
+  const classElementMetadata: ClassElementMetadata =
+    getClassElementMetadataFromLegacyMetadata(metadataList);
+
+  if (classElementMetadata.kind === ClassElementMetadataKind.unmanaged) {
+    throw new Error('Unexpected metadata when creating target');
+  }
+
+  const target: Target = new TargetImpl('', classElementMetadata, 'Variable');
+
   const context: Context = new Context(container);
   const request: Request = new Request(
     serviceIdentifier,

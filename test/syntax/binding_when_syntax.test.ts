@@ -1,3 +1,7 @@
+import {
+  ClassElementMetadataKind,
+  LegacyTargetImpl as TargetImpl,
+} from '@inversifyjs/core';
 import { expect } from 'chai';
 
 import { Binding } from '../../src/bindings/binding';
@@ -8,9 +12,7 @@ import {
 import { Container } from '../../src/container/container';
 import { interfaces } from '../../src/interfaces/interfaces';
 import { Context } from '../../src/planning/context';
-import { Metadata } from '../../src/planning/metadata';
 import { Request } from '../../src/planning/request';
-import { Target } from '../../src/planning/target';
 import { BindingWhenSyntax } from '../../src/syntax/binding_when_syntax';
 import { typeConstraint } from '../../src/syntax/constraint_helpers';
 
@@ -50,10 +52,17 @@ describe('BindingWhenSyntax', () => {
       theRequest.target.name.equals('ninja'),
     );
 
-    const target: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const target: TargetImpl = new TargetImpl(
       'ninja',
-      ninjaIdentifier,
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: ninjaIdentifier,
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
     const context: Context = new Context(new Container());
     const request: Request = new Request(
@@ -100,12 +109,19 @@ describe('BindingWhenSyntax', () => {
 
     const context: Context = new Context(new Container());
 
-    const target: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const target: TargetImpl = new TargetImpl(
       'ninja',
-      ninjaIdentifier,
-      named,
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: named,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: ninjaIdentifier,
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const request: Request = new Request(
       ninjaIdentifier,
       context,
@@ -115,11 +131,19 @@ describe('BindingWhenSyntax', () => {
     );
     expect(binding.constraint(request)).eql(true);
 
-    const target2: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const target2: TargetImpl = new TargetImpl(
       'ninja',
-      ninjaIdentifier,
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: ninjaIdentifier,
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const request2: Request = new Request(
       ninjaIdentifier,
       context,
@@ -146,12 +170,19 @@ describe('BindingWhenSyntax', () => {
 
     const context: Context = new Context(new Container());
 
-    const target: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const target: TargetImpl = new TargetImpl(
       'ninja',
-      ninjaIdentifier,
-      new Metadata('canSwim', true),
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map([['canSwim', true]]),
+        targetName: undefined,
+        value: ninjaIdentifier,
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const request: Request = new Request(
       ninjaIdentifier,
       context,
@@ -161,12 +192,19 @@ describe('BindingWhenSyntax', () => {
     );
     expect(binding.constraint(request)).eql(true);
 
-    const target2: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const target2: TargetImpl = new TargetImpl(
       'ninja',
-      ninjaIdentifier,
-      new Metadata('canSwim', false),
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map([['canSwim', false]]),
+        targetName: undefined,
+        value: ninjaIdentifier,
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const request2: Request = new Request(
       ninjaIdentifier,
       context,
@@ -182,7 +220,7 @@ describe('BindingWhenSyntax', () => {
       name: string;
     }
 
-    interface JaponeseWarrior {
+    interface JapaneseWarrior {
       katana: Weapon;
     }
 
@@ -197,7 +235,7 @@ describe('BindingWhenSyntax', () => {
       }
     }
 
-    class Samurai implements JaponeseWarrior {
+    class Samurai implements JapaneseWarrior {
       public katana: Weapon;
       constructor(katana: Weapon) {
         this.katana = katana;
@@ -211,11 +249,20 @@ describe('BindingWhenSyntax', () => {
       BindingScopeEnum.Transient,
     );
     samuraiBinding.implementationType = Samurai;
-    const samuraiTarget: Target = new Target(
-      TargetTypeEnum.Variable,
+
+    const samuraiTarget: TargetImpl = new TargetImpl(
       '',
-      'Samurai',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Samurai',
+      },
+      TargetTypeEnum.Variable,
     );
+
     const samuraiRequest: Request = new Request(
       'Samurai',
       context,
@@ -229,11 +276,20 @@ describe('BindingWhenSyntax', () => {
       BindingScopeEnum.Transient,
     );
     ninjaBinding.implementationType = Ninja;
-    const ninjaTarget: Target = new Target(
-      TargetTypeEnum.Variable,
+
+    const ninjaTarget: TargetImpl = new TargetImpl(
       '',
-      'Ninja',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Ninja',
+      },
+      TargetTypeEnum.Variable,
     );
+
     const ninjaRequest: Request = new Request(
       'Ninja',
       context,
@@ -248,11 +304,20 @@ describe('BindingWhenSyntax', () => {
     );
     const katanaBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(katanaBinding);
-    const katanaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const katanaTarget: TargetImpl = new TargetImpl(
       'katana',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.Variable,
     );
+
     const katanaRequest: Request = new Request(
       'Weapon',
       context,
@@ -267,11 +332,20 @@ describe('BindingWhenSyntax', () => {
     );
     const shurikenBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(shurikenBinding);
-    const shurikenTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const shurikenTarget: TargetImpl = new TargetImpl(
       'shuriken',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.Variable,
     );
+
     const shurikenRequest: Request = new Request(
       'Weapon',
       context,
@@ -318,7 +392,7 @@ describe('BindingWhenSyntax', () => {
       name: string;
     }
 
-    interface JaponeseWarrior {
+    interface JapaneseWarrior {
       katana: Weapon;
     }
 
@@ -333,7 +407,7 @@ describe('BindingWhenSyntax', () => {
       }
     }
 
-    class Samurai implements JaponeseWarrior {
+    class Samurai implements JapaneseWarrior {
       public katana: Weapon;
       constructor(katana: Weapon) {
         this.katana = katana;
@@ -348,12 +422,19 @@ describe('BindingWhenSyntax', () => {
 
     const context: Context = new Context(new Container());
 
-    const samuraiTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const samuraiTarget: TargetImpl = new TargetImpl(
       '',
-      'Samurai',
-      'japonese',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: 'japanese',
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Samurai',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const samuraiRequest: Request = new Request(
       'Samurai',
       context,
@@ -368,12 +449,19 @@ describe('BindingWhenSyntax', () => {
 
     ninjaBinding.implementationType = Ninja;
 
-    const ninjaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const ninjaTarget: TargetImpl = new TargetImpl(
       '',
-      'Ninja',
-      'chinese',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: 'chinese',
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Ninja',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const ninjaRequest: Request = new Request(
       'Ninja',
       context,
@@ -388,11 +476,20 @@ describe('BindingWhenSyntax', () => {
     );
     const katanaBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(katanaBinding);
-    const katanaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const katanaTarget: TargetImpl = new TargetImpl(
       'katana',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const katanaRequest: Request = new Request(
       'Weapon',
       context,
@@ -407,11 +504,20 @@ describe('BindingWhenSyntax', () => {
     );
     const shurikenBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(shurikenBinding);
-    const shurikenTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const shurikenTarget: TargetImpl = new TargetImpl(
       'shuriken',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const shurikenRequest: Request = new Request(
       'Weapon',
       context,
@@ -425,8 +531,8 @@ describe('BindingWhenSyntax', () => {
     expect(katanaBinding.constraint(katanaRequest)).eql(false);
     expect(shurikenBinding.constraint(shurikenRequest)).eql(true);
 
-    katanaBindingWhenSyntax.whenParentNamed('japonese');
-    shurikenBindingWhenSyntax.whenParentNamed('japonese');
+    katanaBindingWhenSyntax.whenParentNamed('japanese');
+    shurikenBindingWhenSyntax.whenParentNamed('japanese');
     expect(katanaBinding.constraint(katanaRequest)).eql(true);
     expect(shurikenBinding.constraint(shurikenRequest)).eql(false);
   });
@@ -436,7 +542,7 @@ describe('BindingWhenSyntax', () => {
       name: string;
     }
 
-    interface JaponeseWarrior {
+    interface JapaneseWarrior {
       katana: Weapon;
     }
 
@@ -451,7 +557,7 @@ describe('BindingWhenSyntax', () => {
       }
     }
 
-    class Samurai implements JaponeseWarrior {
+    class Samurai implements JapaneseWarrior {
       public katana: Weapon;
       constructor(katana: Weapon) {
         this.katana = katana;
@@ -466,12 +572,19 @@ describe('BindingWhenSyntax', () => {
     );
     samuraiBinding.implementationType = Samurai;
 
-    const samuraiTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const samuraiTarget: TargetImpl = new TargetImpl(
       '',
-      'Samurai',
-      new Metadata('sneaky', false),
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map([['sneaky', false]]),
+        targetName: undefined,
+        value: 'Samurai',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const samuraiRequest: Request = new Request(
       'Samurai',
       context,
@@ -485,12 +598,20 @@ describe('BindingWhenSyntax', () => {
       BindingScopeEnum.Transient,
     );
     ninjaBinding.implementationType = Ninja;
-    const ninjaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const ninjaTarget: TargetImpl = new TargetImpl(
       '',
-      'Ninja',
-      new Metadata('sneaky', true),
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map([['sneaky', true]]),
+        targetName: undefined,
+        value: 'Ninja',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const ninjaRequest: Request = new Request(
       'Ninja',
       context,
@@ -505,11 +626,20 @@ describe('BindingWhenSyntax', () => {
     );
     const katanaBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(katanaBinding);
-    const katanaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const katanaTarget: TargetImpl = new TargetImpl(
       'katana',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const katanaRequest: Request = new Request(
       'Weapon',
       context,
@@ -524,11 +654,20 @@ describe('BindingWhenSyntax', () => {
     );
     const shurikenBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(shurikenBinding);
-    const shurikenTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const shurikenTarget: TargetImpl = new TargetImpl(
       'shuriken',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const shurikenRequest: Request = new Request(
       'Weapon',
       context,
@@ -625,12 +764,19 @@ describe('BindingWhenSyntax', () => {
     );
     samuraiStudentBinding.implementationType = SamuraiStudent;
 
-    const samuraiTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const samuraiTarget: TargetImpl = new TargetImpl(
       '',
-      'Samurai',
-      new Metadata('sneaky', false),
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map([['sneaky', false]]),
+        targetName: undefined,
+        value: 'Samurai',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const samuraiMasterRequest: Request = new Request(
       'Samurai',
       context,
@@ -659,12 +805,19 @@ describe('BindingWhenSyntax', () => {
     );
     ninjaStudentBinding.implementationType = NinjaStudent;
 
-    const ninjaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+    const ninjaTarget: TargetImpl = new TargetImpl(
       '',
-      'Ninja',
-      new Metadata('sneaky', true),
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map([['sneaky', true]]),
+        targetName: undefined,
+        value: 'Ninja',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const ninjaMasterRequest: Request = new Request(
       'Ninja',
       context,
@@ -688,11 +841,20 @@ describe('BindingWhenSyntax', () => {
     katanaBinding.implementationType = Katana;
     const katanaBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(katanaBinding);
-    const katanaTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const katanaTarget: TargetImpl = new TargetImpl(
       'katana',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const ironKatanaRequest: Request = new Request(
       'Weapon',
       context,
@@ -716,11 +878,20 @@ describe('BindingWhenSyntax', () => {
     shurikenBinding.implementationType = Shuriken;
     const shurikenBindingWhenSyntax: BindingWhenSyntax<Weapon> =
       new BindingWhenSyntax<Weapon>(shurikenBinding);
-    const shurikenTarget: Target = new Target(
-      TargetTypeEnum.ConstructorArgument,
+
+    const shurikenTarget: TargetImpl = new TargetImpl(
       'shuriken',
-      'Weapon',
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: 'Weapon',
+      },
+      TargetTypeEnum.ConstructorArgument,
     );
+
     const ironShurikenRequest: Request = new Request(
       'Weapon',
       context,
@@ -781,11 +952,11 @@ describe('BindingWhenSyntax', () => {
       expect(shurikenBinding.constraint(woodShurikenRequest)).eql(false);
       expect(shurikenBinding.constraint(ironShurikenRequest)).eql(false);
 
-      katanaBindingWhenSyntax.whenAnyAncestorNamed('japonese');
+      katanaBindingWhenSyntax.whenAnyAncestorNamed('japanese');
       expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
       expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
 
-      katanaBindingWhenSyntax.whenAnyAncestorNamed('japonese');
+      katanaBindingWhenSyntax.whenAnyAncestorNamed('japanese');
       expect(katanaBinding.constraint(woodKatanaRequest)).eql(false);
       expect(katanaBinding.constraint(ironKatanaRequest)).eql(false);
     });
@@ -799,11 +970,11 @@ describe('BindingWhenSyntax', () => {
       expect(shurikenBinding.constraint(woodShurikenRequest)).eql(true);
       expect(shurikenBinding.constraint(ironShurikenRequest)).eql(true);
 
-      katanaBindingWhenSyntax.whenNoAncestorNamed('japonese');
+      katanaBindingWhenSyntax.whenNoAncestorNamed('japanese');
       expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
       expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
 
-      katanaBindingWhenSyntax.whenNoAncestorNamed('japonese');
+      katanaBindingWhenSyntax.whenNoAncestorNamed('japanese');
       expect(katanaBinding.constraint(woodKatanaRequest)).eql(true);
       expect(katanaBinding.constraint(ironKatanaRequest)).eql(true);
     });

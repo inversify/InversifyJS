@@ -1,5 +1,5 @@
 # Support for classes
-InversifyJS allows your classes to have a direct dependency on other classes. When doing so you will need to use the `@injectable` decorator but you will not be required to use the `@inject` decorator. 
+InversifyJS allows your classes to have a direct dependency on other classes.
 
 The `@inject` decorator is not required when you use classes. The annotation is not required because the typescript compiler generates the metadata for us. However, this won't happen if you forget one of the following things:
 

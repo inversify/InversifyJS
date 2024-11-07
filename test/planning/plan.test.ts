@@ -1,3 +1,4 @@
+import { ClassElementMetadataKind, LegacyTargetImpl } from '@inversifyjs/core';
 import { expect } from 'chai';
 
 import { TargetTypeEnum } from '../../src/constants/literal_types';
@@ -5,7 +6,6 @@ import { Container } from '../../src/container/container';
 import { Context } from '../../src/planning/context';
 import { Plan } from '../../src/planning/plan';
 import { Request } from '../../src/planning/request';
-import { Target } from '../../src/planning/target';
 
 describe('Plan', () => {
   it('Should set its own properties correctly', () => {
@@ -18,7 +18,18 @@ describe('Plan', () => {
       context,
       null,
       [],
-      new Target(TargetTypeEnum.Variable, '', runtimeId),
+      new LegacyTargetImpl(
+        '',
+        {
+          kind: ClassElementMetadataKind.singleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          targetName: undefined,
+          value: runtimeId,
+        },
+        TargetTypeEnum.Variable,
+      ),
     );
 
     const plan: Plan = new Plan(context, request);

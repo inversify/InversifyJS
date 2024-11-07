@@ -1,10 +1,6 @@
 # Inheritance
 
-We try to provide developers with useful error feedback like:
-
-> Error: Missing required @injectable annotation in: SamuraiMaster
-
-This works fine in most cases but it causes some problem when using inheritance.
+We try to provide developers with useful error feedback. This works fine in most cases but it causes some problem when using inheritance.
 
 For example, the following code snippet throws a misleading error:
 
@@ -208,7 +204,7 @@ container
     .whenTargetNamed("master");
 ```
 
-### WORKAROUND E) Skip Base class `@injectable` checks
+### WORKAROUND E) Skip Base class checks
 
 Setting the `skipBaseClassChecks` option to `true` for the container will disable all checking of base classes. This means it will be completely up to the developer to ensure that the `super()` constructor is called with the correct arguments and at the correct time.
 
