@@ -2012,7 +2012,8 @@ describe('InversifyJS', () => {
     const errorFunction: () => void = () => {
       container.get<Warrior>(SYMBOLS.SamuraiMaster);
     };
-    const error: string = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH('SamuraiMaster');
+    const error: string =
+      'No matching bindings found for serviceIdentifier: Object';
     expect(errorFunction).to.throw(error);
 
     const samuraiMaster2: SamuraiMaster2 = container.get<SamuraiMaster2>(
@@ -2934,7 +2935,7 @@ describe('InversifyJS', () => {
     expect(samurai.rank).eql('Master');
   });
 
-  it('Should be able to identify missing @injectable in a base class', () => {
+  it('Should not throw due to a missing @injectable in a base class', () => {
     // eslint-disable-next-line @typescript-eslint/typedef
     const SYMBOLS = {
       SamuraiMaster: Symbol.for('SamuraiMaster'),
@@ -2963,12 +2964,10 @@ describe('InversifyJS', () => {
     const container: Container = new Container();
     container.bind<Warrior>(SYMBOLS.SamuraiMaster).to(SamuraiMaster);
 
-    function throws() {
+    function notThrows() {
       return container.get<Warrior>(SYMBOLS.SamuraiMaster);
     }
 
-    expect(throws).to.throw(
-      `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Samurai`,
-    );
+    expect(notThrows).not.to.throw();
   });
 });

@@ -5,8 +5,8 @@
   },
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "dependencies": {
-    "@inversifyjs/common": "1.3.0",
-    "@inversifyjs/core": "1.3.0"
+    "@inversifyjs/common": "1.3.2",
+    "@inversifyjs/core": "1.3.2"
   },
   "devDependencies": {
     "@eslint/js": "9.13.0",
@@ -65,7 +65,7 @@
     "postupdate": "git diff-files --quiet package-lock.json || npm test",
     "prepublish": "npm run build && publish-please guard",
     "publish-please": "publish-please",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test": "nyc --reporter=lcov --require ts-node/register mocha ./test/*.test.ts test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "update": "updates --update --minor && npm install"
   },
   "sideEffects": false,
