@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Fixed
+
+## [6.1.0]
+
+### Changed
 - Updated `ServiceIdentifier` to rely on `Function` instead of `Abstract<T>`.
 - `injectable` decorator is no longer required.
 
