@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `injectable` decorator is no longer required.
 
 ### Fixed
+- Fixed `Target.getNameTag` with the right type: `number | string | symbol`.
 
 ## [6.0.3]
 
