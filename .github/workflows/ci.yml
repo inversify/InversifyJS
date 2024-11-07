@@ -33,7 +33,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: npm run lint
       - name: Run tests
         run: npm test
 
@@ -57,6 +56,9 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Install Dependencies
         run: npm ci
+      - run: npm run build
+      - name: Run linter
+        run: npm run lint
       - name: Run tests
         run: npm test --coverage
       - name: Codecov Upload
