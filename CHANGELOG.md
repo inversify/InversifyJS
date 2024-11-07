@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
+## [6.1.1]
+
+### Fixed
 - Bumped `@inversifyjs/common` and `@inversifyjs/core` fixing wrong dev engines constraints.
 
 ## [6.1.0]
