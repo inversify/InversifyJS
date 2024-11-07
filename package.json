@@ -65,7 +65,7 @@
     "postupdate": "git diff-files --quiet package-lock.json || npm test",
     "prepublish": "npm run build && publish-please guard",
     "publish-please": "publish-please",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test": "nyc --reporter=lcov --require ts-node/register mocha ./test/*.test.ts test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
     "update": "updates --update --minor && npm install"
   },
   "sideEffects": false,
