@@ -557,9 +557,11 @@ describe('Bugs', () => {
       container.getNamed<Weapon>(TYPES.Weapon, 'bow');
     };
 
-    const error: string =
-      'No matching bindings found for serviceIdentifier: Weapon\n Weapon ' +
-      '- named: bow \n\nRegistered bindings:\n Katana - named: sword ';
+    const error: string = `No matching bindings found for serviceIdentifier: Weapon
+ Weapon - {"key":"named","value":"bow"}
+
+Registered bindings:
+ Katana - named: sword`;
 
     expect(throws).to.throw(error);
   });
@@ -880,7 +882,7 @@ describe('Bugs', () => {
     expect(typedBl.repository.model.instance.name).to.eq(new Type().name);
   });
 
-  it('Should detect missing annotations in base classes', () => {
+  it('Should allow missing annotations in base classes', () => {
     @injectable()
     class Katana implements Katana {
       public hit() {
@@ -915,8 +917,6 @@ describe('Bugs', () => {
       container.get<Ninja>('Ninja');
     };
 
-    expect(tryGet).to.throw(
-      'Missing required @injectable annotation in: Warrior.',
-    );
+    expect(tryGet).not.to.throw();
   });
 });

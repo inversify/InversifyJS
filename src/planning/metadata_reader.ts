@@ -6,10 +6,10 @@ class MetadataReader implements interfaces.MetadataReader {
     constructorFunc: NewableFunction,
   ): interfaces.ConstructorMetadata {
     // TypeScript compiler generated annotations
-    const compilerGeneratedMetadata: NewableFunction[] | undefined =
-      Reflect.getMetadata(METADATA_KEY.PARAM_TYPES, constructorFunc) as
+    const compilerGeneratedMetadata: NewableFunction[] =
+      (Reflect.getMetadata(METADATA_KEY.DESIGN_PARAM_TYPES, constructorFunc) as
         | NewableFunction[]
-        | undefined;
+        | undefined) ?? [];
 
     // User generated constructor annotations
     const userGeneratedMetadata: interfaces.MetadataMap | undefined =

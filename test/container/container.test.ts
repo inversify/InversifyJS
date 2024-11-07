@@ -723,7 +723,10 @@ describe('Container', () => {
     expect(ninja4.weapon).to.not.equal(katana4);
 
     const container5: Container = new Container({ autoBindInjectable: true });
-    expect(() => container5.get(Samurai)).to.throw(ERROR_MSGS.NOT_REGISTERED);
+
+    const samurai: Samurai = container5.get(Samurai);
+
+    expect(samurai).to.be.an.instanceOf(Samurai);
   });
 
   it('Should be throw an exception if incorrect options is provided', () => {

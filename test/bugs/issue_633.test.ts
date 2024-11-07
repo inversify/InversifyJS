@@ -22,10 +22,13 @@ describe('Issue 633', () => {
     container
       .bind<Logger>(TYPE.Logger)
       .toDynamicValue((context: interfaces.Context) => {
-        const namedMetadata: interfaces.Metadata<string> | null =
-          context.currentRequest.target.getNamedTag();
-        const named: string = namedMetadata ? namedMetadata.value : 'default';
-        return new Logger(named);
+        const namedMetadata: interfaces.Metadata<
+          string | number | symbol
+        > | null = context.currentRequest.target.getNamedTag();
+        const named: string | number | symbol = namedMetadata
+          ? namedMetadata.value
+          : 'default';
+        return new Logger(named.toString());
       });
 
     const logger1: Logger = container.getNamed<Logger>(TYPE.Logger, 'Name1');

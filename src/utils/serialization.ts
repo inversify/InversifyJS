@@ -103,19 +103,18 @@ function listMetadataForTarget(
   if (target.isTagged() || target.isNamed()) {
     let m: string = '';
 
-    const namedTag: interfaces.Metadata<string> | null = target.getNamedTag();
+    const namedTag: interfaces.Metadata<string | number | symbol> | null =
+      target.getNamedTag();
     const otherTags: interfaces.Metadata<unknown>[] | null =
       target.getCustomTags();
 
     if (namedTag !== null) {
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      m += namedTag.toString() + '\n';
+      m += stringifyMetadata(namedTag) + '\n';
     }
 
     if (otherTags !== null) {
       otherTags.forEach((tag: interfaces.Metadata) => {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        m += tag.toString() + '\n';
+        m += stringifyMetadata(tag) + '\n';
       });
     }
 
@@ -141,6 +140,10 @@ function getFunctionName(func: { name: string | null | undefined }): string {
 function getSymbolDescription(symbol: symbol) {
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   return symbol.toString().slice(7, -1);
+}
+
+function stringifyMetadata(metadata: interfaces.Metadata): string {
+  return `{"key":"${metadata.key.toString()}","value":"${(metadata.value as string).toString()}"}`;
 }
 
 export {

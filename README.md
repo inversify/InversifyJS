@@ -144,9 +144,9 @@ export { TYPES };
 > **Note**: It is recommended to use Symbols but InversifyJS also support the usage of Classes and string literals (please refer to the features section to learn more).
 
 ### Step 2: Declare dependencies using the `@injectable` & `@inject` decorators
-Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. All the classes must be annotated with the `@injectable` decorator.
+Let's continue by declaring some classes (concretions). The classes are implementations of the interfaces that we just declared. We will annotate them with the `@injectable` decorator.
 
-When a class has a  dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol.for("Weapon")` and `Symbol.for("ThrowableWeapon")` as runtime identifiers.
+When a class has a dependency on an interface we also need to use the `@inject` decorator to define an identifier for the interface that will be available at runtime. In this case we will use the Symbols `Symbol.for("Weapon")` and `Symbol.for("ThrowableWeapon")` as runtime identifiers.
 
 ```ts
 // file entities.ts

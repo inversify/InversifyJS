@@ -1,7 +1,10 @@
+import {
+  ClassElementMetadataKind,
+  LegacyTargetImpl as TargetImpl,
+} from '@inversifyjs/core';
 import { expect } from 'chai';
 
 import { TargetTypeEnum } from '../../src/constants/literal_types';
-import { Target } from '../../src/planning/target';
 import {
   getFunctionName,
   getSymbolDescription,
@@ -28,11 +31,20 @@ describe('Serialization', () => {
 
   it('Should not fail when target is not named or tagged', () => {
     const serviceIdentifier: string = 'SomeTypeId';
-    const target: Target = new Target(
-      TargetTypeEnum.Variable,
+
+    const target: TargetImpl = new TargetImpl(
       '',
-      serviceIdentifier,
+      {
+        kind: ClassElementMetadataKind.singleInjection,
+        name: undefined,
+        optional: false,
+        tags: new Map(),
+        targetName: undefined,
+        value: serviceIdentifier,
+      },
+      TargetTypeEnum.Variable,
     );
+
     const list: string = listMetadataForTarget(serviceIdentifier, target);
     expect(list).to.eql(` ${serviceIdentifier}`);
   });

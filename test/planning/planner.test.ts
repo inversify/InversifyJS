@@ -527,7 +527,7 @@ describe('Planner', () => {
     expect(actualPlan.rootRequest.childRequests[2]).eql(undefined);
   });
 
-  it('Should throw when a class has a missing @injectable annotation', () => {
+  it('Should not throw when a class has a missing @injectable annotation', () => {
     class Katana {}
 
     const container: Container = new Container();
@@ -543,9 +543,7 @@ describe('Planner', () => {
       );
     };
 
-    expect(throwFunction).to.throw(
-      `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} Katana.`,
-    );
+    expect(throwFunction).not.to.throw();
   });
 
   it('Should throw when apply a metadata decorator without @inject or @multiInject', () => {
@@ -573,7 +571,7 @@ describe('Planner', () => {
     };
 
     expect(throwFunction).to.throw(
-      `${ERROR_MSGS.MISSING_INJECTABLE_ANNOTATION} for property weapon in class Ninja.`,
+      'Expected a single @inject, @multiInject or @unmanaged decorator at type "Ninja" at property "weapon"',
     );
   });
 
@@ -632,11 +630,11 @@ describe('Planner', () => {
     };
 
     expect(throwFunction).to.throw(
-      `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`,
+      'No matching bindings found for serviceIdentifier: Object',
     );
   });
 
-  it('Should throw when a function has a missing @injectable annotation', () => {
+  it('Should throw when a function has a missing @inject annotation', () => {
     interface Sword {
       damage: number;
     }
@@ -671,7 +669,7 @@ describe('Planner', () => {
     };
 
     expect(throwFunction).to.throw(
-      `${ERROR_MSGS.MISSING_INJECT_ANNOTATION} argument 0 in class Ninja.`,
+      'No matching bindings found for serviceIdentifier: Function',
     );
   });
 });

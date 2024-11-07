@@ -1,6 +1,6 @@
 import { interfaces } from '../interfaces/interfaces';
 
-class QueryableString implements interfaces.QueryableString {
+export class QueryableString implements interfaces.QueryableString {
   private readonly str: string;
 
   constructor(str: string) {
@@ -34,5 +34,3 @@ class QueryableString implements interfaces.QueryableString {
     return this.str;
   }
 }
-
-export { QueryableString };
