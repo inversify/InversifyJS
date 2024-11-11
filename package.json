@@ -48,6 +48,12 @@
   "license": "MIT",
   "main": "lib/inversify.js",
   "module": "es/inversify.js",
+  "exports": {
+    ".": {
+      "import": "./es/inversify.js",
+      "require": "./lib/inversify.js"
+    }
+  },
   "name": "inversify",
   "repository": {
     "type": "git",
