@@ -62,7 +62,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
     "build:amd": "tsc -p src/tsconfig-amd.json",
-    "build:es": "tsc -p src/tsconfig-es.json",
+    "build:es": "tsc -p src/tsconfig-es.json && node ./scripts/writeEsmPackageJson.mjs ./es",
     "build:es6": "tsc -p src/tsconfig-es6.json",
     "build:lib": "tsc -p src/tsconfig.json",
     "clean": "rimraf amd es es6 lib",
