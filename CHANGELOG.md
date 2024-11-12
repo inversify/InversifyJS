@@ -10,9 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Fixed
+
+## [6.1.2-beta.1]
+
+### Changed
+
 - Updated `package.json` to include the `exports` field for better bundler support.
 
+## [6.1.2-beta.0]
+
 ### Fixed
+- Updated fetch metadata flows with better error descriptions
 
 ## [6.1.1]
 
