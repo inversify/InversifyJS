@@ -4,8 +4,6 @@
   ],
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
     "outDir": "../lib",
     "rootDir": "."
   },

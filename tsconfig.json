@@ -5,6 +5,7 @@
     "allowUnusedLabels": false,
     "alwaysStrict": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
