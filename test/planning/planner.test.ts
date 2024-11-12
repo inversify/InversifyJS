@@ -669,7 +669,8 @@ describe('Planner', () => {
     };
 
     expect(throwFunction).to.throw(
-      'No matching bindings found for serviceIdentifier: Function',
+      `No matching bindings found for serviceIdentifier: Function
+Trying to resolve bindings for "Ninja"`,
     );
   });
 });

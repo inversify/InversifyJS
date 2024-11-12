@@ -9,8 +9,9 @@ export const AMBIGUOUS_MATCH: string =
 export const CANNOT_UNBIND: string = 'Could not unbind serviceIdentifier:';
 export const NOT_REGISTERED: string =
   'No matching bindings found for serviceIdentifier:';
-export const MISSING_INJECTABLE_ANNOTATION: string =
-  'Missing required @injectable annotation in:';
+export const TRYING_TO_RESOLVE_BINDINGS: (name: string) => string = (
+  name: string,
+) => `Trying to resolve bindings for "${name}"`;
 export const UNDEFINED_INJECT_ANNOTATION: (name: string) => string = (
   name: string,
 ) =>

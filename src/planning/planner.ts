@@ -113,6 +113,7 @@ function _getActiveBindings(
   _validateActiveBindingCount(
     target.serviceIdentifier,
     activeBindings,
+    parentRequest,
     target,
     context.container,
   );
@@ -144,6 +145,7 @@ function _getTargetMetadata(
 function _validateActiveBindingCount(
   serviceIdentifier: interfaces.ServiceIdentifier,
   bindings: interfaces.Binding<unknown>[],
+  parentRequest: interfaces.Request | null,
   target: interfaces.Target,
   container: interfaces.Container,
 ): interfaces.Binding<unknown>[] {
@@ -161,6 +163,11 @@ function _validateActiveBindingCount(
           serviceIdentifierString,
           getBindings,
         );
+
+        if (parentRequest !== null) {
+          msg += `\n${ERROR_MSGS.TRYING_TO_RESOLVE_BINDINGS(getServiceIdentifierAsString(parentRequest.serviceIdentifier))}`;
+        }
+
         throw new Error(msg);
       }
 
