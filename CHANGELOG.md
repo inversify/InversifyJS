@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Updated planner with better error description when a binding can not be properly resolved.
 
 ### Fixed
+
+## [6.1.4-beta.0]
+
+### Changed
+- Updated planner with better error description when a binding can not be properly resolved.
 
 ## [6.1.3]
 
