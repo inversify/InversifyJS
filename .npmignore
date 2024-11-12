@@ -17,6 +17,7 @@ mocha.opts
 prettier.config.mjs
 PULL_REQUEST_TEMPLATE.md
 renovate.json
+scripts
 src
 temp
 test
