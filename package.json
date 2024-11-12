@@ -76,5 +76,5 @@
   },
   "sideEffects": false,
   "types": "lib/inversify.d.ts",
-  "version": "6.1.2-beta.1"
+  "version": "6.1.2"
 }
