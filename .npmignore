@@ -16,6 +16,7 @@ ISSUE_TEMPLATE.md
 mocha.opts
 prettier.config.mjs
 PULL_REQUEST_TEMPLATE.md
+renovate.json
 src
 temp
 test
