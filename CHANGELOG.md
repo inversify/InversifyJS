@@ -13,8 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Updated container to allow deactivating singleton undefined values.
-- Updated planner to provide right circular dependent services when such dependencies are detected.
 - Updated ESM build to be compatible with both bundler and NodeJS module resolution algorithms.
+
+## [6.1.4-beta.1]
+
+### Fixed
+- Updated ESM build to be compatible with both bundler and NodeJS module resolution algorithms.
+
+## [6.1.4-beta.0]
+
+### Changed
+- Updated planner with better error description when a binding can not be properly resolved.
 
 ## [6.1.3]
 
