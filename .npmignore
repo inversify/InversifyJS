@@ -22,4 +22,5 @@ src
 temp
 test
 tsconfig.json
+webpack.config.mjs
 wiki
