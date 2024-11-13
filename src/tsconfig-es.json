@@ -5,6 +5,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../es",
-    "module": "es2015"
+    "module": "ES2022",
+    "moduleResolution": "Bundler"
   },
 }
