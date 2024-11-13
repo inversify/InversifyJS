@@ -9,13 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Updated planner with better error description when a binding can not be properly resolved.
 
 ### Fixed
+- Updated container to allow deactivating singleton undefined values.
+- Updated ESM build to be compatible with both bundler and NodeJS module resolution algorithms.
 
 ## [6.1.4-beta.1]
 
 ### Fixed
-- Updated container to allow deactivating singleton undefined values.
 - Updated ESM build to be compatible with both bundler and NodeJS module resolution algorithms.
 
 ## [6.1.4-beta.0]
