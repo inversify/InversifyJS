@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated planner with better error description when a binding can not be properly resolved.
 
 ### Fixed
+- Updated container to allow deactivating singleton undefined values.
 - Updated planner to provide right circular dependent services when such dependencies are detected.
 
 ## [6.1.3]
