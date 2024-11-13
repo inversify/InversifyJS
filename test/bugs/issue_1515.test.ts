@@ -8,7 +8,7 @@ import {
 } from '../../src/inversify';
 
 describe('Issue 1515', () => {
-  it('should not throw on false circular dependency', () => {
+  it('should properly throw on circular dependency', () => {
     @injectable()
     class Circle1 {
       constructor(@inject('circle-2') public readonly circle2: unknown) {}
