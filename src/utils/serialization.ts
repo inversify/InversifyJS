@@ -87,7 +87,7 @@ function dependencyChainToString(request: interfaces.Request) {
 
 function circularDependencyToException(request: interfaces.Request) {
   request.childRequests.forEach((childRequest: interfaces.Request) => {
-    if (alreadyDependencyChain(childRequest, childRequest.serviceIdentifier)) {
+    if (alreadyDependencyChain(request, childRequest.serviceIdentifier)) {
       const services: string = dependencyChainToString(childRequest);
       throw new Error(`${ERROR_MSGS.CIRCULAR_DEPENDENCY} ${services}`);
     } else {
