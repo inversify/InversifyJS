@@ -10,21 +10,13 @@ import {
 describe('Issue 1515', () => {
   it('should not throw on false circular dependency', () => {
     @injectable()
-    class Top {
-      constructor(
-        @multiInject('multi-inject') public readonly multis: unknown[],
-        @inject('circle-1') public readonly circle1: Circle1,
-      ) {}
-    }
-
-    @injectable()
     class Circle1 {
-      constructor(@inject('circle-2') public readonly circle2: Circle2) {}
+      constructor(@inject('circle-2') public readonly circle2: unknown) {}
     }
 
     @injectable()
     class Circle2 {
-      constructor(@inject('circle-1') public circle1: Circle1) {}
+      constructor(@inject('circle-1') public circle1: unknown) {}
     }
 
     @injectable()
@@ -33,6 +25,14 @@ describe('Issue 1515', () => {
     class Multi2 {}
     @injectable()
     class Multi3 {}
+
+    @injectable()
+    class Top {
+      constructor(
+        @multiInject('multi-inject') public readonly multis: unknown[],
+        @inject('circle-1') public readonly circle1: unknown,
+      ) {}
+    }
 
     const container: Container = new Container();
 
