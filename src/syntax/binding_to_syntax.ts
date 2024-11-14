@@ -116,9 +116,14 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
   }
 
   public toService(service: interfaces.ServiceIdentifier<T>): void {
-    this.toDynamicValue((context: interfaces.Context) =>
-      context.container.get<T>(service),
-    );
+    this.toDynamicValue((context: interfaces.Context): T | Promise<T> => {
+      try {
+        return context.container.get<T>(service);
+      } catch (_error: unknown) {
+        // This is a performance degradation in this edge case, we do need to improve the internal resolution architecture in order to solve this properly.
+        return context.container.getAsync<T>(service);
+      }
+    });
   }
 }
 
