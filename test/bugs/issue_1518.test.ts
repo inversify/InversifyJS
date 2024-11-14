@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { Container } from '../../src/inversify';
 
-describe('Issue 1515', () => {
+describe('Issue 1518', () => {
   it('should not throw on deactivating undefined singleton values', () => {
     const container: Container = new Container();
     const symbol: symbol = Symbol.for('foo');
