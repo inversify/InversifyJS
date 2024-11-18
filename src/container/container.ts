@@ -138,8 +138,8 @@ class Container implements interfaces.Container {
         containerModuleHelpers.isboundFunction,
         containerModuleHelpers.rebindFunction,
         containerModuleHelpers.unbindAsyncFunction,
-        containerModuleHelpers.onActivationFunction as interfaces.Container['onActivation'],
-        containerModuleHelpers.onDeactivationFunction as interfaces.Container['onDeactivation'],
+        containerModuleHelpers.onActivationFunction,
+        containerModuleHelpers.onDeactivationFunction,
       );
     }
   }
@@ -192,11 +192,7 @@ class Container implements interfaces.Container {
   public bind<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
   ): interfaces.BindingToSyntax<T> {
-    const scope: interfaces.BindingScope =
-      this.options.defaultScope || BindingScopeEnum.Transient;
-    const binding: Binding<T> = new Binding<T>(serviceIdentifier, scope);
-    this._bindingDictionary.add(serviceIdentifier, binding as Binding<unknown>);
-    return new BindingToSyntax<T>(binding);
+    return this._bind(this._buildBinding(serviceIdentifier));
   }
 
   public rebind<T>(
@@ -684,32 +680,15 @@ class Container implements interfaces.Container {
   }
 
   private _getContainerModuleHelpersFactory() {
-    const setModuleId: (
-      bindingToSyntax: interfaces.BindingToSyntax<unknown>,
-      moduleId: interfaces.ContainerModuleBase['id'],
-    ) => void = (
-      bindingToSyntax: interfaces.BindingToSyntax<unknown>,
-      moduleId: interfaces.ContainerModuleBase['id'],
-    ) => {
-      // TODO: Implement an internal type `_BindingToSyntax<T>` wherein this member
-      // can be public. Let `BindingToSyntax<T>` be the presentational type that
-      // depends on it, and does not expose this member as public.
-      (
-        bindingToSyntax as unknown as {
-          _binding: { moduleId: interfaces.ContainerModuleBase['id'] };
-        }
-      )._binding.moduleId = moduleId;
-    };
-
     const getBindFunction: (
       moduleId: interfaces.ContainerModuleBase['id'],
     ) => interfaces.Bind =
       (moduleId: interfaces.ContainerModuleBase['id']) =>
       <T>(serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
-        const bindingToSyntax: interfaces.BindingToSyntax<T> =
-          this.bind<T>(serviceIdentifier);
-        setModuleId(bindingToSyntax, moduleId);
-        return bindingToSyntax;
+        const binding: Binding<T> = this._buildBinding(serviceIdentifier);
+        binding.moduleId = moduleId;
+
+        return this._bind(binding);
       };
 
     const getUnbindFunction: () => (
@@ -738,25 +717,29 @@ class Container implements interfaces.Container {
 
     const getRebindFunction: (
       moduleId: interfaces.ContainerModuleBase['id'],
-    ) => interfaces.Rebind =
-      (moduleId: interfaces.ContainerModuleBase['id']) =>
-      <T = unknown>(serviceIdentifier: interfaces.ServiceIdentifier<T>) => {
-        const bindingToSyntax: interfaces.BindingToSyntax<T> =
-          this.rebind(serviceIdentifier);
-        setModuleId(bindingToSyntax, moduleId);
-        return bindingToSyntax;
+    ) => interfaces.Rebind = (
+      moduleId: interfaces.ContainerModuleBase['id'],
+    ) => {
+      const bind: interfaces.Bind = getBindFunction(moduleId);
+
+      return <T = unknown>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      ) => {
+        this.unbind(serviceIdentifier);
+        return bind(serviceIdentifier);
       };
+    };
 
     const getOnActivationFunction: (
       moduleId: interfaces.ContainerModuleBase['id'],
-    ) => (
-      serviceIdentifier: interfaces.ServiceIdentifier,
-      onActivation: interfaces.BindingActivation,
+    ) => <T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      onActivation: interfaces.BindingActivation<T>,
     ) => void =
       (moduleId: interfaces.ContainerModuleBase['id']) =>
-      (
-        serviceIdentifier: interfaces.ServiceIdentifier,
-        onActivation: interfaces.BindingActivation,
+      <T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        onActivation: interfaces.BindingActivation<T>,
       ) => {
         this._moduleActivationStore.addActivation(
           moduleId,
@@ -768,14 +751,14 @@ class Container implements interfaces.Container {
 
     const getOnDeactivationFunction: (
       moduleId: interfaces.ContainerModuleBase['id'],
-    ) => (
-      serviceIdentifier: interfaces.ServiceIdentifier,
-      onDeactivation: interfaces.BindingDeactivation,
+    ) => <T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      onDeactivation: interfaces.BindingDeactivation<T>,
     ) => void =
       (moduleId: interfaces.ContainerModuleBase['id']) =>
-      (
-        serviceIdentifier: interfaces.ServiceIdentifier,
-        onDeactivation: interfaces.BindingDeactivation,
+      <T>(
+        serviceIdentifier: interfaces.ServiceIdentifier<T>,
+        onDeactivation: interfaces.BindingDeactivation<T>,
       ) => {
         this._moduleActivationStore.addDeactivation(
           moduleId,
@@ -795,6 +778,23 @@ class Container implements interfaces.Container {
       unbindFunction: getUnbindFunction(),
     });
   }
+
+  private _bind<T>(binding: Binding<T>): BindingToSyntax<T> {
+    this._bindingDictionary.add(
+      binding.serviceIdentifier,
+      binding as Binding<unknown>,
+    );
+    return new BindingToSyntax<T>(binding);
+  }
+
+  private _buildBinding<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  ): Binding<T> {
+    const scope: interfaces.BindingScope =
+      this.options.defaultScope || BindingScopeEnum.Transient;
+    return new Binding<T>(serviceIdentifier, scope);
+  }
+
   private async _getAll<T>(getArgs: GetArgs<T>): Promise<T[]> {
     return Promise.all(this._get<T>(getArgs) as (Promise<T> | T)[]);
   }
