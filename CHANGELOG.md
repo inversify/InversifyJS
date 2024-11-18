@@ -64,10 +64,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated `ServiceIdentifier` to rely on `Function` instead of `Abstract<T>`.
-- `injectable` decorator is no longer required.
 
 ### Fixed
 - Fixed `Target.getNameTag` with the right type: `number | string | symbol`.
+- Fixed `interfaces.ModuleActivationStore.addDeactivation` to enforce `serviceIdentifier` and `onDeactivation` are consistent.
+- Fixed `interfaces.ModuleActivationStore.addActivation` to enforce `serviceIdentifier` and `onDeactivation` are consistent.
 
 ## [6.0.3]
 

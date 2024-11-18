@@ -340,15 +340,15 @@ namespace interfaces {
 
   export interface ModuleActivationStore
     extends Clonable<ModuleActivationStore> {
-    addDeactivation(
+    addDeactivation<T>(
       moduleId: ContainerModuleBase['id'],
-      serviceIdentifier: ServiceIdentifier<unknown>,
-      onDeactivation: interfaces.BindingDeactivation<unknown>,
+      serviceIdentifier: ServiceIdentifier<T>,
+      onDeactivation: interfaces.BindingDeactivation<T>,
     ): void;
-    addActivation(
+    addActivation<T>(
       moduleId: ContainerModuleBase['id'],
-      serviceIdentifier: ServiceIdentifier<unknown>,
-      onActivation: interfaces.BindingActivation<unknown>,
+      serviceIdentifier: ServiceIdentifier<T>,
+      onActivation: interfaces.BindingActivation<T>,
     ): void;
     remove(moduleId: ContainerModuleBase['id']): ModuleActivationHandlers;
   }

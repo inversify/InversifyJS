@@ -18,25 +18,25 @@ export class ModuleActivationStore implements interfaces.ModuleActivationStore {
     return handlers;
   }
 
-  public addDeactivation(
+  public addDeactivation<T>(
     moduleId: number,
-    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-    onDeactivation: interfaces.BindingDeactivation<unknown>,
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    onDeactivation: interfaces.BindingDeactivation<T>,
   ) {
     this._getModuleActivationHandlers(moduleId).onDeactivations.add(
       serviceIdentifier,
-      onDeactivation,
+      onDeactivation as interfaces.BindingDeactivation<unknown>,
     );
   }
 
-  public addActivation(
+  public addActivation<T>(
     moduleId: number,
-    serviceIdentifier: interfaces.ServiceIdentifier<unknown>,
-    onActivation: interfaces.BindingActivation<unknown>,
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    onActivation: interfaces.BindingActivation<T>,
   ) {
     this._getModuleActivationHandlers(moduleId).onActivations.add(
       serviceIdentifier,
-      onActivation,
+      onActivation as interfaces.BindingActivation<unknown>,
     );
   }
 
