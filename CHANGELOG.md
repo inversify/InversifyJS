@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed container to properly resolve async `.toService` bindings.
+- Fixed `.toService` binding to properly disable caching any values.
 
 ## [6.1.4]
 
