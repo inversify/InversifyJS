@@ -116,14 +116,28 @@ class BindingToSyntax<T> implements interfaces.BindingToSyntax<T> {
   }
 
   public toService(service: interfaces.ServiceIdentifier<T>): void {
-    this.toDynamicValue((context: interfaces.Context): T | Promise<T> => {
+    this._binding.type = BindingTypeEnum.DynamicValue;
+
+    // Service bindings should never ever be cached. This is just a workaround to achieve that. A better design should replace this approach.
+    Object.defineProperty(this._binding, 'cache', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return null;
+      },
+      set(_value: unknown) {},
+    });
+    this._binding.dynamicValue = (
+      context: interfaces.Context,
+    ): T | Promise<T> => {
       try {
         return context.container.get<T>(service);
       } catch (_error: unknown) {
         // This is a performance degradation in this edge case, we do need to improve the internal resolution architecture in order to solve this properly.
         return context.container.getAsync<T>(service);
       }
-    });
+    };
+    this._binding.implementationType = null;
   }
 }
 
