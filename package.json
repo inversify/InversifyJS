@@ -29,7 +29,7 @@
     "sinon": "19.0.2",
     "ts-loader": "9.5.1",
     "ts-node": "10.9.2",
-    "typescript": "5.6.3",
+    "typescript": "5.7.2",
     "typescript-eslint": "8.15.0",
     "updates": "16.4.0",
     "webpack": "5.96.1",
