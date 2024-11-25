@@ -11,7 +11,6 @@ Consider these the “staff picks”, and don’t hesitate to submit a PR if you
 - [inversify-express-utils](https://github.com/inversify/inversify-express-utils) - Some utilities for the development of express application with Express.
 - [inversify-restify-utils](https://github.com/inversify/inversify-restify-utils) - Some utilities for the development of express application with Restify.
 - [inversify-vanillajs-helpers](https://github.com/inversify/inversify-vanillajs-helpers) - Some helpers for the development of InversifyJS applications with VanillaJS or Babel.
-- [inversify-tracer](https://github.com/tiagomestre/inversify-tracer) - Tool that allows the developer to trace methods of objects created by InversifyJS.
 - [inversify-components](https://github.com/webcomputing/inversify-components) - Layer on top of InversifyJS that enables you to split your application into several components.
 - [inversify-token](https://github.com/mscharley/inversify-token) - Token based layer for InversifyJS to enable strong type-safe guarantees for injection in TypeScript.
 - [inversify-agenda](https://github.com/lautarobock/inversify-agenda) - Some utilities for the development of agenda workers with Inversify
