@@ -78,6 +78,5 @@
     "update": "updates --update --minor && npm install"
   },
   "sideEffects": false,
-  "types": "lib/inversify.d.ts",
-  "version": "6.1.4"
+  "version": "6.1.5-beta.0"
 }
