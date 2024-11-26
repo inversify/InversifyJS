@@ -9,7 +9,7 @@ import { BindingScopeEnum } from '../../src/constants/literal_types';
 import { Container } from '../../src/container/container';
 import { ContainerModule } from '../../src/container/container_module';
 import { ModuleActivationStore } from '../../src/container/module_activation_store';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 import { getBindingDictionary } from '../../src/planning/planner';
 import { getServiceIdentifierAsString } from '../../src/utils/serialization';
 

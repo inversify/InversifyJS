@@ -107,7 +107,6 @@ export { SomeClass };
 ### /src/index.ts
 
 ```ts
-import "reflect-metadata";
 import { container } from "./ioc/ioc";
 import { SomeClassInterface } from "./ioc/interfaces";
 import { TYPES } from "./ioc/types";
@@ -133,7 +132,7 @@ someClassInstance.test();
   "dependencies": {
     "inversify": "^4.1.0",
     "lodash": "^4.17.4",
-    "reflect-metadata": "^0.1.10",
+    "reflect-metadata": "~0.2.2",
     "sequelize": "^3.30.4"
   },
   "devDependencies": {
@@ -150,7 +149,6 @@ someClassInstance.test();
     "compilerOptions": {
         "target": "es5",
         "lib": ["es6", "dom"],
-        "types": ["reflect-metadata"],
         "module": "commonjs",
         "moduleResolution": "node",
         "experimentalDecorators": true,

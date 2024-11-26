@@ -24,7 +24,6 @@
     "nyc": "17.1.0",
     "prettier": "3.3.3",
     "publish-please": "5.5.2",
-    "reflect-metadata": "0.2.2",
     "rimraf": "6.0.1",
     "sinon": "19.0.2",
     "ts-loader": "9.5.1",
@@ -34,6 +33,9 @@
     "updates": "16.4.0",
     "webpack": "5.96.1",
     "webpack-cli": "5.1.4"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "~0.2.2"
   },
   "engines": {},
   "homepage": "http://inversify.io",
@@ -63,12 +65,10 @@
     "url": "https://github.com/inversify/InversifyJS.git"
   },
   "scripts": {
-    "build": "npm run build:lib && npm run build:amd && npm run build:es && npm run build:es6",
-    "build:amd": "tsc -p src/tsconfig-amd.json",
+    "build": "npm run build:lib && npm run build:es",
     "build:es": "webpack && node ./scripts/writeEsmPackageJson.mjs ./es",
-    "build:es6": "tsc -p src/tsconfig-es6.json",
     "build:lib": "tsc -p src/tsconfig.json",
-    "clean": "rimraf amd es es6 lib",
+    "clean": "rimraf es lib",
     "format": "prettier --write ./src/*.ts ./src/**/*.ts ./test/*.ts ./test/**/*.ts",
     "lint": "eslint ./src ./test",
     "postupdate": "git diff-files --quiet package-lock.json || npm test",

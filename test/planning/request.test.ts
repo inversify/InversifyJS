@@ -6,7 +6,7 @@ import { expect } from 'chai';
 
 import { TargetTypeEnum } from '../../src/constants/literal_types';
 import { Container } from '../../src/container/container';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 import { Context } from '../../src/planning/context';
 import { Request } from '../../src/planning/request';
 

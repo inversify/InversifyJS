@@ -4,7 +4,6 @@ if you prefer. The following code snippet implements the previous example withou
 
 ```js
 var inversify = require("inversify");
-require("reflect-metadata");
 
 var TYPES = {
     Ninja: "Ninja",

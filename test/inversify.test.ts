@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { DecoratorTarget } from '../src/annotation/decorator_utils';
 import * as ERROR_MSGS from '../src/constants/error_msgs';
-import { interfaces } from '../src/interfaces/interfaces';
+import type { interfaces } from '../src/interfaces/interfaces';
 import {
   Container,
   ContainerModule,

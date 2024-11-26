@@ -7,7 +7,7 @@ import {
   AsyncContainerModule,
   ContainerModule,
 } from '../../src/container/container_module';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 
 describe('ContainerModule', () => {
   it('Should be able to set the registry of a container module', () => {

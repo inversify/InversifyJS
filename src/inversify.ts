@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import * as keys from './constants/metadata_keys';
 
 export { LazyServiceIdentifier } from '@inversifyjs/common';

@@ -9,7 +9,7 @@ import { targetName } from '../../src/annotation/target_name';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import { TargetTypeEnum } from '../../src/constants/literal_types';
 import { Container } from '../../src/container/container';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 import { named } from '../../src/inversify';
 import { MetadataReader } from '../../src/planning/metadata_reader';
 import { Plan } from '../../src/planning/plan';
