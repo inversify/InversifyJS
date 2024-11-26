@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Fixed
+
+## [6.1.5-beta.0]
+
+### Changed
 - Updated library to import `reflect-metadata`. Importing `reflect-metadata` before bootstraping a module in the userland is no longer required.
 
 ### Fixed
