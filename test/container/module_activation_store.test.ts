@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { ModuleActivationStore } from '../../src/container/module_activation_store';
-import { interfaces } from '../../src/inversify';
+import type { interfaces } from '../../src/inversify';
 
 describe('ModuleActivationStore', () => {
   it('should remove handlers added by the module', () => {

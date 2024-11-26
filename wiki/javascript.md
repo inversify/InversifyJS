@@ -1,7 +1,6 @@
 # Inversify with ES5
 ```js
 var inversify = require("inversify");
-require("reflect-metadata");
 
 var TYPES = {
     Ninja: "Ninja",
@@ -72,7 +71,6 @@ return ninja;
 
 ```js
 var inversify = require("inversify");
-require("reflect-metadata");
 
 var TYPES = {
     Ninja: "Ninja",

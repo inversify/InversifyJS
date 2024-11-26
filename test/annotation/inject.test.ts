@@ -19,7 +19,7 @@ import { inject } from '../../src/annotation/inject';
 import { multiInject } from '../../src/annotation/multi_inject';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 
 class Katana {}
 class Shuriken {}

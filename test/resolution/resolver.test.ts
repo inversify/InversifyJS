@@ -15,7 +15,7 @@ import {
   TargetTypeEnum,
 } from '../../src/constants/literal_types';
 import { Container } from '../../src/container/container';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 import { MetadataReader } from '../../src/planning/metadata_reader';
 import { getBindingDictionary, plan } from '../../src/planning/planner';
 import { resolveInstance } from '../../src/resolution/instantiation';

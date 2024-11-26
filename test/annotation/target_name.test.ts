@@ -4,7 +4,7 @@ import { decorate } from '../../src/annotation/decorator_utils';
 import { injectable } from '../../src/annotation/injectable';
 import { targetName } from '../../src/annotation/target_name';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import { interfaces } from '../../src/inversify';
+import type { interfaces } from '../../src/inversify';
 import { Metadata } from '../../src/planning/metadata';
 import * as Stubs from '../utils/stubs';
 

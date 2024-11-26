@@ -3,7 +3,6 @@ InversifyJS allows your classes to have a direct dependency on other classes.
 
 The `@inject` decorator is not required when you use classes. The annotation is not required because the typescript compiler generates the metadata for us. However, this won't happen if you forget one of the following things:
 
-- Import `reflect-metadata`
 - Set `emitDecoratorMetadata` to `true` in `tsconfig.json`.
 
 ```ts
@@ -67,7 +66,6 @@ An exception:
 Will be thrown if we use classes as identifiers in circular dependencies. For example:
 
 ```ts
-import "reflect-metadata";
 import { Container, injectable } from "inversify";
 import getDecorators from "inversify-inject-decorators";
 
@@ -104,7 +102,6 @@ This error may seem a bit misleading because when using classes as service ident
 The solution is to use symbols like `Symbol.for("Dom")` as service identifiers instead of the classes like `Dom`:
 
 ```ts
-import "reflect-metadata";
 import { Container, injectable, inject } from "inversify";
 import getDecorators from "inversify-inject-decorators";
 

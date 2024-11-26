@@ -17,7 +17,7 @@ import { decorate } from '../../src/annotation/decorator_utils';
 import { named } from '../../src/annotation/named';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 
 type Weapon = unknown;
 

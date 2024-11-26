@@ -125,7 +125,6 @@ We can solve this problem using a factory:
 
 ```ts
 import { inject, injectable, Container, interfaces } from "inversify";
-import "reflect-metadata";
 
 type FactoryOfWeapon = (parent: IWeaponHolder) => IWeapon;
 
@@ -213,7 +212,6 @@ But if for some reason we really want to avoid factories, we can use request sco
 
 ```ts
 import { inject, injectable, Container, interfaces } from "inversify";
-import "reflect-metadata";
 
 type FactoryOfWeapon = (parent: IWeaponHolder) => IWeapon;
 

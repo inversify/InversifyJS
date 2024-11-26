@@ -9,7 +9,7 @@ import {
   BindingScopeEnum,
   BindingTypeEnum,
 } from '../../src/constants/literal_types';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 import { BindingToSyntax } from '../../src/syntax/binding_to_syntax';
 
 describe('BindingToSyntax', () => {

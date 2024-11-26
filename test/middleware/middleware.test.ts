@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import { injectable } from '../../src/annotation/injectable';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import { Container } from '../../src/container/container';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 
 describe('Middleware', () => {
   let sandbox: sinon.SinonSandbox;

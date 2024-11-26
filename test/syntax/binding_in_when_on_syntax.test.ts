@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import { injectable } from '../../src/annotation/injectable';
 import { Binding } from '../../src/bindings/binding';
 import { BindingScopeEnum } from '../../src/constants/literal_types';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 import { BindingInWhenOnSyntax } from '../../src/syntax/binding_in_when_on_syntax';
 
 describe('BindingInWhenOnSyntax', () => {

@@ -13,12 +13,9 @@
     "forceConsistentCasingInFileNames": true,
     "importsNotUsedAsValues": "remove",
     "isolatedModules": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -36,12 +33,7 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
-    "target": "es5",
-    "types": [
-      "mocha",
-      "reflect-metadata",
-      "node"
-    ]
+    "target": "ES2022",
   },
   "exclude": [
     "node_modules"

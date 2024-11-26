@@ -4,7 +4,7 @@ import { Binding } from '../../src/bindings/binding';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import { BindingScopeEnum } from '../../src/constants/literal_types';
 import { Lookup } from '../../src/container/lookup';
-import { interfaces } from '../../src/interfaces/interfaces';
+import type { interfaces } from '../../src/interfaces/interfaces';
 
 class ClonableValue<T> implements interfaces.Clonable<ClonableValue<T>> {
   public readonly val: T;
