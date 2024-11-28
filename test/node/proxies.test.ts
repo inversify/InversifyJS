@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import type { interfaces } from '../../src/interfaces/interfaces';
-import { Container, inject, injectable } from '../../src/inversify';
+import { Container, inject, injectable } from '../../src/index';
 
 describe('InversifyJS', () => {
   it('Should support the injection of proxied objects', () => {

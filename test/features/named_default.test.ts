@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, inject, injectable, named } from '../../src/inversify';
+import { Container, inject, injectable, named } from '../../src/index';
 
 describe('Named default', () => {
   it('Should be able to inject a default to avoid ambiguous binding exceptions', () => {

@@ -5,7 +5,7 @@ import {
   injectable,
   interfaces,
   multiBindToService,
-} from '../../src/inversify';
+} from '../../src/index';
 
 describe('Transitive bindings', () => {
   it('Should be able to bind to a service', () => {

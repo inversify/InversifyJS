@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, injectable, interfaces } from '../../src/inversify';
+import { Container, injectable, interfaces } from '../../src/index';
 
 describe('Issue 633', () => {
   it('Should expose metadata through context', () => {

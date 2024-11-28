@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { BindingScopeEnum, Container, injectable } from '../../src/inversify';
+import { BindingScopeEnum, Container, injectable } from '../../src/index';
 
 describe('Issue 706', () => {
   it('Should expose BindingScopeEnum as part of the public API', () => {

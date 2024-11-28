@@ -9,7 +9,7 @@ import {
   optional,
   tagged,
   unmanaged,
-} from '../../src/inversify';
+} from '../../src/index';
 
 describe('Property Injection', () => {
   it('Should be able to inject a property', () => {

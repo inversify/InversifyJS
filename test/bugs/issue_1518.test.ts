@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container } from '../../src/inversify';
+import { Container } from '../../src/index';
 
 describe('Issue 1518', () => {
   it('should not throw on deactivating undefined singleton values', () => {

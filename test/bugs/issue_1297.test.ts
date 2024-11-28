@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import { Container, injectable, interfaces } from '../../src/inversify';
+import { Container, injectable, interfaces } from '../../src/index';
 
 describe('Issue 1297', () => {
   it('should call onActivation once if the service is a constant value binding', () => {

@@ -1,11 +1,6 @@
 import { expect } from 'chai';
 
-import {
-  Container,
-  inject,
-  injectable,
-  multiInject,
-} from '../../src/inversify';
+import { Container, inject, injectable, multiInject } from '../../src/index';
 
 describe('Issue 1515', () => {
   it('should properly throw on circular dependency', () => {

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { performance } from 'perf_hooks';
 
-import { Container } from '../../src/inversify';
+import { Container } from '../../src/index';
 
 describe('Performance', () => {
   function registerN(times: number) {

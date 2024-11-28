@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { Container, inject, injectable } from '../../src/inversify';
+import { Container, inject, injectable } from '../../src/index';
 
 describe('Issue 1564', () => {
   it('should not throw on getting async services bound using "toService"', async () => {
