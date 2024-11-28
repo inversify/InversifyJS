@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, injectable, interfaces } from '../../src/inversify';
+import { Container, injectable, interfaces } from '../../src/index';
 
 describe('Container.prototype.resolve', () => {
   it('Should be able to resolve a class that has not binded', () => {

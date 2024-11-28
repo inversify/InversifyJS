@@ -8,7 +8,7 @@ import {
   tagProperty,
 } from '../../src/annotation/decorator_utils';
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
-import { Container, inject, injectable, interfaces } from '../../src/inversify';
+import { Container, inject, injectable, interfaces } from '../../src/index';
 import { Metadata } from '../../src/planning/metadata';
 
 describe('createTaggedDecorator', () => {

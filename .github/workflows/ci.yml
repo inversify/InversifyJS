@@ -14,11 +14,11 @@ jobs:
       matrix:
         node-version: [20.x, 22.x]
         os: [ubuntu-latest, windows-latest]
-        ts-project: [src/tsconfig.json]
+        ts-project: [tsconfig.json]
         exclude:
         - node-version: 22.x
           os: ubuntu-latest
-          ts-project: src/tsconfig.json
+          ts-project: tsconfig.json
     env:
       TS_NODE_PROJECT: ${{ matrix.ts-project }}
 
@@ -40,7 +40,7 @@ jobs:
     name: Upload coverage report to codecov
     environment: CI
     env:
-      TS_NODE_PROJECT: src/tsconfig.json
+      TS_NODE_PROJECT: tsconfig.json
     needs: [Testing]
     runs-on: ubuntu-latest
     steps:

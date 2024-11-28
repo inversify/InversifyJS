@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { performance } from 'perf_hooks';
 
-import { Container, inject, injectable, named } from '../../src/inversify';
+import { Container, inject, injectable, named } from '../../src/index';
 
 describe('inRequestScope', () => {
   it('Should support request scope in basic bindings', () => {

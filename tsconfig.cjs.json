@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.cjs.json",
+  "compilerOptions": {
+    "outDir": "./lib/cjs",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "tsconfig.cjs.tsbuildinfo"
+  },
+  "include": ["src"]
+}

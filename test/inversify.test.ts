@@ -17,7 +17,7 @@ import {
   targetName,
   typeConstraint,
   unmanaged,
-} from '../src/inversify';
+} from '../src/index';
 
 describe('InversifyJS', () => {
   it('Should be able to resolve and inject dependencies', () => {

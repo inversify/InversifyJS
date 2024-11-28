@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.esm.json",
+  "compilerOptions": {
+    "outDir": "./lib/esm",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
+  },
+  "include": ["src"]
+}

@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "@eslint/js": "9.15.0",
+    "@rollup/plugin-terser": "0.4.4",
+    "@rollup/plugin-typescript": "12.1.1",
     "@types/chai": "4.3.20",
     "@types/mocha": "10.0.10",
     "@types/sinon": "17.0.3",
@@ -23,16 +25,13 @@
     "mocha": "10.8.2",
     "nyc": "17.1.0",
     "prettier": "3.4.1",
-    "publish-please": "5.5.2",
     "rimraf": "6.0.1",
+    "rollup-plugin-dts": "6.1.1",
     "sinon": "19.0.2",
     "ts-loader": "9.5.1",
     "ts-node": "10.9.2",
     "typescript": "5.7.2",
-    "typescript-eslint": "8.16.0",
-    "updates": "16.4.0",
-    "webpack": "5.96.1",
-    "webpack-cli": "5.1.4"
+    "typescript-eslint": "8.16.0"
   },
   "peerDependencies": {
     "reflect-metadata": "~0.2.2"
@@ -51,12 +50,12 @@
     "typescript"
   ],
   "license": "MIT",
-  "main": "lib/inversify.js",
-  "module": "es/inversify.js",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
   "exports": {
     ".": {
-      "import": "./es/inversify.js",
-      "require": "./lib/inversify.js"
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
     }
   },
   "name": "inversify",
@@ -65,17 +64,15 @@
     "url": "https://github.com/inversify/InversifyJS.git"
   },
   "scripts": {
-    "build": "npm run build:lib && npm run build:es",
-    "build:es": "webpack && node ./scripts/writeEsmPackageJson.mjs ./es",
-    "build:lib": "tsc -p src/tsconfig.json",
-    "clean": "rimraf es lib",
-    "format": "prettier --write ./src/*.ts ./src/**/*.ts ./test/*.ts ./test/**/*.ts",
-    "lint": "eslint ./src ./test",
-    "postupdate": "git diff-files --quiet package-lock.json || npm test",
-    "prepublish": "npm run build && publish-please guard",
-    "publish-please": "publish-please",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha ./test/*.test.ts test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit",
-    "update": "updates --update --minor && npm install"
+    "build": "pnpm run build:cjs && pnpm run build:esm",
+    "build:cjs": "tsc --build tsconfig.cjs.json && node ./scripts/writeCommonJsPackageJson.mjs ./lib/cjs",
+    "build:esm": "rollup -c ./rollup.config.mjs && node ./scripts/writeEsmPackageJson.mjs ./lib/esm",
+    "build:clean": "rimraf lib",
+    "format": "prettier --write ./src/**/*.ts",
+    "lint": "eslint ./src",
+    "prebuild": "pnpm run build:clean",
+    "prepublish": "npm run build",
+    "test": "nyc --reporter=lcov --require ts-node/register mocha ./test/*.test.ts test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit"
   },
   "sideEffects": false,
   "version": "6.1.5-beta.0"

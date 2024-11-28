@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
 
-import { Container, injectable, preDestroy } from '../../src/inversify';
+import { Container, injectable, preDestroy } from '../../src/index';
 
 describe('Issue 1416', () => {
   it('should allow providing default values on optional bindings', async () => {

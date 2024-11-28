@@ -13,7 +13,7 @@ import {
   tagged,
   targetName,
   unmanaged,
-} from '../../src/inversify';
+} from '../../src/index';
 import { Metadata } from '../../src/planning/metadata';
 import { MetadataReader } from '../../src/planning/metadata_reader';
 import { getDependencies } from '../../src/planning/reflection_utils';

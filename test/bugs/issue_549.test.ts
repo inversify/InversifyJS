@@ -1,5 +1,5 @@
 import * as ERROR_MSGS from '../../src/constants/error_msgs';
-import { Container, inject, injectable, interfaces } from '../../src/inversify';
+import { Container, inject, injectable, interfaces } from '../../src/index';
 
 describe('Issue 549', () => {
   it('Should throw if circular dependencies found with dynamics', () => {

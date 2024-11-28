@@ -6,7 +6,7 @@ import {
   injectable,
   named,
   optional,
-} from '../../src/inversify';
+} from '../../src/index';
 
 describe('Issue 1190', () => {
   it('should inject a katana as default weapon to ninja', () => {

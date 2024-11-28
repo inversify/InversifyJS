@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, inject, injectable, optional } from '../../src/inversify';
+import { Container, inject, injectable, optional } from '../../src/index';
 
 describe('Issue 928', () => {
   it('should inject the right instances', () => {

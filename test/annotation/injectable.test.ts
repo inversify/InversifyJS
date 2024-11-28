@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import * as ERRORS_MSGS from '../../src/constants/error_msgs';
 import * as METADATA_KEY from '../../src/constants/metadata_keys';
-import { decorate, injectable } from '../../src/inversify';
+import { decorate, injectable } from '../../src/index';
 
 describe('@injectable', () => {
   it('Should generate metadata if declared injections', () => {

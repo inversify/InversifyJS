@@ -10,7 +10,7 @@ import * as ERROR_MSGS from '../../src/constants/error_msgs';
 import { TargetTypeEnum } from '../../src/constants/literal_types';
 import { Container } from '../../src/container/container';
 import type { interfaces } from '../../src/interfaces/interfaces';
-import { named } from '../../src/inversify';
+import { named } from '../../src/index';
 import { MetadataReader } from '../../src/planning/metadata_reader';
 import { Plan } from '../../src/planning/plan';
 import { plan } from '../../src/planning/planner';
