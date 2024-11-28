@@ -64,13 +64,13 @@
     "url": "https://github.com/inversify/InversifyJS.git"
   },
   "scripts": {
-    "build": "pnpm run build:cjs && pnpm run build:esm",
+    "build": "npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc --build tsconfig.cjs.json && node ./scripts/writeCommonJsPackageJson.mjs ./lib/cjs",
     "build:esm": "rollup -c ./rollup.config.mjs && node ./scripts/writeEsmPackageJson.mjs ./lib/esm",
     "build:clean": "rimraf lib",
     "format": "prettier --write ./src/**/*.ts",
     "lint": "eslint ./src",
-    "prebuild": "pnpm run build:clean",
+    "prebuild": "npm run build:clean",
     "prepublish": "npm run build",
     "test": "nyc --reporter=lcov --require ts-node/register mocha ./test/*.test.ts test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit"
   },
