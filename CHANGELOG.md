@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Fixed
+
+## [6.1.5-beta.1]
+
+### Fixed
 - Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland.
 
 ## [6.1.5-beta.0]
