@@ -48,6 +48,10 @@ export default [
   {
     input: 'lib/esm/index.d.ts',
     output: [{ file: 'lib/esm/index.d.ts', format: 'es' }],
-    plugins: [dts()],
+    plugins: [
+      dts({
+        tsconfig: './tsconfig.esm.json',
+      }),
+    ],
   },
 ];
