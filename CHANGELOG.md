@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [6.1.5]
+
+### Changed
+- Updated library to import `reflect-metadata`. Importing `reflect-metadata` before bootstraping a module in the userland is no longer required.
+
+### Fixed
+- Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland.
+- Fixed container to properly resolve async `.toService` bindings.
+- Fixed `.toService` binding to properly disable caching any values.
+
 ## [6.1.5-beta.2]
 
 ### Fixed
