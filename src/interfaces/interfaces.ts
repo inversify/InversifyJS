@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {
-  Newable as CommonNewable,
-  ServiceIdentifier as CommonServiceIdentifier,
-} from '@inversifyjs/common';
 import { LegacyTarget } from '@inversifyjs/core';
 
 import { FactoryType } from '../utils/factory_type';
+import {
+  CommonNewable,
+  CommonServiceIdentifier,
+} from './interfaces_common_exports';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace interfaces {
