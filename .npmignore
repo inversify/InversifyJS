@@ -1,4 +1,3 @@
-.auditignore
 .github
 .gitignore
 .nyc_output
@@ -14,6 +13,7 @@ ISSUE_TEMPLATE.md
 lib/esm/**/*.d.ts.map
 !lib/esm/index.d.ts
 !lib/esm/index.d.ts.map
+lib/*/test/**
 mocha.opts
 prettier.config.mjs
 PULL_REQUEST_TEMPLATE.md
@@ -22,7 +22,6 @@ rollup.config.mjs
 scripts
 src
 temp
-test
 tsconfig.json
 tsconfig.base.cjs.json
 tsconfig.base.esm.json
