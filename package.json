@@ -72,7 +72,8 @@
     "lint": "eslint ./src",
     "prebuild": "npm run build:clean",
     "prepublish": "npm run build",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha ./test/*.test.ts test/**/*.test.ts --reporter spec --retries 3 --require 'node_modules/reflect-metadata/Reflect.js' --exit"
+    "test": "nyc --reporter=lcov --require ts-node/register mocha src/test/*.test.ts src/test/**/*.test.ts --reporter spec --require 'node_modules/reflect-metadata/Reflect.js' --exit",
+    "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec --require 'node_modules/reflect-metadata/Reflect.js'"
   },
   "sideEffects": false,
   "version": "6.1.5"
