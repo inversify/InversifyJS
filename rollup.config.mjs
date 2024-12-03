@@ -36,6 +36,14 @@ export default [
         dir: './lib/esm',
         format: 'esm',
         sourcemap: true,
+        sourcemapPathTransform: (relativeSourcePath) => {
+          // Rollup seems to generate source maps pointing to the wrong directory. Ugly patch to fix it
+          if (relativeSourcePath.startsWith('../')) {
+            return relativeSourcePath.slice(3);
+          } else {
+            return relativeSourcePath;
+          }
+        },
       },
     ],
     plugins: [
