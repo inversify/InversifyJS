@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed unexpected property access while running planning checks on injected base types.
+- Updated ESM sourcemaps to refelct the right source code files.
 
 ## [6.1.5]
 
