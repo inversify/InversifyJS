@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Added `interfaces.GetAllOptions`.
 
 ### Changed
+- Updated `container.getAll` with `options` optional param.
+- Updated `container.getAllAsync` with `options` optional param.
 
 ### Fixed
 
