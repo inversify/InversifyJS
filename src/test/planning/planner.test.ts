@@ -124,6 +124,28 @@ describe('Planner', () => {
     expect(actualShurikenRequest?.target.serviceIdentifier).eql(shurikenId);
   });
 
+  it('Should be able to create a basic plan with optional metadata', () => {
+    const ninjaId: string = 'Ninja';
+
+    const container: Container = new Container();
+
+    // Actual
+    const actualPlan: Plan = plan(
+      new MetadataReader(),
+      container,
+      TargetTypeEnum.Variable,
+      ninjaId,
+      {
+        isMultiInject: false,
+        isOptional: true,
+      },
+    ).plan;
+    const actualNinjaRequest: interfaces.Request = actualPlan.rootRequest;
+
+    expect(actualNinjaRequest.serviceIdentifier).eql(ninjaId);
+    expect(actualNinjaRequest.bindings).to.have.length(0);
+  });
+
   it('Should throw when circular dependencies found', () => {
     @injectable()
     class D {
