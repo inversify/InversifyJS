@@ -215,6 +215,10 @@ namespace interfaces {
     skipBaseClassChecks?: boolean;
   }
 
+  export interface GetAllOptions {
+    enforceBindingConstraints?: boolean;
+  }
+
   export interface Container {
     id: number;
     parent: Container | null;
@@ -251,7 +255,10 @@ namespace interfaces {
       key: string | number | symbol,
       value: unknown,
     ): T;
-    getAll<T>(serviceIdentifier: ServiceIdentifier<T>): T[];
+    getAll<T>(
+      serviceIdentifier: ServiceIdentifier<T>,
+      options?: GetAllOptions,
+    ): T[];
     getAllTagged<T>(
       serviceIdentifier: ServiceIdentifier<T>,
       key: string | number | symbol,
@@ -271,7 +278,10 @@ namespace interfaces {
       key: string | number | symbol,
       value: unknown,
     ): Promise<T>;
-    getAllAsync<T>(serviceIdentifier: ServiceIdentifier<T>): Promise<T[]>;
+    getAllAsync<T>(
+      serviceIdentifier: ServiceIdentifier<T>,
+      options?: GetAllOptions,
+    ): Promise<T[]>;
     getAllTaggedAsync<T>(
       serviceIdentifier: ServiceIdentifier<T>,
       key: string | number | symbol,
