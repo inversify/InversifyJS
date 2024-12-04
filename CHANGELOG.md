@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+## [6.2.0-beta.0]
+
+### Added
 - Added `interfaces.GetAllOptions`.
 
 ### Changed
