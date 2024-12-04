@@ -28,7 +28,7 @@ import {
 } from './reflection_utils';
 import { Request } from './request';
 
-function getBindingDictionary(
+export function getBindingDictionary(
   cntnr: interfaces.Container,
 ): interfaces.Lookup<interfaces.Binding<unknown>> {
   return (
@@ -39,18 +39,13 @@ function getBindingDictionary(
 }
 
 function _createTarget(
-  isMultiInject: boolean,
   targetType: interfaces.TargetType,
   serviceIdentifier: interfaces.ServiceIdentifier,
-  name: string,
-  key?: string | number | symbol,
-  value?: unknown,
+  metadata: PlanMetadata,
 ): interfaces.Target {
   const metadataList: Metadata[] = _getTargetMetadata(
-    isMultiInject,
     serviceIdentifier,
-    key,
-    value,
+    metadata,
   );
 
   const classElementMetadata: ClassElementMetadata =
@@ -60,7 +55,7 @@ function _createTarget(
     throw new Error('Unexpected metadata when creating target');
   }
 
-  const target: Target = new TargetImpl(name, classElementMetadata, targetType);
+  const target: Target = new TargetImpl('', classElementMetadata, targetType);
 
   return target;
 }
@@ -122,12 +117,10 @@ function _getActiveBindings(
 }
 
 function _getTargetMetadata(
-  isMultiInject: boolean,
   serviceIdentifier: interfaces.ServiceIdentifier,
-  key: string | number | symbol | undefined,
-  value: unknown,
+  metadata: PlanMetadata,
 ): Metadata[] {
-  const metadataKey: string = isMultiInject
+  const metadataKey: string = metadata.isMultiInject
     ? METADATA_KEY.MULTI_INJECT_TAG
     : METADATA_KEY.INJECT_TAG;
 
@@ -135,8 +128,14 @@ function _getTargetMetadata(
     new Metadata(metadataKey, serviceIdentifier),
   ];
 
-  if (key !== undefined) {
-    metadataList.push(new Metadata(key, value));
+  if (metadata.customTag !== undefined) {
+    metadataList.push(
+      new Metadata(metadata.customTag.key, metadata.customTag.value),
+    );
+  }
+
+  if (metadata.isOptional === true) {
+    metadataList.push(new Metadata(METADATA_KEY.OPTIONAL_TAG, true));
   }
 
   return metadataList;
@@ -312,24 +311,28 @@ function getBindings<T>(
   return bindings;
 }
 
-function plan(
+export interface PlanMetadata {
+  isMultiInject: boolean;
+  isOptional?: boolean;
+  customTag?: {
+    key: string | number | symbol;
+    value?: unknown;
+  };
+}
+
+export function plan(
   metadataReader: interfaces.MetadataReader,
   container: interfaces.Container,
-  isMultiInject: boolean,
   targetType: interfaces.TargetType,
   serviceIdentifier: interfaces.ServiceIdentifier,
-  key?: string | number | symbol,
-  value?: unknown,
+  metadata: PlanMetadata,
   avoidConstraints: boolean = false,
 ): interfaces.Context {
   const context: Context = new Context(container);
   const target: interfaces.Target = _createTarget(
-    isMultiInject,
     targetType,
     serviceIdentifier,
-    '',
-    key,
-    value,
+    metadata,
   );
 
   try {
@@ -350,17 +353,14 @@ function plan(
   }
 }
 
-function createMockRequest(
+export function createMockRequest(
   container: interfaces.Container,
   serviceIdentifier: interfaces.ServiceIdentifier,
-  key: string | number | symbol,
-  value: unknown,
+  metadata: PlanMetadata,
 ): interfaces.Request {
   const metadataList: Metadata[] = _getTargetMetadata(
-    false,
     serviceIdentifier,
-    key,
-    value,
+    metadata,
   );
 
   const classElementMetadata: ClassElementMetadata =
@@ -382,5 +382,3 @@ function createMockRequest(
   );
   return request;
 }
-
-export { plan, createMockRequest, getBindingDictionary };

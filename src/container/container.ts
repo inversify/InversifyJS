@@ -8,6 +8,7 @@ import {
   createMockRequest,
   getBindingDictionary,
   plan,
+  PlanMetadata,
 } from '../planning/planner';
 import { resolve } from '../resolution/resolver';
 import { BindingToSyntax } from '../syntax/binding_to_syntax';
@@ -319,8 +320,13 @@ class Container implements interfaces.Container {
       const request: interfaces.Request = createMockRequest(
         this,
         serviceIdentifier,
-        key,
-        value,
+        {
+          customTag: {
+            key,
+            value,
+          },
+          isMultiInject: false,
+        },
       );
       bound = bindings.some((b: interfaces.Binding) => b.constraint(request));
     }
@@ -862,6 +868,27 @@ class Container implements interfaces.Container {
     return getNotAllArgs;
   }
 
+  private _getPlanMetadataFromNextArgs(
+    args: interfaces.NextArgs<unknown>,
+  ): PlanMetadata {
+    const planMetadata: PlanMetadata = {
+      isMultiInject: args.isMultiInject,
+    };
+
+    if (args.key !== undefined) {
+      planMetadata.customTag = {
+        key: args.key,
+        value: args.value,
+      };
+    }
+
+    if (args.isOptional === true) {
+      planMetadata.isOptional = true;
+    }
+
+    return planMetadata;
+  }
+
   // Planner creates a plan and Resolver resolves a plan
   // one of the jobs of the Container is to links the Planner
   // with the Resolver and that is what this function is about
@@ -875,11 +902,9 @@ class Container implements interfaces.Container {
       let context: interfaces.Context = plan(
         this._metadataReader,
         this,
-        args.isMultiInject,
         args.targetType,
         args.serviceIdentifier,
-        args.key,
-        args.value,
+        this._getPlanMetadataFromNextArgs(args),
         args.avoidConstraints,
       );
 

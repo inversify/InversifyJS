@@ -143,6 +143,7 @@ namespace interfaces {
     avoidConstraints: boolean;
     contextInterceptor: (contexts: Context) => Context;
     isMultiInject: boolean;
+    isOptional?: boolean;
     targetType: TargetType;
     serviceIdentifier: interfaces.ServiceIdentifier<T>;
     key?: string | number | symbol | undefined;
