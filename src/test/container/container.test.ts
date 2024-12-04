@@ -580,6 +580,37 @@ describe('Container', () => {
     expect(es[1]?.goodbye).to.equal('adios');
   });
 
+  it('Should be able to resolve optional injection', async () => {
+    const container: Container = new Container();
+
+    const serviceIdentifier: string = 'service-id';
+
+    expect(container.tryGet(serviceIdentifier)).to.eq(undefined);
+    expect(container.tryGetAll(serviceIdentifier)).to.deep.eq([]);
+    expect(await container.tryGetAllAsync(serviceIdentifier)).to.deep.eq([]);
+    expect(container.tryGetAllNamed(serviceIdentifier, 'name')).to.deep.eq([]);
+    expect(
+      await container.tryGetAllNamedAsync(serviceIdentifier, 'name'),
+    ).to.deep.eq([]);
+    expect(
+      container.tryGetAllTagged(serviceIdentifier, 'tag', 'value'),
+    ).to.deep.eq([]);
+    expect(
+      await container.tryGetAllTaggedAsync(serviceIdentifier, 'tag', 'value'),
+    ).to.deep.eq([]);
+    expect(await container.tryGetAsync(serviceIdentifier)).to.eq(undefined);
+    expect(container.tryGetNamed(serviceIdentifier, 'name')).to.eq(undefined);
+    expect(await container.tryGetNamedAsync(serviceIdentifier, 'name')).to.eq(
+      undefined,
+    );
+    expect(container.tryGetTagged(serviceIdentifier, 'tag', 'value')).to.eq(
+      undefined,
+    );
+    expect(
+      await container.tryGetTaggedAsync(serviceIdentifier, 'tag', 'value'),
+    ).to.eq(undefined);
+  });
+
   it('Should be able configure the default scope at a global level', () => {
     interface Warrior {
       health: number;

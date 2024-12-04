@@ -390,7 +390,11 @@ class Container implements interfaces.Container {
   // The runtime identifier must be associated with only one binding
   // use getAll when the runtime identifier is associated with multiple bindings
   public get<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T {
-    const getArgs: GetArgs<T> = this._getNotAllArgs(serviceIdentifier, false);
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      false,
+      false,
+    );
 
     return this._getButThrowIfAsync<T>(getArgs) as T;
   }
@@ -398,7 +402,11 @@ class Container implements interfaces.Container {
   public async getAsync<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
   ): Promise<T> {
-    const getArgs: GetArgs<T> = this._getNotAllArgs(serviceIdentifier, false);
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      false,
+      false,
+    );
 
     return this._get<T>(getArgs) as Promise<T> | T;
   }
@@ -410,6 +418,7 @@ class Container implements interfaces.Container {
   ): T {
     const getArgs: GetArgs<T> = this._getNotAllArgs(
       serviceIdentifier,
+      false,
       false,
       key,
       value,
@@ -425,6 +434,7 @@ class Container implements interfaces.Container {
   ): Promise<T> {
     const getArgs: GetArgs<T> = this._getNotAllArgs(
       serviceIdentifier,
+      false,
       false,
       key,
       value,
@@ -457,7 +467,11 @@ class Container implements interfaces.Container {
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
     options?: interfaces.GetAllOptions,
   ): T[] {
-    const getArgs: GetArgs<T> = this._getAllArgs(serviceIdentifier, options);
+    const getArgs: GetArgs<T> = this._getAllArgs(
+      serviceIdentifier,
+      options,
+      false,
+    );
 
     return this._getButThrowIfAsync<T>(getArgs) as T[];
   }
@@ -466,7 +480,11 @@ class Container implements interfaces.Container {
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
     options?: interfaces.GetAllOptions,
   ): Promise<T[]> {
-    const getArgs: GetArgs<T> = this._getAllArgs(serviceIdentifier, options);
+    const getArgs: GetArgs<T> = this._getAllArgs(
+      serviceIdentifier,
+      options,
+      false,
+    );
 
     return this._getAll(getArgs);
   }
@@ -479,6 +497,7 @@ class Container implements interfaces.Container {
     const getArgs: GetArgs<T> = this._getNotAllArgs(
       serviceIdentifier,
       true,
+      false,
       key,
       value,
     );
@@ -494,6 +513,7 @@ class Container implements interfaces.Container {
     const getArgs: GetArgs<T> = this._getNotAllArgs(
       serviceIdentifier,
       true,
+      false,
       key,
       value,
     );
@@ -533,6 +553,164 @@ class Container implements interfaces.Container {
       this.unbind(constructorFunction);
     }
     return resolved;
+  }
+
+  public tryGet<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  ): T | undefined {
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      false,
+      true,
+    );
+
+    return this._getButThrowIfAsync<T>(getArgs) as T | undefined;
+  }
+
+  public async tryGetAsync<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+  ): Promise<T | undefined> {
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      false,
+      true,
+    );
+
+    return this._get<T>(getArgs) as Promise<T> | T | undefined;
+  }
+
+  public tryGetTagged<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown,
+  ): T | undefined {
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      false,
+      true,
+      key,
+      value,
+    );
+
+    return this._getButThrowIfAsync<T>(getArgs) as T | undefined;
+  }
+
+  public async tryGetTaggedAsync<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown,
+  ): Promise<T | undefined> {
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      false,
+      true,
+      key,
+      value,
+    );
+
+    return this._get<T>(getArgs) as Promise<T> | T | undefined;
+  }
+
+  public tryGetNamed<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    named: string | number | symbol,
+  ): T | undefined {
+    return this.tryGetTagged<T>(
+      serviceIdentifier,
+      METADATA_KEY.NAMED_TAG,
+      named,
+    );
+  }
+
+  public async tryGetNamedAsync<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    named: string | number | symbol,
+  ): Promise<T | undefined> {
+    return this.tryGetTaggedAsync<T>(
+      serviceIdentifier,
+      METADATA_KEY.NAMED_TAG,
+      named,
+    );
+  }
+
+  public tryGetAll<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    options?: interfaces.GetAllOptions,
+  ): T[] {
+    const getArgs: GetArgs<T> = this._getAllArgs(
+      serviceIdentifier,
+      options,
+      true,
+    );
+
+    return this._getButThrowIfAsync<T>(getArgs) as T[];
+  }
+
+  public async tryGetAllAsync<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    options?: interfaces.GetAllOptions,
+  ): Promise<T[]> {
+    const getArgs: GetArgs<T> = this._getAllArgs(
+      serviceIdentifier,
+      options,
+      true,
+    );
+
+    return this._getAll(getArgs);
+  }
+
+  public tryGetAllTagged<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown,
+  ): T[] {
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      true,
+      true,
+      key,
+      value,
+    );
+
+    return this._getButThrowIfAsync<T>(getArgs) as T[];
+  }
+
+  public async tryGetAllTaggedAsync<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    key: string | number | symbol,
+    value: unknown,
+  ): Promise<T[]> {
+    const getArgs: GetArgs<T> = this._getNotAllArgs(
+      serviceIdentifier,
+      true,
+      true,
+      key,
+      value,
+    );
+
+    return this._getAll(getArgs);
+  }
+
+  public tryGetAllNamed<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    named: string | number | symbol,
+  ): T[] {
+    return this.tryGetAllTagged<T>(
+      serviceIdentifier,
+      METADATA_KEY.NAMED_TAG,
+      named,
+    );
+  }
+
+  public async tryGetAllNamedAsync<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    named: string | number | symbol,
+  ): Promise<T[]> {
+    return this.tryGetAllTaggedAsync<T>(
+      serviceIdentifier,
+      METADATA_KEY.NAMED_TAG,
+      named,
+    );
   }
 
   private _preDestroy(
@@ -828,23 +1006,25 @@ class Container implements interfaces.Container {
     return this._planAndResolve<T>()(planAndResolveArgs);
   }
 
-  private _getButThrowIfAsync<T>(getArgs: GetArgs<T>): T | T[] {
+  private _getButThrowIfAsync<T>(getArgs: GetArgs<T>): undefined | T | T[] {
     const result: interfaces.ContainerResolution<T> = this._get<T>(getArgs);
 
     if (isPromiseOrContainsPromise<T>(result)) {
       throw new Error(ERROR_MSGS.LAZY_IN_SYNC(getArgs.serviceIdentifier));
     }
 
-    return result as T | T[];
+    return result as undefined | T | T[];
   }
 
   private _getAllArgs<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
     options: interfaces.GetAllOptions | undefined,
+    isOptional: boolean,
   ): GetArgs<T> {
     const getAllArgs: GetArgs<T> = {
       avoidConstraints: !(options?.enforceBindingConstraints ?? false),
       isMultiInject: true,
+      isOptional,
       serviceIdentifier,
     };
 
@@ -854,12 +1034,14 @@ class Container implements interfaces.Container {
   private _getNotAllArgs<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
     isMultiInject: boolean,
+    isOptional: boolean,
     key?: string | number | symbol | undefined,
     value?: unknown,
   ): GetArgs<T> {
     const getNotAllArgs: GetArgs<T> = {
       avoidConstraints: false,
       isMultiInject,
+      isOptional,
       key,
       serviceIdentifier,
       value,
