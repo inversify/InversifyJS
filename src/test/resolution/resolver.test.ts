@@ -96,9 +96,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
     const ninja: Ninja = resolveTyped<Ninja>(context);
 
@@ -176,9 +178,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const katanaBinding: interfaces.Binding<unknown> | undefined =
@@ -230,9 +234,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const throwFunction: () => void = () => {
@@ -304,9 +310,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const katanaBinding: interfaces.Binding | undefined =
@@ -378,9 +386,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
     const ninja: Ninja = resolveTyped<Ninja>(context);
 
@@ -462,9 +472,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -546,9 +558,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
     const ninja: Ninja = resolveTyped<Ninja>(context);
 
@@ -639,9 +653,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Warrior>(context);
@@ -699,9 +715,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -753,9 +771,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -813,9 +833,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -868,9 +890,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -887,9 +911,11 @@ describe('Resolve', () => {
     const context2: interfaces.Context = plan(
       new MetadataReader(),
       container2,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja2: Ninja = resolveTyped<Ninja>(context2);
@@ -943,9 +969,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = await resolveTyped<Promise<Ninja>>(context);
@@ -964,9 +992,11 @@ describe('Resolve', () => {
     const context2: interfaces.Context = plan(
       new MetadataReader(),
       container2,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja2: Ninja = await resolveTyped<Promise<Ninja>>(context2);
@@ -1011,9 +1041,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       crazyInjectableId,
+      {
+        isMultiInject: false,
+      },
     );
     const crazyInjectable: CrazyInjectable =
       await resolveTyped<Promise<CrazyInjectable>>(context);
@@ -1081,9 +1113,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -1158,9 +1192,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -1217,9 +1253,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);
@@ -1292,9 +1330,11 @@ describe('Resolve', () => {
     const context: interfaces.Context = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     );
 
     const ninja: Ninja = resolveTyped<Ninja>(context);

@@ -79,9 +79,11 @@ describe('Planner', () => {
     const actualPlan: Plan = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     ).plan;
     const actualNinjaRequest: interfaces.Request = actualPlan.rootRequest;
     const actualKatanaRequest: interfaces.Request | undefined =
@@ -120,6 +122,28 @@ describe('Planner', () => {
     expect(actualShurikenRequest?.serviceIdentifier).eql(shurikenId);
     expect(actualShurikenRequest?.bindings.length).eql(1);
     expect(actualShurikenRequest?.target.serviceIdentifier).eql(shurikenId);
+  });
+
+  it('Should be able to create a basic plan with optional metadata', () => {
+    const ninjaId: string = 'Ninja';
+
+    const container: Container = new Container();
+
+    // Actual
+    const actualPlan: Plan = plan(
+      new MetadataReader(),
+      container,
+      TargetTypeEnum.Variable,
+      ninjaId,
+      {
+        isMultiInject: false,
+        isOptional: true,
+      },
+    ).plan;
+    const actualNinjaRequest: interfaces.Request = actualPlan.rootRequest;
+
+    expect(actualNinjaRequest.serviceIdentifier).eql(ninjaId);
+    expect(actualNinjaRequest.bindings).to.have.length(0);
   });
 
   it('Should throw when circular dependencies found', () => {
@@ -233,9 +257,11 @@ describe('Planner', () => {
     const actualPlan: Plan = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     ).plan;
 
     expect(actualPlan.rootRequest.serviceIdentifier).eql(ninjaId);
@@ -285,9 +311,11 @@ describe('Planner', () => {
     const actualPlan: Plan = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     ).plan;
 
     // root request has no target
@@ -399,13 +427,9 @@ describe('Planner', () => {
     container.bind<Shuriken>(shurikenId).to(Shuriken);
 
     const throwFunction: () => void = () => {
-      plan(
-        new MetadataReader(),
-        container,
-        false,
-        TargetTypeEnum.Variable,
-        ninjaId,
-      );
+      plan(new MetadataReader(), container, TargetTypeEnum.Variable, ninjaId, {
+        isMultiInject: false,
+      });
     };
 
     expect(throwFunction).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Katana`);
@@ -444,13 +468,9 @@ describe('Planner', () => {
     container.bind<Shuriken>(shurikenId).to(Shuriken);
 
     const throwFunction: () => void = () => {
-      plan(
-        new MetadataReader(),
-        container,
-        false,
-        TargetTypeEnum.Variable,
-        ninjaId,
-      );
+      plan(new MetadataReader(), container, TargetTypeEnum.Variable, ninjaId, {
+        isMultiInject: false,
+      });
     };
 
     expect(throwFunction).to.throw(`${ERROR_MSGS.AMBIGUOUS_MATCH} Katana`);
@@ -493,9 +513,11 @@ describe('Planner', () => {
     const actualPlan: Plan = plan(
       new MetadataReader(),
       container,
-      false,
       TargetTypeEnum.Variable,
       ninjaId,
+      {
+        isMultiInject: false,
+      },
     ).plan;
 
     // root request has no target
@@ -534,13 +556,9 @@ describe('Planner', () => {
     container.bind('Weapon').to(Katana);
 
     const throwFunction: () => void = () => {
-      plan(
-        new MetadataReader(),
-        container,
-        false,
-        TargetTypeEnum.Variable,
-        'Weapon',
-      );
+      plan(new MetadataReader(), container, TargetTypeEnum.Variable, 'Weapon', {
+        isMultiInject: false,
+      });
     };
 
     expect(throwFunction).not.to.throw();
@@ -561,13 +579,9 @@ describe('Planner', () => {
     container.bind(Ninja).toSelf();
 
     const throwFunction: () => void = () => {
-      plan(
-        new MetadataReader(),
-        container,
-        false,
-        TargetTypeEnum.Variable,
-        Ninja,
-      );
+      plan(new MetadataReader(), container, TargetTypeEnum.Variable, Ninja, {
+        isMultiInject: false,
+      });
     };
 
     expect(throwFunction).to.throw(
@@ -623,9 +637,11 @@ describe('Planner', () => {
       plan(
         new MetadataReader(),
         container,
-        false,
         TargetTypeEnum.Variable,
         'Warrior',
+        {
+          isMultiInject: false,
+        },
       );
     };
 
@@ -659,13 +675,9 @@ describe('Planner', () => {
     container.bind<Katana>('Factory<Katana>').to(Katana);
 
     const throwFunction: () => void = () => {
-      plan(
-        new MetadataReader(),
-        container,
-        false,
-        TargetTypeEnum.Variable,
-        'Ninja',
-      );
+      plan(new MetadataReader(), container, TargetTypeEnum.Variable, 'Ninja', {
+        isMultiInject: false,
+      });
     };
 
     expect(throwFunction).to.throw(
