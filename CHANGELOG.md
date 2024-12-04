@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated `interfaces.NextArgs` with optional `isOptional` param.
+- Updated `container` with `tryGet`.
+- Updated `container` with `tryGetAsync`.
+- Updated `container` with `tryGetTagged`.
+- Updated `container` with `tryGetTaggedAsync`.
+- Updated `container` with `tryGetNamed`.
+- Updated `container` with `tryGetNamedAsync`.
+- Updated `container` with `tryGetAll`.
+- Updated `container` with `tryGetAllAsync`.
+- Updated `container` with `tryGetAllTagged`.
+- Updated `container` with `tryGetAllTaggedAsync`.
+- Updated `container` with `tryGetAllNamed`.
+- Updated `container` with `tryGetAllNamedAsync`.
 
 ### Fixed
 
