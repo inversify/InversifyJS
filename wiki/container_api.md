@@ -205,7 +205,7 @@ let katana = await container.getTaggedAsync<Weapon>("Weapon", "faction", "samura
 let shuriken = await container.getTaggedAsync<Weapon>("Weapon", "faction", "ninja");
 ```
 
-## container.getAll\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): T[]
+## container.getAll\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, options?: interfaces.GetAllOptions): T[]
 
 Get all available bindings for a given identifier. All the bindings must be synchronously resolved, otherwise an error is thrown:
 
@@ -217,7 +217,21 @@ container.bind<Weapon>("Weapon").to(Shuriken);
 let weapons = container.getAll<Weapon>("Weapon");  // returns Weapon[]
 ```
 
-## container.getAllAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>): Promise\<T[]>
+Keep in mind `container.getAll` doesn't enforce binding contraints by default in the root level, enable the `enforceBindingConstraints` flag to force this binding constraint check:
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana).when(() => true);
+container.bind<Weapon>("Weapon").to(Shuriken).when(() => false);
+
+let allWeapons = container.getAll<Weapon>("Weapon");  // returns [new Katana(), new Shuriken()]
+let notAllWeapons = container.getAll<Weapon>(
+  "Weapon",
+  { enforceBindingConstraints: true },
+);  // returns [new Katana()]
+```
+
+## container.getAllAsync\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, options?: interfaces.GetAllOptions): Promise\<T[]>
 
 Get all available bindings for a given identifier:
 
@@ -227,6 +241,20 @@ container.bind<Weapon>("Weapon").to(Katana);
 container.bind<Weapon>("Weapon").toDynamicValue(async () => new Shuriken());
 
 let weapons = await container.getAllAsync<Weapon>("Weapon");  // returns Promise<Weapon[]>
+```
+
+Keep in mind `container.getAll` doesn't enforce binding contraints by default in the root level, enable the `enforceBindingConstraints` flag to force this binding constraint check:
+
+```ts
+let container = new Container();
+container.bind<Weapon>("Weapon").to(Katana).when(() => true);
+container.bind<Weapon>("Weapon").to(Shuriken).when(() => false);
+
+let allWeapons = await container.getAllAsync<Weapon>("Weapon");  // returns Promise.resolve([new Katana(), new Shuriken()])
+let notAllWeapons = container.getAllAsync<Weapon>(
+  "Weapon",
+  { enforceBindingConstraints: true },
+);  // returns Promise.resolve([new Katana()])
 ```
 
 ## container.getAllNamed\<T>(serviceIdentifier: interfaces.ServiceIdentifier\<T>, named: string | number | symbol): T[]
