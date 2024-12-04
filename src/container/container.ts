@@ -447,16 +447,20 @@ class Container implements interfaces.Container {
 
   // Resolves a dependency by its runtime identifier
   // The runtime identifier can be associated with one or multiple bindings
-  public getAll<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): T[] {
-    const getArgs: GetArgs<T> = this._getAllArgs(serviceIdentifier);
+  public getAll<T>(
+    serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    options?: interfaces.GetAllOptions,
+  ): T[] {
+    const getArgs: GetArgs<T> = this._getAllArgs(serviceIdentifier, options);
 
     return this._getButThrowIfAsync<T>(getArgs) as T[];
   }
 
   public async getAllAsync<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    options?: interfaces.GetAllOptions,
   ): Promise<T[]> {
-    const getArgs: GetArgs<T> = this._getAllArgs(serviceIdentifier);
+    const getArgs: GetArgs<T> = this._getAllArgs(serviceIdentifier, options);
 
     return this._getAll(getArgs);
   }
@@ -830,9 +834,10 @@ class Container implements interfaces.Container {
 
   private _getAllArgs<T>(
     serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    options: interfaces.GetAllOptions | undefined,
   ): GetArgs<T> {
     const getAllArgs: GetArgs<T> = {
-      avoidConstraints: true,
+      avoidConstraints: !(options?.enforceBindingConstraints ?? false),
       isMultiInject: true,
       serviceIdentifier,
     };
