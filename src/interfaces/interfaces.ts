@@ -10,7 +10,11 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace interfaces {
   export type DynamicValue<T> = (context: interfaces.Context) => T | Promise<T>;
-  export type ContainerResolution<T> = T | Promise<T> | (T | Promise<T>)[];
+  export type ContainerResolution<T> =
+    | undefined
+    | T
+    | Promise<T>
+    | (T | Promise<T>)[];
 
   type AsyncCallback<TCallback> = TCallback extends (
     ...args: infer TArgs
@@ -301,6 +305,56 @@ namespace interfaces {
       onDeactivation: BindingDeactivation<T>,
     ): void;
     resolve<T>(constructorFunction: interfaces.Newable<T>): T;
+    tryGet<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    ): T | undefined;
+    tryGetAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+    ): Promise<T | undefined>;
+    tryGetTagged<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      key: string | number | symbol,
+      value: unknown,
+    ): T | undefined;
+    tryGetTaggedAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      key: string | number | symbol,
+      value: unknown,
+    ): Promise<T | undefined>;
+    tryGetNamed<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      named: string | number | symbol,
+    ): T | undefined;
+    tryGetNamedAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      named: string | number | symbol,
+    ): Promise<T | undefined>;
+    tryGetAll<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      options?: interfaces.GetAllOptions,
+    ): T[];
+    tryGetAllAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      options?: interfaces.GetAllOptions,
+    ): Promise<T[]>;
+    tryGetAllTagged<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      key: string | number | symbol,
+      value: unknown,
+    ): T[];
+    tryGetAllTaggedAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      key: string | number | symbol,
+      value: unknown,
+    ): Promise<T[]>;
+    tryGetAllNamed<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      named: string | number | symbol,
+    ): T[];
+    tryGetAllNamedAsync<T>(
+      serviceIdentifier: interfaces.ServiceIdentifier<T>,
+      named: string | number | symbol,
+    ): Promise<T[]>;
     load(...modules: ContainerModule[]): void;
     loadAsync(...modules: AsyncContainerModule[]): Promise<void>;
     unload(...modules: ContainerModuleBase[]): void;
