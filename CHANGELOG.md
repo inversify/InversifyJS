@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Fixed
+
+## [6.2.0-beta.1]
+
+### Added
+
+### Changed
 - Updated `interfaces.NextArgs` with optional `isOptional` param.
 - Updated `container` with `tryGet`.
 - Updated `container` with `tryGetAsync`.
