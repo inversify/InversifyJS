@@ -76,5 +76,5 @@
     "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec --require 'node_modules/reflect-metadata/Reflect.js'"
   },
   "sideEffects": false,
-  "version": "6.2.0-beta.1"
+  "version": "6.2.0"
 }
