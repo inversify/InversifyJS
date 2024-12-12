@@ -29,7 +29,7 @@ ambiguous ("manager") class names.
 #### Avoid the injection of data, as opposed to behaviour
 
 Injection of data, as opposed to behaviour, is a subtype of the poltergeist anti-pattern, 
-with the 'geist in this case being the container. If a class needs to be aware of the current 
+with the geist in this case being the container. If a class needs to be aware of the current 
 date and time, you don't inject a DateTime, which is data; instead, you inject an abstraction 
 over the system clock. This is not only correct for DI; it is absolutely essential for testability, 
 so that you can test time-varying functions without needing to actually wait on them.
