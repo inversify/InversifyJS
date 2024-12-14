@@ -66,11 +66,9 @@ An exception:
 Will be thrown if we use classes as identifiers in circular dependencies. For example:
 
 ```ts
-import { Container, injectable } from "inversify";
-import getDecorators from "inversify-inject-decorators";
+import { Container, injectable, inject } from "inversify";
 
 let container = new Container();
-let { lazyInject } = getDecorators(container);
 
 @injectable()
 class Dom {
@@ -82,7 +80,7 @@ class Dom {
 
 @injectable()
 class DomUi {
-    @lazyInject(Dom) public dom: Dom;
+    @inject(Dom) public dom: Dom;
 }
 
 @injectable()
@@ -103,10 +101,8 @@ The solution is to use symbols like `Symbol.for("Dom")` as service identifiers i
 
 ```ts
 import { Container, injectable, inject } from "inversify";
-import getDecorators from "inversify-inject-decorators";
 
 const container: Container = new Container();
-const { lazyInject } = getDecorators(container);
 
 const TYPE = {
     Dom: Symbol.for("Dom"),
@@ -128,7 +124,7 @@ class DomUi {
 @injectable()
 class Dom {
     public name: string;
-    @lazyInject(TYPE.DomUi) public domUi: DomUi;
+    @inject(TYPE.DomUi) public domUi: DomUi;
     constructor() {
         this.name = "Dom";
     }
