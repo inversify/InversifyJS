@@ -1,8 +1,18 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import 'reflect-metadata';
+
+import { LazyServiceIdentifier } from '@inversifyjs/common';
 
 import * as keys from './constants/metadata_keys';
 
 export { LazyServiceIdentifier } from '@inversifyjs/common';
+
+/**
+ * @deprecated Use LazyServiceIdentifier instead
+ */
+export const LazyServiceIdentifer: typeof LazyServiceIdentifier =
+  LazyServiceIdentifier;
+
 // eslint-disable-next-line @typescript-eslint/typedef
 export const METADATA_KEY = keys;
 export { Container } from './container/container';
