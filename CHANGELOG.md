@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [6.1.1]
+
+### Changed
+- Added back missing `LazyServiceIdentifer` export.
+
 ## [6.1.0]
 
 ### Changed

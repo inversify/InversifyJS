@@ -1,6 +1,10 @@
 import * as keys from './constants/metadata_keys';
 
 export { LazyServiceIdentifier } from '@inversifyjs/common';
+/**
+ * @deprecated This is a typo. Use `LazyServiceIdentifier` instead.
+ */
+export { LazyServiceIdentifier as LazyServiceIdentifer } from '@inversifyjs/common';
 // eslint-disable-next-line @typescript-eslint/typedef
 export const METADATA_KEY = keys;
 export { Container } from './container/container';
