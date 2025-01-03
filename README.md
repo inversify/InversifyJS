@@ -1,3 +1,6 @@
+> [!NOTE]
+> New docs are temporary available [here](https://inversify.io/monorepo/). We would love to have your feedback in this [discussion](https://github.com/inversify/monorepo/discussions/235).
+
 ![](https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/cover.jpg)
 
 <p align="center">
