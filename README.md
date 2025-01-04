@@ -68,19 +68,6 @@ You can get the latest release and the type definitions using your preferred pac
 
 `reflect-metadata` will be automatically imported by inversify.
 
-The InversifyJS type definitions are included in the inversify npm package.
-
-> :warning: **Important!** InversifyJS requires TypeScript >= 4.4 and the `experimentalDecorators`, `emitDecoratorMetadata`, compilation options in your `tsconfig.json` file.
-
-```json
-{
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  }
-}
-```
-
 InversifyJS requires a modern JavaScript engine with support for:
 
 - [Reflect metadata](https://rbuckton.github.io/reflect-metadata/)
@@ -92,6 +79,25 @@ If your environment doesn't support one of these you will need to import a shim 
 
 Check out the [Environment support and polyfills](https://github.com/inversify/InversifyJS/blob/master/wiki/environment.md)
 page in the wiki and the [Basic example](https://github.com/inversify/inversify-basic-example) to learn more.
+
+### TypeScript
+
+The InversifyJS type definitions are included in the inversify npm package.
+
+TypeScript >= 4.4 is required.
+
+Add the `experimentalDecorators` compiler option to your `tsconfig.json`.
+Also add `emitDecoratorMetadata` if you want to enable class injection without
+`@inject` as described in [Support for classes](https://github.com/inversify/InversifyJS/blob/master/wiki/classes_as_id.md).
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
 
 ## The Basics
 Let’s take a look at the basic usage and APIs of InversifyJS with TypeScript:
