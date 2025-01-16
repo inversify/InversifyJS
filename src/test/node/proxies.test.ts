@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, inject, injectable } from '../../index';
-import type { interfaces } from '../../interfaces/interfaces';
+import { Container, inject, injectable, ResolutionContext } from '../..';
 
 describe('InversifyJS', () => {
   it('Should support the injection of proxied objects', () => {
@@ -38,7 +37,7 @@ describe('InversifyJS', () => {
     container
       .bind<Weapon>(weaponId)
       .to(Katana)
-      .onActivation((_context: interfaces.Context, weapon: Weapon) => {
+      .onActivation((_context: ResolutionContext, weapon: Weapon) => {
         const handler: ProxyHandler<() => void> = {
           apply(
             target: () => void,

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, inject, injectable, named } from '../../index';
+import { Container, inject, injectable, named } from '../..';
 
 describe('Named default', () => {
   it('Should be able to inject a default to avoid ambiguous binding exceptions', () => {
@@ -63,28 +63,17 @@ describe('Named default', () => {
     }
 
     const container: Container = new Container();
-    container
-      .bind<Warrior>(TYPES.Warrior)
-      .to(Ninja)
-      .whenTargetNamed(TAG.chinese);
-    container
-      .bind<Warrior>(TYPES.Warrior)
-      .to(Samurai)
-      .whenTargetNamed(TAG.japanese);
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Shuriken)
-      .whenTargetNamed(TAG.throwable);
-    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
+    container.bind<Warrior>(TYPES.Warrior).to(Ninja).whenNamed(TAG.chinese);
+    container.bind<Warrior>(TYPES.Warrior).to(Samurai).whenNamed(TAG.japanese);
+    container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenNamed(TAG.throwable);
+    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenDefault();
 
-    const ninja: Warrior = container.getNamed<Warrior>(
-      TYPES.Warrior,
-      TAG.chinese,
-    );
-    const samurai: Warrior = container.getNamed<Warrior>(
-      TYPES.Warrior,
-      TAG.japanese,
-    );
+    const ninja: Warrior = container.get<Warrior>(TYPES.Warrior, {
+      name: TAG.chinese,
+    });
+    const samurai: Warrior = container.get<Warrior>(TYPES.Warrior, {
+      name: TAG.japanese,
+    });
 
     expect(ninja.name).to.eql('Ninja');
     expect(ninja.weapon.name).to.eql('Shuriken');
@@ -124,21 +113,17 @@ describe('Named default', () => {
     }
 
     const container: Container = new Container();
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Shuriken)
-      .whenTargetNamed(TAG.throwable);
+    container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenNamed(TAG.throwable);
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Katana)
       .inSingletonScope()
-      .whenTargetIsDefault();
+      .whenDefault();
 
     const defaultWeapon: Weapon = container.get<Weapon>(TYPES.Weapon);
-    const throwableWeapon: Weapon = container.getNamed<Weapon>(
-      TYPES.Weapon,
-      TAG.throwable,
-    );
+    const throwableWeapon: Weapon = container.get<Weapon>(TYPES.Weapon, {
+      name: TAG.throwable,
+    });
 
     expect(defaultWeapon.name).eql('Katana');
     expect(throwableWeapon.name).eql('Shuriken');

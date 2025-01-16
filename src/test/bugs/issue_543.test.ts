@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 
-import * as ERROR_MSGS from '../../constants/error_msgs';
 import { Container, inject, injectable } from '../../index';
 
 describe('Issue 543', () => {
@@ -76,7 +75,7 @@ describe('Issue 543', () => {
     }
 
     expect(throws).to.throw(
-      `${ERROR_MSGS.CIRCULAR_DEPENDENCY} Symbol(Root) --> Symbol(Circular) --> Symbol(Child) --> Symbol(Child2) --> Symbol(Circular)`,
+      'Circular dependency found: Symbol(Root) -> Symbol(Circular) -> Symbol(Child) -> Symbol(Child2) -> Symbol(Circular)',
     );
   });
 });
