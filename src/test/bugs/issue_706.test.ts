@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { BindingScopeEnum, Container, injectable } from '../../index';
+import { bindingScopeValues, Container, injectable } from '../..';
 
 describe('Issue 706', () => {
   it('Should expose BindingScopeEnum as part of the public API', () => {
@@ -13,7 +13,7 @@ describe('Issue 706', () => {
     }
 
     const container: Container = new Container({
-      defaultScope: BindingScopeEnum.Singleton,
+      defaultScope: bindingScopeValues.Singleton,
     });
 
     // eslint-disable-next-line @typescript-eslint/typedef

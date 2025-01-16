@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { Container, inject, injectable, optional } from '../../index';
+import { Container, inject, injectable, optional } from '../..';
 
 describe('@optional', () => {
   it('Should allow to flag dependencies as optional', () => {
