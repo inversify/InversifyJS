@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
 import {
@@ -15,7 +17,6 @@ import {
   Newable,
   ResolutionContext,
   tagged,
-  unmanaged,
 } from '..';
 
 describe('InversifyJS', () => {

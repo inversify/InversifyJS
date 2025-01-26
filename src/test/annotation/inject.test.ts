@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { LazyServiceIdentifier } from '@inversifyjs/common';
 import { expect } from 'chai';
 

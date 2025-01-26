@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
 import { Container, inject, injectable } from '../..';

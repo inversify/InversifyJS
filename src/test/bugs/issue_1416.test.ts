@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
 

@@ -6,11 +6,11 @@
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "dependencies": {
     "@inversifyjs/common": "1.5.0",
-    "@inversifyjs/container": "1.4.0",
-    "@inversifyjs/core": "3.3.0"
+    "@inversifyjs/container": "1.4.2",
+    "@inversifyjs/core": "3.4.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.18.0",
+    "@eslint/js": "9.19.0",
     "@rollup/plugin-terser": "0.4.4",
     "@rollup/plugin-typescript": "12.1.2",
     "@types/chai": "4.3.20",
@@ -19,11 +19,11 @@
     "@typescript-eslint/eslint-plugin": "8.21.0",
     "@typescript-eslint/parser": "8.21.0",
     "chai": "4.5.0",
-    "eslint": "9.18.0",
+    "eslint": "9.19.0",
     "eslint-config-prettier": "10.0.1",
     "eslint-plugin-prettier": "5.2.3",
     "eslint-plugin-simple-import-sort": "12.1.1",
-    "mocha": "11.0.1",
+    "mocha": "11.1.0",
     "nyc": "17.1.0",
     "prettier": "3.4.2",
     "rimraf": "6.0.1",
@@ -73,8 +73,8 @@
     "lint": "eslint ./src",
     "prebuild": "npm run build:clean",
     "prepublish": "npm run build",
-    "test": "nyc --reporter=lcov --require ts-node/register mocha src/test/*.test.ts src/test/**/*.test.ts --reporter spec --require 'node_modules/reflect-metadata/Reflect.js' --exit",
-    "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec --require 'node_modules/reflect-metadata/Reflect.js'"
+    "test": "nyc --reporter=lcov --require ts-node/register mocha src/test/*.test.ts src/test/**/*.test.ts --reporter spec --exit",
+    "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec"
   },
   "sideEffects": false,
   "version": "7.0.0-alpha.1"
