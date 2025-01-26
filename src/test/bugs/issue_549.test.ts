@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { Container, inject, injectable, ResolutionContext } from '../..';
 
 describe('Issue 549', () => {
