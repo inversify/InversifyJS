@@ -25,12 +25,15 @@ if (!pathExists(PACKAGE_JSON_PATH)) {
 
 const packageJsonObject = JSON.parse(await fs.readFile(PACKAGE_JSON_PATH));
 const packageDependencies = Object.keys(packageJsonObject.dependencies ?? {});
+const packagePeerDependencies = Object.keys(
+  packageJsonObject.peerDependencies ?? {},
+);
 
 /** @type {!import("rollup").MergedRollupOptions[]} */
 export default [
   {
     input: './src/index.ts',
-    external: packageDependencies,
+    external: [...packageDependencies, ...packagePeerDependencies],
     output: [
       {
         dir: './lib/esm',
