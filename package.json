@@ -6,8 +6,8 @@
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "dependencies": {
     "@inversifyjs/common": "1.5.0",
-    "@inversifyjs/container": "1.4.2",
-    "@inversifyjs/core": "3.4.0"
+    "@inversifyjs/container": "1.5.0",
+    "@inversifyjs/core": "3.5.0"
   },
   "devDependencies": {
     "@eslint/js": "9.19.0",
