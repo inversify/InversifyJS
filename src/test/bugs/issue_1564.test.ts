@@ -1,7 +1,9 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { Container, inject, injectable } from '../../index';
+import { Container, inject, injectable } from '../..';
 
 describe('Issue 1564', () => {
   it('should not throw on getting async services bound using "toService"', async () => {

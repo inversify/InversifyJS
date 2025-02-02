@@ -1,6 +1,8 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
-import { Container, inject, injectable, optional } from '../../index';
+import { Container, inject, injectable, optional } from '../..';
 
 describe('Issue 928', () => {
   it('should inject the right instances', () => {

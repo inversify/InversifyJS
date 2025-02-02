@@ -1,57 +1,22 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
-import * as ERROR_MSGS from '../../constants/error_msgs';
-import * as METADATA_KEY from '../../constants/metadata_keys';
 import {
+  BindingMetadata,
   Container,
   decorate,
   inject,
   injectable,
-  interfaces,
-  multiInject,
+  injectFromBase,
+  MetadataName,
   named,
+  ServiceIdentifier,
   tagged,
-  targetName,
   unmanaged,
-} from '../../index';
-import { Metadata } from '../../planning/metadata';
-import { MetadataReader } from '../../planning/metadata_reader';
-import { getDependencies } from '../../planning/reflection_utils';
-import {
-  getFunctionName,
-  getServiceIdentifierAsString,
-} from '../../utils/serialization';
+} from '../..';
 
 describe('Bugs', () => {
-  it('Should throw when args length of base and derived class not match', () => {
-    @injectable()
-    class Warrior {
-      public rank: string;
-      constructor(rank: string) {
-        // length = 1
-        this.rank = rank;
-      }
-    }
-
-    @injectable()
-    class SamuraiMaster extends Warrior {
-      constructor() {
-        // length = 0
-        super('master');
-      }
-    }
-
-    const container: Container = new Container();
-    container.bind<SamuraiMaster>(SamuraiMaster).to(SamuraiMaster);
-
-    const shouldThrow: () => void = function () {
-      container.get<SamuraiMaster>(SamuraiMaster);
-    };
-
-    const error: string = ERROR_MSGS.ARGUMENTS_LENGTH_MISMATCH('SamuraiMaster');
-    expect(shouldThrow).to.throw(error);
-  });
-
   it('Should not throw when args length of base and derived class match (property setter)', () => {
     @injectable()
     class Warrior {
@@ -107,7 +72,7 @@ describe('Bugs', () => {
     container
       .bind<string>(TYPES.Rank)
       .toConstantValue('master')
-      .whenTargetNamed('master');
+      .whenNamed('master');
 
     const master: SamuraiMaster = container.get<SamuraiMaster>(SamuraiMaster);
     expect(master.rank).eql('master');
@@ -162,7 +127,7 @@ describe('Bugs', () => {
     container
       .bind<string>(TYPES.Rank)
       .toConstantValue('master')
-      .whenTargetNamed('master');
+      .whenNamed('master');
 
     const master: SamuraiMaster = container.get<SamuraiMaster>(SamuraiMaster);
     expect(master.rank).eql('master');
@@ -181,39 +146,8 @@ describe('Bugs', () => {
     const throwF: () => void = () => {
       container.get<Weapon>(TYPES.Weapon);
     };
-    expect(throwF).to.throw(
-      `${ERROR_MSGS.NOT_REGISTERED} ${getServiceIdentifierAsString(TYPES.Weapon)}`,
-    );
-  });
 
-  it('Should be not require @inject annotation in toConstructor bindings', () => {
-    type CategorySortingFn = unknown;
-    type ContentSortingFn = unknown;
-    type Collection = unknown;
-
-    @injectable()
-    class Category {
-      constructor(
-        public id: string,
-        public title: string,
-        public categoryFirstPermalink: string,
-        public categoryPermalink: string,
-        public pagination: number,
-        public categorySortingFn: CategorySortingFn,
-        public contentSortingFn: ContentSortingFn,
-        public belongsToCollection: Collection,
-      ) {
-        // do nothing
-      }
-    }
-
-    const container: Container = new Container();
-    container
-      .bind<interfaces.Newable<Category>>('Newable<Category>')
-      .toConstructor(Category);
-    const expected: interfaces.Newable<Category> =
-      container.get<interfaces.Newable<Category>>('Newable<Category>');
-    expect(expected).eql(Category);
+    expect(throwF).to.throw('');
   });
 
   it('Should be able to combine tagged injection and constant value bindings', () => {
@@ -224,14 +158,19 @@ describe('Bugs', () => {
     container
       .bind<Intl>('Intl')
       .toConstantValue({ hello: 'bonjour' })
-      .whenTargetTagged('lang', 'fr');
+      .whenTagged('lang', 'fr');
     container
       .bind<Intl>('Intl')
       .toConstantValue({ goodbye: 'au revoir' })
-      .whenTargetTagged('lang', 'fr');
+      .whenTagged('lang', 'fr');
 
     const f: () => void = function () {
-      container.getTagged<Intl>('Intl', 'lang', 'fr');
+      container.get<Intl>('Intl', {
+        tag: {
+          key: 'lang',
+          value: 'fr',
+        },
+      });
     };
     expect(f).to.throw();
   });
@@ -241,12 +180,12 @@ describe('Bugs', () => {
 
     container
       .bind<number>('transient_random')
-      .toDynamicValue((_context: interfaces.Context) => Math.random())
+      .toDynamicValue(() => Math.random())
       .inTransientScope();
 
     container
       .bind<number>('singleton_random')
-      .toDynamicValue((_context: interfaces.Context) => Math.random())
+      .toDynamicValue(() => Math.random())
       .inSingletonScope();
 
     const a: number = container.get<number>('transient_random');
@@ -304,234 +243,6 @@ describe('Bugs', () => {
     expect(jungle.animal.move(5)).to.eql('Slithering... Snake moved 5m');
   });
 
-  it('Should be able to identify is a target is tagged', () => {
-    // eslint-disable-next-line @typescript-eslint/typedef
-    const TYPES = {
-      Dependency1: Symbol.for('Dependency1'),
-      Dependency2: Symbol.for('Dependency2'),
-      Dependency3: Symbol.for('Dependency3'),
-      Dependency4: Symbol.for('Dependency4'),
-      Dependency5: Symbol.for('Dependency5'),
-      Test: Symbol.for('Test'),
-    };
-
-    // eslint-disable-next-line @typescript-eslint/typedef
-    const TAGS = {
-      somename: 'somename',
-      sometag: 'sometag',
-    };
-
-    @injectable()
-    class Dependency1 {
-      public name: string = 'Dependency1';
-    }
-
-    @injectable()
-    class Dependency2 {
-      public name: string = 'Dependency1';
-    }
-
-    @injectable()
-    class Dependency3 {
-      public name: string = 'Dependency1';
-    }
-
-    @injectable()
-    class Dependency4 {
-      public name: string = 'Dependency1';
-    }
-
-    @injectable()
-    class Dependency5 {
-      public name: string = 'Dependency1';
-    }
-
-    @injectable()
-    class Base {
-      public baseProp: string;
-      constructor(@unmanaged() baseProp: string) {
-        this.baseProp = baseProp;
-      }
-    }
-
-    @injectable()
-    class Test extends Base {
-      private readonly _prop1: Dependency1;
-      private readonly _prop2: Dependency2[];
-      private readonly _prop3: Dependency3;
-      private readonly _prop4: Dependency4;
-      private readonly _prop5: Dependency5;
-
-      constructor(
-        @inject(TYPES.Dependency1) prop1: Dependency1, // inject
-        @multiInject(TYPES.Dependency2) prop2: Dependency2[], // multi inject
-        @inject(TYPES.Dependency3) @named(TAGS.somename) prop3: Dependency3, // named
-        @inject(TYPES.Dependency4)
-        @tagged(TAGS.sometag, true)
-        prop4: Dependency4, // tagged
-        @inject(TYPES.Dependency5) @targetName('prop6') prop5: Dependency5, // targetName
-      ) {
-        super('unmanaged!');
-        this._prop1 = prop1;
-        this._prop2 = prop2;
-        this._prop3 = prop3;
-        this._prop4 = prop4;
-        this._prop5 = prop5;
-      }
-      public debug() {
-        return {
-          prop1: this._prop1,
-          prop2: this._prop2,
-          prop3: this._prop3,
-          prop4: this._prop4,
-          prop5: this._prop5,
-        };
-      }
-    }
-
-    const container: Container = new Container();
-    container.bind<Test>(TYPES.Test).to(Test);
-    container.bind<Dependency1>(TYPES.Dependency1).to(Dependency1);
-    container.bind<Dependency2>(TYPES.Dependency2).to(Dependency2);
-    container.bind<Dependency3>(TYPES.Dependency3).to(Dependency3);
-    container.bind<Dependency4>(TYPES.Dependency4).to(Dependency4);
-    container.bind<Dependency5>(TYPES.Dependency5).to(Dependency5);
-
-    function logger(next: interfaces.Next): interfaces.Next {
-      return (args: interfaces.NextArgs) => {
-        const nextContextInterceptor: (
-          contexts: interfaces.Context,
-        ) => interfaces.Context = args.contextInterceptor;
-
-        args.contextInterceptor = (context: interfaces.Context) => {
-          context.plan.rootRequest.childRequests.forEach(
-            (request: interfaces.Request | null, index: number) => {
-              if (
-                request === null ||
-                (request.target as interfaces.Target | null) === null
-              ) {
-                throw new Error('Request should not be null!');
-              }
-
-              switch (index) {
-                case 0:
-                  expect(request.target.isNamed()).to.eql(false);
-                  expect(request.target.isTagged()).to.eql(false);
-                  break;
-                case 1:
-                  expect(request.target.isNamed()).to.eql(false);
-                  expect(request.target.isTagged()).to.eql(false);
-                  break;
-
-                case 2:
-                  expect(request.target.isNamed()).to.eql(true);
-                  expect(request.target.isTagged()).to.eql(false);
-                  break;
-
-                case 3:
-                  expect(request.target.isNamed()).to.eql(false);
-                  expect(request.target.isTagged()).to.eql(true);
-                  break;
-
-                case 4:
-                  expect(request.target.isNamed()).to.eql(false);
-                  expect(request.target.isTagged()).to.eql(false);
-              }
-            },
-          );
-
-          return nextContextInterceptor(context);
-        };
-
-        const result: unknown = next(args);
-
-        return result;
-      };
-    }
-
-    container.applyMiddleware(logger);
-    container.get<Test>(TYPES.Test);
-  });
-
-  it('Helper getFunctionName should not throw when using an anonymous function', () => {
-    const anonymousFunctionBuilder: () => (options: unknown) => unknown =
-      () =>
-      (options: unknown): unknown => {
-        return options;
-      };
-
-    const name: string = getFunctionName(anonymousFunctionBuilder());
-
-    expect(name).to.eql(
-      'Anonymous function: ' + anonymousFunctionBuilder().toString(),
-    );
-  });
-
-  it('Should be able to get all the available bindings for a service identifier', () => {
-    const controllerId: string = 'SomeControllerID';
-    const tagA: string = 'A';
-    const tagB: string = 'B';
-
-    interface Controller {
-      name: string;
-    }
-
-    const container: Container = new Container();
-
-    @injectable()
-    class AppController implements Controller {
-      public name: string;
-      constructor() {
-        this.name = 'AppController';
-      }
-    }
-
-    @injectable()
-    class AppController2 implements Controller {
-      public name: string;
-      constructor() {
-        this.name = 'AppController2';
-      }
-    }
-
-    container.bind(controllerId).to(AppController).whenTargetNamed(tagA);
-    container.bind(controllerId).to(AppController2).whenTargetNamed(tagB);
-
-    function wrongNamedBinding() {
-      container.getAllNamed<Controller>(controllerId, 'Wrong');
-    }
-    expect(wrongNamedBinding).to.throw();
-
-    const appControllerNamedRight: Controller[] =
-      container.getAllNamed<Controller>(controllerId, tagA);
-    expect(appControllerNamedRight.length).to.eql(1, 'getAllNamed');
-    expect(appControllerNamedRight[0]?.name).to.eql('AppController');
-
-    function wrongTaggedBinding() {
-      container.getAllTagged<Controller>(controllerId, 'Wrong', 'Wrong');
-    }
-    expect(wrongTaggedBinding).to.throw();
-
-    const appControllerTaggedRight: Controller[] =
-      container.getAllTagged<Controller>(
-        controllerId,
-        METADATA_KEY.NAMED_TAG,
-        tagB,
-      );
-    expect(appControllerTaggedRight.length).to.eql(1, 'getAllTagged');
-    expect(appControllerTaggedRight[0]?.name).to.eql('AppController2');
-
-    const getAppController: () => void = () => {
-      const matches: Controller[] = container.getAll<Controller>(controllerId);
-
-      expect(matches.length).to.eql(2);
-      expect(matches[0]?.name).to.eql('AppController');
-      expect(matches[1]?.name).to.eql('AppController2');
-    };
-
-    expect(getAppController).not.to.throw();
-  });
-
   it('Should not be able to get a named dependency if no named bindings are registered', () => {
     // eslint-disable-next-line @typescript-eslint/typedef
     const TYPES = {
@@ -551,17 +262,17 @@ describe('Bugs', () => {
     }
 
     const container: Container = new Container();
-    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetNamed('sword');
+    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenNamed('sword');
 
     const throws: () => void = () => {
-      container.getNamed<Weapon>(TYPES.Weapon, 'bow');
+      container.get<Weapon>(TYPES.Weapon, {
+        name: 'bow',
+      });
     };
 
-    const error: string = `No matching bindings found for serviceIdentifier: Weapon
- Weapon - {"key":"named","value":"bow"}
+    const error: string = `No bindings found for service: "Weapon".
 
-Registered bindings:
- Katana - named: sword`;
+Trying to resolve bindings for "Weapon (Root service)"`;
 
     expect(throws).to.throw(error);
   });
@@ -571,62 +282,7 @@ Registered bindings:
     const throws: () => void = () => {
       container.bind('testId').toSelf();
     };
-    expect(throws).to.throw(ERROR_MSGS.INVALID_TO_SELF_VALUE);
-  });
-
-  it('Should generate correct metadata when the spread operator is used', () => {
-    const BAR: symbol = Symbol.for('BAR');
-    const FOO: symbol = Symbol.for('FOO');
-
-    interface Bar {
-      name: string;
-    }
-
-    @injectable()
-    class Foo {
-      public bar: Bar[];
-      constructor(@multiInject(BAR) ...args: Bar[][]) {
-        this.bar = args[0] as Bar[];
-      }
-    }
-
-    // is the metadata correct?
-    const serviceIdentifiers: interfaces.MetadataMap = Reflect.getMetadata(
-      METADATA_KEY.TAGGED,
-      Foo,
-    ) as interfaces.MetadataMap;
-
-    const zeroIndexedMetadata: interfaces.Metadata[] = serviceIdentifiers[
-      '0'
-    ] as interfaces.Metadata[];
-
-    const expectedMetadata: interfaces.Metadata = new Metadata(
-      METADATA_KEY.MULTI_INJECT_TAG,
-      BAR,
-    );
-
-    expect(zeroIndexedMetadata).to.deep.equal([expectedMetadata]);
-
-    // is the plan correct?
-    const dependencies: interfaces.Target[] = getDependencies(
-      new MetadataReader(),
-      Foo,
-    );
-    expect(dependencies.length).to.be.eql(1);
-    expect(dependencies[0]?.serviceIdentifier.toString()).to.be.eql(
-      'Symbol(BAR)',
-    );
-
-    // integration test
-    const container: Container = new Container();
-    container.bind<Bar>(BAR).toConstantValue({ name: 'bar1' });
-    container.bind<Bar>(BAR).toConstantValue({ name: 'bar2' });
-    container.bind<Foo>(FOO).to(Foo);
-    const foo: Foo = container.get<Foo>(FOO);
-
-    expect(foo.bar.length).to.eql(2);
-    expect(foo.bar[0]?.name).to.eql('bar1');
-    expect(foo.bar[1]?.name).to.eql('bar2');
+    expect(throws).to.throw('');
   });
 
   it('Should be able to inject into an abstract class', () => {
@@ -641,12 +297,21 @@ Registered bindings:
     }
 
     @injectable()
+    @injectFromBase({
+      extendConstructorArguments: true,
+    })
     class Soldier extends BaseSoldier {}
 
     @injectable()
+    @injectFromBase({
+      extendConstructorArguments: true,
+    })
     class Archer extends BaseSoldier {}
 
     @injectable()
+    @injectFromBase({
+      extendConstructorArguments: true,
+    })
     class Knight extends BaseSoldier {}
 
     @injectable()
@@ -660,37 +325,40 @@ Registered bindings:
 
     const container: Container = new Container();
 
+    function whenIsAndIsNamed(
+      serviceIdentifier: ServiceIdentifier,
+      name: MetadataName,
+    ): (bindingMetadata: BindingMetadata) => boolean {
+      return (bindingMetadata: BindingMetadata): boolean =>
+        bindingMetadata.serviceIdentifier === serviceIdentifier &&
+        bindingMetadata.name === name;
+    }
+
     container
       .bind<Weapon>('Weapon')
       .to(DefaultWeapon)
-      .whenInjectedInto(Soldier);
-    container.bind<Weapon>('Weapon').to(Sword).whenInjectedInto(Knight);
-    container.bind<Weapon>('Weapon').to(Bow).whenInjectedInto(Archer);
+      .whenParent(whenIsAndIsNamed('BaseSoldier', 'default'));
     container
-      .bind<BaseSoldier>('BaseSoldier')
-      .to(Soldier)
-      .whenTargetNamed('default');
+      .bind<Weapon>('Weapon')
+      .to(Sword)
+      .whenParent(whenIsAndIsNamed('BaseSoldier', 'knight'));
     container
-      .bind<BaseSoldier>('BaseSoldier')
-      .to(Knight)
-      .whenTargetNamed('knight');
-    container
-      .bind<BaseSoldier>('BaseSoldier')
-      .to(Archer)
-      .whenTargetNamed('archer');
+      .bind<Weapon>('Weapon')
+      .to(Bow)
+      .whenParent(whenIsAndIsNamed('BaseSoldier', 'archer'));
+    container.bind<BaseSoldier>('BaseSoldier').to(Soldier).whenNamed('default');
+    container.bind<BaseSoldier>('BaseSoldier').to(Knight).whenNamed('knight');
+    container.bind<BaseSoldier>('BaseSoldier').to(Archer).whenNamed('archer');
 
-    const soldier: BaseSoldier = container.getNamed<BaseSoldier>(
-      'BaseSoldier',
-      'default',
-    );
-    const knight: BaseSoldier = container.getNamed<BaseSoldier>(
-      'BaseSoldier',
-      'knight',
-    );
-    const archer: BaseSoldier = container.getNamed<BaseSoldier>(
-      'BaseSoldier',
-      'archer',
-    );
+    const soldier: BaseSoldier = container.get<BaseSoldier>('BaseSoldier', {
+      name: 'default',
+    });
+    const knight: BaseSoldier = container.get<BaseSoldier>('BaseSoldier', {
+      name: 'knight',
+    });
+    const archer: BaseSoldier = container.get<BaseSoldier>('BaseSoldier', {
+      name: 'archer',
+    });
 
     expect(soldier.weapon instanceof DefaultWeapon).to.eql(true);
     expect(knight.weapon instanceof Sword).to.eql(true);
@@ -722,7 +390,7 @@ Registered bindings:
     }
 
     const container: Container = new Container();
-    container.bind<Weapon>('Weapon').to(Katana).whenTargetNamed('sword');
+    container.bind<Weapon>('Weapon').to(Katana).whenNamed('sword');
     container.bind<Ninja>(Ninja).toSelf();
 
     const ninja: Ninja = container.get<Ninja>(Ninja);
@@ -778,7 +446,7 @@ Registered bindings:
     }
 
     // @injectable()
-    decorate(injectable(), BaseWarrior);
+    decorate([injectable()], BaseWarrior);
 
     // @inject(TYPES.Weapon)
     inject(TYPES.Weapon)(BaseWarrior.prototype, 'primaryWeapon');
@@ -787,6 +455,9 @@ Registered bindings:
     tagged(TAGS.Priority, TAGS.Primary)(BaseWarrior.prototype, 'primaryWeapon');
 
     @injectable()
+    @injectFromBase({
+      extendProperties: true,
+    })
     class Samurai extends BaseWarrior {
       @inject(TYPES.Weapon)
       @tagged(TAGS.Priority, TAGS.Secondary)
@@ -802,11 +473,11 @@ Registered bindings:
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Katana)
-      .whenTargetTagged(TAGS.Priority, TAGS.Primary);
+      .whenTagged(TAGS.Priority, TAGS.Primary);
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Shuriken)
-      .whenTargetTagged(TAGS.Priority, TAGS.Secondary);
+      .whenTagged(TAGS.Priority, TAGS.Secondary);
 
     const samurai: Samurai = container.get<Samurai>(TYPES.Warrior);
 

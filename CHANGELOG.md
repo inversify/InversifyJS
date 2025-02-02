@@ -8,6 +8,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Solved issue with npm registry.
 
+## [7.0.0-alpha.3]
+
+### Changed
+- Updated `BindToFluentSyntax` with `.toResolvedValue`.
+
+## [7.0.0-alpha.2]
+
+### Changed
+- Updated `Container` with a plan cache. `Container.get`, `Container.getAll`, `Container.getAllAsync` and `Container.getAsync` performance has been improved.
+
+## [7.0.0-alpha.1]
+
+### Changed
+- Updated `GetOptions` with `autobind`.
+- Updated `ContainerOptions` with `autobind`.
+
+## [7.0.0-alpha.0]
+
+### Added
+- Added `BindInFluentSyntax`.
+- Added `BindInWhenOnFluentSyntax`.
+- Added `BindOnFluentSyntax`.
+- Added `BindingScope`.
+- Added `BindToFluentSyntax`.
+- Added `BindWhenFluentSyntax`.
+- Added `BindWhenOnFluentSyntax`.
+- Added `ContainerModuleLoadOptions`.
+- Added `DynamicValueBuilder`.
+- Added `Factory`.
+- Added `GetOptions`.
+- Added `GetOptionsTagConstraint`.
+- Added `IsBoundOptions`.
+- Added `MetadataName`.
+- Added `MetadataTag`.
+- Added `MetadataTargetName`.
+- Added `OptionalGetOptions`.
+- Added `Provider`.
+- Added `ResolutionContext`.
+- Added `bindingScopeValues`.
+- Added `bindingTypeValues`.
+- Added `injectFromBase` decorator.
+
+### Changed
+- Updated `injectable` with optional `scope`.
+- [Breaking] Updated `ContainerModule` constructor to receive a callback with `ContainerModuleLoadOptions` instead of `interfaces.ContainerModuleCallBack`.
+- [Breaking] Updated `ContainerModule`.load to return `Promise<void>`.
+- Updated `ContainerOptions` with `parent`.
+- Updated `ContainerOptions` without `autoBindInjectable` and `skipBaseClassChecks`.
+- [Breaking] Updated `Container` to no longer expose `id`, `parent` nor `options`.
+- [Breaking] Updated `Container` with no `applyCustomMetadataReader`, `applyMiddleware`, `createChild`, `merge` and `rebind` methods.
+- [Breaking] Updated `Container` with no `isCurrentBound`, `isBoundNamed`, `isBoundTagged` methods in favor of using `Container.isBound` with `isBoundOptions`.
+- [Breaking] Updated `Container` with no `getNamed`, `getTagged`, `tryGet`, `tryGetNamed` and `tryGetTagged` methods in favor of `Container.get` with `OptionalGetOptions` options.
+- [Breaking] Updated `Container` with no `getNamedAsync`, `getTaggedAsync`, `tryGetAsync`, `tryGetNamedAsync` and `tryGetTaggedAsync` methods in favor of `Container.getAsync` with `OptionalGetOptions` options.
+- [Breaking] Updated `Container` with no `getAllNamed`, `getAllTagged`, `tryGetAll`, `tryGetAllNamed` and `tryGetAllTagged` methods in favor of `Container.getAll` with `GetOptions` options.
+- [Breaking] Updated `Container` with no `getAllNamedAsync`, `getAllTaggedAsync`, `tryGetAllAsync`, `tryGetAllNamedAsync` and `tryGetAllTaggedAsync` methods in favor of `Container.getAllAsync` with `GetOptions` options.
+- [Breaking] Updated `Container` with no `loadAsync` in favor of an async `Container.load`.
+- [Breaking] Updated `Container` with no `unbindAsync` in favor of an async `Container.unbind`.
+- [Breaking] Updated `Container` with no `unbindAllAsync` in favor of an async `Container.unbindAll`.
+- [Breaking] Updated `Container` with no `unloadAsync` in favor of an async `Container.unload`.
+
+
+### Fixed
+- Updated `decorate` to no longer require a unexpected prototypes to decorate property nor methods.
+
+### Removed
+- [Breaking] Removed deprecated `LazyServiceIdentifer`. Use `LazyServiceIdentifier` instead.
+- [Breaking] Removed `BindingScopeEnum`. Use `bindingScopeValues` instead.
+- [Breaking] Removed `BindingTypeEnum`.
+- [Breaking] Removed `TargetTypeEnum`.
+- [Breaking] Removed `METADATA_KEY`.
+- [Breaking] Removed `AsyncContainerModule`. Use `ContainerModule` instead.
+- [Breaking] Removed `createTaggedDecorator`.
+- [Breaking] Removed `MetadataReader`.
+- [Breaking] Removed `id`.
+- [Breaking] Removed `interfaces` types. Rely on new types instead.
+- [Breaking] Removed `traverseAncerstors`.
+- [Breaking] Removed `taggedConstraint`.
+- [Breaking] Removed `namedConstraint`.
+- [Breaking] Removed `typeConstraint`.
+- [Breaking] Removed `getServiceIdentifierAsString`.
+- [Breaking] Removed `multiBindToService`.
+
+
 ## [6.2.1]
 
 ### Fixed

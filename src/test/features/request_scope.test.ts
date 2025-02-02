@@ -1,7 +1,9 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import { performance } from 'perf_hooks';
 
-import { Container, inject, injectable, named } from '../../index';
+import { Container, inject, injectable, named } from '../..';
 
 describe('inRequestScope', () => {
   it('Should support request scope in basic bindings', () => {
@@ -154,13 +156,13 @@ describe('inRequestScope', () => {
       .bind<Weapon>(TYPE.Weapon)
       .to(Katana)
       .inRequestScope()
-      .whenTargetNamed('sword');
+      .whenNamed('sword');
 
     container
       .bind<Weapon>(TYPE.Weapon)
       .to(Shuriken)
       .inRequestScope()
-      .whenTargetNamed('throwable');
+      .whenNamed('throwable');
 
     container.bind<Warrior>(TYPE.Warrior).to(Samurai);
 

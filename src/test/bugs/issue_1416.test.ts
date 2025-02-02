@@ -1,7 +1,9 @@
+import 'reflect-metadata';
+
 import { describe, it } from 'mocha';
 import sinon from 'sinon';
 
-import { Container, injectable, preDestroy } from '../../index';
+import { Container, injectable, preDestroy } from '../..';
 
 describe('Issue 1416', () => {
   it('should allow providing default values on optional bindings', async () => {
@@ -35,7 +37,11 @@ describe('Issue 1416', () => {
     container.get(Test2);
     container.get(Test3);
 
-    container.unbindAll();
+    await Promise.all([
+      container.unbind(Test1),
+      container.unbind(Test2),
+      container.unbind(Test3),
+    ]);
 
     sinon.assert.calledOnce(test1.stub);
   });

@@ -1,6 +1,8 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
-import { Container, inject, injectable, multiInject } from '../../index';
+import { Container, inject, injectable, multiInject } from '../..';
 
 describe('Issue 1515', () => {
   it('should properly throw on circular dependency', () => {
@@ -41,7 +43,7 @@ describe('Issue 1515', () => {
     expect(() => {
       container.get(Top);
     }).to.throw(
-      'Circular dependency found: Top --> circle-1 --> circle-2 --> circle-1',
+      'Circular dependency found: Top -> circle-1 -> circle-2 -> circle-1',
     );
   });
 });

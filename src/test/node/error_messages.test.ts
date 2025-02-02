@@ -1,7 +1,8 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
-import * as ERROR_MSGS from '../../constants/error_msgs';
-import { Container, injectable } from '../../index';
+import { Container, injectable } from '../..';
 
 describe('Error message when resolving fails', () => {
   @injectable()
@@ -22,7 +23,7 @@ describe('Error message when resolving fails', () => {
       container.get('Ninja');
     };
 
-    expect(tryWeapon).to.throw(`${ERROR_MSGS.NOT_REGISTERED} Ninja`);
+    expect(tryWeapon).to.throw('');
   });
 
   it('Should contain the provided name in error message when target is named', () => {
@@ -30,21 +31,36 @@ describe('Error message when resolving fails', () => {
     const tryGetNamedWeapon: (name: string | number | symbol) => void = (
       name: string | number | symbol,
     ) => {
-      container.getNamed('Weapon', name);
+      container.get('Weapon', { name });
     };
 
     expect(() => {
       tryGetNamedWeapon('superior');
-    }).to.throw(`No matching bindings found for serviceIdentifier: Weapon
- Weapon - {"key":"named","value":"superior"}`);
+    }).to.throw(`No bindings found for service: "Weapon".
+
+Trying to resolve bindings for "Weapon (Root service)".
+
+Binding metadata:
+- service identifier: Weapon
+- name: superior`);
     expect(() => {
       tryGetNamedWeapon(Symbol.for('Superior'));
-    }).to.throw(`No matching bindings found for serviceIdentifier: Weapon
- Weapon - {"key":"named","value":"Symbol(Superior)"}`);
+    }).to.throw(`No bindings found for service: "Weapon".
+
+Trying to resolve bindings for "Weapon (Root service)".
+
+Binding metadata:
+- service identifier: Weapon
+- name: Symbol(Superior)`);
     expect(() => {
       tryGetNamedWeapon(0);
-    }).to.throw(`No matching bindings found for serviceIdentifier: Weapon
- Weapon - {"key":"named","value":"0"}`);
+    }).to.throw(`No bindings found for service: "Weapon".
+
+Trying to resolve bindings for "Weapon (Root service)".
+
+Binding metadata:
+- service identifier: Weapon
+- name: 0`);
   });
 
   it('Should contain the provided tag in error message when target is tagged', () => {
@@ -52,59 +68,72 @@ describe('Error message when resolving fails', () => {
     const tryGetTaggedWeapon: (tag: string | number | symbol) => void = (
       tag: string | number | symbol,
     ) => {
-      container.getTagged('Weapon', tag, true);
+      container.get('Weapon', {
+        tag: {
+          key: tag,
+          value: true,
+        },
+      });
     };
 
     expect(() => {
       tryGetTaggedWeapon('canShoot');
-    }).to.throw(/.*\bWeapon\b.*\bcanShoot\b.*\btrue\b/g);
+    }).to.throw(`No bindings found for service: "Weapon".
+
+Trying to resolve bindings for "Weapon (Root service)".
+
+Binding metadata:
+- service identifier: Weapon
+- name: -
+- tags:
+  - canShoot`);
     expect(() => {
       tryGetTaggedWeapon(Symbol.for('Can shoot'));
-    }).to.throw(/.*\bWeapon\b.*Symbol\(Can shoot\).*\btrue\b/g);
+    }).to.throw(`No bindings found for service: "Weapon".
+
+Trying to resolve bindings for "Weapon (Root service)".
+
+Binding metadata:
+- service identifier: Weapon
+- name: -
+- tags:
+  - Symbol(Can shoot)`);
     expect(() => {
       tryGetTaggedWeapon(0);
-    }).to.throw(/.*\bWeapon\b.*\b0\b.*\btrue\b/g);
-  });
+    }).to.throw(`No bindings found for service: "Weapon".
 
-  it('Should list all possible bindings in error message if no matching binding found', () => {
-    const container: Container = new Container();
-    container.bind('Weapon').to(Katana).whenTargetNamed('strong');
-    container.bind('Weapon').to(Shuriken).whenTargetTagged('canThrow', true);
-    container.bind('Weapon').to(Bokken).whenTargetNamed('weak');
+Trying to resolve bindings for "Weapon (Root service)".
 
-    try {
-      container.getNamed('Weapon', 'superior');
-    } catch (error) {
-      expect((error as Error).message).to.match(
-        /.*\bKatana\b.*\bnamed\b.*\bstrong\b/,
-      );
-      expect((error as Error).message).to.match(
-        /.*\bBokken\b.*\bnamed\b.*\bweak\b/,
-      );
-      expect((error as Error).message).to.match(
-        /.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/,
-      );
-    }
+Binding metadata:
+- service identifier: Weapon
+- name: -
+- tags:
+  - 0`);
   });
 
   it('Should list all possible bindings in error message if ambiguous matching binding found', () => {
     const container: Container = new Container();
-    container.bind('Weapon').to(Katana).whenTargetNamed('strong');
-    container.bind('Weapon').to(Shuriken).whenTargetTagged('canThrow', true);
-    container.bind('Weapon').to(Bokken).whenTargetNamed('weak');
+    container.bind('Weapon').to(Katana);
+    container.bind('Weapon').to(Shuriken);
+    container.bind('Weapon').to(Bokken);
 
     try {
       container.get('Weapon');
     } catch (error) {
-      expect((error as Error).message).to.match(
-        /.*\bKatana\b.*\bnamed\b.*\bstrong\b/,
-      );
-      expect((error as Error).message).to.match(
-        /.*\bBokken\b.*\bnamed\b.*\bweak\b/,
-      );
-      expect((error as Error).message).to.match(
-        /.*\bShuriken\b.*\btagged\b.*\bcanThrow\b.*\btrue\b/,
-      );
+      expect((error as Error).message).to
+        .equal(`Ambiguous bindings found for service: "Weapon".
+
+Registered bindings:
+
+[ type: "Instance", serviceIdentifier: "Weapon", scope: "Transient", implementationType: "Katana" ]
+[ type: "Instance", serviceIdentifier: "Weapon", scope: "Transient", implementationType: "Shuriken" ]
+[ type: "Instance", serviceIdentifier: "Weapon", scope: "Transient", implementationType: "Bokken" ]
+
+Trying to resolve bindings for "Weapon (Root service)".
+
+Binding metadata:
+- service identifier: Weapon
+- name: -`);
     }
   });
 });

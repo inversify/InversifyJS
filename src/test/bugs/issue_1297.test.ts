@@ -1,17 +1,25 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import { Container, injectable, interfaces } from '../../index';
+import {
+  Container,
+  Factory,
+  injectable,
+  Provider,
+  ResolutionContext,
+} from '../..';
 
 describe('Issue 1297', () => {
   it('should call onActivation once if the service is a constant value binding', () => {
     const container: Container = new Container();
 
     const onActivationHandlerSpy: sinon.SinonSpy<
-      [interfaces.Context, string],
+      [ResolutionContext, string],
       string
-    > = sinon.spy<(ctx: interfaces.Context, message: string) => string>(
-      (_ctx: interfaces.Context, message: string) => message,
+    > = sinon.spy<(_: ResolutionContext, message: string) => string>(
+      (_: ResolutionContext, message: string) => message,
     );
 
     container
@@ -36,118 +44,23 @@ describe('Issue 1297', () => {
     const container: Container = new Container();
 
     const onActivationHandlerSpy: sinon.SinonSpy<
-      [interfaces.Context, interfaces.Factory<Katana>],
-      interfaces.Factory<Katana>
+      [ResolutionContext, Factory<Katana>],
+      Factory<Katana>
     > = sinon.spy<
-      (
-        ctx: interfaces.Context,
-        instance: interfaces.Factory<Katana>,
-      ) => interfaces.Factory<Katana>
-    >(
-      (_ctx: interfaces.Context, instance: interfaces.Factory<Katana>) =>
-        instance,
-    );
+      (_: ResolutionContext, instance: Factory<Katana>) => Factory<Katana>
+    >((_: ResolutionContext, instance: Factory<Katana>) => instance);
 
     container.bind<Katana>('Katana').to(Katana);
 
     container
-      .bind<interfaces.Factory<Katana>>('Factory<Katana>')
-      .toFactory<Katana>(
-        (context: interfaces.Context) => () =>
-          context.container.get<Katana>('Katana'),
+      .bind<Factory<Katana>>('Factory<Katana>')
+      .toFactory(
+        (context: ResolutionContext) => () => context.get<Katana>('Katana'),
       )
       .onActivation(onActivationHandlerSpy);
 
     container.get('Factory<Katana>');
     container.get('Factory<Katana>');
-
-    expect(onActivationHandlerSpy.callCount).to.eq(1);
-  });
-
-  it('should call onActivation once if the service is an auto factory binding', () => {
-    @injectable()
-    class Katana {
-      public hit() {
-        return 'cut!';
-      }
-    }
-
-    const container: Container = new Container();
-
-    const onActivationHandlerSpy: sinon.SinonSpy<
-      [interfaces.Context, interfaces.Factory<Katana>],
-      interfaces.Factory<Katana>
-    > = sinon.spy<
-      (
-        ctx: interfaces.Context,
-        instance: interfaces.Factory<Katana>,
-      ) => interfaces.Factory<Katana>
-    >(
-      (_ctx: interfaces.Context, instance: interfaces.Factory<Katana>) =>
-        instance,
-    );
-
-    container.bind<Katana>('Katana').to(Katana);
-
-    container
-      .bind<interfaces.Factory<Katana>>('Factory<Katana>')
-      .toAutoFactory<Katana>('Katana')
-      .onActivation(onActivationHandlerSpy);
-
-    container.get('Factory<Katana>');
-    container.get('Factory<Katana>');
-
-    expect(onActivationHandlerSpy.callCount).to.eq(1);
-  });
-
-  it('should call onActivation once if the service is a function binding', () => {
-    const container: Container = new Container();
-
-    const onActivationHandlerSpy: sinon.SinonSpy<
-      [interfaces.Context, () => string],
-      () => string
-    > = sinon.spy<
-      (ctx: interfaces.Context, messageGenerator: () => string) => () => string
-    >(
-      (_ctx: interfaces.Context, messageGenerator: () => string) =>
-        messageGenerator,
-    );
-
-    container
-      .bind<() => string>('message')
-      .toFunction(() => 'Hello world')
-      .onActivation(onActivationHandlerSpy);
-
-    container.get('message');
-    container.get('message');
-
-    expect(onActivationHandlerSpy.callCount).to.eq(1);
-  });
-
-  it('should call onActivation once if the service is a constructor binding', () => {
-    @injectable()
-    class Katana {
-      public hit() {
-        return 'cut!';
-      }
-    }
-
-    const container: Container = new Container();
-
-    const onActivationHandlerSpy: sinon.SinonSpy<
-      [interfaces.Context, unknown],
-      unknown
-    > = sinon.spy<(ctx: interfaces.Context, injectableObj: unknown) => unknown>(
-      (_ctx: interfaces.Context, injectableObj: unknown) => injectableObj,
-    );
-
-    container
-      .bind('Katana')
-      .toConstructor<Katana>(Katana)
-      .onActivation(onActivationHandlerSpy);
-
-    container.get('Katana');
-    container.get('Katana');
 
     expect(onActivationHandlerSpy.callCount).to.eq(1);
   });
@@ -163,16 +76,19 @@ describe('Issue 1297', () => {
     const container: Container = new Container();
 
     const onActivationHandlerSpy: sinon.SinonSpy<
-      [interfaces.Context, unknown],
-      unknown
-    > = sinon.spy<(ctx: interfaces.Context, injectableObj: unknown) => unknown>(
-      (_ctx: interfaces.Context, injectableObj: unknown) => injectableObj,
-    );
+      [ResolutionContext, Provider<Katana>],
+      Provider<Katana>
+    > = sinon.spy<
+      (
+        _: ResolutionContext,
+        injectableObj: Provider<Katana>,
+      ) => Provider<Katana>
+    >((_: ResolutionContext, injectableObj: Provider<Katana>) => injectableObj);
 
     container
-      .bind('Provider<Katana>')
-      .toProvider<Katana>(
-        (_context: interfaces.Context) => async () =>
+      .bind<Provider<Katana>>('Provider<Katana>')
+      .toProvider(
+        (_context: ResolutionContext) => async () =>
           Promise.resolve(new Katana()),
       )
       .onActivation(onActivationHandlerSpy);

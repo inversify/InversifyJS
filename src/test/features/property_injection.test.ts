@@ -1,15 +1,18 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
 import {
   Container,
   inject,
   injectable,
+  injectFromBase,
   multiInject,
   named,
   optional,
   tagged,
   unmanaged,
-} from '../../index';
+} from '../..';
 
 describe('Property Injection', () => {
   it('Should be able to inject a property', () => {
@@ -112,14 +115,8 @@ describe('Property Injection', () => {
 
     const container: Container = new Container();
     container.bind<Warrior>(TYPES.Warrior).to(Samurai);
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Katana)
-      .whenTargetNamed(TAGS.Primary);
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Shuriken)
-      .whenTargetNamed(TAGS.Secondary);
+    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenNamed(TAGS.Primary);
+    container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenNamed(TAGS.Secondary);
 
     const warrior: Warrior = container.get<Warrior>(TYPES.Warrior);
     expect(warrior.name).to.eql('Samurai');
@@ -187,14 +184,8 @@ describe('Property Injection', () => {
 
     const container: Container = new Container();
     container.bind<Warrior>(TYPES.Warrior).to(Samurai);
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Katana)
-      .whenTargetNamed(TAGS.Primary);
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Shuriken)
-      .whenTargetNamed(TAGS.Secondary);
+    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenNamed(TAGS.Primary);
+    container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenNamed(TAGS.Secondary);
 
     const warrior: Warrior = container.get<Warrior>(TYPES.Warrior);
     expect(warrior.name).to.eql('Samurai');
@@ -266,11 +257,11 @@ describe('Property Injection', () => {
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Katana)
-      .whenTargetTagged(TAGS.Priority, TAGS.Primary);
+      .whenTagged(TAGS.Priority, TAGS.Primary);
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Shuriken)
-      .whenTargetTagged(TAGS.Priority, TAGS.Secondary);
+      .whenTagged(TAGS.Priority, TAGS.Secondary);
 
     const warrior: Warrior = container.get<Warrior>(TYPES.Warrior);
     expect(warrior.name).to.eql('Samurai');
@@ -388,6 +379,10 @@ describe('Property Injection', () => {
     }
 
     @injectable()
+    @injectFromBase({
+      extendConstructorArguments: false,
+      extendProperties: true,
+    })
     class Samurai extends BaseWarrior {
       @inject(TYPES.Weapon)
       @tagged(TAGS.Priority, TAGS.Secondary)
@@ -403,11 +398,11 @@ describe('Property Injection', () => {
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Katana)
-      .whenTargetTagged(TAGS.Priority, TAGS.Primary);
+      .whenTagged(TAGS.Priority, TAGS.Primary);
     container
       .bind<Weapon>(TYPES.Weapon)
       .to(Shuriken)
-      .whenTargetTagged(TAGS.Priority, TAGS.Secondary);
+      .whenTagged(TAGS.Priority, TAGS.Secondary);
 
     const samurai: Samurai = container.get<Samurai>(TYPES.Warrior);
     expect(samurai.name).to.eql('Samurai');

@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { expect } from 'chai';
 
 import { Container, inject, injectable, named, optional } from '../../index';
@@ -51,11 +53,8 @@ describe('Issue 1190', () => {
 
     const container: Container = new Container();
 
-    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenTargetIsDefault();
-    container
-      .bind<Weapon>(TYPES.Weapon)
-      .to(Shuriken)
-      .whenTargetNamed(TAG.throwable);
+    container.bind<Weapon>(TYPES.Weapon).to(Katana).whenDefault();
+    container.bind<Weapon>(TYPES.Weapon).to(Shuriken).whenNamed(TAG.throwable);
 
     container.bind<Ninja>('Ninja').to(Ninja);
 
