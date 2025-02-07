@@ -1,8 +1,3 @@
-> [!NOTE]
-> New docs are temporary available [here](https://inversify.io/monorepo/). We would love to have your feedback in this [discussion](https://github.com/inversify/monorepo/discussions/235).
-
-![](https://raw.githubusercontent.com/inversify/inversify.github.io/master/img/cover.jpg)
-
 <p align="center">
   <a href="https://www.npmjs.com/package/inversify" target="__blank"><img src="https://img.shields.io/npm/v/inversify?color=0476bc&label=" alt="NPM version"></a>
   <a href="https://www.npmjs.com/package/inversify" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/inversify?color=3890aa&label="></a>
@@ -17,6 +12,9 @@
 
 # InversifyJS
 A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript.
+
+## 📕 Documentation
+Documentation is available at https://inversify.io
 
 ## About
 InversifyJS is a lightweight inversion of control (IoC) container for TypeScript and JavaScript apps.
@@ -55,9 +53,6 @@ InversifyJS has been developed with 4 main goals:
 ## Some companies using InversifyJS
 
 [<img src="https://avatars0.githubusercontent.com/u/6154722?s=200&v=4" width="100" />](https://opensource.microsoft.com/)[<img src="https://avatars2.githubusercontent.com/u/69631?s=200&v=4" width="100" />](https://code.facebook.com/projects/1021334114569758/nuclide/)[<img src="https://avatars0.githubusercontent.com/u/2232217?s=200&v=4" width="100" />](https://aws.github.io/aws-amplify/)[<img src="https://avatars0.githubusercontent.com/u/1520648?s=200&v=4" width="100" />](https://www.plainconcepts.com/)[<img src="https://avatars3.githubusercontent.com/u/6962987?s=200&v=4" width="100" />](https://api.slack.com/)[<img src="https://pbs.twimg.com/profile_images/827249559046909954/SyaBPcH8_400x400.jpg" width="100" />](http://acia.aon.com/index.php/home/) [<img src="https://avatars3.githubusercontent.com/u/114767?s=200&v=4" width="100" />](https://www.lonelyplanet.com/) [<img src="https://avatars0.githubusercontent.com/u/25283328?s=200&v=4" width="100" />](https://jincor.com/) [<img src="https://avatars1.githubusercontent.com/u/1957282?s=200&v=4" width="100" />](https://www.web-computing.de/) [<img src="https://avatars1.githubusercontent.com/u/17648048?s=200&v=4" width="100" />](https://dcos.io/) [<img src="https://avatars0.githubusercontent.com/u/16970371?s=200&v=4" width="100" />](https://typefox.io/) [<img src="https://avatars0.githubusercontent.com/u/18010308?s=200&v=4" width="100" />](https://code4.ro/) [<img src="https://user-images.githubusercontent.com/10656223/33888109-fae0852e-df43-11e7-97f6-9db543da0bde.png" width="100">](http://www.baidu.com/) [<img src="https://avatars2.githubusercontent.com/u/8085382?s=200&v=4" width="100" />](https://www.imdada.cn/) [<img src="https://avatars2.githubusercontent.com/u/17041151?s=200&v=4" width="100" />](https://www.ato.gov.au/) [<img src="https://avatars1.githubusercontent.com/u/14963540?s=200&v=4" width="100" />](https://www.kaneoh.com/) [<img src="https://avatars0.githubusercontent.com/u/26021686?s=200&v=4" width="100" />](https://particl.io/) [<img src="https://avatars2.githubusercontent.com/u/24523195?s=200&v=4" width="100" />](https://slackmap.com/) [<img src="https://avatars3.githubusercontent.com/u/16556899?s=200&v=4" width="100" />](https://www.go1.com/) [<img src="https://avatars3.githubusercontent.com/u/23475730?s=200&v=4" width="100" />](http://www.stellwagengroup.com/stellwagen-technology/) [<img src="https://avatars1.githubusercontent.com/u/15262567?s=200&v=4" width="100" />](https://www.edrlab.org/) [<img src="https://avatars1.githubusercontent.com/u/10072104?s=200&v=4" width="100" />](https://www.goodgamestudios.com/) [<img src="https://avatars2.githubusercontent.com/u/13613760?s=200&v=4" width="100" />](https://freshfox.at/) [<img src="https://avatars1.githubusercontent.com/u/864482?s=200&v=4" width="100" />](https://schubergphilis.com/)
-
-## 📕 Documentation
-Documentation is available at https://inversify.io
 
 ## Acknowledgements
 
