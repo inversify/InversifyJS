@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect } from 'chai';
 
 import {
-  BindingMetadata,
+  BindingConstraints,
   Container,
   decorate,
   inject,
@@ -328,10 +328,10 @@ Trying to resolve bindings for "Weapon (Root service)"`;
     function whenIsAndIsNamed(
       serviceIdentifier: ServiceIdentifier,
       name: MetadataName,
-    ): (bindingMetadata: BindingMetadata) => boolean {
-      return (bindingMetadata: BindingMetadata): boolean =>
-        bindingMetadata.serviceIdentifier === serviceIdentifier &&
-        bindingMetadata.name === name;
+    ): (bindingConstraints: BindingConstraints) => boolean {
+      return (bindingConstraints: BindingConstraints): boolean =>
+        bindingConstraints.serviceIdentifier === serviceIdentifier &&
+        bindingConstraints.name === name;
     }
 
     container

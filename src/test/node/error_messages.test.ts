@@ -40,7 +40,7 @@ describe('Error message when resolving fails', () => {
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: superior`);
     expect(() => {
@@ -49,7 +49,7 @@ Binding metadata:
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: Symbol(Superior)`);
     expect(() => {
@@ -58,7 +58,7 @@ Binding metadata:
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: 0`);
   });
@@ -82,7 +82,7 @@ Binding metadata:
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: -
 - tags:
@@ -93,7 +93,7 @@ Binding metadata:
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: -
 - tags:
@@ -104,7 +104,7 @@ Binding metadata:
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: -
 - tags:
@@ -131,7 +131,7 @@ Registered bindings:
 
 Trying to resolve bindings for "Weapon (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Weapon
 - name: -`);
     }
