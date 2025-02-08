@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect } from 'chai';
 
 import {
-  BindingMetadata,
+  BindingConstraints,
   Container,
   ContainerModule,
   ContainerModuleLoadOptions,
@@ -2091,20 +2091,20 @@ describe('InversifyJS', () => {
     }
 
     function isNinjaStudentConstraint(
-      bindingMetadata: BindingMetadata,
+      bindingConstraints: BindingConstraints,
     ): boolean {
       return (
-        bindingMetadata.serviceIdentifier === TYPES.Ninja &&
-        bindingMetadata.tags.get('master') === false
+        bindingConstraints.serviceIdentifier === TYPES.Ninja &&
+        bindingConstraints.tags.get('master') === false
       );
     }
 
     function isNinjaMasterConstraint(
-      bindingMetadata: BindingMetadata,
+      bindingConstraints: BindingConstraints,
     ): boolean {
       return (
-        bindingMetadata.serviceIdentifier === TYPES.Ninja &&
-        bindingMetadata.tags.get('master') === true
+        bindingConstraints.serviceIdentifier === TYPES.Ninja &&
+        bindingConstraints.tags.get('master') === true
       );
     }
 
@@ -2494,20 +2494,20 @@ describe('InversifyJS', () => {
 
     // custom constraints
     function isNinjaStudentConstraint(
-      bindingMetadata: BindingMetadata,
+      bindingConstraints: BindingConstraints,
     ): boolean {
       return (
-        bindingMetadata.serviceIdentifier === TYPES.Ninja &&
-        bindingMetadata.tags.get('master') === false
+        bindingConstraints.serviceIdentifier === TYPES.Ninja &&
+        bindingConstraints.tags.get('master') === false
       );
     }
 
     function isNinjaMasterConstraint(
-      bindingMetadata: BindingMetadata,
+      bindingConstraints: BindingConstraints,
     ): boolean {
       return (
-        bindingMetadata.serviceIdentifier === TYPES.Ninja &&
-        bindingMetadata.tags.get('master') === true
+        bindingConstraints.serviceIdentifier === TYPES.Ninja &&
+        bindingConstraints.tags.get('master') === true
       );
     }
 
