@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.0.0]
+
+Parity version with `7.0.0-alpha.5`
+
 ## [7.0.0-alpha.5]
 
 ### Changed
