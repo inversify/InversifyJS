@@ -16,8 +16,8 @@
     "@types/chai": "4.3.20",
     "@types/mocha": "10.0.10",
     "@types/sinon": "17.0.4",
-    "@typescript-eslint/eslint-plugin": "8.25.0",
-    "@typescript-eslint/parser": "8.25.0",
+    "@typescript-eslint/eslint-plugin": "8.26.0",
+    "@typescript-eslint/parser": "8.26.0",
     "chai": "4.5.0",
     "eslint": "9.21.0",
     "eslint-config-prettier": "10.0.2",
@@ -32,7 +32,7 @@
     "ts-loader": "9.5.2",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.25.0"
+    "typescript-eslint": "8.26.0"
   },
   "peerDependencies": {
     "reflect-metadata": "~0.2.2"
