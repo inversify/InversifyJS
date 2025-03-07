@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.0.2]
+
+### Changed
+- Updated `container.get` like methods to no longer initialize twice singleton scoped bindings.
+
 ## [7.0.1]
 
 ### Changed
