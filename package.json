@@ -7,7 +7,7 @@
   "dependencies": {
     "@inversifyjs/common": "1.5.0",
     "@inversifyjs/container": "1.5.3",
-    "@inversifyjs/core": "4.0.1"
+    "@inversifyjs/core": "5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "9.21.0",
