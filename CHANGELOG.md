@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added `BindingActivation`.
-- Added `BindingDeactivation`.
 
 ### Changed
 
 ### Removed
+
+## [7.1.0]
+
+### Added
+- Added `BindingActivation`.
+- Added `BindingDeactivation`.
 
 ## [7.0.2]
 
