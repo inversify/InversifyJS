@@ -19,7 +19,9 @@ export {
   IsBoundOptions,
 } from '@inversifyjs/container';
 export {
+  BindingActivation,
   BindingConstraints,
+  BindingDeactivation,
   BindingScope,
   DynamicValueBuilder,
   Factory,
