@@ -7,11 +7,13 @@ export {
 } from '@inversifyjs/common';
 export {
   BindInFluentSyntax,
+  BindingIdentifier,
   BindInWhenOnFluentSyntax,
   BindOnFluentSyntax,
   BindToFluentSyntax,
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
+  BoundServiceSyntax,
   Container,
   ContainerModule,
   ContainerModuleLoadOptions,

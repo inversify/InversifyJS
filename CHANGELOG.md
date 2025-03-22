@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.2.0]
+
+### Added
+- Added `BindingIdentifier`.
+
+### Changed
+- Updated `BindInFluentSyntax` with `getIdentifier`.
+- Updated `Container.unbind` to handle `BindingIdentifier`.
+- Updated `BindOnFluentSyntax` with `getIdentifier`.
+- Updated `BindWhenFluentSyntax` with `getIdentifier`.
+
 ## [7.1.0]
 
 ### Added
