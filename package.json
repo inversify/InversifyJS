@@ -28,7 +28,7 @@
     "prettier": "3.5.3",
     "rimraf": "6.0.1",
     "rollup-plugin-dts": "6.2.1",
-    "sinon": "19.0.5",
+    "sinon": "20.0.0",
     "ts-loader": "9.5.2",
     "ts-node": "10.9.2",
     "typescript": "5.8.2",
