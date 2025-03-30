@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.3.0]
+
+### Changed
+- Updated `Container` with `rebindSync`.
+- Updated `Container` with `unbindSync`.
+- Updated `Container` with `rebind`.
+- Updated `ContainerModuleLoadOptions` with `unbindSync`.
+- Updated `ContainerModuleLoadOptions.unbind` to accept `BindingIdentifier`.
+
 ## [7.2.0]
 
 ### Added
