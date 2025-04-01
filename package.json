@@ -6,7 +6,7 @@
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "dependencies": {
     "@inversifyjs/common": "1.5.0",
-    "@inversifyjs/container": "1.7.0",
+    "@inversifyjs/container": "1.8.0",
     "@inversifyjs/core": "5.1.0"
   },
   "devDependencies": {
@@ -77,5 +77,5 @@
     "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec"
   },
   "sideEffects": false,
-  "version": "7.3.0"
+  "version": "7.4.0"
 }
