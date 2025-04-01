@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.4.0]
+
+### Changed
+- Updated `ContainerModuleLoadOptions` with `rebind`.
+- Updated `ContainerModuleLoadOptions` with `rebindSync`.
+- Updated `BindToFluentSyntax.toResolvedValue` with additional type constraints.
+
 ## [7.3.0]
 
 ### Changed
