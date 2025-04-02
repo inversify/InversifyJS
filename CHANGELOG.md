@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.5.0]
+
+### Changed
+- Updated `Container` with `unloadSync`.
+- Updated `Container` with `loadSync`.
+
 ## [7.4.0]
 
 ### Changed
