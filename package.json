@@ -6,7 +6,7 @@
   "description": "A powerful and lightweight inversion of control container for JavaScript and Node.js apps powered by TypeScript.",
   "dependencies": {
     "@inversifyjs/common": "1.5.0",
-    "@inversifyjs/container": "1.8.0",
+    "@inversifyjs/container": "1.9.0",
     "@inversifyjs/core": "5.1.0"
   },
   "devDependencies": {
@@ -21,7 +21,7 @@
     "chai": "4.5.0",
     "eslint": "9.23.0",
     "eslint-config-prettier": "10.1.1",
-    "eslint-plugin-prettier": "5.2.5",
+    "eslint-plugin-prettier": "5.2.6",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "mocha": "11.1.0",
     "nyc": "17.1.0",
