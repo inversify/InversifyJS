@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.5.1]
+
+### Changed
+- Updated `Container.get` like methods to properly set bindings when autobind mode is set:
+  - `@injectable` scopes properly handled.
+  - Autobind mode no longer creates duplicated bindings.
+
 ## [7.5.0]
 
 ### Changed
