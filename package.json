@@ -10,7 +10,7 @@
     "@inversifyjs/core": "5.2.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.24.0",
+    "@eslint/js": "9.25.0",
     "@rollup/plugin-terser": "0.4.4",
     "@rollup/plugin-typescript": "12.1.2",
     "@types/chai": "4.3.20",
