@@ -23,7 +23,7 @@
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
-    "mocha": "11.4.0",
+    "mocha": "11.5.0",
     "nyc": "17.1.0",
     "prettier": "3.5.3",
     "rimraf": "6.0.1",
