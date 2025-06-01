@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.5.2]
+
+### Changed
+- Fixed `Container.snapshot` so snapshot bindings are not updated after a snapshot is taken.
+- Fixed a memory leak affecting child containers.
+
 ## [7.5.1]
 
 ### Changed
