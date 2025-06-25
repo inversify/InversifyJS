@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.5.4]
+
+### Changed
+- Updated `ServiceIdentifier` to rely on `Function` again. This solves an issue affecting classes with protected constructors.
+
 ## [7.5.3]
 
 ### Changed
