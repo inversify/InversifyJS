@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { expect } from 'chai';
 
-import { Container, inject, injectable, optional } from '../..';
+import { Container, inject, injectable, Newable, optional } from '../..';
 
 describe('Issue 928', () => {
   it('should inject the right instances', () => {
@@ -49,7 +49,7 @@ describe('Issue 928', () => {
     }
 
     const container: Container = new Container();
-    [DepA, DepB, DepC, Cls].forEach((i: NewableFunction) =>
+    [DepA, DepB, DepC, Cls].forEach((i: Newable<unknown>) =>
       container.bind(i).toSelf().inSingletonScope(),
     );
 
