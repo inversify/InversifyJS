@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.5.3]
+
+### Changed
+- Updated `ServiceIdentifier` removing `Function` in favor of a new `AbstractNewable` type. ServiceIdentifier now uses AbstractNewable instead of Function to better represent abstract classes. This provides better type safety and semantics.
+
 ## [7.5.2]
 
 ### Changed
