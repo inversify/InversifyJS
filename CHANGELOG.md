@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.6.1]
+
+### Changed
+- Updated `getAll` and `getAllAsync` options with missing `chained` property.
+
 ## [7.6.0]
 
 ### Added
@@ -19,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated `multiInject` decorator with optional `MultiInjectOptions`.
-- Updated `getAll` and `getAllAsync` with optional`chained` property.
+- Updated `getAll` and `getAllAsync` options with optional`chained` property.
 
 ## [7.5.4]
 
