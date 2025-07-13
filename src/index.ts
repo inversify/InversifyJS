@@ -30,6 +30,7 @@ export {
   BindingScope,
   DynamicValueBuilder,
   Factory,
+  GetAllOptions,
   GetOptions,
   GetOptionsTagConstraint,
   MetadataName,
