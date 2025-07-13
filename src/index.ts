@@ -19,6 +19,9 @@ export {
   ContainerModuleLoadOptions,
   ContainerOptions,
   IsBoundOptions,
+  ResolvedValueInjectOptions,
+  ResolvedValueMetadataInjectOptions,
+  ResolvedValueMetadataInjectTagOptions,
 } from '@inversifyjs/container';
 export {
   BindingActivation,
@@ -31,6 +34,7 @@ export {
   GetOptionsTagConstraint,
   MetadataName,
   MetadataTag,
+  MultiInjectOptions,
   OptionalGetOptions,
   Provider,
   ResolutionContext,

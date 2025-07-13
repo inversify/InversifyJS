@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.6.0]
+
+### Added
+- Added `MultiInjectOptions`.
+
+### Changed
+- Updated `multiInject` decorator with optional `MultiInjectOptions`.
+- Updated `getAll` and `getAllAsync` with optional`chained` property.
+
 ## [7.5.4]
 
 ### Changed
