@@ -16,12 +16,12 @@
     "@types/chai": "4.3.20",
     "@types/mocha": "10.0.10",
     "@types/sinon": "17.0.4",
-    "@typescript-eslint/eslint-plugin": "8.36.0",
-    "@typescript-eslint/parser": "8.36.0",
+    "@typescript-eslint/eslint-plugin": "8.38.0",
+    "@typescript-eslint/parser": "8.38.0",
     "chai": "4.5.0",
     "eslint": "9.31.0",
-    "eslint-config-prettier": "10.1.5",
-    "eslint-plugin-prettier": "5.5.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.3",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "mocha": "11.7.1",
     "nyc": "17.1.0",
@@ -32,7 +32,7 @@
     "ts-loader": "9.5.2",
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.36.0"
+    "typescript-eslint": "8.38.0"
   },
   "peerDependencies": {
     "reflect-metadata": "~0.2.2"
