@@ -51,7 +51,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.17.0
+          node-version: 22.17.1
           cache: npm
           registry-url: https://registry.npmjs.org/
       - name: Install Dependencies
