@@ -25,16 +25,39 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run build
+
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 10
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+      - name: Compile source code
+        run: pnpm run build
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   Upload_Coverage_Report:
     name: Upload coverage report to codecov
@@ -46,21 +69,41 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Use Node.js
+
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.17.1
-          cache: npm
-          registry-url: https://registry.npmjs.org/
-      - name: Install Dependencies
-        run: npm ci
-      - run: npm run build
+          node-version: 22.x
+
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 10
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+      - name: Compile source code
+        run: pnpm run build
       - name: Run linter
-        run: npm run lint
+        run: pnpm run lint
       - name: Run tests
-        run: npm test --coverage
+        run: pnpm test --coverage
       - name: Codecov Upload
         uses: codecov/codecov-action@v5
         with:
