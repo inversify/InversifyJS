@@ -9,12 +9,17 @@
     "@inversifyjs/container": "1.11.1",
     "@inversifyjs/core": "5.4.0"
   },
+  "devEngines": {
+    "node": "^22.10.2",
+    "pnpm": "^10.13.1"
+  },
   "devDependencies": {
     "@eslint/js": "9.31.0",
     "@rollup/plugin-terser": "0.4.4",
     "@rollup/plugin-typescript": "12.1.4",
     "@types/chai": "4.3.20",
     "@types/mocha": "10.0.10",
+    "@types/node": "22.17.0",
     "@types/sinon": "17.0.4",
     "@typescript-eslint/eslint-plugin": "8.38.0",
     "@typescript-eslint/parser": "8.38.0",
@@ -30,6 +35,7 @@
     "rollup-plugin-dts": "6.2.1",
     "sinon": "21.0.0",
     "ts-loader": "9.5.2",
+    "tslib": "2.8.1",
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "typescript-eslint": "8.38.0"
@@ -65,14 +71,13 @@
     "url": "https://github.com/inversify/InversifyJS.git"
   },
   "scripts": {
-    "build": "npm run build:cjs && npm run build:esm",
+    "build": "pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --build tsconfig.cjs.json && node ./scripts/writeCommonJsPackageJson.mjs ./lib/cjs",
     "build:esm": "rollup -c ./rollup.config.mjs && node ./scripts/writeEsmPackageJson.mjs ./lib/esm",
     "build:clean": "rimraf lib",
     "format": "prettier --write ./src/**/*.ts",
     "lint": "eslint ./src",
-    "prebuild": "npm run build:clean",
-    "prepublish": "npm run build",
+    "prebuild": "pnpm run build:clean",
     "test": "nyc --reporter=lcov --require ts-node/register mocha src/test/*.test.ts src/test/**/*.test.ts --reporter spec --exit",
     "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec"
   },

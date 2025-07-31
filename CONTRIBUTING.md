@@ -11,13 +11,13 @@ git clone https://github.com/YOUR_USERNAME/InversifyJS.git
 2 Install npm dependencies
 
 ```sh
-npm install
+pnpm install
 ```
 
 3 Run build process
 
 ```sh
-npm test
+pnpm test
 ```
 
 ## Guidelines
