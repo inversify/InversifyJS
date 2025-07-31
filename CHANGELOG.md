@@ -12,6 +12,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [7.7.0]
+
+### Added
+- Added `Bind` type.
+- Added `IsBound` type.
+- Added `OnActivation` type.
+- Added `OnDeactivation` type.
+- Added `Rebind` type.
+- Added `RebindSync` type.
+- Added `Unbind` type.
+- Added `UnbindSync` type.
+
+### Changed
+- Updated `BindOnFluentSyntaxImplementation.onDeactivation` to throw an error on non singleton scoped bindings.
+- Updated `ServiceResolutionManager` to provide right `getChained` operation after computed properties are reset.
+
 ## [7.6.1]
 
 ### Changed
