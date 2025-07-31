@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated `BindOnFluentSyntaxImplementation.onDeactivation` to throw an error on non singleton scoped bindings.
 - Updated `ServiceResolutionManager` to provide right `getChained` operation after computed properties are reset.
+- Updated `Container` to properly manage bindings bindings on child containers after a parent container restores a snapshot.
 
 ## [7.6.1]
 
