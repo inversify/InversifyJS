@@ -15,8 +15,8 @@ importers:
         specifier: 1.12.0
         version: 1.12.0(reflect-metadata@0.2.2)
       '@inversifyjs/core':
-        specifier: 5.4.0
-        version: 5.4.0(reflect-metadata@0.2.2)
+        specifier: 6.0.0
+        version: 6.0.0(reflect-metadata@0.2.2)
       reflect-metadata:
         specifier: ~0.2.2
         version: 0.2.2
@@ -243,9 +243,6 @@ packages:
     peerDependencies:
       reflect-metadata: ~0.2.2
 
-  '@inversifyjs/core@5.4.0':
-    resolution: {integrity: sha512-ZQXfPvXmIlzWs/K8n8R5AFBHk55gV7xEjKtKv1dvS3K6f8wEVXeHij9Zh0tqp2pvEyiuxv0UHPBONpE84DuYcg==}
-
   '@inversifyjs/core@6.0.0':
     resolution: {integrity: sha512-xkHeydzdsCrm8ubftPn0Fiy5ShsRcJQhjZmmSLHou43F5XKLeCHaGQs2o96t+Ej0ICj16ZbRrE9IPLTOaj4LYg==}
 
@@ -254,11 +251,6 @@ packages:
 
   '@inversifyjs/prototype-utils@0.1.2':
     resolution: {integrity: sha512-WZAEycwVd8zVCPCQ7GRzuQmjYF7X5zbjI9cGigDbBoTHJ8y5US9om00IAp0RYislO+fYkMzgcB2SnlIVIzyESA==}
-
-  '@inversifyjs/reflect-metadata-utils@1.2.0':
-    resolution: {integrity: sha512-EvXdBP+IjAZ3QKWFWGDzWLacyng9RMohtZ0c0EPUmvbaF4wgfwrE6n92ilt9aGwdbE5roGmDTmoRSmvavVOtIA==}
-    peerDependencies:
-      reflect-metadata: 0.2.2
 
   '@inversifyjs/reflect-metadata-utils@1.3.0':
     resolution: {integrity: sha512-JJVnIRq75+nF8FP4WwFPdVQ4sgqf09acXbODi3B7vVtJo+0Mo0YQOOdSWw/cHmbP8+5MAKi4PBYOK3yqn4tGNg==}
@@ -2004,14 +1996,6 @@ snapshots:
       '@inversifyjs/reflect-metadata-utils': 1.3.0(reflect-metadata@0.2.2)
       reflect-metadata: 0.2.2
 
-  '@inversifyjs/core@5.4.0(reflect-metadata@0.2.2)':
-    dependencies:
-      '@inversifyjs/common': 1.5.2
-      '@inversifyjs/prototype-utils': 0.1.2
-      '@inversifyjs/reflect-metadata-utils': 1.2.0(reflect-metadata@0.2.2)
-    transitivePeerDependencies:
-      - reflect-metadata
-
   '@inversifyjs/core@6.0.0(reflect-metadata@0.2.2)':
     dependencies:
       '@inversifyjs/common': 1.5.2
@@ -2025,10 +2009,6 @@ snapshots:
   '@inversifyjs/prototype-utils@0.1.2':
     dependencies:
       '@inversifyjs/common': 1.5.2
-
-  '@inversifyjs/reflect-metadata-utils@1.2.0(reflect-metadata@0.2.2)':
-    dependencies:
-      reflect-metadata: 0.2.2
 
   '@inversifyjs/reflect-metadata-utils@1.3.0(reflect-metadata@0.2.2)':
     dependencies:
