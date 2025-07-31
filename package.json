@@ -83,5 +83,5 @@
     "test:cjs": "nyc --reporter=lcov mocha lib/cjs/test/*.test.js lib/cjs/test/**/*.test.js --reporter spec"
   },
   "sideEffects": false,
-  "version": "7.6.1"
+  "version": "7.7.0"
 }

@@ -6,6 +6,7 @@ export {
   ServiceIdentifier,
 } from '@inversifyjs/common';
 export {
+  Bind,
   BindInFluentSyntax,
   BindingIdentifier,
   BindInWhenOnFluentSyntax,
@@ -18,10 +19,17 @@ export {
   ContainerModule,
   ContainerModuleLoadOptions,
   ContainerOptions,
+  IsBound,
   IsBoundOptions,
+  OnActivation,
+  OnDeactivation,
+  Rebind,
+  RebindSync,
   ResolvedValueInjectOptions,
   ResolvedValueMetadataInjectOptions,
   ResolvedValueMetadataInjectTagOptions,
+  Unbind,
+  UnbindSync,
 } from '@inversifyjs/container';
 export {
   BindingActivation,
