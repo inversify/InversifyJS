@@ -10,8 +10,16 @@
     "@inversifyjs/core": "6.0.0"
   },
   "devEngines": {
-    "node": "^22.10.2",
-    "pnpm": "^10.13.1"
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^10.13.1",
+      "onFail": "warn"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "^22.10.2",
+      "onFail": "warn"
+    }
   },
   "devDependencies": {
     "@eslint/js": "9.32.0",
@@ -44,9 +52,7 @@
   "peerDependencies": {
     "reflect-metadata": "~0.2.2"
   },
-  "engines": {},
   "homepage": "http://inversify.io",
-  "jsnext:main": "es/inversify.js",
   "keywords": [
     "dependency injection",
     "dependency inversion",
