@@ -34,7 +34,7 @@
     "chai": "4.5.0",
     "eslint": "9.32.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.3",
+    "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "mocha": "11.7.1",
     "nyc": "17.1.0",
