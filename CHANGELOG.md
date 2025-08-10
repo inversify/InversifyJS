@@ -4,13 +4,11 @@ All notable changes to this project from 5.0.0 forward will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
+## [7.7.1-beta.0]
 
 ### Changed
-
-### Removed
+- Fixed a bug causing `Container.bind` and `Container.unbind` to avoid throwing planning errors.
+- Fixed a bug causing wrong cached plans involving bindings with ancestor related constraints.
 
 ## [7.7.0]
 
