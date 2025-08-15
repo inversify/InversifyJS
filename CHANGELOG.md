@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [7.8.1]
+
+### Changed
+- Fixed `injectFromHierarchy` avoiding crash when traversing `Object` metadata.
+
 ## [7.8.0]
 
 ### Added
