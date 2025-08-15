@@ -37,8 +37,8 @@ importers:
         specifier: 10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: 22.17.1
-        version: 22.17.1
+        specifier: 22.17.2
+        version: 22.17.2
       '@types/sinon':
         specifier: 17.0.4
         version: 17.0.4
@@ -89,7 +89,7 @@ importers:
         version: 9.5.2(typescript@5.9.2)(webpack@5.101.0)
       ts-node:
         specifier: 10.9.2
-        version: 10.9.2(@types/node@22.17.1)(typescript@5.9.2)
+        version: 10.9.2(@types/node@22.17.2)(typescript@5.9.2)
       tslib:
         specifier: 2.8.1
         version: 2.8.1
@@ -486,8 +486,8 @@ packages:
   '@types/mocha@10.0.10':
     resolution: {integrity: sha512-xPyYSz1cMPnJQhl0CLMH68j3gprKZaTjG3s5Vi+fDgx+uhG9NOXwbVt52eFS8ECyXhyKcjDLCBEqBExKuiZb7Q==}
 
-  '@types/node@22.17.1':
-    resolution: {integrity: sha512-y3tBaz+rjspDTylNjAX37jEC3TETEFGNJL6uQDxwF9/8GLLIjW1rvVHlynyuUKMnMr1Roq8jOv3vkopBjC4/VA==}
+  '@types/node@22.17.2':
+    resolution: {integrity: sha512-gL6z5N9Jm9mhY+U2KXZpteb+09zyffliRkZyZOHODGATyC5B1Jt/7TzuuiLkFsSUMLbS1OLmlj/E+/3KF4Q/4w==}
 
   '@types/sinon@17.0.4':
     resolution: {integrity: sha512-RHnIrhfPO3+tJT0s7cFaXGZvsL4bbR3/k7z3P312qMS4JaS2Tk+KiwiLx1S0rQ56ERj00u1/BtdyVd0FY+Pdew==}
@@ -2204,7 +2204,7 @@ snapshots:
 
   '@types/mocha@10.0.10': {}
 
-  '@types/node@22.17.1':
+  '@types/node@22.17.2':
     dependencies:
       undici-types: 6.21.0
 
@@ -2944,7 +2944,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.17.1
+      '@types/node': 22.17.2
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -3433,14 +3433,14 @@ snapshots:
       typescript: 5.9.2
       webpack: 5.101.0
 
-  ts-node@10.9.2(@types/node@22.17.1)(typescript@5.9.2):
+  ts-node@10.9.2(@types/node@22.17.2)(typescript@5.9.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 22.17.1
+      '@types/node': 22.17.2
       acorn: 8.15.0
       acorn-walk: 8.3.4
       arg: 4.1.3
