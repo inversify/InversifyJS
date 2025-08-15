@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [7.8.0]
+
+### Added
+- Added `injectFromHierarchy`.
+
 ## [7.7.1]
 
 ### Changed
