@@ -52,6 +52,7 @@ export {
   decorate,
   inject,
   injectFromBase,
+  injectFromHierarchy,
   injectable,
   multiInject,
   named,
