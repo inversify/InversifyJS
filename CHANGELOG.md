@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [7.9.0]
+
+### Changed
+
+- Updated `decorate` to allow method parameter decoration.
+
 ## [7.8.1]
 
 ### Changed
