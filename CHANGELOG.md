@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [7.9.1]
+
+### Changed
+- Updated `Container` to trigger autobind options on autobound parent container related binding requests.
+
 ## [7.9.0]
 
 ### Changed
