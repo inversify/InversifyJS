@@ -15,8 +15,8 @@ importers:
         specifier: 1.12.6
         version: 1.12.6(reflect-metadata@0.2.2)
       '@inversifyjs/core':
-        specifier: 7.2.0
-        version: 7.2.0(reflect-metadata@0.2.2)
+        specifier: 8.0.0
+        version: 8.0.0(reflect-metadata@0.2.2)
       reflect-metadata:
         specifier: ~0.2.2
         version: 0.2.2
@@ -245,6 +245,9 @@ packages:
 
   '@inversifyjs/core@7.2.0':
     resolution: {integrity: sha512-rOmtf31TGTeO5BNZhobV0hoV5F0yGwVJFm8mWyoLJbemOH1ugZRMYlVyKXvSDZfMCi/MSU4EEasSi/NFaq4qeA==}
+
+  '@inversifyjs/core@8.0.0':
+    resolution: {integrity: sha512-rYmI6lT9NbhujCRu/cMRAqvpM+I0leYmgHidA418f8VbMeRexxr9WbjPb8KaUG/dQpTUzHkHDxh+0ocp/fb+Ng==}
 
   '@inversifyjs/plugin@0.2.0':
     resolution: {integrity: sha512-R/JAdkTSD819pV1zi0HP54mWHyX+H2m8SxldXRgPQarS3ySV4KPyRdosWcfB8Se0JJZWZLHYiUNiS6JvMWSPjw==}
@@ -1981,6 +1984,14 @@ snapshots:
       reflect-metadata: 0.2.2
 
   '@inversifyjs/core@7.2.0(reflect-metadata@0.2.2)':
+    dependencies:
+      '@inversifyjs/common': 1.5.2
+      '@inversifyjs/prototype-utils': 0.1.2
+      '@inversifyjs/reflect-metadata-utils': 1.3.0(reflect-metadata@0.2.2)
+    transitivePeerDependencies:
+      - reflect-metadata
+
+  '@inversifyjs/core@8.0.0(reflect-metadata@0.2.2)':
     dependencies:
       '@inversifyjs/common': 1.5.2
       '@inversifyjs/prototype-utils': 0.1.2
