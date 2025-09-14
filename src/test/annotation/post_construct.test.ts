@@ -9,12 +9,8 @@ describe('@postConstruct', () => {
     function setup() {
       class Katana {
         @postConstruct()
-        public testMethod1() {
-          /* ... */
-        }
-
         @postConstruct()
-        public testMethod2() {
+        public testMethod1() {
           /* ... */
         }
       }

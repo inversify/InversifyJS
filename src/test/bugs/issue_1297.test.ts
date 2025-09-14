@@ -76,17 +76,24 @@ describe('Issue 1297', () => {
     const container: Container = new Container();
 
     const onActivationHandlerSpy: sinon.SinonSpy<
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       [ResolutionContext, Provider<Katana>],
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       Provider<Katana>
     > = sinon.spy<
       (
         _: ResolutionContext,
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         injectableObj: Provider<Katana>,
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
       ) => Provider<Katana>
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
     >((_: ResolutionContext, injectableObj: Provider<Katana>) => injectableObj);
 
     container
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       .bind<Provider<Katana>>('Provider<Katana>')
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       .toProvider(
         (_context: ResolutionContext) => async () =>
           Promise.resolve(new Katana()),

@@ -911,6 +911,7 @@ describe('InversifyJS', () => {
     container.bind<Ninja>('Ninja').to(NinjaWithProvider);
     container.bind<Katana>('Katana').to(Katana);
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     container.bind<KatanaProvider>('Provider<Katana>').toProvider(
       (context: ResolutionContext) => async () =>
         new Promise<Katana>((resolve: (value: Katana) => void) => {
