@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [7.10.0]
+
+### Added
+- Added `InjectFromBaseOptionsLifecycle`.
+- Added `InjectFromHierarchyOptionsLifecycle`.
+
+### Changed
+- Updated `injectFromBase` with `lifecycle` property.
+- Updated `injectFromHierarchy` with `lifecycle` property.
+
 ## [7.9.1]
 
 ### Changed
