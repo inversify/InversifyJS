@@ -39,6 +39,7 @@ describe('Provider', () => {
     const container: Container = new Container();
 
     container.bind<Ninja>('Ninja').to(Ninja).inSingletonScope();
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     container.bind<NinjaMasterProvider>('Provider<NinjaMaster>').toProvider(
       (context: ResolutionContext) => async () =>
         new Promise<NinjaMaster>(
@@ -109,8 +110,10 @@ describe('Provider', () => {
 
     container.bind<Sword>('Sword').to(Katana);
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     type SwordProvider = Provider<Sword, [string, number]>;
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     container.bind<SwordProvider>('SwordProvider').toProvider(
       (context: ResolutionContext): SwordProvider =>
         async (material: string, damage: number) =>
@@ -162,6 +165,7 @@ describe('Provider', () => {
 
     container.bind<Warrior>('Warrior').to(Ninja).inSingletonScope(); // Value is singleton!
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     container.bind<WarriorProvider>('WarriorProvider').toProvider(
       (context: ResolutionContext) => async (increaseLevel: number) =>
         new Promise<Warrior>((resolve: (value: Warrior) => void) => {
