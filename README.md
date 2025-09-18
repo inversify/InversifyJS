@@ -1,3 +1,8 @@
+> [!NOTE]  
+> InversifyJS will be moving to the [monorepo](https://github.com/inversify/monorepo). Please, consider creating issues and pull requests there.
+>
+> Next releases will be published in the monorepo, so consider starring it to be notified.
+
 <p align="center">
   <a href="https://www.npmjs.com/package/inversify" target="__blank"><img src="https://img.shields.io/npm/v/inversify?color=0476bc&label=" alt="NPM version"></a>
   <a href="https://www.npmjs.com/package/inversify" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/inversify?color=3890aa&label="></a>
