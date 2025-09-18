@@ -12,6 +12,7 @@ body:
         Please, submit your idea or proposal in the [monorepo](https://github.com/inversify/monorepo/issues/new?template=feature.yml)
 
         Please do not create the issue here, it will be closed.
+
         ---
 
   - type: checkboxes
